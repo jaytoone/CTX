@@ -1,0 +1,188 @@
+"""
+Trigger classifier for CTX experiment.
+
+Classifies input prompts into trigger types using regex + keyword matching.
+No LLM API calls -- purely local processing.
+"""
+
+import re
+from dataclasses import dataclass
+from enum import Enum
+from typing import List, Optional
+
+
+class TriggerType(Enum):
+    EXPLICIT_SYMBOL = "EXPLICIT_SYMBOL"
+    SEMANTIC_CONCEPT = "SEMANTIC_CONCEPT"
+    TEMPORAL_HISTORY = "TEMPORAL_HISTORY"
+    IMPLICIT_CONTEXT = "IMPLICIT_CONTEXT"
+
+
+@dataclass
+class Trigger:
+    """A detected trigger from input text."""
+    trigger_type: TriggerType
+    value: str
+    confidence: float
+    source_span: Optional[str] = None
+
+
+# Patterns for explicit symbol detection
+SYMBOL_PATTERNS = [
+    # Function/method references: function_name, ClassName.method_name
+    re.compile(r'\b([a-z_][a-z0-9_]*(?:\.[a-z_][a-z0-9_]*)?\s*\()', re.IGNORECASE),
+    # Class references: CamelCase words
+    re.compile(r'\b([A-Z][a-zA-Z0-9]+(?:[A-Z][a-zA-Z0-9]+)*)\b'),
+    # Quoted identifiers
+    re.compile(r'[`"\']([a-zA-Z_][a-zA-Z0-9_.]+)[`"\']'),
+    # File paths
+    re.compile(r'(?:file|module|path)\s+([a-zA-Z0-9_/]+\.py)', re.IGNORECASE),
+]
+
+# Keywords that indicate explicit symbol lookup
+EXPLICIT_KEYWORDS = [
+    "function", "method", "class", "variable", "constant",
+    "definition", "implementation", "signature", "declaration",
+    "find the function", "show the class", "where is", "locate",
+]
+
+# Keywords that indicate semantic/concept queries
+SEMANTIC_KEYWORDS = [
+    "related to", "about", "concept", "how does", "explain",
+    "all code", "everything about", "functionality", "feature",
+    "module for", "handles", "responsible for", "deals with",
+    "authentication", "database", "caching", "logging", "security",
+    "api", "endpoint", "configuration", "testing", "scheduling",
+]
+
+# Keywords that indicate temporal/history references
+TEMPORAL_KEYWORDS = [
+    "previously", "before", "last time", "earlier", "remember",
+    "discussed", "mentioned", "we talked", "history", "past",
+    "previous session", "ago", "recent", "lately", "prior",
+]
+
+# Keywords that indicate implicit context inference
+IMPLICIT_KEYWORDS = [
+    "needed to", "understand", "dependencies", "depends on",
+    "required by", "imports", "calls", "uses", "affects",
+    "impact", "connected", "related modules", "fully understand",
+]
+
+
+class TriggerClassifier:
+    """Classifies input prompts into trigger types."""
+
+    def classify(self, prompt: str) -> List[Trigger]:
+        """Extract and classify triggers from a prompt.
+
+        Args:
+            prompt: The input text to analyze
+
+        Returns:
+            List of detected triggers, sorted by confidence (highest first)
+        """
+        triggers = []
+        prompt_lower = prompt.lower()
+
+        # 1. Detect explicit symbols
+        triggers.extend(self._detect_explicit_symbols(prompt, prompt_lower))
+
+        # 2. Detect semantic concepts
+        triggers.extend(self._detect_semantic_concepts(prompt_lower))
+
+        # 3. Detect temporal references
+        triggers.extend(self._detect_temporal_refs(prompt_lower))
+
+        # 4. Detect implicit context
+        triggers.extend(self._detect_implicit_context(prompt_lower))
+
+        # If no triggers found, default to semantic concept with the full prompt
+        if not triggers:
+            triggers.append(Trigger(
+                trigger_type=TriggerType.SEMANTIC_CONCEPT,
+                value=prompt,
+                confidence=0.3,
+            ))
+
+        # Sort by confidence descending
+        triggers.sort(key=lambda t: t.confidence, reverse=True)
+
+        return triggers
+
+    def classify_primary(self, prompt: str) -> TriggerType:
+        """Return the primary (highest-confidence) trigger type for a prompt."""
+        triggers = self.classify(prompt)
+        return triggers[0].trigger_type if triggers else TriggerType.SEMANTIC_CONCEPT
+
+    def _detect_explicit_symbols(self, prompt: str, prompt_lower: str) -> List[Trigger]:
+        """Detect explicit symbol references (function names, class names, etc.)."""
+        triggers = []
+
+        # Check for explicit keywords
+        has_explicit_keyword = any(kw in prompt_lower for kw in EXPLICIT_KEYWORDS)
+
+        for pattern in SYMBOL_PATTERNS:
+            matches = pattern.findall(prompt)
+            for match in matches:
+                # Clean up match
+                symbol = match.rstrip("(").strip()
+                if len(symbol) < 2 or symbol.lower() in ("the", "all", "for", "and", "show"):
+                    continue
+
+                confidence = 0.9 if has_explicit_keyword else 0.7
+                triggers.append(Trigger(
+                    trigger_type=TriggerType.EXPLICIT_SYMBOL,
+                    value=symbol,
+                    confidence=confidence,
+                    source_span=match,
+                ))
+
+        return triggers
+
+    def _detect_semantic_concepts(self, prompt_lower: str) -> List[Trigger]:
+        """Detect semantic concept references."""
+        triggers = []
+
+        matched_keywords = [kw for kw in SEMANTIC_KEYWORDS if kw in prompt_lower]
+        if matched_keywords:
+            # Extract the most specific concept
+            concept = max(matched_keywords, key=len)
+            confidence = min(0.85, 0.5 + len(matched_keywords) * 0.1)
+            triggers.append(Trigger(
+                trigger_type=TriggerType.SEMANTIC_CONCEPT,
+                value=concept,
+                confidence=confidence,
+            ))
+
+        return triggers
+
+    def _detect_temporal_refs(self, prompt_lower: str) -> List[Trigger]:
+        """Detect temporal/history references."""
+        triggers = []
+
+        matched = [kw for kw in TEMPORAL_KEYWORDS if kw in prompt_lower]
+        if matched:
+            confidence = min(0.9, 0.5 + len(matched) * 0.15)
+            triggers.append(Trigger(
+                trigger_type=TriggerType.TEMPORAL_HISTORY,
+                value=max(matched, key=len),
+                confidence=confidence,
+            ))
+
+        return triggers
+
+    def _detect_implicit_context(self, prompt_lower: str) -> List[Trigger]:
+        """Detect implicit context inference needs."""
+        triggers = []
+
+        matched = [kw for kw in IMPLICIT_KEYWORDS if kw in prompt_lower]
+        if matched:
+            confidence = min(0.8, 0.4 + len(matched) * 0.12)
+            triggers.append(Trigger(
+                trigger_type=TriggerType.IMPLICIT_CONTEXT,
+                value=max(matched, key=len),
+                confidence=confidence,
+            ))
+
+        return triggers
