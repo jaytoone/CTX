@@ -37,7 +37,7 @@
 - [x] Git initialized
 - [x] .gitignore configured
 - [x] README.md with quick start
-- [ ] GitHub push (awaiting user authorization)
+- [x] GitHub push (https://github.com/jaytoone/CTX)
 - [ ] arXiv submission (awaiting user action)
 
 ---
