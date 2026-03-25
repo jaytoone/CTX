@@ -34,3 +34,4 @@
 - [[projects/CTX/research/20260325-ctx-paper-tier-evaluation|20260325-ctx-paper-tier-evaluation]]
 - [[projects/CTX/research/20260324-ctx-paper-worthiness|20260324-ctx-paper-worthiness]]
 - [[projects/CTX/research/20260324-ctx-methodology-critique-top-tier|20260324-ctx-methodology-critique-top-tier]]
+| [../benchmarks/results/llm_quality_openrouter.md](../benchmarks/results/llm_quality_openrouter.md) | OpenRouter Gemini Flash 1.5 pass@1 — CTX 0.733 vs Full 0.200 (+267%, p=0.0004) |
