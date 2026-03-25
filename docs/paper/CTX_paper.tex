@@ -58,7 +58,7 @@ This paper makes four contributions:
 
 \textbf{CAR} \citep{li2024car} introduces dynamic retrieval size selection based on query clustering. CTX shares the principle of adaptive retrieval but differs in mechanism: CAR clusters queries by embedding similarity, while CTX classifies by trigger type---a code-specific taxonomy that maps directly to retrieval strategies.
 
-\textbf{RANGER} (2025) constructs a comprehensive knowledge graph of entire repositories, capturing hierarchical and cross-file dependencies down to the variable level, and augments nodes with textual descriptions and embeddings. RANGER achieves strong results across four standard benchmarks (CodeSearchNet, RepoQA, RepoBench, CrossCodeEval). CTX differs from RANGER in three key ways: (1) CTX operates at query-routing level, classifying \textit{intent} before retrieval, whereas RANGER applies uniform graph traversal to all queries; (2) CTX's adaptive-k selection adjusts retrieval budget per trigger type, while RANGER uses fixed retrieval depth; and (3) CTX achieves 5.2\% token usage versus RANGER's full-graph traversal. The approaches are complementary: CTX's trigger taxonomy could be applied as a query routing layer on top of RANGER's knowledge graph.
+\textbf{RANGER} (2025) constructs a comprehensive knowledge graph of entire repositories, capturing hierarchical and cross-file dependencies down to the variable level, and augments nodes with textual descriptions and embeddings. RANGER achieves strong results across four standard benchmarks (CodeSearchNet, RepoQA, RepoBench, CrossCodeEval). CTX differs from RANGER in three key ways: (1) CTX operates at query-routing level, classifying \textit{intent} before retrieval, whereas RANGER applies uniform graph traversal to all queries; (2) CTX's adaptive-k selection adjusts retrieval budget per trigger type, while RANGER uses fixed retrieval depth; and (3) CTX achieves 5.2\% token usage versus RANGER's full-graph traversal. The approaches are complementary: CTX's trigger taxonomy could be applied as a query routing layer on top of RANGER's knowledge graph. We validate this empirically using a RANGER-approx baseline that implements AST-based call graph construction with BFS traversal (Section~\ref{sec:ranger_comparison}).
 
 \subsection{Long-Context Degradation}
 
@@ -194,7 +194,7 @@ Total: 968 real files across 3 codebases, 415 total queries.
 
 \subsection{Baselines}
 
-We compare CTX against seven baselines spanning the spectrum from no retrieval to production-grade neural RAG, graph-based retrieval, and a hybrid approach:
+We compare CTX against eight baselines spanning the spectrum from no retrieval to production-grade neural RAG, graph-based retrieval, and a hybrid approach:
 
 \begin{table}[t]
 \centering
@@ -209,6 +209,7 @@ Full Context & Loads all files into context \\
 BM25 & Sparse keyword retrieval \\
 Dense TF-IDF & TF-IDF + cosine similarity \\
 GraphRAG-lite & Import graph BFS without triggers \\
+RANGER-approx & AST-based call+import graph BFS \\
 LlamaIndex & AST-aware code chunking + TF-IDF \\
 Chroma Dense & ChromaDB + MiniLM-L6-v2 embeddings \\
 Hybrid Dense+CTX & Dense seed + import graph expansion \\
@@ -234,6 +235,7 @@ Full Context & 0.014 & 0.075 & 0.170 & 100.0 & 0.019 \\
 BM25 & 0.745 & 0.982 & 0.985 & 18.7 & 0.410 \\
 Dense TF-IDF & 0.510 & 0.973 & 0.985 & 21.0 & 0.406 \\
 GraphRAG-lite & 0.318 & 0.523 & 0.633 & 24.0 & 0.218 \\
+RANGER-approx & 0.318 & 0.345 & 0.345 & 5.8 & 0.249 \\
 LlamaIndex & 0.502 & 0.972 & 0.985 & 20.1 & 0.405 \\
 Chroma Dense & 0.392 & 0.829 & 0.898 & 19.3 & 0.346 \\
 Hybrid Dense+CTX & 0.392 & 0.725 & 0.757 & 23.6 & 0.303 \\
@@ -242,7 +244,7 @@ Hybrid Dense+CTX & 0.392 & 0.725 & 0.757 & 23.6 & 0.303 \\
 \end{tabular}
 \end{table}
 
-CTX achieves a TES of 0.776, which is 1.9$\times$ higher than BM25 (0.410) and 2.6$\times$ higher than Hybrid Dense+CTX (0.303). While BM25 achieves higher absolute Recall@5 (0.982 vs.\ 0.874), it consumes 3.6$\times$ more tokens.
+CTX achieves a TES of 0.776, which is 1.9$\times$ higher than BM25 (0.410), 3.1$\times$ higher than RANGER-approx (0.249), and 2.6$\times$ higher than Hybrid Dense+CTX (0.303). RANGER-approx, despite using AST-based call graph edges, achieves only 0.345 Recall@5 compared to CTX's 0.874, demonstrating that trigger-driven query routing is more effective than uniform graph traversal. While BM25 achieves higher absolute Recall@5 (0.982 vs.\ 0.874), it consumes 3.6$\times$ more tokens.
 
 \subsubsection{Real Codebases (3 projects, 968 files, 249 queries)}
 
@@ -259,6 +261,7 @@ Full Context & 0.105 & 0.002 & 0.012 & 0.009 \\
 BM25 & 0.457 & 0.156 & 0.252 & 0.116 \\
 Dense TF-IDF & 0.531 & 0.224 & 0.300 & 0.146 \\
 GraphRAG-lite & 0.567 & 0.206 & 0.066 & 0.107 \\
+RANGER-approx & 0.559 & 0.124 & 0.032 & 0.099 \\
 LlamaIndex & 0.545 & 0.366 & 0.188 & 0.145 \\
 Chroma Dense & 0.458 & 0.252 & 0.162 & 0.118 \\
 Hybrid Dense+CTX & 0.427 & --- & --- & --- \\
@@ -284,6 +287,7 @@ BM25 & 1.00 & 1.00 & 1.00 & 0.40 \\
 Dense TF-IDF & 1.00 & 0.98 & 1.00 & 0.40 \\
 Chroma Dense & 0.86 & 0.81 & 0.90 & 0.38 \\
 LlamaIndex & 1.00 & 0.98 & 1.00 & 0.40 \\
+RANGER-approx & 0.66 & 0.05 & 0.00 & 0.33 \\
 Hybrid Dense+CTX & 0.81 & 0.66 & 0.60 & 0.53 \\
 \textbf{CTX (Ours)} & \textbf{0.99} & 0.72 & \textbf{1.00} & \textbf{1.00} \\
 \bottomrule
@@ -402,6 +406,31 @@ The hybrid approach validates the complementary hypothesis:
 \end{itemize}
 
 The optimal strategy depends on the deployment scenario: CTX for token-constrained dependency-heavy workloads; Hybrid for balanced workloads requiring both semantic and structural retrieval.
+
+\subsection{RANGER-approx Comparison}
+\label{sec:ranger_comparison}
+
+To directly compare against graph-based SOTA, we implement RANGER-approx: an approximation of RANGER (2025) using Python \texttt{ast} for precise symbol extraction and combined import+call graph BFS traversal.
+
+\begin{table}[t]
+\centering
+\small
+\caption{CTX vs RANGER-approx on synthetic data.}
+\label{tab:ranger}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Strategy} & \textbf{R@5} & \textbf{Tok\%} & \textbf{TES} & \textbf{IMPL R@5} \\
+\midrule
+GraphRAG-lite & 0.514 & 22.5 & 0.214 & 0.43 \\
+RANGER-approx & 0.345 & 5.8 & 0.249 & 0.33 \\
+\textbf{CTX (Ours)} & \textbf{0.874} & \textbf{5.2} & \textbf{0.776} & \textbf{1.00} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+CTX outperforms RANGER-approx by 153\% in Recall@5 and 212\% in TES. The key difference is query routing: RANGER-approx applies uniform graph traversal regardless of query type, while CTX classifies queries into trigger types and routes each to a specialized pipeline. On \textsc{Implicit\_Context} queries---the target use case for graph-based methods---CTX achieves perfect recall (1.0) versus 0.33 for RANGER-approx. RANGER-approx's AST-based call graph enrichment provides marginal TES improvement over GraphRAG-lite (0.249 vs 0.214) but cannot compensate for the lack of query-aware retrieval strategy selection.
+
+On RepoBench cross-file retrieval, RANGER-approx achieves R@5 of 1.0 (matching BM25), while CTX achieves 0.483. This reversal highlights CTX's limitation on pure cross-file dependency tasks where the import-based trigger classifier underperforms direct graph traversal. RANGER-approx's AST-based symbol resolution provides stronger seed matching for import-heavy queries.
 
 \subsection{Token Efficiency Frontier}
 

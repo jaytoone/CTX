@@ -22,6 +22,7 @@ from src.retrieval.dense_retriever import DenseRetriever
 from src.retrieval.full_context import FullContextRetriever
 from src.retrieval.graph_rag import GraphRAGRetriever
 from src.retrieval.hybrid_dense_ctx import HybridDenseCTXRetriever
+from src.retrieval.ranger_approx import RANGERApproxRetriever
 from src.retrieval.llamaindex_retriever import LlamaIndexRetriever
 
 
@@ -139,6 +140,7 @@ class BenchmarkRunner:
         "llamaindex": LlamaIndexRetriever,
         "chroma_dense": ChromaDenseRetriever,
         "hybrid_dense_ctx": HybridDenseCTXRetriever,
+        "ranger_approx": RANGERApproxRetriever,
     }
 
     def __init__(self, base_dir: str, seed: int = 42):
