@@ -26,3 +26,4 @@
 | [../benchmarks/results/final_report_v6.md](../benchmarks/results/final_report_v6.md) | P4 최종 통합 리포트 — 8전략 비교 (Hybrid Dense+CTX 추가) |
 | [paper/CTX_paper.tex](paper/CTX_paper.tex) | ACL/EMNLP LaTeX 논문 — CTX_paper_draft.md의 LaTeX 변환본 |
 | [paper/references.bib](paper/references.bib) | BibTeX 참고문헌 — 12개 참고문헌 |
+| [research/20260325-ctx-paper-tier-evaluation.md](research/20260325-ctx-paper-tier-evaluation.md) | CTX 논문 학술 티어 평가 — expert-research-v2, 베뉴별 전망 + 개선 로드맵 |
