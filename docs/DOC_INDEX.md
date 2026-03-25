@@ -32,5 +32,5 @@
 
 ## Related
 - [[projects/CTX/research/20260325-ctx-paper-tier-evaluation|20260325-ctx-paper-tier-evaluation]]
-- [[projects/CTX/research/20260324-ctx-methodology-critique-top-tier|20260324-ctx-methodology-critique-top-tier]]
 - [[projects/CTX/research/20260324-ctx-paper-worthiness|20260324-ctx-paper-worthiness]]
+- [[projects/CTX/research/20260324-ctx-methodology-critique-top-tier|20260324-ctx-methodology-critique-top-tier]]
