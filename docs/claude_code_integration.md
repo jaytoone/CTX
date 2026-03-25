@@ -21,17 +21,25 @@ User prompt → [ctx_loader.py hook]
          as additionalContext
 ```
 
+## Supported Languages
+
+| Language | Extensions |
+|---|---|
+| Python | `.py` |
+| TypeScript | `.ts`, `.tsx` |
+| JavaScript | `.js`, `.jsx` |
+| Go | `.go` |
+| Rust | `.rs` |
+| Java | `.java` |
+| C/C++ | `.c`, `.cpp`, `.h` |
+
+Primary language auto-detected by file count. Related extensions co-indexed (e.g. `.ts` + `.tsx` together).
+
 ## Installation
 
 ```bash
-# 1. Copy hook
-cp /home/jayone/Project/CTX/docs/ctx_loader_hook.py ~/.claude/hooks/ctx_loader.py
-
-# 2. Add to ~/.claude/settings.json UserPromptSubmit hooks:
-{
-  "type": "command",
-  "command": "python3 $HOME/.claude/hooks/ctx_loader.py"
-}
+# Hook installed at: ~/.claude/hooks/ctx_loader.py
+# Registered in ~/.claude/settings.json UserPromptSubmit hooks
 ```
 
 The hook is self-contained (no external CTX imports required).
@@ -40,26 +48,26 @@ The hook is self-contained (no external CTX imports required).
 
 | Trigger Type | Strategy | k (default) |
 |---|---|---|
-| EXPLICIT_SYMBOL | Symbol index exact/partial match | 2–3 |
-| SEMANTIC_CONCEPT | ASCII keyword frequency scoring | 4–6 |
-| IMPLICIT_CONTEXT | BFS from seeds (depth ≤ 2) | 5–8 |
-| TEMPORAL_HISTORY | Skipped (memory MCP) | — |
+| `EXPLICIT_SYMBOL` | Symbol index exact/partial match | 2–3 |
+| `SEMANTIC_CONCEPT` | ASCII keyword frequency scoring | 4–6 |
+| `IMPLICIT_CONTEXT` | BFS from seeds (depth ≤ 2) | 5–8 |
+| `TEMPORAL_HISTORY` | Skipped (memory MCP) | — |
 
 ## Skip Conditions
 
 - Prompt < 15 chars
 - Starts with `/` (slash command)
 - Contains `[noctx]` or `[raw]` tag
-- Codebase has < 3 Python files
+- Codebase has < 3 source files
 - cwd is inside `.claude/` (meta-hook)
 
 ## Output Format
 
 ```
-[CTX] Trigger: EXPLICIT_SYMBOL | Query: TriggerClassifier | Confidence: 0.90
-Relevant files (1/88 total):
-• src/trigger/trigger_classifier.py [TriggerType, Trigger, TriggerClassifier]
-  Trigger classifier for CTX experiment.
+[CTX/TypeScript] Trigger: EXPLICIT_SYMBOL | Query: VideoPlayer | Confidence: 0.70
+Relevant files (3/651 total):
+• components/VideoPlayer.tsx [VideoPlayer, useVideoState, handleSeek]
+  Video playback component with seek controls.
 ```
 
 ## A/B Test Design
@@ -72,7 +80,7 @@ To measure the impact of the CTX hook on Claude Code session quality:
 - Files read unnecessarily (wasted reads)
 
 ### Protocol
-1. **Baseline session** (hook disabled): solve 10 coding tasks in a Python project
+1. **Baseline session** (hook disabled): solve 10 coding tasks in a Python/TS project
 2. **CTX session** (hook enabled): solve same 10 tasks
 3. Score each session independently
 
@@ -83,8 +91,9 @@ Based on LLM quality experiments (CTX pass@1=0.733 vs Full=0.200):
 
 ## Performance
 
-| Project size | Indexing time |
-|---|---|
-| 88 .py files | ~40ms |
-| 215 .py files | ~165ms |
-| >2000 .py files | skipped (venv detection) |
+| Project | Language | Files | Time |
+|---|---|---|---|
+| CTX | Python | 88 | ~40ms |
+| AgentNode | Python | 215 | ~165ms |
+| OneViral | TypeScript | 651 | ~270ms |
+| >2000 files | any | — | skipped (dir exclusion) |
