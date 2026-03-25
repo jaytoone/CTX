@@ -29,9 +29,10 @@
 | [research/20260325-ctx-paper-tier-evaluation.md](research/20260325-ctx-paper-tier-evaluation.md) | CTX 논문 학술 티어 평가 — expert-research-v2, 베뉴별 전망 + 개선 로드맵 |
 | [../benchmarks/results/trigger_accuracy.md](../benchmarks/results/trigger_accuracy.md) | Trigger 분류기 정확도 분석 — 60.2% accuracy, confusion matrix, SEMANTIC F1=0.15 |
 | [../benchmarks/results/external_codebase_eval.md](../benchmarks/results/external_codebase_eval.md) | 외부 코드베이스 평가 (Flask/Requests/FastAPI) — 3개 공개 프로젝트 일반화 실험 |
+| [../benchmarks/results/llm_quality_openrouter.md](../benchmarks/results/llm_quality_openrouter.md) | OpenRouter Gemini Flash 1.5 pass@1 — CTX 0.733 vs Full 0.200 (+267%, p=0.0004) |
+| [claude_code_integration.md](claude_code_integration.md) | CTX → Claude Code Hook 통합 가이드 — UserPromptSubmit hook, 트리거별 전략, A/B 테스트 설계 |
 
 ## Related
 - [[projects/CTX/research/20260325-ctx-paper-tier-evaluation|20260325-ctx-paper-tier-evaluation]]
 - [[projects/CTX/research/20260324-ctx-paper-worthiness|20260324-ctx-paper-worthiness]]
 - [[projects/CTX/research/20260324-ctx-methodology-critique-top-tier|20260324-ctx-methodology-critique-top-tier]]
-| [../benchmarks/results/llm_quality_openrouter.md](../benchmarks/results/llm_quality_openrouter.md) | OpenRouter Gemini Flash 1.5 pass@1 — CTX 0.733 vs Full 0.200 (+267%, p=0.0004) |
