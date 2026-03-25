@@ -31,6 +31,7 @@
 | [../benchmarks/results/external_codebase_eval.md](../benchmarks/results/external_codebase_eval.md) | 외부 코드베이스 평가 (Flask/Requests/FastAPI) — 3개 공개 프로젝트 일반화 실험 |
 | [../benchmarks/results/llm_quality_openrouter.md](../benchmarks/results/llm_quality_openrouter.md) | OpenRouter Gemini Flash 1.5 pass@1 — CTX 0.733 vs Full 0.200 (+267%, p=0.0004) |
 | [claude_code_integration.md](claude_code_integration.md) | CTX → Claude Code Hook 통합 가이드 — UserPromptSubmit hook, 트리거별 전략, A/B 테스트 설계 |
+| [../benchmarks/results/doc_retrieval_eval.md](../benchmarks/results/doc_retrieval_eval.md) | 문서 검색 평가 — CTX-doc Recall@3=0.600 vs Random 0.000, 10-query 수동 쿼리셋 |
 
 ## Related
 - [[projects/CTX/research/20260325-ctx-paper-tier-evaluation|20260325-ctx-paper-tier-evaluation]]
