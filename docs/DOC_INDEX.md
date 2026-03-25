@@ -32,6 +32,7 @@
 | [../benchmarks/results/llm_quality_openrouter.md](../benchmarks/results/llm_quality_openrouter.md) | OpenRouter Gemini Flash 1.5 pass@1 — CTX 0.733 vs Full 0.200 (+267%, p=0.0004) |
 | [claude_code_integration.md](claude_code_integration.md) | CTX → Claude Code Hook 통합 가이드 — UserPromptSubmit hook, 트리거별 전략, A/B 테스트 설계 |
 | [../benchmarks/results/doc_retrieval_eval.md](../benchmarks/results/doc_retrieval_eval.md) | 문서 검색 평가 — CTX-doc Recall@3=0.600 vs Random 0.000, 10-query 수동 쿼리셋 |
+| [../benchmarks/results/hook_effectiveness_eval.md](../benchmarks/results/hook_effectiveness_eval.md) | CTX Hook 실효성 평가 — 30 queries, CHR 70.0%, EXPLICIT_SYMBOL 86.7%/PASS, TEMPORAL 100%/PASS, 평균 RT 116.9ms |
 
 ## Related
 - [[projects/CTX/research/20260325-ctx-paper-tier-evaluation|20260325-ctx-paper-tier-evaluation]]
