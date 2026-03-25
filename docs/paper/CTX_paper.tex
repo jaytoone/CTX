@@ -58,6 +58,8 @@ This paper makes four contributions:
 
 \textbf{CAR} \citep{li2024car} introduces dynamic retrieval size selection based on query clustering. CTX shares the principle of adaptive retrieval but differs in mechanism: CAR clusters queries by embedding similarity, while CTX classifies by trigger type---a code-specific taxonomy that maps directly to retrieval strategies.
 
+\textbf{RANGER} (2025) constructs a comprehensive knowledge graph of entire repositories, capturing hierarchical and cross-file dependencies down to the variable level, and augments nodes with textual descriptions and embeddings. RANGER achieves strong results across four standard benchmarks (CodeSearchNet, RepoQA, RepoBench, CrossCodeEval). CTX differs from RANGER in three key ways: (1) CTX operates at query-routing level, classifying \textit{intent} before retrieval, whereas RANGER applies uniform graph traversal to all queries; (2) CTX's adaptive-k selection adjusts retrieval budget per trigger type, while RANGER uses fixed retrieval depth; and (3) CTX achieves 5.2\% token usage versus RANGER's full-graph traversal. The approaches are complementary: CTX's trigger taxonomy could be applied as a query routing layer on top of RANGER's knowledge graph.
+
 \subsection{Long-Context Degradation}
 
 The empirical evidence for context dilution is substantial. \citet{shi2024distracted} document the ``Lost in the Middle'' phenomenon. \citet{kandpal2023longtail} show that LLMs struggle disproportionately with long-tail knowledge. LongCodeBench \citep{guo2025longcodebench} extends these findings to code, demonstrating severe accuracy degradation beyond 32K tokens. The Head-to-Tail study \citep{sun2024headtotail} further characterizes frequency-dependent knowledge retrieval failures. These findings motivate CTX's core design: rather than expanding context windows, reduce context to only what is relevant, guided by code structure.
@@ -133,6 +135,15 @@ We define the Trade-off Efficiency Score as:
 \end{equation}
 
 \textbf{Information-Theoretic Justification.} The logarithmic denominator follows from the empirical distribution of file utility in codebases. File reference frequencies follow a Zipf distribution \citep{baxter2006java}, where the marginal cost of retrieving the $k$-th additional file scales as $\ln(k)$. TES therefore measures the ratio of marginal benefit (recall gain) to marginal cost (logarithmic retrieval overhead).
+
+\textbf{Formal properties of TES.}
+TES satisfies three desirable properties for an efficiency metric:
+\begin{enumerate}
+\item \textbf{Monotonicity in recall}: For fixed $|\text{retrieved}|$, TES is monotonically increasing in Recall@K.
+\item \textbf{Diminishing returns}: For fixed Recall@K, TES is monotonically decreasing in $|\text{retrieved}|$, with marginal penalty $\partial \text{TES}/\partial n = -\text{Recall}@K / (n(1+n) \cdot \ln(1+n)^{-1}...)$ capturing sub-linear cost growth.
+\item \textbf{Boundedness}: $0 \leq \text{TES} \leq 1/\ln 2 \approx 1.44$ when $|\text{retrieved}| = 1$ and Recall@K = 1.0.
+\end{enumerate}
+These properties ensure TES penalizes context bloat proportionally to the marginal benefit of additional files.
 
 \textbf{Empirical Validation.} We compute NDCG@5 for all 7 strategies across all 4 datasets (28 strategy-dataset pairs) and measure the Pearson correlation with TES. The overall correlation is $r = 0.87$ ($t = 9.05$, $\text{df} = 26$, $p < 0.001$), confirming that TES is a cost-adjusted quality metric.
 

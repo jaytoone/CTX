@@ -64,3 +64,6 @@ Achievable tier: EMNLP/ACL Findings, ASE main (6-12 months)
 - [KG-based Repo Code Gen](https://arxiv.org/abs/2505.14394)
 - [EMNLP 2025 CFP](https://www.aclweb.org/portal/content/emnlp-2025-first-call-papers)
 - [NeurIPS 2025 HyperGraphRAG](https://github.com/LHRLAB/HyperGraphRAG)
+
+## Related
+- [[projects/CTX/research/20260324-ctx-methodology-critique-top-tier|20260324-ctx-methodology-critique-top-tier]]

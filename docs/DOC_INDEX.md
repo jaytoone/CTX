@@ -27,3 +27,10 @@
 | [paper/CTX_paper.tex](paper/CTX_paper.tex) | ACL/EMNLP LaTeX 논문 — CTX_paper_draft.md의 LaTeX 변환본 |
 | [paper/references.bib](paper/references.bib) | BibTeX 참고문헌 — 12개 참고문헌 |
 | [research/20260325-ctx-paper-tier-evaluation.md](research/20260325-ctx-paper-tier-evaluation.md) | CTX 논문 학술 티어 평가 — expert-research-v2, 베뉴별 전망 + 개선 로드맵 |
+| [../benchmarks/results/trigger_accuracy.md](../benchmarks/results/trigger_accuracy.md) | Trigger 분류기 정확도 분석 — 60.2% accuracy, confusion matrix, SEMANTIC F1=0.15 |
+| [../benchmarks/results/external_codebase_eval.md](../benchmarks/results/external_codebase_eval.md) | 외부 코드베이스 평가 (Flask/Requests/FastAPI) — 3개 공개 프로젝트 일반화 실험 |
+
+## Related
+- [[projects/CTX/research/20260325-ctx-paper-tier-evaluation|20260325-ctx-paper-tier-evaluation]]
+- [[projects/CTX/research/20260324-ctx-methodology-critique-top-tier|20260324-ctx-methodology-critique-top-tier]]
+- [[projects/CTX/research/20260324-ctx-paper-worthiness|20260324-ctx-paper-worthiness]]
