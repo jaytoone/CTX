@@ -66,6 +66,7 @@
 | [../benchmarks/results/final_report_v9.md](../benchmarks/results/final_report_v9.md) | **P9 수정 최종 리포트** — Classifier 버그 수정 후 정직한 수치: CTX R@10=0.457(수정), BM25 baseline=0.556 추가, TEMPORAL_HISTORY CTX+24pp, DRR N=3 제거, 학술 제출 수준 방어력 확보 |
 | [research/20260327-ctx-downstream-eval.md](research/20260327-ctx-downstream-eval.md) | CTX Downstream LLM 평가 — CTX-with vs without ablation, G1(memory recall Δ+0.700) / G2(coding Δ+0.582, hallucination 2.00→0.00) |
 | [research/20260327-ctx-real-project-self-eval.md](research/20260327-ctx-real-project-self-eval.md) | CTX 실제 코드베이스 자체 평가 — instruction-style query R@5=0.000 (proxy R@3=0.862와 격차), 실패 원인 분석 + 개선 방향 |
+| [research/20260328-ctx-downstream-minimax-eval.md](research/20260328-ctx-downstream-minimax-eval.md) | CTX Downstream LLM 평가 (MiniMax M2.5 실제 호출) — G1 Δ+0.781(WITH=1.000), G2 Δ+0.375, Overall Δ+0.578 STRONGLY IMPROVES |
 
 ## Related
 - [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
@@ -74,5 +75,5 @@
 - [[projects/CTX/research/20260326-ctx-vs-industry-comparison|20260326-ctx-vs-industry-comparison]]
 - [[projects/CTX/research/20260326-ctx-final-sota-comparison|20260326-ctx-final-sota-comparison]]
 - [[projects/CTX/research/20260326-ctx-vs-sota-comparison|20260326-ctx-vs-sota-comparison]]
-- [[projects/CTX/research/20260326-ctx-methodology-comparison|20260326-ctx-methodology-comparison]]
-- [[projects/CTX/research/20260326-ctx-results-review|20260326-ctx-results-review]]
+- [[projects/CTX/research/20260326-ctx-vs-claudecode-tools|20260326-ctx-vs-claudecode-tools]]
+- [[projects/CTX/research/20260327-ctx-downstream-eval|20260327-ctx-downstream-eval]]

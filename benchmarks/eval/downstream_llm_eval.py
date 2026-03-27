@@ -44,6 +44,12 @@ DATASET_DIR = ROOT / "benchmarks" / "datasets"
 def get_llm_client():
     try:
         import anthropic
+        # MiniMax (Anthropic-compatible endpoint) — preferred when available
+        minimax_key = os.environ.get("MINIMAX_API_KEY", "")
+        minimax_url = os.environ.get("MINIMAX_BASE_URL", "")
+        if minimax_key and minimax_url:
+            return anthropic.Anthropic(api_key=minimax_key, base_url=minimax_url)
+        # Native Anthropic fallback
         key = os.environ.get("ANTHROPIC_API_KEY", "")
         if not key:
             return None
@@ -53,8 +59,10 @@ def get_llm_client():
 
 
 def call_llm(client, system: str, user: str,
-             model: str = "claude-haiku-4-5-20251001",
+             model: str = "",
              max_tokens: int = 512) -> str:
+    if not model:
+        model = os.environ.get("MINIMAX_MODEL") or "claude-haiku-4-5-20251001"
     if client is None:
         return "[NO-CLIENT]"
     try:
@@ -64,7 +72,16 @@ def call_llm(client, system: str, user: str,
             messages=[{"role": "user", "content": user}],
             system=system,
         )
-        return resp.content[0].text.strip()
+        # Skip ThinkingBlock — find first text block
+        for block in resp.content:
+            block_type = getattr(block, "type", "")
+            if block_type == "text" and hasattr(block, "text"):
+                return block.text.strip()
+        # Fallback: any block with text attr
+        for block in resp.content:
+            if hasattr(block, "text"):
+                return block.text.strip()
+        return "[NO-TEXT-BLOCK]"
     except Exception as exc:
         return f"[LLM-ERROR] {exc}"
 
@@ -446,13 +463,23 @@ def main():
     parser.add_argument("--n-scenarios", type=int, default=10)
     parser.add_argument("--dry-run",     action="store_true",
                         help="Use simulated responses (no API calls)")
-    parser.add_argument("--model",       default="claude-haiku-4-5-20251001")
+    parser.add_argument("--model",       default="")
     args = parser.parse_args()
+
+    # Auto-detect model from env if not specified
+    if not args.model:
+        if os.environ.get("MINIMAX_API_KEY"):
+            args.model = os.environ.get("MINIMAX_MODEL", "MiniMax-M2.5")
+        else:
+            args.model = "claude-haiku-4-5-20251001"
 
     client = get_llm_client()
     if client is None and not args.dry_run:
-        print("[WARN] ANTHROPIC_API_KEY not set — switching to dry-run mode")
+        print("[WARN] No API key found — switching to dry-run mode")
         args.dry_run = True
+    elif client is not None:
+        backend = "MiniMax" if os.environ.get("MINIMAX_API_KEY") else "Anthropic"
+        print(f"Backend: {backend} | Model: {args.model}")
 
     data = load_dataset(args.dataset)
     files_meta = data["files"]
