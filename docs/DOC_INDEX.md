@@ -68,6 +68,7 @@
 | [research/20260327-ctx-real-project-self-eval.md](research/20260327-ctx-real-project-self-eval.md) | CTX 실제 코드베이스 자체 평가 — instruction-style query R@5=0.000 (proxy R@3=0.862와 격차), 실패 원인 분석 + 개선 방향 |
 | [research/20260328-ctx-downstream-minimax-eval.md](research/20260328-ctx-downstream-minimax-eval.md) | CTX Downstream LLM 평가 (MiniMax M2.5 실제 호출) — G1 Δ+0.781(WITH=1.000), G2 Δ+0.375, Overall Δ+0.578 STRONGLY IMPROVES |
 | [research/20260328-ctx-real-codebase-g2-eval.md](research/20260328-ctx-real-codebase-g2-eval.md) | CTX G2 실제 코드베이스 평가 (MiniMax M2.5) — real code Δ+0.200, over-anchoring 발견, synthetic vs real 비교 |
+| [research/20260328-ctx-downstream-eval-complete.md](research/20260328-ctx-downstream-eval-complete.md) | CTX Downstream LLM 평가 완전 보고서 — G1/G2 synthetic+real 3실험 종합, over-anchoring 분석, CTX 개선 방향 |
 
 ## Related
 - [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
