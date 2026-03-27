@@ -73,8 +73,65 @@ ANTHROPIC_API_KEY=<key> python3 benchmarks/eval/downstream_llm_eval.py --model c
 2. **소규모 합성 데이터셋**: 50 파일, 8-10 시나리오
 3. **키워드 매칭 스코어**: LLM이 파일 이름을 언급했는지만 측정 (코드 정확성 미측정)
 
+## 실증 검증: CTX 자체 코드베이스 평가 (Real-Project Self-Eval)
+
+> **핵심 발견**: CTX retrieval이 instruction-based query에서 **R@5=0.000** 달성 — 자신의 코드베이스에서도 실패
+
+### 실험 설계
+
+```python
+# 5개 실제 작업 시나리오 (CTX 코드베이스 대상)
+SCENARIOS = [
+    ("real_g2_01", "Replace TF-IDF with BM25 in the retrieval pipeline",
+     "src/retrieval/adaptive_trigger.py"),
+    ("real_g2_02", "Add keyword query type detection to document ranking function",
+     "benchmarks/eval/doc_retrieval_eval_v2.py"),
+    ("real_g2_03", "Fix BM25Okapi IDF penalty on small corpus",
+     "src/retrieval/adaptive_trigger.py"),
+    ("real_g2_04", "Implement query-type aware routing for BM25 vs heading match",
+     "src/retrieval/adaptive_trigger.py"),
+    ("real_g2_05", "Add R@5 metric to document retrieval evaluation",
+     "benchmarks/eval/doc_retrieval_eval_v2.py"),
+]
+retriever = AdaptiveTriggerRetriever(str(ROOT))
+```
+
+### 결과
+
+| 측정 | 값 |
+|------|-----|
+| CTX R@5 (instruction queries) | **0.000** (5/5 모두 실패) |
+| CTX R@5 (with partial credit) | 0.300 |
+| WITHOUT CTX baseline | 0.100 |
+| Delta (with vs without) | +0.200 |
+
+**실패 예시**:
+- Query: "Replace TF-IDF with BM25 in the retrieval pipeline"
+- Expected: `src/retrieval/adaptive_trigger.py`
+- CTX returned: `llamaindex_retriever.py` (SEMANTIC_CONCEPT, IMPLICIT_CONTEXT triggers 오작동)
+
+### 의미
+
+**proxy metric(R@3=0.862) ≠ real-world performance**:
+
+| 측정 컨텍스트 | R@K |
+|-------------|-----|
+| CTX-doc benchmark (29 docs, 58 queries) | R@3=0.862 ✅ |
+| Real CTX codebase (instruction queries) | R@5=0.000 ❌ |
+
+이 차이는 CTX의 두 가지 한계를 실증합니다:
+1. **일반화 실패**: 합성 벤치마크와 실제 코드베이스 사이의 분포 이동
+2. **쿼리 타입 불일치**: instruction-style 쿼리 ("Replace X with Y")는 CTX가 학습하지 않은 패턴
+
+→ downstream LLM eval의 필요성을 실증적으로 확인: proxy 지표만으로는 실제 LLM 품질 예측 불가
+
 ## 다음 단계
 
 1. ANTHROPIC_API_KEY 환경변수 설정 → 실제 haiku 호출 결과
 2. 코드 생성 품질 측정 (syntactic correctness, test pass rate)
-3. 더 현실적인 시나리오: 실제 CTX 프로젝트 파일 기반
+3. 더 현실적인 시나리오: 실제 CTX 프로젝트 파일 기반 (위 self-eval 확장)
+4. Instruction-grounded retrieval 개선: semantic search (embedding) 또는 hybrid BM25+embed
+
+## Related
+- [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
+- [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]
