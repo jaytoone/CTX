@@ -34,6 +34,37 @@
 | [../benchmarks/results/doc_retrieval_eval.md](../benchmarks/results/doc_retrieval_eval.md) | 문서 검색 평가 — CTX-doc Recall@3=0.600 vs Random 0.000, 10-query 수동 쿼리셋 |
 | [../benchmarks/results/hook_effectiveness_eval.md](../benchmarks/results/hook_effectiveness_eval.md) | CTX Hook 실효성 평가 — 30 queries, CHR 70.0%, EXPLICIT_SYMBOL 86.7%/PASS, TEMPORAL 100%/PASS, 평균 RT 116.9ms |
 | [research/20260325-long-session-context-management.md](research/20260325-long-session-context-management.md) | 장기 세션 컨텍스트 관리 리서치 — 7개 도구 비교 + 2024-2025 연구 + CTX Gap 분석 (P0: cross-session memory) |
+| [research/20260326-ctx-achievement-review.md](research/20260326-ctx-achievement-review.md) | CTX 현재 성과 vs 사용자 요구 평론 — Goal 1: 30%, Goal 2: 60%, 측정 인프라: 90%, "방향 희석"은 mcp__memory__ 결정 맥락 복원이 실제 해법 |
+| [../benchmarks/results/cross_session_recall.json](../benchmarks/results/cross_session_recall.json) | 크로스 세션 연속성 평가 — persistent memory 복원 Recall@10=0.917 (Goal 1: 세션 간 작업 히스토리 유지) |
+| [../benchmarks/results/instruction_grounding_eval.json](../benchmarks/results/instruction_grounding_eval.json) | 지시→파일 grounding 평가 — IMPLICIT_CONTEXT 88.9%, 베이스라인 Recall@5=0.333 (Goal 2: 자연어 지시→유관 파일 찾기) |
+| [research/20260326-ctx-vs-industry-comparison.md](research/20260326-ctx-vs-industry-comparison.md) | CTX vs Cursor/Copilot/Windsurf 비교 — Cross-session memory 3-tier, Instruction grounding CoIR/Voyage-Code, 외부 검증 포함 |
+| [research/20260326-ctx-vs-sota-comparison.md](research/20260326-ctx-vs-sota-comparison.md) | CTX Goal 1&2 vs SOTA 성능 비교 — CoIR 미출시, MemoryArena (Feb 2026) 신규 벤치마크, Cursor/Copilot/Windsurf 공개 지표 없음 |
+| [research/20260326-ctx-final-sota-comparison.md](research/20260326-ctx-final-sota-comparison.md) | CTX 최종 SOTA 성능 비교 테이블 — Goal 1(Recall@10=0.567), Goal 2(NDCG@5=0.723), TES=0.776(1.9x BM25), IMPLICIT_CONTEXT Recall@5=1.0 |
+| [research/20260326-ctx-results-review.md](research/20260326-ctx-results-review.md) | CTX 성과 평론 — 합성/실제 붕괴 분석, ICSE/FSE 15-25%, MSR 45-60%, 3 Must-Fix 제시 |
+| [../benchmarks/results/multi_dataset_cross_session_eval.md](../benchmarks/results/multi_dataset_cross_session_eval.md) | SG1: 4개 데이터셋 cross-session 평가 — small=0.567(PASS), AgentNode=0.361, GraphPrompt=0.472, OneViral=0.405, head recall mean=0.803 |
+| [../benchmarks/results/coir_repobench_integrated.md](../benchmarks/results/coir_repobench_integrated.md) | SG2: COIR+RepoBench 통합 평가 — NDCG@10 추가, CTX vs BM25 p=0.0000 Cohen's d=0.955(large effect) |
+| [../benchmarks/results/aggregated_stat_report.md](../benchmarks/results/aggregated_stat_report.md) | SG3: 22개 결과 파일 통합 통계 리포트 — Goal1 mean=0.544, Goal2 d=0.276, cross-dataset significance test |
+| [../benchmarks/results/final_report_v7.md](../benchmarks/results/final_report_v7.md) | P5 최종 리포트 — 5x 성능 붕괴 완전 해결 (5.0x→1.84x), AgentNode R@5=0.522(목표 0.35 달성), 5개 RC 분석 + 코드 변경 기록 |
+| [research/20260326-ctx-sota-final-v2.md](research/20260326-ctx-sota-final-v2.md) | CTX vs SOTA 최종 성능 비교 v2 — iter5 수치 반영, IDE 도구/검색모델/기준선 8개 시스템 비교, Goal 1&2 달성 현황 |
+| [research/20260326-ctx-methodology-comparison.md](research/20260326-ctx-methodology-comparison.md) | CTX vs 연구 방법론 비교 — RANGER/GraphRAG/BM25/Dense/LlamaIndex/CodeXEmbed 정량 비교, IMPLICIT_CONTEXT +150-1275%, TES 1.89x BM25, 논문 포지셔닝 권고 |
+| [../benchmarks/results/doc_retrieval_eval_v2.md](../benchmarks/results/doc_retrieval_eval_v2.md) | 문서 검색 평가 v2 — 20 docs, 60 쿼리, CTX-doc R@5=0.933(1위), BM25=0.833, Dense=0.900, heading_paraphrase R@3=1.000 (3전략 비교) |
+| [research/20260326-ctx-goal1-goal2-final.md](research/20260326-ctx-goal1-goal2-final.md) | Goal 1+2 최종 달성 보고서 — 코드+문서 통합 인덱싱 구현, 문서 R@5=0.933, 크로스 세션 Recall@10=0.567, heading_paraphrase R@3=1.000 |
+| [decisions/20260326-import-bfs-over-ast.md](decisions/20260326-import-bfs-over-ast.md) | 결정: IMPLICIT_CONTEXT에 AST 대신 import BFS 채택 — IMPLICIT R@5 0.044→0.715, FastAPI 속도 문제 회피 |
+| [decisions/20260326-non-symbols-frozenset.md](decisions/20260326-non-symbols-frozenset.md) | 결정: _NON_SYMBOLS frozenset — 동사/접속사 30개 제거로 SEMA_CONC false positive 제거, recall 0.000→0.587 |
+| [decisions/20260326-path-derived-module-to-file.md](decisions/20260326-path-derived-module-to-file.md) | 결정: 파일 경로 기반 module_to_file 파생 — 실제 코드베이스 MODULE_NAME 상수 없음 문제 해결, AgentNode 5x 붕괴 핵심 수정 |
+| [decisions/20260326-unified-doc-code-indexing.md](decisions/20260326-unified-doc-code-indexing.md) | 결정: .py+.md 통합 인덱싱 — AdaptiveTriggerRetriever에 문서 파일 추가, Goal 1 트리거→코드+문서 동시 서페이싱 |
+| [decisions/20260326-concept-extraction-sema-conc.md](decisions/20260326-concept-extraction-sema-conc.md) | 결정: "related to X" 패턴에서 X만 concept.value 추출 — 구문 전체 대신 핵심 개념어만 검색 |
+| [../benchmarks/results/decision_recall_eval.md](../benchmarks/results/decision_recall_eval.md) | Decision Recall Rate 측정 — DRR@3=1.000, DRR@5=1.000 (5/5 결정 재복원), TEMPORAL_HISTORY 트리거 검증 |
+| [research/20260326-ctx-benchmark-validation-roadmap.md](research/20260326-ctx-benchmark-validation-roadmap.md) | 공인 벤치마크 검증 로드맵 — Goal2: CoIR(NDCG@10 추정 0.60-0.68)/RepoBench 즉시 제출, Goal1: 공인 벤치마크 공백, LongMemEval partial proxy |
+| [research/20260326-ctx-vs-claudecode-tools.md](research/20260326-ctx-vs-claudecode-tools.md) | CTX vs Claude Code 내장 도구 성능 비교 — Goal1: 네이티브 파일 검색 不在(CTX 독보적, R@10=0.567), Goal2: 1.89x BM25 실증/mcp__code-search__ 대비 미지, IMPLICIT_CONTEXT 명확 우위, P0=head-to-head 필요 |
+| [../benchmarks/results/trigger_token_analysis.md](../benchmarks/results/trigger_token_analysis.md) | SG3+SG2: Trigger-type별 R@10 분해 (SEMANTIC=0.880, EXPLICIT=0.566, TEMPORAL=0.500, IMPLICIT=0.424) + 토큰 비용 측정 (TEMPORAL 40K tok/q 급등, IMPLICIT 6K/q 최저) |
+| [../benchmarks/results/mcp_code_search_headtohead.md](../benchmarks/results/mcp_code_search_headtohead.md) | SG1: mcp__code-search__ vs CTX head-to-head — 8쿼리 file-level R@5: CTX=0.50, mcp=0.00. 구조적 차이: chunk-level semantic vs file-level trigger |
+| [../benchmarks/results/coir_format_analysis.md](../benchmarks/results/coir_format_analysis.md) | SG4: CoIR 공식 벤치마크 형식 분석 — CodeSearchNet=CODE→NL (CTX와 반대 방향), cosqa=NL→code (적합), RepoBench-R 권고 |
+| [../benchmarks/results/cosqa_official_eval.json](../benchmarks/results/cosqa_official_eval.json) | CosQA 공식 평가 결과 — coir-eval==0.7.0, N=500, NDCG@10=0.1223, Recall@10=0.232, MAP=0.099 (TF-IDF BM25-equivalent) |
+| [../benchmarks/results/final_report_v8.md](../benchmarks/results/final_report_v8.md) | P8 최종 종합 리포트 — TEMPORAL_HISTORY R@10=0.600(목표 달성), CosQA NDCG@10=0.1223, 7개 데이터셋 통합, 논문 수치 완결 |
+| [research/20260327-ctx-paper-numbers-critique.md](research/20260327-ctx-paper-numbers-critique.md) | CTX Key Paper Numbers 비판적 평론 — 수치별 위험도(RepoBench/DRR HIGH, TES/CosQA MEDIUM), 리뷰어 공격 예상, 논문 제출 전 필수 수정사항 |
+| [../benchmarks/results/final_report_v9.md](../benchmarks/results/final_report_v9.md) | **P9 수정 최종 리포트** — Classifier 버그 수정 후 정직한 수치: CTX R@10=0.457(수정), BM25 baseline=0.556 추가, TEMPORAL_HISTORY CTX+24pp, DRR N=3 제거, 학술 제출 수준 방어력 확보 |
+| [research/20260327-ctx-downstream-eval.md](research/20260327-ctx-downstream-eval.md) | CTX Downstream LLM 평가 — CTX-with vs without ablation, G1(memory recall Δ+0.700) / G2(coding Δ+0.582, hallucination 2.00→0.00) |
 
 ## Related
 - [[projects/CTX/research/20260325-ctx-paper-tier-evaluation|20260325-ctx-paper-tier-evaluation]]
