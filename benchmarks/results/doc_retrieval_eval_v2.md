@@ -1,6 +1,6 @@
 # CTX Document Retrieval Evaluation v2
 
-**Date**: 2026-03-27 14:37
+**Date**: 2026-03-27 17:10
 **Corpus**: 29 .md files from docs/
 **Queries**: 87 (heading_exact + heading_paraphrase + keyword)
 **Metrics**: Recall@3, Recall@5, NDCG@5, MRR
@@ -9,24 +9,23 @@
 
 | Strategy | Recall@3 | Recall@5 | NDCG@5 | MRR |
 |----------|----------|----------|--------|-----|
-| CTX-doc (heading+BM25) | **0.839** | **0.931** | 0.787 | 0.748 |
+| CTX-doc (heading+BM25) | **0.862** | **0.954** | 0.830 | 0.795 |
 | BM25 | **0.667** | **0.839** | 0.655 | 0.611 |
 | Dense TF-IDF | **0.690** | **0.805** | 0.607 | 0.563 |
 
 ## Per-Strategy Analysis
 
 ### CTX-doc (heading+BM25)
-- Hits@3: 73/87 (83.9%)
-- Hits@5: 81/87 (93.1%)
-- NDCG@5: 0.787
-- MRR: 0.748
+- Hits@3: 75/87 (86.2%)
+- Hits@5: 83/87 (95.4%)
+- NDCG@5: 0.830
+- MRR: 0.795
 
 **Misses (top 5)**:
 - [heading_exact] `original question` → expected `research/20260326-ctx-vs-claudecode-tools.md`
-- [keyword] `notes about goal memory` → expected `research/20260326-ctx-vs-claudecode-tools.md`
-- [keyword] `notes about coir benchmark` → expected `research/20260326-ctx-vs-sota-comparison.md`
 - [keyword] `find docs related to repobench cosqa` → expected `research/20260327-ctx-paper-numbers-critique.md`
 - [heading_exact] `original question` → expected `research/20260326-ctx-benchmark-validation-roadmap.md`
+- [keyword] `show information about full files` → expected `paper/README.md`
 
 ### BM25
 - Hits@3: 58/87 (66.7%)
@@ -60,7 +59,7 @@
 |------|---|---------|----------|-----------|
 | heading_exact | 29 | 0.862 | 0.621 | 0.690 |
 | heading_paraphrase | 29 | 1.000 | 0.655 | 0.655 |
-| keyword | 29 | 0.655 | 0.724 | 0.724 |
+| keyword | 29 | 0.724 | 0.724 | 0.724 |
 
 ## Method Description
 

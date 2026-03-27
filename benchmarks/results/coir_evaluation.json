@@ -1,18 +1,19 @@
 {
   "benchmark": "COIR-CodeSearchNet",
   "language": "Python",
-  "n_queries": 100,
-  "corpus_size": 1000,
+  "n_queries": 30,
+  "corpus_size": 300,
   "corpus_multiplier": 10,
   "seed": 42,
-  "timestamp": "2026-03-24T16:50:34.414922",
+  "timestamp": "2026-03-26T15:07:35.439047",
   "strategies": {
     "BM25": {
       "strategy": "BM25",
-      "recall_at_1": 0.92,
-      "recall_at_5": 0.98,
-      "mrr": 0.9455595134032635,
-      "n_queries": 100,
+      "recall_at_1": 0.9666666666666667,
+      "recall_at_5": 1.0,
+      "mrr": 0.9833333333333333,
+      "ndcg_at_10": 0.9833333333333333,
+      "n_queries": 30,
       "per_query": [
         {
           "query_id": "q_0",
@@ -46,9 +47,9 @@
         },
         {
           "query_id": "q_5",
-          "hit_at_1": true,
+          "hit_at_1": false,
           "hit_at_5": true,
-          "rank": 1
+          "rank": 2
         },
         {
           "query_id": "q_6",
@@ -190,439 +191,20 @@
         },
         {
           "query_id": "q_29",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_30",
-          "hit_at_1": false,
-          "hit_at_5": true,
-          "rank": 2
-        },
-        {
-          "query_id": "q_31",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_32",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_33",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_34",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_35",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_36",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_37",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_38",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_39",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_40",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_41",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_42",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_43",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_44",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_45",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": 64
-        },
-        {
-          "query_id": "q_46",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_47",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_48",
-          "hit_at_1": false,
-          "hit_at_5": true,
-          "rank": 3
-        },
-        {
-          "query_id": "q_49",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_50",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_51",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_52",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_53",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_54",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_55",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_56",
-          "hit_at_1": false,
-          "hit_at_5": true,
-          "rank": 5
-        },
-        {
-          "query_id": "q_57",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_58",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_59",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_60",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_61",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_62",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_63",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_64",
-          "hit_at_1": false,
-          "hit_at_5": true,
-          "rank": 2
-        },
-        {
-          "query_id": "q_65",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_66",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_67",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_68",
-          "hit_at_1": false,
-          "hit_at_5": true,
-          "rank": 2
-        },
-        {
-          "query_id": "q_69",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_70",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_71",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_72",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_73",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_74",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_75",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_76",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_77",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_78",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_79",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_80",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_81",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_82",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_83",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_84",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_85",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_86",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_87",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_88",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_89",
-          "hit_at_1": false,
-          "hit_at_5": true,
-          "rank": 2
-        },
-        {
-          "query_id": "q_90",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_91",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": 143
-        },
-        {
-          "query_id": "q_92",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_93",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_94",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_95",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_96",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_97",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_98",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_99",
           "hit_at_1": true,
           "hit_at_5": true,
           "rank": 1
         }
       ],
-      "elapsed_s": 0.39249372482299805
+      "elapsed_s": 0.03226637840270996
     },
     "Dense TF-IDF": {
       "strategy": "Dense TF-IDF",
-      "recall_at_1": 0.89,
-      "recall_at_5": 0.97,
-      "mrr": 0.9235952380952382,
-      "n_queries": 100,
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "mrr": 1.0,
+      "ndcg_at_10": 1.0,
+      "n_queries": 30,
       "per_query": [
         {
           "query_id": "q_0",
@@ -803,1102 +385,264 @@
           "hit_at_1": true,
           "hit_at_5": true,
           "rank": 1
-        },
+        }
+      ],
+      "elapsed_s": 0.01932382583618164
+    },
+    "Dense Embedding": {
+      "strategy": "Dense Embedding (MiniLM)",
+      "recall_at_1": 0.9666666666666667,
+      "recall_at_5": 1.0,
+      "mrr": 0.9833333333333333,
+      "ndcg_at_10": 0.9833333333333333,
+      "n_queries": 30,
+      "per_query": [
         {
-          "query_id": "q_30",
+          "query_id": "q_0",
           "hit_at_1": true,
           "hit_at_5": true,
           "rank": 1
         },
         {
-          "query_id": "q_31",
+          "query_id": "q_1",
           "hit_at_1": true,
           "hit_at_5": true,
           "rank": 1
         },
         {
-          "query_id": "q_32",
+          "query_id": "q_2",
           "hit_at_1": true,
           "hit_at_5": true,
           "rank": 1
         },
         {
-          "query_id": "q_33",
+          "query_id": "q_3",
           "hit_at_1": true,
           "hit_at_5": true,
           "rank": 1
         },
         {
-          "query_id": "q_34",
+          "query_id": "q_4",
           "hit_at_1": true,
           "hit_at_5": true,
           "rank": 1
         },
         {
-          "query_id": "q_35",
+          "query_id": "q_5",
           "hit_at_1": true,
           "hit_at_5": true,
           "rank": 1
         },
         {
-          "query_id": "q_36",
+          "query_id": "q_6",
           "hit_at_1": true,
           "hit_at_5": true,
           "rank": 1
         },
         {
-          "query_id": "q_37",
+          "query_id": "q_7",
           "hit_at_1": true,
           "hit_at_5": true,
           "rank": 1
         },
         {
-          "query_id": "q_38",
+          "query_id": "q_8",
           "hit_at_1": true,
           "hit_at_5": true,
           "rank": 1
         },
         {
-          "query_id": "q_39",
+          "query_id": "q_9",
           "hit_at_1": true,
           "hit_at_5": true,
           "rank": 1
         },
         {
-          "query_id": "q_40",
+          "query_id": "q_10",
           "hit_at_1": true,
           "hit_at_5": true,
           "rank": 1
         },
         {
-          "query_id": "q_41",
+          "query_id": "q_11",
           "hit_at_1": true,
           "hit_at_5": true,
           "rank": 1
         },
         {
-          "query_id": "q_42",
+          "query_id": "q_12",
           "hit_at_1": true,
           "hit_at_5": true,
           "rank": 1
         },
         {
-          "query_id": "q_43",
+          "query_id": "q_13",
           "hit_at_1": true,
           "hit_at_5": true,
           "rank": 1
         },
         {
-          "query_id": "q_44",
+          "query_id": "q_14",
           "hit_at_1": true,
           "hit_at_5": true,
           "rank": 1
         },
         {
-          "query_id": "q_45",
-          "hit_at_1": false,
-          "hit_at_5": true,
-          "rank": 5
-        },
-        {
-          "query_id": "q_46",
+          "query_id": "q_15",
           "hit_at_1": true,
           "hit_at_5": true,
           "rank": 1
         },
         {
-          "query_id": "q_47",
+          "query_id": "q_16",
           "hit_at_1": true,
           "hit_at_5": true,
           "rank": 1
         },
         {
-          "query_id": "q_48",
-          "hit_at_1": false,
-          "hit_at_5": true,
-          "rank": 3
-        },
-        {
-          "query_id": "q_49",
+          "query_id": "q_17",
           "hit_at_1": true,
           "hit_at_5": true,
           "rank": 1
         },
         {
-          "query_id": "q_50",
+          "query_id": "q_18",
           "hit_at_1": true,
           "hit_at_5": true,
           "rank": 1
         },
         {
-          "query_id": "q_51",
+          "query_id": "q_19",
           "hit_at_1": true,
           "hit_at_5": true,
           "rank": 1
         },
         {
-          "query_id": "q_52",
+          "query_id": "q_20",
           "hit_at_1": true,
           "hit_at_5": true,
           "rank": 1
         },
         {
-          "query_id": "q_53",
+          "query_id": "q_21",
           "hit_at_1": true,
           "hit_at_5": true,
           "rank": 1
         },
         {
-          "query_id": "q_54",
+          "query_id": "q_22",
           "hit_at_1": true,
           "hit_at_5": true,
           "rank": 1
         },
         {
-          "query_id": "q_55",
+          "query_id": "q_23",
           "hit_at_1": true,
           "hit_at_5": true,
           "rank": 1
         },
         {
-          "query_id": "q_56",
-          "hit_at_1": false,
-          "hit_at_5": true,
-          "rank": 3
-        },
-        {
-          "query_id": "q_57",
+          "query_id": "q_24",
           "hit_at_1": true,
           "hit_at_5": true,
           "rank": 1
         },
         {
-          "query_id": "q_58",
+          "query_id": "q_25",
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "rank": 1
+        },
+        {
+          "query_id": "q_26",
           "hit_at_1": false,
           "hit_at_5": true,
           "rank": 2
         },
         {
-          "query_id": "q_59",
+          "query_id": "q_27",
           "hit_at_1": true,
           "hit_at_5": true,
           "rank": 1
         },
         {
-          "query_id": "q_60",
+          "query_id": "q_28",
           "hit_at_1": true,
           "hit_at_5": true,
           "rank": 1
         },
         {
-          "query_id": "q_61",
+          "query_id": "q_29",
           "hit_at_1": true,
           "hit_at_5": true,
           "rank": 1
-        },
+        }
+      ],
+      "elapsed_s": 9.474673986434937
+    },
+    "CTX Adaptive Trigger": {
+      "strategy": "CTX Adaptive Trigger",
+      "recall_at_1": 0.23333333333333334,
+      "recall_at_5": 0.5,
+      "mrr": 0.3561111111111111,
+      "ndcg_at_10": 0.3561111111111111,
+      "n_queries": 30,
+      "per_query": [
         {
-          "query_id": "q_62",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_63",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_64",
+          "query_id": "q_0",
           "hit_at_1": false,
           "hit_at_5": false,
-          "rank": 6
+          "rank": -1
         },
         {
-          "query_id": "q_65",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_66",
+          "query_id": "q_1",
           "hit_at_1": false,
           "hit_at_5": false,
-          "rank": 10
+          "rank": -1
         },
         {
-          "query_id": "q_67",
+          "query_id": "q_2",
           "hit_at_1": true,
           "hit_at_5": true,
           "rank": 1
         },
         {
-          "query_id": "q_68",
+          "query_id": "q_3",
+          "hit_at_1": false,
+          "hit_at_5": true,
+          "rank": 2
+        },
+        {
+          "query_id": "q_4",
+          "hit_at_1": false,
+          "hit_at_5": true,
+          "rank": 2
+        },
+        {
+          "query_id": "q_5",
           "hit_at_1": false,
           "hit_at_5": false,
-          "rank": 7
+          "rank": -1
         },
         {
-          "query_id": "q_69",
+          "query_id": "q_6",
           "hit_at_1": true,
           "hit_at_5": true,
           "rank": 1
         },
         {
-          "query_id": "q_70",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
+          "query_id": "q_7",
+          "hit_at_1": false,
+          "hit_at_5": false,
+          "rank": -1
         },
         {
-          "query_id": "q_71",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_72",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_73",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_74",
+          "query_id": "q_8",
           "hit_at_1": false,
           "hit_at_5": true,
           "rank": 4
         },
         {
-          "query_id": "q_75",
-          "hit_at_1": false,
-          "hit_at_5": true,
-          "rank": 3
-        },
-        {
-          "query_id": "q_76",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_77",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_78",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_79",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_80",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_81",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_82",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_83",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_84",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_85",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_86",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_87",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_88",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_89",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_90",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_91",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_92",
-          "hit_at_1": false,
-          "hit_at_5": true,
-          "rank": 2
-        },
-        {
-          "query_id": "q_93",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_94",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_95",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_96",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_97",
-          "hit_at_1": false,
-          "hit_at_5": true,
-          "rank": 2
-        },
-        {
-          "query_id": "q_98",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_99",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        }
-      ],
-      "elapsed_s": 0.05273938179016113
-    },
-    "Dense Embedding": {
-      "strategy": "Dense Embedding (MiniLM)",
-      "recall_at_1": 0.96,
-      "recall_at_5": 1.0,
-      "mrr": 0.9783333333333333,
-      "n_queries": 100,
-      "per_query": [
-        {
-          "query_id": "q_0",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_1",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_2",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_3",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_4",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_5",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_6",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_7",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_8",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_9",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_10",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_11",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_12",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_13",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_14",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_15",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_16",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_17",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_18",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_19",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_20",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_21",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_22",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_23",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_24",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_25",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_26",
-          "hit_at_1": false,
-          "hit_at_5": true,
-          "rank": 3
-        },
-        {
-          "query_id": "q_27",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_28",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_29",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_30",
-          "hit_at_1": false,
-          "hit_at_5": true,
-          "rank": 2
-        },
-        {
-          "query_id": "q_31",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_32",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_33",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_34",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_35",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_36",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_37",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_38",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_39",
-          "hit_at_1": false,
-          "hit_at_5": true,
-          "rank": 2
-        },
-        {
-          "query_id": "q_40",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_41",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_42",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_43",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_44",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_45",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_46",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_47",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_48",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_49",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_50",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_51",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_52",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_53",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_54",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_55",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_56",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_57",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_58",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_59",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_60",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_61",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_62",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_63",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_64",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_65",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_66",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_67",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_68",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_69",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_70",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_71",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_72",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_73",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_74",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_75",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_76",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_77",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_78",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_79",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_80",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_81",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_82",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_83",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_84",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_85",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_86",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_87",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_88",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_89",
-          "hit_at_1": false,
-          "hit_at_5": true,
-          "rank": 2
-        },
-        {
-          "query_id": "q_90",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_91",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_92",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_93",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_94",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_95",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_96",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_97",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_98",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_99",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        }
-      ],
-      "elapsed_s": 10.130753517150879
-    },
-    "CTX Adaptive Trigger": {
-      "strategy": "CTX Adaptive Trigger",
-      "recall_at_1": 0.21,
-      "recall_at_5": 0.38,
-      "mrr": 0.29333333333333333,
-      "n_queries": 100,
-      "per_query": [
-        {
-          "query_id": "q_0",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_1",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_2",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_3",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_4",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_5",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_6",
-          "hit_at_1": false,
-          "hit_at_5": true,
-          "rank": 2
-        },
-        {
-          "query_id": "q_7",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_8",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
           "query_id": "q_9",
           "hit_at_1": false,
           "hit_at_5": false,
@@ -1918,15 +662,15 @@
         },
         {
           "query_id": "q_12",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "rank": 1
         },
         {
           "query_id": "q_13",
           "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
+          "hit_at_5": true,
+          "rank": 2
         },
         {
           "query_id": "q_14",
@@ -1943,8 +687,8 @@
         {
           "query_id": "q_16",
           "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
+          "hit_at_5": true,
+          "rank": 2
         },
         {
           "query_id": "q_17",
@@ -1972,9 +716,9 @@
         },
         {
           "query_id": "q_21",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "rank": 1
         },
         {
           "query_id": "q_22",
@@ -1984,33 +728,33 @@
         },
         {
           "query_id": "q_23",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_24",
-          "hit_at_1": false,
-          "hit_at_5": true,
-          "rank": 2
-        },
-        {
-          "query_id": "q_25",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_26",
           "hit_at_1": true,
           "hit_at_5": true,
           "rank": 1
         },
         {
-          "query_id": "q_27",
+          "query_id": "q_24",
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "rank": 1
+        },
+        {
+          "query_id": "q_25",
+          "hit_at_1": false,
+          "hit_at_5": true,
+          "rank": 2
+        },
+        {
+          "query_id": "q_26",
           "hit_at_1": false,
           "hit_at_5": false,
-          "rank": -1
+          "rank": 10
+        },
+        {
+          "query_id": "q_27",
+          "hit_at_1": false,
+          "hit_at_5": true,
+          "rank": 3
         },
         {
           "query_id": "q_28",
@@ -2023,436 +767,17 @@
           "hit_at_1": false,
           "hit_at_5": false,
           "rank": -1
-        },
-        {
-          "query_id": "q_30",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_31",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_32",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_33",
-          "hit_at_1": false,
-          "hit_at_5": true,
-          "rank": 2
-        },
-        {
-          "query_id": "q_34",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_35",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_36",
-          "hit_at_1": false,
-          "hit_at_5": true,
-          "rank": 2
-        },
-        {
-          "query_id": "q_37",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_38",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_39",
-          "hit_at_1": false,
-          "hit_at_5": true,
-          "rank": 2
-        },
-        {
-          "query_id": "q_40",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_41",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_42",
-          "hit_at_1": false,
-          "hit_at_5": true,
-          "rank": 2
-        },
-        {
-          "query_id": "q_43",
-          "hit_at_1": false,
-          "hit_at_5": true,
-          "rank": 2
-        },
-        {
-          "query_id": "q_44",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_45",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_46",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_47",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_48",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_49",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_50",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_51",
-          "hit_at_1": false,
-          "hit_at_5": true,
-          "rank": 2
-        },
-        {
-          "query_id": "q_52",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_53",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_54",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_55",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_56",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_57",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_58",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_59",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_60",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_61",
-          "hit_at_1": false,
-          "hit_at_5": true,
-          "rank": 2
-        },
-        {
-          "query_id": "q_62",
-          "hit_at_1": false,
-          "hit_at_5": true,
-          "rank": 2
-        },
-        {
-          "query_id": "q_63",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_64",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_65",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_66",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_67",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_68",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_69",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_70",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_71",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_72",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_73",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_74",
-          "hit_at_1": false,
-          "hit_at_5": true,
-          "rank": 2
-        },
-        {
-          "query_id": "q_75",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_76",
-          "hit_at_1": false,
-          "hit_at_5": true,
-          "rank": 2
-        },
-        {
-          "query_id": "q_77",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_78",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_79",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_80",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_81",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_82",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_83",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_84",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_85",
-          "hit_at_1": false,
-          "hit_at_5": true,
-          "rank": 2
-        },
-        {
-          "query_id": "q_86",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_87",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_88",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_89",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_90",
-          "hit_at_1": false,
-          "hit_at_5": true,
-          "rank": 2
-        },
-        {
-          "query_id": "q_91",
-          "hit_at_1": false,
-          "hit_at_5": true,
-          "rank": 3
-        },
-        {
-          "query_id": "q_92",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_93",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_94",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_95",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_96",
-          "hit_at_1": false,
-          "hit_at_5": true,
-          "rank": 2
-        },
-        {
-          "query_id": "q_97",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_98",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_99",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
         }
       ],
-      "elapsed_s": 0.23845934867858887
+      "elapsed_s": 0.07854509353637695
     },
     "Hybrid Dense+CTX": {
       "strategy": "Hybrid Dense+CTX",
-      "recall_at_1": 0.93,
-      "recall_at_5": 0.95,
-      "mrr": 0.94,
-      "n_queries": 100,
+      "recall_at_1": 0.9666666666666667,
+      "recall_at_5": 0.9666666666666667,
+      "mrr": 0.9666666666666667,
+      "ndcg_at_10": 0.9666666666666667,
+      "n_queries": 30,
       "per_query": [
         {
           "query_id": "q_0",
@@ -2633,429 +958,9 @@
           "hit_at_1": true,
           "hit_at_5": true,
           "rank": 1
-        },
-        {
-          "query_id": "q_30",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_31",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_32",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_33",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_34",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_35",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_36",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_37",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_38",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_39",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_40",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_41",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_42",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_43",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_44",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_45",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_46",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_47",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_48",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_49",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_50",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_51",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_52",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_53",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_54",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_55",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_56",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_57",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_58",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_59",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_60",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_61",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_62",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_63",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_64",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_65",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_66",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_67",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_68",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_69",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_70",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_71",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_72",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_73",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_74",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_75",
-          "hit_at_1": false,
-          "hit_at_5": true,
-          "rank": 2
-        },
-        {
-          "query_id": "q_76",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_77",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_78",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_79",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_80",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_81",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_82",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_83",
-          "hit_at_1": false,
-          "hit_at_5": false,
-          "rank": -1
-        },
-        {
-          "query_id": "q_84",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_85",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_86",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_87",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_88",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_89",
-          "hit_at_1": false,
-          "hit_at_5": true,
-          "rank": 2
-        },
-        {
-          "query_id": "q_90",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_91",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_92",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_93",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_94",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_95",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_96",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_97",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_98",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
-        },
-        {
-          "query_id": "q_99",
-          "hit_at_1": true,
-          "hit_at_5": true,
-          "rank": 1
         }
       ],
-      "elapsed_s": 63.353208780288696
+      "elapsed_s": 15.369255542755127
     }
   }
 }

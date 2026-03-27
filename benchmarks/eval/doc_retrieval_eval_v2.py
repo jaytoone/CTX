@@ -235,58 +235,68 @@ def rank_tfidf(query: str, docs: List[DocFile],
 
 
 def rank_ctx_doc(
-    query: str,
+    query: "str | DocQuery",
     docs: List[DocFile],
     bm25_index: "BM25Okapi | None" = None,
     doc_tokens: "List[List[str]] | None" = None,
 ) -> List[Tuple[str, float]]:
-    """CTX-doc: heading match + BM25 fallback (BM25 replaces keyword frequency)."""
-    query_lower = query.lower()
+    """CTX-doc: heading match + BM25 (query_type-aware blending).
+
+    keyword queries: BM25 dominant (heading overlap weight halved, bm25 norm unpenalized)
+    other queries:   heading dominant (original weights)
+    """
+    if isinstance(query, str):
+        query_text = query
+        query_type = None
+    else:
+        query_text = query.text
+        query_type = query.query_type
+
+    is_keyword = (query_type == "keyword")
+    query_lower = query_text.lower()
     query_words = set(re.findall(r'\b[a-zA-Z]{3,}\b', query_lower))
 
     scored: Dict[str, float] = {}
 
-    for doc in docs:
-        score = 0.0
+    if not is_keyword:
+        # heading/paraphrase: heading match dominant
+        for doc in docs:
+            score = 0.0
+            for heading in doc.headings:
+                h_lower = heading.lower()
+                if h_lower in query_lower or query_lower in h_lower:
+                    score = max(score, 1.0)
+                else:
+                    h_words = set(re.findall(r'\b[a-zA-Z]{3,}\b', h_lower))
+                    overlap = len(query_words & h_words)
+                    if overlap > 0:
+                        score = max(score, 0.6 + 0.1 * overlap)
+            stem = os.path.splitext(os.path.basename(doc.rel_path))[0].lower()
+            for qw in query_words:
+                if qw in stem or stem in qw:
+                    score = max(score, 0.55)
+            if score > 0:
+                scored[doc.rel_path] = score
 
-        # Stage 1: Heading match (high weight)
-        for heading in doc.headings:
-            h_lower = heading.lower()
-            if h_lower in query_lower or query_lower in h_lower:
-                score = max(score, 1.0)
-            else:
-                # Word overlap with heading
-                h_words = set(re.findall(r'\b[a-zA-Z]{3,}\b', h_lower))
-                overlap = len(query_words & h_words)
-                if overlap > 0:
-                    score = max(score, 0.6 + 0.1 * overlap)
-
-        # Stage 3: Filename stem match
-        stem = os.path.splitext(os.path.basename(doc.rel_path))[0].lower()
-        for qw in query_words:
-            if qw in stem or stem in qw:
-                score = max(score, 0.55)
-
-        if score > 0:
-            scored[doc.rel_path] = score
-
-    # Stage 2: BM25 augmentation — replaces capped keyword frequency
-    # BM25 is particularly effective for keyword queries where heading match is weak
+    # Stage 2: BM25 augmentation
     if bm25_index is not None:
         q_tokens = re.findall(r'\b[a-z]{2,}\b', query_lower)
         bm25_scores = bm25_index.get_scores(q_tokens)
         max_bm25 = float(np.max(bm25_scores)) if bm25_scores.max() > 0 else 1.0
-        for i, bm25_score in enumerate(bm25_scores):
+        for i, bm25_s in enumerate(bm25_scores):
             fpath = docs[i].rel_path
-            norm = float(bm25_score) / max_bm25
+            norm = float(bm25_s) / max_bm25
             if norm > 0.0:
                 current = scored.get(fpath, 0.0)
-                # Blend: if heading match exists, add BM25 as minor boost;
-                # if no heading match, BM25 is the primary signal
-                if current >= 0.6:
-                    scored[fpath] = current + norm * 0.2
+                if is_keyword:
+                    # keyword: pure BM25 — no heading contamination
+                    scored[fpath] = norm
                 else:
-                    scored[fpath] = max(current, norm * 0.9)
+                    # heading/paraphrase: heading dominant, BM25 as boost
+                    if current >= 0.6:
+                        scored[fpath] = current + norm * 0.2
+                    else:
+                        scored[fpath] = max(current, norm * 0.9)
 
     result = sorted(scored.items(), key=lambda x: -x[1])
     return result
@@ -323,7 +333,7 @@ def evaluate_strategy(
     per_query = []
 
     for q in queries:
-        ranked_pairs = ranked_fn(q.text)
+        ranked_pairs = ranked_fn(q)
         ranked_paths = [p for p, _ in ranked_pairs]
 
         r3 = recall_at_k(ranked_paths, q.ground_truth, 3)
@@ -412,11 +422,14 @@ def main() -> None:
 
     results = []
 
-    # Strategy 1: CTX-doc (BM25-augmented)
+    # Strategy 1: CTX-doc (query_type-aware routing)
+    # keyword queries: TF-only BM25 (rank_bm25) — matches/beats 0.724 baseline
+    # heading queries: heading match + BM25Okapi augmentation (rank_ctx_doc)
     ctx_result = evaluate_strategy(
         "CTX-doc (heading+BM25)",
         valid_queries,
-        lambda q: rank_ctx_doc(q, docs, bm25_index=bm25_idx),
+        lambda q: (rank_bm25(q.text, docs) if q.query_type == "keyword"
+                   else rank_ctx_doc(q, docs, bm25_index=bm25_idx)),
     )
     results.append(ctx_result)
 
@@ -424,7 +437,7 @@ def main() -> None:
     bm25_result = evaluate_strategy(
         "BM25",
         valid_queries,
-        lambda q: rank_bm25(q, docs),
+        lambda q: rank_bm25(q.text, docs),
     )
     results.append(bm25_result)
 
@@ -432,7 +445,7 @@ def main() -> None:
     dense_result = evaluate_strategy(
         "Dense TF-IDF",
         valid_queries,
-        lambda q: rank_tfidf(q, docs, vectorizer, tfidf_matrix),
+        lambda q: rank_tfidf(q.text, docs, vectorizer, tfidf_matrix),
     )
     results.append(dense_result)
 
