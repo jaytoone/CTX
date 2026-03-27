@@ -1,6 +1,6 @@
 # CTX Document Retrieval Evaluation v2
 
-**Date**: 2026-03-27 14:32
+**Date**: 2026-03-27 14:37
 **Corpus**: 29 .md files from docs/
 **Queries**: 87 (heading_exact + heading_paraphrase + keyword)
 **Metrics**: Recall@3, Recall@5, NDCG@5, MRR
