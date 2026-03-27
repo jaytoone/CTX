@@ -67,13 +67,14 @@
 | [research/20260327-ctx-downstream-eval.md](research/20260327-ctx-downstream-eval.md) | CTX Downstream LLM 평가 — CTX-with vs without ablation, G1(memory recall Δ+0.700) / G2(coding Δ+0.582, hallucination 2.00→0.00) |
 | [research/20260327-ctx-real-project-self-eval.md](research/20260327-ctx-real-project-self-eval.md) | CTX 실제 코드베이스 자체 평가 — instruction-style query R@5=0.000 (proxy R@3=0.862와 격차), 실패 원인 분석 + 개선 방향 |
 | [research/20260328-ctx-downstream-minimax-eval.md](research/20260328-ctx-downstream-minimax-eval.md) | CTX Downstream LLM 평가 (MiniMax M2.5 실제 호출) — G1 Δ+0.781(WITH=1.000), G2 Δ+0.375, Overall Δ+0.578 STRONGLY IMPROVES |
+| [research/20260328-ctx-real-codebase-g2-eval.md](research/20260328-ctx-real-codebase-g2-eval.md) | CTX G2 실제 코드베이스 평가 (MiniMax M2.5) — real code Δ+0.200, over-anchoring 발견, synthetic vs real 비교 |
 
 ## Related
 - [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
 - [[projects/CTX/research/20260325-ctx-paper-tier-evaluation|20260325-ctx-paper-tier-evaluation]]
+- [[projects/CTX/research/20260328-ctx-downstream-minimax-eval|20260328-ctx-downstream-minimax-eval]]
 - [[projects/CTX/research/20260326-ctx-achievement-review|20260326-ctx-achievement-review]]
 - [[projects/CTX/research/20260326-ctx-vs-industry-comparison|20260326-ctx-vs-industry-comparison]]
 - [[projects/CTX/research/20260326-ctx-final-sota-comparison|20260326-ctx-final-sota-comparison]]
 - [[projects/CTX/research/20260326-ctx-vs-sota-comparison|20260326-ctx-vs-sota-comparison]]
 - [[projects/CTX/research/20260326-ctx-vs-claudecode-tools|20260326-ctx-vs-claudecode-tools]]
-- [[projects/CTX/research/20260327-ctx-downstream-eval|20260327-ctx-downstream-eval]]
