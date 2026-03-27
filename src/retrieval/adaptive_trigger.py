@@ -4,24 +4,31 @@ Adaptive Trigger retrieval strategy -- the core experiment.
 Classifies the query's trigger type, then applies a specialized
 retrieval strategy per type:
   - EXPLICIT_SYMBOL  -> exact match on function/class names (high precision)
-  - SEMANTIC_CONCEPT -> TF-IDF similarity on expanded concepts
+  - SEMANTIC_CONCEPT -> BM25 similarity on expanded concepts
   - TEMPORAL_HISTORY -> keyword match on module docstrings + concepts
   - IMPLICIT_CONTEXT -> graph-based import chain traversal
 
 Dynamically adjusts k based on trigger confidence (CAR-style).
 """
 
-import math
 import os
 import re
 from typing import Dict, List, Set
 
 import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+from rank_bm25 import BM25Okapi
 
 from src.retrieval.full_context import RetrievalResult, estimate_tokens
 from src.trigger.trigger_classifier import TriggerClassifier, TriggerType
+
+# Directories to exclude from indexing (venvs, build artifacts, VCS, caches)
+_EXCLUDED_DIRS = frozenset({
+    'venv', '.venv', 'env', '.env',
+    'node_modules', '__pycache__', '.git', '.svn', '.hg',
+    'build', 'dist', 'site-packages', '.local',
+    '.tox', '.mypy_cache', '.pytest_cache', '.ruff_cache',
+    'htmlcov', '.eggs', 'buck-out', '_build',
+})
 
 
 class AdaptiveTriggerRetriever:
@@ -43,28 +50,29 @@ class AdaptiveTriggerRetriever:
         # Module name -> file path mapping
         self.module_to_file: Dict[str, str] = {}
 
-        # TF-IDF for semantic fallback
-        self.vectorizer = TfidfVectorizer(
-            token_pattern=r'[a-zA-Z_][a-zA-Z0-9_]{1,}',
-            lowercase=True,
-            max_features=10000,
-            sublinear_tf=True,
-        )
-        self.tfidf_matrix = None
+        # BM25 for semantic fallback
+        self.bm25: BM25Okapi | None = None
+        self._bm25_corpus: List[List[str]] = []
 
         self._index()
 
     def _index(self) -> None:
         """Build all indices from the codebase."""
-        documents = []
-
-        for root, _, filenames in os.walk(self.codebase_dir):
+        for root, dirs, filenames in os.walk(self.codebase_dir):
+            # Prune excluded directories to avoid indexing venvs, caches, etc.
+            dirs[:] = [
+                d for d in dirs
+                if d not in _EXCLUDED_DIRS and not d.endswith('.egg-info')
+            ]
             for fname in filenames:
                 if fname.endswith(".py"):
                     fpath = os.path.join(root, fname)
                     rel_path = os.path.relpath(fpath, self.codebase_dir)
-                    with open(fpath, "r", encoding="utf-8") as f:
-                        content = f.read()
+                    try:
+                        with open(fpath, "r", encoding="utf-8", errors="replace") as f:
+                            content = f.read()
+                    except OSError:
+                        continue
 
                     self.files[rel_path] = content
                     self.file_paths.append(rel_path)
@@ -85,13 +93,14 @@ class AdaptiveTriggerRetriever:
                     # Build import graph
                     self._index_imports(rel_path, content)
 
-                    # Expand for TF-IDF
+                    # Tokenize for BM25
                     expanded = re.sub(r'([a-z])([A-Z])', r'\1 \2', content)
                     expanded = expanded.replace("_", " ")
-                    documents.append(expanded)
+                    tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', expanded.lower())
+                    self._bm25_corpus.append(tokens)
 
-        if documents:
-            self.tfidf_matrix = self.vectorizer.fit_transform(documents)
+        if self._bm25_corpus:
+            self.bm25 = BM25Okapi(self._bm25_corpus)
 
     def _index_symbols(self, file_path: str, content: str) -> None:
         """Extract function and class names and map them to file paths."""
@@ -236,18 +245,20 @@ class AdaptiveTriggerRetriever:
                     matched_files.setdefault(f, 0.0)
                     matched_files[f] = max(matched_files[f], 0.8)
 
-        # Augment with TF-IDF similarity
-        if self.tfidf_matrix is not None:
+        # Augment with BM25 similarity
+        if self.bm25 is not None:
             expanded = re.sub(r'([a-z])([A-Z])', r'\1 \2', query_text).replace("_", " ")
-            query_vec = self.vectorizer.transform([expanded])
-            sims = cosine_similarity(query_vec, self.tfidf_matrix).flatten()
+            query_tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', expanded.lower())
+            scores = self.bm25.get_scores(query_tokens)
+            max_score = float(np.max(scores)) if scores.max() > 0 else 1.0
 
-            for i, sim in enumerate(sims):
+            for i, score in enumerate(scores):
                 fpath = self.file_paths[i]
-                if sim > 0.05:
+                norm_score = float(score) / max_score
+                if norm_score > 0.05:
                     current = matched_files.get(fpath, 0.0)
-                    # Combine: concept match + TF-IDF similarity
-                    matched_files[fpath] = max(current, float(sim) * 0.6) + current * 0.4
+                    # Combine: concept match + BM25 similarity
+                    matched_files[fpath] = max(current, norm_score * 0.6) + current * 0.4
 
         sorted_files = sorted(matched_files.items(), key=lambda x: x[1], reverse=True)[:k]
         retrieved = [f for f, _ in sorted_files]
@@ -268,32 +279,63 @@ class AdaptiveTriggerRetriever:
         """Retrieve based on temporal/history references.
 
         Since we don't have actual session history, we simulate by
-        matching on module docstrings and concept keywords.
+        matching on module names, paths, and concept keywords.
+        temporal_ref carries the extracted topic word (e.g. "setup", "logging").
         """
-        # Extract topic from the query (remove temporal keywords)
-        topic = query_text.lower()
-        for kw in ["previously", "before", "last time", "earlier", "remember",
-                    "discussed", "mentioned", "we talked", "show the module"]:
-            topic = topic.replace(kw, "")
-        topic = topic.strip()
+        _TEMPORAL_KW = frozenset([
+            "previously", "before", "last time", "earlier", "remember",
+            "discussed", "mentioned", "we talked", "show the module",
+            "show", "module", "about", "the", "we",
+        ])
+        _STOP = frozenset([
+            "the", "all", "and", "for", "that", "this", "was", "are",
+            "had", "our", "but", "not", "can", "has", "its", "his",
+            "a", "an", "to", "of", "in", "is", "it", "be", "by",
+            "on", "at", "up", "as", "do", "go", "so", "my", "me",
+        ])
 
-        # Search in concept index and content
+        # Use temporal_ref if it's a meaningful topic word (not just a temporal keyword)
+        if temporal_ref and temporal_ref not in _TEMPORAL_KW and len(temporal_ref) > 2:
+            raw_topic = temporal_ref
+        else:
+            raw_topic = query_text.lower()
+            for kw in _TEMPORAL_KW:
+                raw_topic = raw_topic.replace(kw, " ")
+
+        topic_words = [
+            w for w in raw_topic.split()
+            if len(w) > 2 and w not in _STOP and w.isalpha()
+        ]
+
         matched_files: Dict[str, float] = {}
 
+        # Priority 1: concept index — metadata/docstring keyword match (score 0.75)
         for concept_key, file_list in self.concept_index.items():
-            if any(word in concept_key for word in topic.split() if len(word) > 2):
+            if any(word in concept_key for word in topic_words if len(word) > 2):
                 for f in file_list:
                     matched_files.setdefault(f, 0.0)
                     matched_files[f] = max(matched_files[f], 0.75)
 
-        # Content search fallback
-        for fpath, content in self.files.items():
-            content_lower = content.lower()
-            match_count = sum(1 for word in topic.split() if len(word) > 2 and word in content_lower)
-            if match_count > 0:
-                score = min(0.9, match_count * 0.2)
-                matched_files.setdefault(fpath, 0.0)
-                matched_files[fpath] = max(matched_files[fpath], score)
+        # Priority 2: path-based match — filename stem contains topic word (score 0.85)
+        # This is higher than concept index since a file named "logging.py" IS the logging module
+        if topic_words:
+            for fpath in self.file_paths:
+                fpath_lower = fpath.lower().replace("/", " ").replace("_", " ").replace("-", " ")
+                path_matches = sum(1 for word in topic_words if len(word) > 2 and word in fpath_lower)
+                if path_matches > 0:
+                    score = min(0.95, 0.7 + path_matches * 0.15)
+                    matched_files.setdefault(fpath, 0.0)
+                    matched_files[fpath] = max(matched_files[fpath], score)
+
+        # Priority 3: content search (score cap 0.5 — lower than path match)
+        if topic_words:
+            for fpath, content in self.files.items():
+                content_lower = content.lower()
+                match_count = sum(1 for word in topic_words if len(word) > 2 and word in content_lower)
+                if match_count > 0:
+                    score = min(0.5, match_count * 0.2)
+                    matched_files.setdefault(fpath, 0.0)
+                    matched_files[fpath] = max(matched_files[fpath], score)
 
         if not matched_files:
             return self._tfidf_retrieve(query_id, query_text, k)
@@ -323,12 +365,12 @@ class AdaptiveTriggerRetriever:
             if mod_name in query_text:
                 primary_files.add(fpath)
 
-        # If no module name found, use TF-IDF to find the primary file
-        if not primary_files and self.tfidf_matrix is not None:
+        # If no module name found, use BM25 to find the primary file
+        if not primary_files and self.bm25 is not None:
             expanded = re.sub(r'([a-z])([A-Z])', r'\1 \2', query_text).replace("_", " ")
-            query_vec = self.vectorizer.transform([expanded])
-            sims = cosine_similarity(query_vec, self.tfidf_matrix).flatten()
-            top_idx = int(np.argmax(sims))
+            query_tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', expanded.lower())
+            scores = self.bm25.get_scores(query_tokens)
+            top_idx = int(np.argmax(scores))
             primary_files.add(self.file_paths[top_idx])
 
         # Traverse import graph to find dependencies
@@ -369,8 +411,8 @@ class AdaptiveTriggerRetriever:
                     self._traverse_imports(imported_file, result, depth - 1, decay * 0.5)
 
     def _tfidf_retrieve(self, query_id: str, query_text: str, k: int) -> RetrievalResult:
-        """Fallback TF-IDF retrieval."""
-        if self.tfidf_matrix is None:
+        """Fallback BM25 retrieval (replaces TF-IDF)."""
+        if self.bm25 is None:
             return RetrievalResult(
                 query_id=query_id,
                 retrieved_files=[],
@@ -381,12 +423,12 @@ class AdaptiveTriggerRetriever:
             )
 
         expanded = re.sub(r'([a-z])([A-Z])', r'\1 \2', query_text).replace("_", " ")
-        query_vec = self.vectorizer.transform([expanded])
-        sims = cosine_similarity(query_vec, self.tfidf_matrix).flatten()
+        query_tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', expanded.lower())
+        raw_scores = self.bm25.get_scores(query_tokens)
 
-        top_indices = np.argsort(sims)[::-1][:k]
+        top_indices = np.argsort(raw_scores)[::-1][:k]
         retrieved = [self.file_paths[i] for i in top_indices]
-        scores = {self.file_paths[i]: float(sims[i]) for i in top_indices}
+        scores = {self.file_paths[i]: float(raw_scores[i]) for i in top_indices}
 
         tokens_used = sum(estimate_tokens(self.files[f]) for f in retrieved)
 
