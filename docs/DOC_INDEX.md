@@ -9,7 +9,7 @@
 | [../benchmarks/results/final_report_v3.md](../benchmarks/results/final_report_v3.md) | P1.6 최종 통합 리포트 — 7전략 비교 (LlamaIndex + Chroma Dense 추가) |
 | [../benchmarks/results/differentiation_analysis.md](../benchmarks/results/differentiation_analysis.md) | CTX vs Memori 차별화 정량 분석 — 코드 구조 활용도 + 트리거별 강점 |
 | [paper_draft_outline.md](paper_draft_outline.md) | arXiv 논문 초안 구조 — 섹션별 핵심 포인트 + 실험 결과 요약 |
-| [paper/CTX_paper_draft.md](paper/CTX_paper_draft.md) | arXiv 제출용 논문 초안 — 전체 본문 (Abstract~References) |
+| [paper/CTX_paper_draft.md](paper/CTX_paper_draft.md) | arXiv 제출용 논문 초안 v4.0 P11 — G2 v4 calibrated (+0.688), SOYA READY, BM25 비교 |
 | [../benchmarks/results/llm_quality_results.json](../benchmarks/results/llm_quality_results.json) | LLM pass@1 실험 결과 JSON — MiniMax M2.5, Full Context vs Adaptive Trigger |
 | [../benchmarks/results/llm_quality_report.md](../benchmarks/results/llm_quality_report.md) | LLM pass@1 실험 리포트 — per-sample 결과 + 컨텍스트 토큰 비교 |
 | [research/20260324-ctx-methodology-critique-top-tier.md](research/20260324-ctx-methodology-critique-top-tier.md) | 상위 티어 논문 기준 실험 방식 평론 — expert-research-v2, 제출 로드맵 포함 |
