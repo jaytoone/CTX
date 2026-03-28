@@ -69,6 +69,9 @@
 | [research/20260328-ctx-downstream-minimax-eval.md](research/20260328-ctx-downstream-minimax-eval.md) | CTX Downstream LLM 평가 (MiniMax M2.5 실제 호출) — G1 Δ+0.781(WITH=1.000), G2 Δ+0.375, Overall Δ+0.578 STRONGLY IMPROVES |
 | [research/20260328-ctx-real-codebase-g2-eval.md](research/20260328-ctx-real-codebase-g2-eval.md) | CTX G2 실제 코드베이스 평가 (MiniMax M2.5) — real code Δ+0.200, over-anchoring 발견, synthetic vs real 비교 |
 | [research/20260328-ctx-downstream-eval-complete.md](research/20260328-ctx-downstream-eval-complete.md) | CTX Downstream LLM 평가 완전 보고서 — G1/G2 synthetic+real 3실험 종합, over-anchoring 분석, CTX 개선 방향 |
+| [research/20260328-adaptive-trigger-generalization-fix.md](research/20260328-adaptive-trigger-generalization-fix.md) | AdaptiveTrigger 외부 코드베이스 일반화 수정 — import graph + module_to_file 범용화, IMPLICIT R@5 +362~441% |
+| [research/20260328-trigger-classifier-semantic-fix.md](research/20260328-trigger-classifier-semantic-fix.md) | TriggerClassifier SEMANTIC 수정 — "Find all code related to X" 오분류 수정, SEMANTIC R@5 near-zero→0.531~0.958 |
+| [../benchmarks/results/final_report_v10.md](../benchmarks/results/final_report_v10.md) | **P10 최종 리포트 (현재)** — Trigger+Import 두 버그 수정 후: External R@5=0.495 [CI: 0.441,0.550], 목표 0.25 달성, Bootstrap CI 추가 |
 
 ## Related
 - [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]

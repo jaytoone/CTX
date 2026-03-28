@@ -115,6 +115,25 @@ class TriggerClassifier:
         triggers = self.classify(prompt)
         return triggers[0].trigger_type if triggers else TriggerType.SEMANTIC_CONCEPT
 
+    # Common English words that look like CamelCase but are NOT code symbols
+    _COMMON_WORDS = frozenset({
+        "find", "show", "get", "list", "what", "where", "how", "why",
+        "the", "all", "for", "and", "but", "not", "can", "will", "are",
+        "from", "this", "that", "with", "have", "has", "was", "were",
+        "code", "file", "module", "function", "class", "method", "test",
+        "write", "make", "use", "add", "see", "look", "need", "want",
+    })
+
+    # Patterns to extract actual concept word from semantic queries
+    _CONCEPT_EXTRACT_PATTERNS = [
+        re.compile(r'related\s+to\s+([a-z_][a-z0-9_]*)', re.IGNORECASE),
+        re.compile(r'everything\s+about\s+([a-z_][a-z0-9_]+)', re.IGNORECASE),
+        re.compile(r'about\s+([a-z_][a-z0-9_]{2,})', re.IGNORECASE),
+        re.compile(r'handles?\s+([a-z_][a-z0-9_]+)', re.IGNORECASE),
+        re.compile(r'responsible\s+for\s+([a-z_][a-z0-9_]+)', re.IGNORECASE),
+        re.compile(r'deals?\s+with\s+([a-z_][a-z0-9_]+)', re.IGNORECASE),
+    ]
+
     def _detect_explicit_symbols(self, prompt: str, prompt_lower: str) -> List[Trigger]:
         """Detect explicit symbol references (function names, class names, etc.)."""
         triggers = []
@@ -127,7 +146,10 @@ class TriggerClassifier:
             for match in matches:
                 # Clean up match
                 symbol = match.rstrip("(").strip()
-                if len(symbol) < 2 or symbol.lower() in ("the", "all", "for", "and", "show"):
+                if len(symbol) < 2:
+                    continue
+                # Filter out common English words that happen to match patterns
+                if symbol.lower() in self._COMMON_WORDS:
                     continue
 
                 confidence = 0.9 if has_explicit_keyword else 0.7
@@ -146,9 +168,27 @@ class TriggerClassifier:
 
         matched_keywords = [kw for kw in SEMANTIC_KEYWORDS if kw in prompt_lower]
         if matched_keywords:
-            # Extract the most specific concept
-            concept = max(matched_keywords, key=len)
-            confidence = min(0.85, 0.5 + len(matched_keywords) * 0.1)
+            # Try to extract the actual concept word (e.g., "routing" from "related to routing")
+            concept = None
+            for pat in self._CONCEPT_EXTRACT_PATTERNS:
+                m = pat.search(prompt_lower)
+                if m:
+                    candidate = m.group(1)
+                    if len(candidate) > 2 and candidate not in self._COMMON_WORDS:
+                        concept = candidate
+                        break
+
+            # Fallback: use the longest matched semantic keyword
+            if concept is None:
+                concept = max(matched_keywords, key=len)
+
+            # Higher confidence when explicit semantic marker ("related to", "all code") is present
+            has_explicit_marker = any(kw in prompt_lower for kw in ("related to", "all code", "everything about"))
+            if has_explicit_marker:
+                confidence = min(0.85, 0.70 + len(matched_keywords) * 0.03)
+            else:
+                confidence = min(0.85, 0.50 + len(matched_keywords) * 0.10)
+
             triggers.append(Trigger(
                 trigger_type=TriggerType.SEMANTIC_CONCEPT,
                 value=concept,

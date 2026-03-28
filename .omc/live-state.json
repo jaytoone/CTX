@@ -1,0 +1,17 @@
+{
+  "current_iteration": 10,
+  "last_outcome": "success",
+  "last_phase_reached": "phase-5",
+  "started_at": "2026-03-27T00:00:00",
+  "best_score": 0.90,
+  "current_score": 0.85,
+  "plateau_count": 1,
+  "evolution_count": 3,
+  "goal": "CTX 논문 수치 학술 방어력 확보",
+  "score_history": [
+    {"iteration": 7, "score": 1.0, "goal_version": 0},
+    {"iteration": 8, "score": 0.72, "goal_version": 1},
+    {"iteration": 9, "score": 0.90, "goal_version": 2},
+    {"iteration": 10, "score": 0.85, "goal_version": 3}
+  ]
+}

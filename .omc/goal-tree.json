@@ -1,0 +1,79 @@
+{
+  "root_goal": "CTX 논문 수치 학술 방어력 확보: HIGH 위험 3개 수정 — BM25 baseline 추가, DRR N=3 대체, RepoBench 방법론 재정립",
+  "original_goal": "ctx 실험 목적에서 멀어지지 않도록 진행",
+  "level": 0,
+  "sub_goals": [
+    {
+      "id": "SG1",
+      "desc": "BM25 baseline 추가 — 전체 6 real datasets CTX vs BM25 비교",
+      "status": "completed",
+      "priority": "P0",
+      "metric": "BM25 R@10 측정 완료",
+      "result": "ACHIEVED: BM25=0.556, CTX=0.453. Trigger별: EXPLICIT_SYMBOL CTX+14.8pp, TEMPORAL CTX+24.0pp, SEMANTIC CTX-63.0pp"
+    },
+    {
+      "id": "SG2",
+      "desc": "DRR N=3 문제 해결 — N≥30 확대 또는 대체 메트릭",
+      "status": "completed",
+      "priority": "P0",
+      "metric": "DRR 통계적 유효성 확보",
+      "result": "ACHIEVED: DRR@3=1.000 제거, TEMPORAL_HISTORY R@10=0.520 (N=50, CTX vs BM25: +0.240) 로 대체"
+    },
+    {
+      "id": "SG3",
+      "desc": "RepoBench 비교방법론 재정립 — 메트릭 불일치 명시 + BM25 baseline 추가",
+      "status": "completed",
+      "priority": "P1",
+      "metric": "RepoBench section에 BM25 baseline 포함 + caveat 명시",
+      "result": "ACHIEVED: RepoBench NDCG@5=0.723 vs BM25=0.646 (+7.7pp), RANGER 비교 limitation 명시"
+    },
+    {
+      "id": "SG4",
+      "desc": "TriggerClassifier 버그 수정 — snake_case 함수명 추출 불가 문제",
+      "status": "completed",
+      "priority": "P0",
+      "metric": "CTX EXPLICIT_SYMBOL R@10 개선",
+      "result": "ACHIEVED: 새 패턴 \\b(?:function|method|class)\\s+([a-zA-Z_][a-zA-Z0-9_]{2,}) 추가. GraphPrompt CTX 0.237→0.537"
+    },
+    {
+      "id": "SG5",
+      "desc": "final_report_v9.md 작성 — 수정된 정직한 수치 기반 최종 리포트",
+      "status": "completed",
+      "priority": "P1",
+      "metric": "final_report_v9.md 생성",
+      "result": "ACHIEVED: benchmarks/results/final_report_v9.md 생성, DOC_INDEX 업데이트"
+    }
+  ],
+  "reward_spec": {
+    "primary_metric": "HIGH 위험 수치 3개 수정 완료 + 학술 방어 가능 수준 확보",
+    "threshold": "BM25 baseline 추가 AND DRR 대체 AND RepoBench 방법론 명확화",
+    "achieved": true
+  },
+  "evolution_history": [
+    {
+      "iteration": 7,
+      "goal": "결정 기억 복원 완전 구현",
+      "score": 1.0,
+      "rationale": "DRR@3=1.000 완전 달성"
+    },
+    {
+      "iteration": 8,
+      "goal": "분석 결과 기반 CTX 검증 완성",
+      "score": 0.72,
+      "rationale": "포지셔닝 분석 완료. 약점: 실험 목적보다 비교분석에 치우침"
+    },
+    {
+      "iteration": 9,
+      "goal": "CTX 핵심 실험 완성 — TEMPORAL R@10>=0.60 + CosQA + final_report_v8",
+      "score": 0.90,
+      "rationale": "SG1-SG3 달성. 단, 수치 버그(SYMBOL_PATTERN) 미발견"
+    },
+    {
+      "iteration": 10,
+      "goal": "논문 수치 학술 방어력 확보 (HIGH 위험 3개 수정)",
+      "score": 0.85,
+      "rationale": "BM25 baseline 추가, DRR 대체, RepoBench 방법론 재정립, Classifier 버그 수정. 정직한 수치 확보. 단, CTX 전반적 성능 하향(0.579→0.457) 확인"
+    }
+  ],
+  "history": []
+}

@@ -90,3 +90,6 @@ BM25를 1차 랭커로, concept_index는 BM25 결과에만 15% boost (신규 파
 1. AST 기반 SEMANTIC 개선: `ast.parse()`로 docstring/decorator/type annotation에서 개념 추출
 2. 통계적 엄밀성: CI 95% 추가, DRR N=3 교체
 3. 논문 재포지셔닝: IMPLICIT+G1 결과 기반 스토리 강화
+
+## Related
+- [[projects/CTX/research/20260325-ctx-paper-tier-evaluation|20260325-ctx-paper-tier-evaluation]]
