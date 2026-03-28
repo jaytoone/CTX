@@ -243,7 +243,18 @@ On EXPLICIT_SYMBOL and TEMPORAL_HISTORY queries, multiple strategies achieve nea
 
 *Bootstrap 95% CI: Flask [0.451, 0.636], FastAPI [0.246, 0.415], Requests [0.529, 0.717], External mean [0.441, 0.550]*
 
-SEMANTIC_CONCEPT is the strongest trigger type on external codebases (mean 0.663), demonstrating that BM25 concept-word retrieval generalizes effectively to unseen codebases. FastAPI (928 files) presents the largest scale challenge, with TEMPORAL_HISTORY (0.100) and IMPLICIT_CONTEXT (0.240) degrading significantly at scale. See Section 4.9 for external generalization analysis.
+SEMANTIC_CONCEPT is the strongest trigger type on external codebases (mean 0.663), demonstrating that BM25 concept-word retrieval generalizes effectively to unseen codebases. FastAPI (928 files) presents the largest scale challenge, with TEMPORAL_HISTORY (0.100) and IMPLICIT_CONTEXT (0.240) degrading significantly at scale. See Section 4.9 for external generalization analysis and CTX vs BM25 comparison.
+
+**CTX vs BM25 on External Codebases:**
+
+| Codebase | CTX R@5 | BM25 R@5 | Δ (CTX-BM25) |
+|----------|---------|---------|--------------|
+| Flask | **0.542** | 0.347 | **+0.194** |
+| FastAPI | **0.331** | 0.174 | **+0.156** |
+| Requests | **0.626** | 0.489 | **+0.136** |
+| **External mean** | **0.499** | 0.337 | **+0.162** |
+
+CTX outperforms BM25 on all three held-out external codebases. This reverses the internal-codebase pattern from v9 where CTX lagged BM25, confirming that the trigger classifier and import graph fixes address the root causes of the prior generalization failure.
 
 **Internal Real Codebases (GraphPrompt, AgentNode) -- CTX Recall@5 by Trigger Type:**
 
@@ -492,3 +503,13 @@ These results establish four key findings. First, code structure---specifically,
 ---
 
 *Manuscript prepared: 2026-03-28. Experiment version: CTX v4.0 P10 (external R@5=0.495 [CI: 0.441, 0.550], SEMANTIC fix, import graph generalization, Bootstrap CI n_boot=10,000, G1/G2 downstream eval with MiniMax M2.5 + Nemotron-Cascade-2).*
+
+## Related
+- [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
+- [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]
+- [[projects/CTX/research/20260325-ctx-paper-tier-evaluation|20260325-ctx-paper-tier-evaluation]]
+- [[projects/CTX/research/20260328-trigger-classifier-semantic-fix|20260328-trigger-classifier-semantic-fix]]
+- [[projects/CTX/research/20260328-ctx-downstream-eval-complete|20260328-ctx-downstream-eval-complete]]
+- [[projects/CTX/research/20260327-ctx-downstream-eval|20260327-ctx-downstream-eval]]
+- [[projects/CTX/research/20260328-ctx-downstream-nemotron-eval|20260328-ctx-downstream-nemotron-eval]]
+- [[projects/CTX/research/20260328-ctx-downstream-eval-nemotron-final|20260328-ctx-downstream-eval-nemotron-final]]
