@@ -138,7 +138,7 @@ def _extract_concepts(docstring: str, functions: List[str], classes: List[str],
             if w not in stopwords:
                 concepts.add(w)
 
-    return list(concepts)[:10]
+    return sorted(concepts)[:10]
 
 
 class RealCodebaseLoader:
@@ -208,13 +208,13 @@ class RealCodebaseLoader:
 
         for root, dirs, filenames in os.walk(self.project_path):
             # Skip common non-source directories
-            dirs[:] = [d for d in dirs if d not in (
+            dirs[:] = sorted(d for d in dirs if d not in (
                 "__pycache__", ".git", "node_modules", ".venv", "venv",
                 "env", ".tox", ".eggs", "dist", "build", ".mypy_cache",
                 ".pytest_cache",
-            )]
+            ))
 
-            for fname in filenames:
+            for fname in sorted(filenames):
                 if not fname.endswith(".py"):
                     continue
 
@@ -347,7 +347,7 @@ class RealCodebaseLoader:
         }
         if interesting_concepts:
             sample_size = min(20, len(interesting_concepts))
-            for concept in random.sample(list(interesting_concepts.keys()), sample_size):
+            for concept in random.sample(sorted(interesting_concepts.keys()), sample_size):
                 files = interesting_concepts[concept]
                 queries.append(RealQuery(
                     id=f"q_{query_id:04d}",

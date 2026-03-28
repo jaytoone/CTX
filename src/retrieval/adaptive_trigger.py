@@ -78,11 +78,22 @@ class AdaptiveTriggerRetriever:
                     self.file_paths.append(rel_path)
                     self.total_tokens += estimate_tokens(content)
 
-                    # Extract module name from MODULE_NAME constant
+                    # Extract module name from MODULE_NAME constant (CTX-internal)
                     mod_match = re.search(r'MODULE_NAME\s*=\s*"([^"]+)"', content)
                     if mod_match:
                         mod_name = mod_match.group(1)
                         self.module_to_file[mod_name] = rel_path
+
+                    # Derive module name from file path structure (universal)
+                    stem = rel_path.replace("\\", "/")
+                    if stem.endswith(".py"):
+                        stem = stem[:-3]
+                    parts = [p for p in stem.split("/") if p and p != "__init__"]
+                    if parts:
+                        for i in range(len(parts)):
+                            mod_key = ".".join(parts[i:])
+                            if mod_key not in self.module_to_file:
+                                self.module_to_file[mod_key] = rel_path
 
                     # Build symbol index
                     self._index_symbols(rel_path, content)
@@ -130,10 +141,27 @@ class AdaptiveTriggerRetriever:
             self.concept_index.setdefault(f"tier:{tier}", []).append(file_path)
 
     def _index_imports(self, file_path: str, content: str) -> None:
-        """Build import dependency graph."""
+        """Build import dependency graph from real Python import statements."""
         imports = []
-        for match in re.finditer(r'#\s*import\s+([a-zA-Z_][a-zA-Z0-9_]*)', content):
-            imports.append(match.group(1))
+
+        # Real Python: import X, import X.Y, import X as Z
+        for m in re.finditer(r'^\s*import\s+([\w.]+)', content, re.MULTILINE):
+            mod = m.group(1).split(".")[0]
+            if mod not in imports:
+                imports.append(mod)
+
+        # Real Python: from X import Y
+        for m in re.finditer(r'^\s*from\s+([\w.]+)\s+import', content, re.MULTILINE):
+            mod = m.group(1).split(".")[0]
+            if mod not in imports:
+                imports.append(mod)
+
+        # CTX-internal comment style (backward compat)
+        for m in re.finditer(r'#\s*import\s+([a-zA-Z_][a-zA-Z0-9_]*)', content):
+            mod = m.group(1)
+            if mod not in imports:
+                imports.append(mod)
+
         self.import_graph[file_path] = imports
 
     def _adaptive_k(self, trigger_type: TriggerType, confidence: float, total_files: int) -> int:
@@ -235,30 +263,39 @@ class AdaptiveTriggerRetriever:
         )
 
     def _concept_retrieve(self, query_id: str, query_text: str, concept: str, k: int) -> RetrievalResult:
-        """Retrieve by semantic concept matching."""
+        """Retrieve by semantic concept matching.
+
+        BM25 is the primary ranker. concept_index adds a small boost to BM25
+        results only — never injects files that BM25 didn't rank.
+        """
         matched_files: Dict[str, float] = {}
 
-        # Direct concept index lookup
-        for concept_key, file_list in self.concept_index.items():
-            if concept.lower() in concept_key or concept_key in concept.lower():
-                for f in file_list:
-                    matched_files.setdefault(f, 0.0)
-                    matched_files[f] = max(matched_files[f], 0.8)
-
-        # Augment with BM25 similarity
+        # Step 1: BM25 primary ranker — use extracted concept, not full query_text.
+        # Full query text contains noise tokens ("find", "code", "related") that
+        # appear in all Python files and dilute the concept-specific signal.
         if self.bm25 is not None:
-            expanded = re.sub(r'([a-z])([A-Z])', r'\1 \2', query_text).replace("_", " ")
-            query_tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', expanded.lower())
-            scores = self.bm25.get_scores(query_tokens)
-            max_score = float(np.max(scores)) if scores.max() > 0 else 1.0
+            concept_expanded = re.sub(r'([a-z])([A-Z])', r'\1 \2', concept).replace("_", " ")
+            query_tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', concept_expanded.lower())
+            # Fallback to full query_text tokens if concept is empty or trivial
+            if not query_tokens or all(len(t) <= 2 for t in query_tokens):
+                full_exp = re.sub(r'([a-z])([A-Z])', r'\1 \2', query_text).replace("_", " ")
+                query_tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', full_exp.lower())
+            bm25_scores = self.bm25.get_scores(query_tokens)
+            max_score = float(np.max(bm25_scores)) if bm25_scores.max() > 0 else 1.0
 
-            for i, score in enumerate(scores):
+            for i, score in enumerate(bm25_scores):
                 fpath = self.file_paths[i]
                 norm_score = float(score) / max_score
                 if norm_score > 0.05:
-                    current = matched_files.get(fpath, 0.0)
-                    # Combine: concept match + BM25 similarity
-                    matched_files[fpath] = max(current, norm_score * 0.6) + current * 0.4
+                    matched_files[fpath] = norm_score
+
+        # Step 2: concept_index boosts BM25 results only (no new injections)
+        concept_lc = concept.lower()
+        for concept_key, file_list in self.concept_index.items():
+            if concept_lc in concept_key or concept_key in concept_lc:
+                for f in file_list:
+                    if f in matched_files:
+                        matched_files[f] *= 1.15  # 15% rank boost
 
         sorted_files = sorted(matched_files.items(), key=lambda x: x[1], reverse=True)[:k]
         retrieved = [f for f, _ in sorted_files]
