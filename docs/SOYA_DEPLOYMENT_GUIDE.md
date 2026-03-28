@@ -108,7 +108,42 @@ class CTXSessionRetriever:
         return "\n\n".join(parts)
 ```
 
-### 패턴 C: 배치 처리 (고처리량)
+### 패턴 C: Over-Anchoring 방지 (Fix/Replace 쿼리)
+
+20%의 Fix/Replace 쿼리에서 CTX가 현재 (잘못된) 구현을 주입하면 LLM이 수정을 거부하는
+over-anchoring 현상 발생. `classify_intent()`로 감지 후 컨텍스트 헤더 주입.
+
+```python
+class CTXIntentAwareRetriever:
+    def __init__(self, codebase_dir: str):
+        self.retriever = AdaptiveTriggerRetriever(codebase_dir)
+        self.classifier = self.retriever.classifier
+
+    def get_context(self, user_query: str, k: int = 5) -> str:
+        result = self.retriever.retrieve("q", user_query, k=k)
+        raw_context = "\n\n".join(
+            f"# {fp}\n{self.retriever.files[fp]}"
+            for fp in result.retrieved_files
+        )
+
+        intent = self.classifier.classify_intent(user_query)
+
+        if intent == "modify":
+            # Over-anchoring 방지: 현재 구현이 잘못됐을 수 있음을 LLM에 명시
+            return (
+                "CAUTION: The following code is the CURRENT implementation. "
+                "It may contain bugs or be outdated — please apply the requested fix:\n\n"
+                + raw_context
+            )
+        elif intent == "create":
+            # 새 코드 생성 시 기존 패턴 참고용
+            return "REFERENCE (existing patterns — do not copy verbatim):\n\n" + raw_context
+        else:
+            # Read intent: 컨텍스트 그대로 제공
+            return raw_context
+```
+
+### 패턴 E: 배치 처리 (고처리량)
 
 SOYA가 동시 다수 쿼리를 처리하는 경우.
 
@@ -217,3 +252,7 @@ SOYA 배포 준비 완료 ✓
 ---
 
 *문서 생성: 2026-03-28 omc-live iter 2 | 실험 버전: CTX v4.0 P11*
+
+## Related
+- [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
+- [[projects/CTX/decisions/20260326-path-derived-module-to-file|20260326-path-derived-module-to-file]]

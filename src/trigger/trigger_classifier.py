@@ -226,3 +226,47 @@ class TriggerClassifier:
             ))
 
         return triggers
+
+    # --- Query intent detection (over-anchoring prevention) ---
+
+    # Keywords indicating the user wants to MODIFY existing code
+    _MODIFY_KEYWORDS = frozenset({
+        "fix", "change", "update", "replace", "refactor", "rewrite",
+        "correct", "improve", "modify", "rename", "move", "delete",
+        "remove", "edit", "patch", "repair", "convert", "migrate",
+    })
+
+    # Keywords indicating the user wants to CREATE new code
+    _CREATE_KEYWORDS = frozenset({
+        "create", "implement", "write", "add new", "generate", "make",
+        "build", "new function", "new class", "new method",
+    })
+
+    def classify_intent(self, prompt: str) -> str:
+        """Classify query intent as 'modify', 'create', or 'read'.
+
+        Returns:
+            'modify': Fix/Replace/Refactor — over-anchoring risk. Inject context
+                      WITHOUT current implementation, or add a caution header.
+            'create': New code generation — low anchoring risk.
+            'read':   Information retrieval — no anchoring risk (default).
+
+        Usage in SOYA deployment:
+            intent = classifier.classify_intent(user_query)
+            if intent == 'modify':
+                # Option A: skip context injection for this query
+                # Option B: prepend "Note: the following may be INCORRECT — please fix it:"
+                context = "CAUTION — current implementation may have bugs:\n" + raw_context
+        """
+        prompt_lower = prompt.lower()
+
+        # Check for modify intent (Fix/Replace — highest over-anchoring risk)
+        if any(kw in prompt_lower for kw in self._MODIFY_KEYWORDS):
+            return "modify"
+
+        # Check for create intent
+        if any(kw in prompt_lower for kw in self._CREATE_KEYWORDS):
+            return "create"
+
+        # Default: read (information retrieval, no anchoring risk)
+        return "read"
