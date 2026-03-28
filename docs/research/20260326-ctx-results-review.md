@@ -74,3 +74,6 @@ CTX 실험 결과가 상위 논문(ICSE/FSE/EMNLP) 수준인지 종합 평가
 - CoIR Leaderboard: https://archersama.github.io/coir/
 - MemoryArena: https://memoryarena.github.io/
 - SWE-bench: https://www.swebench.com/
+
+## Related
+- [[projects/CTX/research/20260324-ctx-methodology-critique-top-tier|20260324-ctx-methodology-critique-top-tier]]

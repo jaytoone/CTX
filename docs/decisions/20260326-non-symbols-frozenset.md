@@ -32,3 +32,6 @@ _NON_SYMBOLS = frozenset({
 
 새로운 쿼리 유형에서 false negative 발생 시 (실제 심볼명이 동사형인 경우 — 예: `run`, `build`).
 현재 `run`, `build`는 frozenset에 포함됨 → 심볼명이 `run`인 경우 EXPLICIT_SYMBOL 놓칠 수 있음.
+
+## Related
+- [[projects/CTX/research/20260328-trigger-classifier-semantic-fix|20260328-trigger-classifier-semantic-fix]]

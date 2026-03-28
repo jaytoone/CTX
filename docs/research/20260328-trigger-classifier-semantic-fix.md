@@ -64,3 +64,6 @@ When explicit semantic marker ("related to", "all code") is present:
 
 - External R@5: 0.217 → **0.495** (+128%)
 - Target 0.25: **ACHIEVED** (CI: [0.441, 0.550])
+
+## Related
+- [[projects/CTX/decisions/20260326-concept-extraction-sema-conc|20260326-concept-extraction-sema-conc]]

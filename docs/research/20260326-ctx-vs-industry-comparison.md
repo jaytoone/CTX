@@ -84,3 +84,13 @@ CTX Goal 1 (cross-session memory) and Goal 2 (instruction grounding) compared to
 - CTX trigger taxonomy coverage vs CoIR instruction patterns
 - CTX CHR vs Windsurf three-tier benchmark comparison
 - CodeXEmbed vs CTX stem-matching hybrid evaluation
+
+## Related
+- [[projects/CTX/research/20260326-ctx-final-sota-comparison|20260326-ctx-final-sota-comparison]]
+- [[projects/CTX/research/20260326-ctx-vs-sota-comparison|20260326-ctx-vs-sota-comparison]]
+- [[projects/CTX/research/20260326-ctx-methodology-comparison|20260326-ctx-methodology-comparison]]
+- [[projects/CTX/research/20260324-ctx-methodology-critique-top-tier|20260324-ctx-methodology-critique-top-tier]]
+- [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]
+- [[projects/CTX/research/20260325-ctx-paper-tier-evaluation|20260325-ctx-paper-tier-evaluation]]
+- [[projects/CTX/research/20260326-ctx-benchmark-validation-roadmap|20260326-ctx-benchmark-validation-roadmap]]
+- [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]

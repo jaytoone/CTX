@@ -200,3 +200,8 @@
 | RANGER (Panthaplackel et al., 2022) | AST call+import graph |
 | RepoBench (Liu et al., 2023) | Cross-file completion |
 | CoIR (Li et al., ACL 2025) | Code IR benchmark |
+
+## Related
+- [[projects/CTX/research/20260328-trigger-classifier-semantic-fix|20260328-trigger-classifier-semantic-fix]]
+- [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
+- [[projects/CTX/research/20260328-adaptive-trigger-generalization-fix|20260328-adaptive-trigger-generalization-fix]]

@@ -109,3 +109,9 @@ CTX 수치는 AgentNode/CTX 코드베이스 (154파일) 내부 평가. Claude Co
 - [mcp__codebase-memory-mcp__ GitHub](https://github.com/DeusData/codebase-memory-mcp)
 - [CoIR benchmark (ACL 2025)](https://github.com/CoIR-team/coir)
 - [Claude Code Memory docs](https://code.claude.com/docs/en/memory)
+
+## Related
+- [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]
+- [[projects/CTX/research/20260328-adaptive-trigger-generalization-fix|20260328-adaptive-trigger-generalization-fix]]
+- [[projects/CTX/research/20260328-ctx-real-codebase-g2-eval|20260328-ctx-real-codebase-g2-eval]]
+- [[projects/CTX/research/20260328-trigger-classifier-semantic-fix|20260328-trigger-classifier-semantic-fix]]

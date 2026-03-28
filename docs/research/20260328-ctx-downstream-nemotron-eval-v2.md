@@ -110,3 +110,10 @@ Combined score (HR 포함)에서는 Δ=+0.167. HR scoring 노이즈 존재하나
 ### HR scoring 개선
 - Hallucination keyword를 더 좁게 정의 (false positive 최소화)
 - FRA와 HR을 독립 지표로 분리 보고
+
+## Related
+- [[projects/CTX/research/20260328-ctx-downstream-nemotron-eval|20260328-ctx-downstream-nemotron-eval]]
+- [[projects/CTX/research/20260328-ctx-downstream-eval-nemotron-final|20260328-ctx-downstream-eval-nemotron-final]]
+- [[projects/CTX/research/20260327-ctx-downstream-eval|20260327-ctx-downstream-eval]]
+- [[projects/CTX/research/20260328-ctx-downstream-minimax-eval|20260328-ctx-downstream-minimax-eval]]
+- [[projects/CTX/research/20260328-ctx-downstream-eval-complete|20260328-ctx-downstream-eval-complete]]

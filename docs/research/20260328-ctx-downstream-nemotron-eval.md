@@ -124,3 +124,13 @@ G1은 세션-특화 정보(specific numbers, configuration details)를 요구하
 3. **설계 교훈**: downstream eval benchmark는 **target LLM baseline 능력을 먼저 측정**하고, baseline이 이미 1.0이면 어려운 시나리오로 교체해야 함.
 
 4. **CTX 포지셔닝**: CTX는 "중간 능력 모델의 성능을 1회성으로 높이는 도구"가 아닌, **"모든 모델의 세션-기억 한계를 보완하는 영구 인프라"**로 재정의 가능.
+
+## Related
+- [[projects/CTX/research/20260328-ctx-downstream-nemotron-eval-v2|20260328-ctx-downstream-nemotron-eval-v2]]
+- [[projects/CTX/research/20260328-ctx-downstream-minimax-eval|20260328-ctx-downstream-minimax-eval]]
+- [[projects/CTX/research/20260328-ctx-downstream-eval-nemotron-final|20260328-ctx-downstream-eval-nemotron-final]]
+- [[projects/CTX/research/20260328-ctx-downstream-eval-complete|20260328-ctx-downstream-eval-complete]]
+- [[projects/CTX/research/20260327-ctx-downstream-eval|20260327-ctx-downstream-eval]]
+- [[projects/CTX/research/20260328-ctx-real-codebase-g2-eval|20260328-ctx-real-codebase-g2-eval]]
+- [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]
+- [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]

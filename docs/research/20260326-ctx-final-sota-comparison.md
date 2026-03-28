@@ -152,3 +152,11 @@
 | CTX internal: `benchmarks/results/coir_evaluation.md` | 내부 평가 30쿼리 |
 | CTX internal: `benchmarks/results/hook_effectiveness_eval.md` | CHR=86.7%, RT=120ms |
 | CTX internal: `docs/research/20260326-ctx-achievement-review.md` | expert-research-v2 분석 |
+
+## Related
+- [[projects/CTX/research/20260326-ctx-achievement-review|20260326-ctx-achievement-review]]
+- [[projects/CTX/research/20260326-ctx-vs-sota-comparison|20260326-ctx-vs-sota-comparison]]
+- [[projects/CTX/research/20260326-ctx-results-review|20260326-ctx-results-review]]
+- [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
+- [[projects/CTX/research/20260328-trigger-classifier-semantic-fix|20260328-trigger-classifier-semantic-fix]]
+- [[projects/CTX/research/20260328-adaptive-trigger-generalization-fix|20260328-adaptive-trigger-generalization-fix]]

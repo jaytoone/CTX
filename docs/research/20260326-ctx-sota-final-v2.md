@@ -188,3 +188,10 @@
 | CTX internal: hook_effectiveness_eval.md | CHR=86.7%, RT=120ms |
 | CTX internal: cross_session_recall.json | Recall@10 weighted avg=0.567 |
 | CTX internal: coir_evaluation.md | 내부 30q 샘플 평가 |
+
+## Related
+- [[projects/CTX/research/20260328-adaptive-trigger-generalization-fix|20260328-adaptive-trigger-generalization-fix]]
+- [[projects/CTX/research/20260328-ctx-real-codebase-g2-eval|20260328-ctx-real-codebase-g2-eval]]
+- [[projects/CTX/research/20260328-trigger-classifier-semantic-fix|20260328-trigger-classifier-semantic-fix]]
+- [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
+- [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]

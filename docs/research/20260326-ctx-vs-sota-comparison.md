@@ -65,3 +65,8 @@ CTX Goal 1 (cross-session recall) and Goal 2 (instruction grounding) compared to
 - CTX CoIR evaluation results
 - CTX MemoryArena evaluation results
 - Proxy benchmark for Cursor/Copilot/Windsurf cross-session
+
+## Related
+- [[projects/CTX/research/20260326-ctx-vs-industry-comparison|20260326-ctx-vs-industry-comparison]]
+- [[projects/CTX/research/20260326-ctx-final-sota-comparison|20260326-ctx-final-sota-comparison]]
+- [[projects/CTX/research/20260326-ctx-benchmark-validation-roadmap|20260326-ctx-benchmark-validation-roadmap]]

@@ -93,3 +93,7 @@ Source: https://dl.acm.org/doi/10.1145/3611643.3616323
 - https://www.truefoundry.com/blog/cursor-vs-github-copilot
 - https://arxiv.org/html/2602.11671 (Structured Code Retrieval 2025)
 - https://aclanthology.org/2025.findings-naacl.176.pdf (CODERAG-BENCH ACL 2025)
+
+## Related
+- [[projects/CTX/research/20260328-trigger-classifier-semantic-fix|20260328-trigger-classifier-semantic-fix]]
+- [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]

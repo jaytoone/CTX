@@ -171,3 +171,6 @@
 | `benchmarks/results/multi_dataset_cross_session_eval.md` | Cross-session Recall@10=0.567 |
 | `benchmarks/results/coir_repobench_integrated.md` | NDCG@10=0.646 (RepoBench) |
 | `src/retrieval/adaptive_trigger.py` | 통합 인덱싱 구현 (이번 세션) |
+
+## Related
+- [[projects/CTX/research/20260328-trigger-classifier-semantic-fix|20260328-trigger-classifier-semantic-fix]]

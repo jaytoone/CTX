@@ -78,3 +78,13 @@ Goal 1 벤치마크 공백 자체를 논문의 motivation으로 활용.
 - [LongMemEval GitHub (ICLR 2025)](https://github.com/xiaowu0162/LongMemEval)
 - [MemoryAgentBench GitHub (ICLR 2026)](https://github.com/HUST-AI-HYZ/MemoryAgentBench)
 - [SWE-bench](https://www.swebench.com)
+
+## Related
+- [[projects/CTX/research/20260327-ctx-downstream-eval|20260327-ctx-downstream-eval]]
+- [[projects/CTX/research/20260328-ctx-downstream-eval-complete|20260328-ctx-downstream-eval-complete]]
+- [[projects/CTX/research/20260328-ctx-downstream-nemotron-eval|20260328-ctx-downstream-nemotron-eval]]
+- [[projects/CTX/research/20260328-ctx-downstream-minimax-eval|20260328-ctx-downstream-minimax-eval]]
+- [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]
+- [[projects/CTX/research/20260328-ctx-downstream-eval-nemotron-final|20260328-ctx-downstream-eval-nemotron-final]]
+- [[projects/CTX/research/20260328-ctx-downstream-nemotron-eval-v2|20260328-ctx-downstream-nemotron-eval-v2]]
+- [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
