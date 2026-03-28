@@ -10,6 +10,8 @@
 | [../benchmarks/results/differentiation_analysis.md](../benchmarks/results/differentiation_analysis.md) | CTX vs Memori 차별화 정량 분석 — 코드 구조 활용도 + 트리거별 강점 |
 | [paper_draft_outline.md](paper_draft_outline.md) | arXiv 논문 초안 구조 — 섹션별 핵심 포인트 + 실험 결과 요약 |
 | [paper/CTX_paper_draft.md](paper/CTX_paper_draft.md) | arXiv 제출용 논문 초안 v4.0 P11 — G2 v4 calibrated (+0.688), SOYA READY, BM25 비교 |
+| [SOYA_DEPLOYMENT_GUIDE.md](SOYA_DEPLOYMENT_GUIDE.md) | CTX SOYA 배포 가이드 — 비기능 요건 검증(P99<3ms), 통합 패턴, 배포 체크리스트 |
+| [../benchmarks/eval/latency_profiler.py](../benchmarks/eval/latency_profiler.py) | CTX 지연시간 프로파일러 — P50/P95/P99 측정, SOYA P99<500ms 검증 |
 | [../benchmarks/results/llm_quality_results.json](../benchmarks/results/llm_quality_results.json) | LLM pass@1 실험 결과 JSON — MiniMax M2.5, Full Context vs Adaptive Trigger |
 | [../benchmarks/results/llm_quality_report.md](../benchmarks/results/llm_quality_report.md) | LLM pass@1 실험 리포트 — per-sample 결과 + 컨텍스트 토큰 비교 |
 | [research/20260324-ctx-methodology-critique-top-tier.md](research/20260324-ctx-methodology-critique-top-tier.md) | 상위 티어 논문 기준 실험 방식 평론 — expert-research-v2, 제출 로드맵 포함 |
