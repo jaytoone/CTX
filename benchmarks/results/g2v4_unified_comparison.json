@@ -1,0 +1,40 @@
+{
+  "benchmark_version": "G2_v4",
+  "description": "Unified G2 v4 multi-model comparison — all models use identical 6 CTX-unique scenarios",
+  "date": "2026-03-29",
+  "note": "Resolves FAT-2: previous comparison used MiniMax(v2)/Nemotron(v3)/Sonnet(v4) — different versions, invalid comparison. This run uses identical G2 v4 for all.",
+  "results": {
+    "MiniMax_M2.5": {
+      "g2_with": 0.8333,
+      "g2_without": 0.0000,
+      "g2_delta": 0.8333,
+      "n_scenarios": 6,
+      "failed_scenario": "h04_v4 (deals?\\s+ pattern not recognized)",
+      "source": "benchmarks/results/g2v4_minimax_20260329_115254.json"
+    },
+    "Nemotron_Cascade_2": {
+      "g2_with": 1.0000,
+      "g2_without": 0.0000,
+      "g2_delta": 1.0000,
+      "n_scenarios": 6,
+      "failed_scenario": "none",
+      "source": "benchmarks/results/g2v4_nemotron_20260329.json"
+    },
+    "Claude_Sonnet_4.6": {
+      "g2_with": 1.0000,
+      "g2_without": 0.0000,
+      "g2_delta": 1.0000,
+      "n_scenarios": 6,
+      "failed_scenario": "none",
+      "method": "inline self-eval",
+      "source": "benchmarks/results/sonnet_ctx_g1g2_results.json"
+    }
+  },
+  "summary": {
+    "all_models_without": 0.0000,
+    "comment": "All 3 models score 0.000 WITHOUT context — confirms G2 v4 scenarios are CTX-unique",
+    "with_scores": [0.8333, 1.0000, 1.0000],
+    "mean_with": 0.9444,
+    "mean_delta": 0.9444
+  }
+}

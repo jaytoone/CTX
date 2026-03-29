@@ -1,0 +1,39 @@
+{
+  "model": "nemotron-cascade-2",
+  "benchmark": "G2_v4",
+  "with_mean": 1.0,
+  "without_mean": 0.0,
+  "delta": 1.0,
+  "scenarios": [
+    {
+      "id": "h01",
+      "with": 1.0,
+      "without": 0.0
+    },
+    {
+      "id": "h02",
+      "with": 1.0,
+      "without": 0.0
+    },
+    {
+      "id": "h03_v4",
+      "with": 1.0,
+      "without": 0.0
+    },
+    {
+      "id": "h04_v4",
+      "with": 1.0,
+      "without": 0.0
+    },
+    {
+      "id": "h05",
+      "with": 1.0,
+      "without": 0.0
+    },
+    {
+      "id": "h06",
+      "with": 1.0,
+      "without": 0.0
+    }
+  ]
+}

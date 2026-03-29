@@ -254,5 +254,7 @@ SOYA 배포 준비 완료 ✓
 *문서 생성: 2026-03-28 omc-live iter 2 | 실험 버전: CTX v4.0 P11*
 
 ## Related
+- [[projects/CTX/research/QUICK_REFERENCE|QUICK_REFERENCE]]
+- [[projects/CTX/research/20260328-trigger-classifier-semantic-fix|20260328-trigger-classifier-semantic-fix]]
 - [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
 - [[projects/CTX/decisions/20260326-path-derived-module-to-file|20260326-path-derived-module-to-file]]

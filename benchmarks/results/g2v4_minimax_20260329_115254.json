@@ -1,0 +1,77 @@
+{
+  "model": "minimax",
+  "benchmark_version": "G2_v4",
+  "timestamp": "2026-03-29T11:52:54.843826",
+  "n_scenarios": 6,
+  "with_mean": 0.8333,
+  "without_mean": 0.0,
+  "delta": 0.8333,
+  "scenarios": [
+    {
+      "id": "g2_h01",
+      "with_score": 1.0,
+      "without_score": 0.0,
+      "with_fra": 1.0,
+      "without_fra": 0.0,
+      "with_hr": 0.0,
+      "without_hr": 0.0,
+      "with_answer": "The exact numeric threshold is **`0.6`**.\n\n```python\nif current >= 0.6:\n    current = current + norm * 0.2\nelse:\n    current = max(current, norm * 0.9)\n```\n\n- If `heading_match_score` returns a value ",
+      "without_answer": "[EMPTY]"
+    },
+    {
+      "id": "g2_h02",
+      "with_score": 1.0,
+      "without_score": 0.0,
+      "with_fra": 1.0,
+      "without_fra": 0.0,
+      "with_hr": 0.0,
+      "without_hr": 0.0,
+      "with_answer": "Based on the provided code, the exact import statement used for 'keyword' query_type is:\n\n```python\nfrom rank_bm25 import BM25L as TFOnlyBM25\n```\n\nThe class `BM25L` from the `rank_bm25` package is imp",
+      "without_answer": "[EMPTY]"
+    },
+    {
+      "id": "g2_h03_v4",
+      "with_score": 1.0,
+      "without_score": 0.0,
+      "with_fra": 1.0,
+      "without_fra": 0.0,
+      "with_hr": 0.0,
+      "without_hr": 0.0,
+      "with_answer": "Based on the code:\n\n**Given conditions:**\n- `has_explicit_marker = True`\n- `len(matched_keywords) = 3`\n\n**Formula (when has_explicit_marker is True):**\n```python\nconfidence = min(0.85, 0.70 + len(matc",
+      "without_answer": "[EMPTY]"
+    },
+    {
+      "id": "g2_h04_v4",
+      "with_score": 0.0,
+      "without_score": 0.0,
+      "with_fra": 0.0,
+      "without_fra": 0.0,
+      "with_hr": 0.0,
+      "without_hr": 0.0,
+      "with_answer": "The 6th and final regex pattern (index 5) is:",
+      "without_answer": "[EMPTY]"
+    },
+    {
+      "id": "g2_h05",
+      "with_score": 1.0,
+      "without_score": 0.0,
+      "with_fra": 1.0,
+      "without_fra": 0.0,
+      "with_hr": 0.0,
+      "without_hr": 0.0,
+      "with_answer": "**Maximum BFS traversal depth:** 2\n\nThe condition `depth > 2` causes the traversal to skip nodes when depth exceeds 2. This means nodes at depth 0, 1, and 2 are visited, making the maximum depth **2**",
+      "without_answer": "[EMPTY]"
+    },
+    {
+      "id": "g2_h06",
+      "with_score": 1.0,
+      "without_score": 0.0,
+      "with_fra": 1.0,
+      "without_fra": 0.0,
+      "with_hr": 0.0,
+      "without_hr": 0.0,
+      "with_answer": "In the `current < 0.6` branch:\n\n- **Multiplier:** `0.9` is applied to `norm` (i.e., `norm * 0.9`)\n\nThis upper-bound prevents BM25 from completely dominating the heading match score when the heading ma",
+      "without_answer": "[EMPTY]"
+    }
+  ]
+}

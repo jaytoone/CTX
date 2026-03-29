@@ -14,7 +14,10 @@
 | [research/generate_soya_validation_report.py](research/generate_soya_validation_report.py) | CTX SOYA 최종 검증 결과 DOCX 보고서 생성기 — G1/G2/지연시간/over-anchoring 테이블 |
 | [../benchmarks/results/CTX_SOYA_VALIDATION_REPORT.docx](../benchmarks/results/CTX_SOYA_VALIDATION_REPORT.docx) | CTX v4.0 SOYA 배포 최종 검증 보고서 (DOCX) — 8개 섹션, 모든 기준 PASS |
 | [../benchmarks/eval/claude_sonnet_ctx_eval.py](../benchmarks/eval/claude_sonnet_ctx_eval.py) | Claude Sonnet 4.6 G1/G2 v4 eval — claude CLI subprocess 기반 격리 평가 |
+| [../benchmarks/eval/unified_g2v4_eval.py](../benchmarks/eval/unified_g2v4_eval.py) | G2 v4 통일 평가 스크립트 — MiniMax/Nemotron/Sonnet 동일 벤치마크로 cross-model 비교 (FAT-2 해결) |
+| [../benchmarks/results/g2v4_unified_comparison.json](../benchmarks/results/g2v4_unified_comparison.json) | G2 v4 통일 비교 결과 — MiniMax(Δ=0.833)/Nemotron(Δ=1.000)/Sonnet(Δ=1.000), WITHOUT 전원=0.000 |
 | [../benchmarks/results/sonnet_ctx_g1g2_results.json](../benchmarks/results/sonnet_ctx_g1g2_results.json) | Claude Sonnet 4.6 G2 v4 self-eval 결과 — WITHOUT=0.000, WITH=1.000, Δ=+1.000 |
+| [research/20260329-ctx-paper-gap-analysis.md](research/20260329-ctx-paper-gap-analysis.md) | CTX 논문 수준 갭 분석 — FAT/MAJ/MIN 갭 진단, 재포지셔닝 전략, Phase별 수정 계획 |
 | [../benchmarks/eval/latency_profiler.py](../benchmarks/eval/latency_profiler.py) | CTX 지연시간 프로파일러 — P50/P95/P99 측정, SOYA P99<500ms 검증 |
 | [../benchmarks/results/llm_quality_results.json](../benchmarks/results/llm_quality_results.json) | LLM pass@1 실험 결과 JSON — MiniMax M2.5, Full Context vs Adaptive Trigger |
 | [../benchmarks/results/llm_quality_report.md](../benchmarks/results/llm_quality_report.md) | LLM pass@1 실험 리포트 — per-sample 결과 + 컨텍스트 토큰 비교 |
