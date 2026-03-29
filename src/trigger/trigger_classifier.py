@@ -234,12 +234,18 @@ class TriggerClassifier:
         "fix", "change", "update", "replace", "refactor", "rewrite",
         "correct", "improve", "modify", "rename", "move", "delete",
         "remove", "edit", "patch", "repair", "convert", "migrate",
+        # Korean
+        "수정", "고쳐", "변경", "바꿔", "바꾸어", "리팩토링", "개선", "리팩터",
+        "제거", "삭제", "이름 변경", "이동", "교체", "수리", "패치", "고치",
     })
 
     # Keywords indicating the user wants to CREATE new code
     _CREATE_KEYWORDS = frozenset({
         "create", "implement", "write", "add new", "generate", "make",
         "build", "new function", "new class", "new method",
+        # Korean
+        "만들어", "만들", "작성", "구현", "생성", "추가", "새로운", "새 함수",
+        "새 클래스", "새 메서드", "작성해", "구현해",
     })
 
     def classify_intent(self, prompt: str) -> str:
