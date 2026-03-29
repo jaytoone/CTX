@@ -3,6 +3,7 @@
 | 파일 | 설명 |
 |------|------|
 | [CTX_SPEC_v1.0.md](CTX_SPEC_v1.0.md) | 실험 상세 스펙 문서 v1.0 — 트리거 기반 동적 메모리 호출 실험 설계 |
+| [research/20260329-ctx-hook-improvement-report.md](research/20260329-ctx-hook-improvement-report.md) | CTX 훅 개선 세션 Before/After 성과 리포트 — FP 85.7%→0%, 전체 정확도 85%→100% |
 | [research/20260324-ctx-paper-worthiness.md](research/20260324-ctx-paper-worthiness.md) | CTX 논문 가치 평론 — expert-research-v2 결과 |
 | [../benchmarks/results/final_report.md](../benchmarks/results/final_report.md) | P0 최종 실험 결과 리포트 — Synthetic + Real(GraphPrompt) + CCS/ASS |
 | [../benchmarks/results/final_report_v2.md](../benchmarks/results/final_report_v2.md) | P1 최종 통합 리포트 — 5전략 비교 + GraphRAG-lite + Differentiation |

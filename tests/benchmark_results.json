@@ -1,0 +1,131 @@
+{
+  "total_cases": 40,
+  "latency_us": {
+    "before_per_call": 1.513,
+    "after_per_call": 2.577,
+    "overhead_us": 1.064
+  },
+  "fp_cases_before": [
+    {
+      "prompt": "추가 설명해줘",
+      "expected": "read",
+      "got": "create",
+      "desc": "추가=명사 (additional)"
+    },
+    {
+      "prompt": "추가로 어떻게 동작해?",
+      "expected": "read",
+      "got": "create",
+      "desc": "추가로=부사"
+    },
+    {
+      "prompt": "수정 없이 그냥 실행해",
+      "expected": "read",
+      "got": "modify",
+      "desc": "수정=명사 (without modification)"
+    },
+    {
+      "prompt": "만들어진 과정 설명해줘",
+      "expected": "read",
+      "got": "create",
+      "desc": "만들어진=수동 (was made)"
+    },
+    {
+      "prompt": "생성 시점이 언제야?",
+      "expected": "read",
+      "got": "create",
+      "desc": "생성=명사 (creation time)"
+    },
+    {
+      "prompt": "삭제된 이유가 뭐야?",
+      "expected": "read",
+      "got": "modify",
+      "desc": "삭제된=과거수동 (was deleted)"
+    }
+  ],
+  "fp_cases_after": [],
+  "category_breakdown": {
+    "en_create": {
+      "total": 2,
+      "before_correct": 2,
+      "after_correct": 2,
+      "before_acc": 1.0,
+      "after_acc": 1.0
+    },
+    "en_modify": {
+      "total": 3,
+      "before_correct": 3,
+      "after_correct": 3,
+      "before_acc": 1.0,
+      "after_acc": 1.0
+    },
+    "en_read": {
+      "total": 2,
+      "before_correct": 2,
+      "after_correct": 2,
+      "before_acc": 1.0,
+      "after_acc": 1.0
+    },
+    "fp_prevent": {
+      "total": 7,
+      "before_correct": 1,
+      "after_correct": 7,
+      "before_acc": 0.14285714285714285,
+      "after_acc": 1.0
+    },
+    "ko_create": {
+      "total": 8,
+      "before_correct": 8,
+      "after_correct": 8,
+      "before_acc": 1.0,
+      "after_acc": 1.0
+    },
+    "ko_modify": {
+      "total": 10,
+      "before_correct": 10,
+      "after_correct": 10,
+      "before_acc": 1.0,
+      "after_acc": 1.0
+    },
+    "ko_read": {
+      "total": 5,
+      "before_correct": 5,
+      "after_correct": 5,
+      "before_acc": 1.0,
+      "after_acc": 1.0
+    },
+    "mixed": {
+      "total": 3,
+      "before_correct": 3,
+      "after_correct": 3,
+      "before_acc": 1.0,
+      "after_acc": 1.0
+    }
+  },
+  "before_summary": {
+    "correct": 34,
+    "wrong": 6,
+    "fp": 0,
+    "fn": 0,
+    "fp_prevent_count": 7,
+    "fp_count": 6,
+    "fp_rate": 0.8571428571428571,
+    "tp_total": 33,
+    "tp_count": 33,
+    "tp_rate": 1.0,
+    "accuracy": 0.85
+  },
+  "after_summary": {
+    "correct": 40,
+    "wrong": 0,
+    "fp": 0,
+    "fn": 0,
+    "fp_prevent_count": 7,
+    "fp_count": 0,
+    "fp_rate": 0.0,
+    "tp_total": 33,
+    "tp_count": 33,
+    "tp_rate": 1.0,
+    "accuracy": 1.0
+  }
+}
