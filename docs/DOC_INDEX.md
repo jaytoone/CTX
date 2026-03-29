@@ -16,6 +16,8 @@
 | [../benchmarks/eval/claude_sonnet_ctx_eval.py](../benchmarks/eval/claude_sonnet_ctx_eval.py) | Claude Sonnet 4.6 G1/G2 v4 eval — claude CLI subprocess 기반 격리 평가 |
 | [../benchmarks/eval/unified_g2v4_eval.py](../benchmarks/eval/unified_g2v4_eval.py) | G2 v4 통일 평가 스크립트 — MiniMax/Nemotron/Sonnet 동일 벤치마크로 cross-model 비교 (FAT-2 해결) |
 | [../benchmarks/results/g2v4_unified_comparison.json](../benchmarks/results/g2v4_unified_comparison.json) | G2 v4 통일 비교 결과 — MiniMax(Δ=0.833)/Nemotron(Δ=1.000)/Sonnet(Δ=1.000), WITHOUT 전원=0.000 |
+| [../benchmarks/results/ctx_vs_bm25_complete.json](../benchmarks/results/ctx_vs_bm25_complete.json) | CTX vs BM25 완전 비교 — 6개 실제 코드베이스 모두 CTX 승리 (내부 3개 BM25 추가 완성) |
+| [research/20260329-ctx-corrected-results-summary.md](research/20260329-ctx-corrected-results-summary.md) | CTX 수정된 실험 결과 종합 — Table A(CTX vs BM25 7개), Table B(G2 v4 통일), 논문 수준 평가 |
 | [../benchmarks/results/sonnet_ctx_g1g2_results.json](../benchmarks/results/sonnet_ctx_g1g2_results.json) | Claude Sonnet 4.6 G2 v4 self-eval 결과 — WITHOUT=0.000, WITH=1.000, Δ=+1.000 |
 | [research/20260329-ctx-paper-gap-analysis.md](research/20260329-ctx-paper-gap-analysis.md) | CTX 논문 수준 갭 분석 — FAT/MAJ/MIN 갭 진단, 재포지셔닝 전략, Phase별 수정 계획 |
 | [../benchmarks/eval/latency_profiler.py](../benchmarks/eval/latency_profiler.py) | CTX 지연시간 프로파일러 — P50/P95/P99 측정, SOYA P99<500ms 검증 |
@@ -86,8 +88,8 @@
 - [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
 - [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]
 - [[projects/CTX/research/20260325-ctx-paper-tier-evaluation|20260325-ctx-paper-tier-evaluation]]
+- [[projects/CTX/research/20260328-ctx-downstream-nemotron-eval-v2|20260328-ctx-downstream-nemotron-eval-v2]]
 - [[projects/CTX/research/20260328-ctx-downstream-minimax-eval|20260328-ctx-downstream-minimax-eval]]
+- [[projects/CTX/research/20260328-ctx-downstream-nemotron-eval|20260328-ctx-downstream-nemotron-eval]]
 - [[projects/CTX/research/20260328-ctx-real-codebase-g2-eval|20260328-ctx-real-codebase-g2-eval]]
-- [[projects/CTX/research/20260326-ctx-benchmark-validation-roadmap|20260326-ctx-benchmark-validation-roadmap]]
-- [[projects/CTX/research/20260326-ctx-achievement-review|20260326-ctx-achievement-review]]
-- [[projects/CTX/research/20260326-ctx-vs-industry-comparison|20260326-ctx-vs-industry-comparison]]
+- [[projects/CTX/research/20260328-ctx-downstream-eval-nemotron-final|20260328-ctx-downstream-eval-nemotron-final]]
