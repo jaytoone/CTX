@@ -229,50 +229,68 @@ class TriggerClassifier:
 
     # --- Query intent detection (over-anchoring prevention) ---
 
-    # Keywords indicating the user wants to MODIFY existing code
-    _MODIFY_KEYWORDS = frozenset({
+    # English modify/create keywords (substring match — English nouns ≠ verbs)
+    _MODIFY_KEYWORDS_EN = frozenset({
         "fix", "change", "update", "replace", "refactor", "rewrite",
         "correct", "improve", "modify", "rename", "move", "delete",
         "remove", "edit", "patch", "repair", "convert", "migrate",
-        # Korean
-        "수정", "고쳐", "변경", "바꿔", "바꾸어", "리팩토링", "개선", "리팩터",
-        "제거", "삭제", "이름 변경", "이동", "교체", "수리", "패치", "고치",
     })
-
-    # Keywords indicating the user wants to CREATE new code
-    _CREATE_KEYWORDS = frozenset({
+    _CREATE_KEYWORDS_EN = frozenset({
         "create", "implement", "write", "add new", "generate", "make",
         "build", "new function", "new class", "new method",
-        # Korean
-        "만들어", "만들", "작성", "구현", "생성", "추가", "새로운", "새 함수",
-        "새 클래스", "새 메서드", "작성해", "구현해",
     })
+
+    # Korean: verb-ending anchored regex to avoid noun-context false positives.
+    # Korean nouns (수정, 추가, 생성...) only signal intent when paired with a
+    # verb ending (해줘, 하다, 할, etc.). Inherently-verb forms (고쳐, 바꿔)
+    # are matched directly.
+    _VERB_ENDINGS = r'(?:\s*)(?:해줘|해주|해야|해봐|합니다|할게|해라|하자|하면|해서|해도|하고|하다|할|했|해)'
+
+    _KO_MODIFY_RE = re.compile(
+        # Stem + explicit verb ending (highest precision)
+        r'(?:수정|변경|개선|삭제|제거|이동|교체|수리|패치|리팩토링|리팩터)'
+        + r'(?:\s*)(?:해줘|해주|해야|해봐|합니다|할게|해라|하자|하면|해서|해도|하고|하다|할|했|해)'
+        # Stem at end-of-sentence: Korean implicit imperative (어미 생략 명령형)
+        # e.g. "retrieve 함수 수정" = "수정해줘" in ellipsis form
+        + r'|(?:수정|변경|개선|삭제|제거|이동|교체|수리|패치|리팩토링)\s*$'
+        # Inherently-verb forms (no suffix needed)
+        + r'|고쳐|고치(?:다|고|면|어|세요)'
+        + r'|바꿔|바꾸(?:다|고|면|어|세요)'
+    )
+
+    _KO_CREATE_RE = re.compile(
+        # Stem + explicit verb ending
+        r'(?:추가|생성|작성|구현)'
+        + r'(?:\s*)(?:해줘|해주|해야|해봐|합니다|할게|해라|하자|하면|해서|해도|하고|하다|할|했|해)'
+        # Stem at end-of-sentence (implicit imperative)
+        + r'|(?:추가|생성|작성|구현|만들)\s*$'
+        + r'|만들어(?!진|졌)'   # 만들어줘 ✓  만들어진 ✗  만들어졌 ✗
+        + r'|만들(?:고|면|어야|어줘|어주)'
+    )
 
     def classify_intent(self, prompt: str) -> str:
         """Classify query intent as 'modify', 'create', or 'read'.
 
         Returns:
-            'modify': Fix/Replace/Refactor — over-anchoring risk. Inject context
-                      WITHOUT current implementation, or add a caution header.
+            'modify': Fix/Replace/Refactor — over-anchoring risk.
             'create': New code generation — low anchoring risk.
             'read':   Information retrieval — no anchoring risk (default).
 
-        Usage in SOYA deployment:
-            intent = classifier.classify_intent(user_query)
-            if intent == 'modify':
-                # Option A: skip context injection for this query
-                # Option B: prepend "Note: the following may be INCORRECT — please fix it:"
-                context = "CAUTION — current implementation may have bugs:\n" + raw_context
+        Korean nouns (수정, 추가, 생성…) require a verb ending suffix to avoid
+        noun-context false positives (e.g. "추가 설명해줘" → read, not create).
         """
         prompt_lower = prompt.lower()
 
-        # Check for modify intent (Fix/Replace — highest over-anchoring risk)
-        if any(kw in prompt_lower for kw in self._MODIFY_KEYWORDS):
+        # English: simple keyword match (English noun/verb forms rarely overlap)
+        if any(kw in prompt_lower for kw in self._MODIFY_KEYWORDS_EN):
             return "modify"
-
-        # Check for create intent
-        if any(kw in prompt_lower for kw in self._CREATE_KEYWORDS):
+        if any(kw in prompt_lower for kw in self._CREATE_KEYWORDS_EN):
             return "create"
 
-        # Default: read (information retrieval, no anchoring risk)
+        # Korean: verb-ending anchored regex
+        if self._KO_MODIFY_RE.search(prompt):
+            return "modify"
+        if self._KO_CREATE_RE.search(prompt):
+            return "create"
+
         return "read"

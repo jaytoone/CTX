@@ -140,3 +140,30 @@ class TestMixedLanguage:
 
     def test_ko_create_en_noun(self, clf):
         assert clf.classify_intent("BM25 retriever 만들어줘") == "create"
+
+
+# ── 오탐(FP) 방지 — 명사/부정 컨텍스트 ───────────────────────────────────────────
+
+class TestFalsePositivePrevention:
+    """한국어 명사로 쓰인 경우 modify/create로 분류되면 안 됨."""
+
+    def test_추가_명사(self, clf):
+        assert clf.classify_intent("추가 설명해줘") == "read"
+
+    def test_추가로_부사(self, clf):
+        assert clf.classify_intent("추가로 어떻게 동작해?") == "read"
+
+    def test_수정_부정_컨텍스트(self, clf):
+        assert clf.classify_intent("수정 없이 그냥 실행해") == "read"
+
+    def test_만들어진_수동형(self, clf):
+        assert clf.classify_intent("만들어진 과정 설명해줘") == "read"
+
+    def test_생성_명사(self, clf):
+        assert clf.classify_intent("생성 시점이 언제야?") == "read"
+
+    def test_삭제된_과거수동(self, clf):
+        assert clf.classify_intent("삭제된 이유가 뭐야?") == "read"
+
+    def test_새로운_형용사(self, clf):
+        assert clf.classify_intent("새로운 기능이 뭔지 알려줘") == "read"
