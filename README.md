@@ -103,6 +103,19 @@ Code files (3/847 total):
 
 **TES** = Recall@5 / ln(1 + files_loaded). Higher = better token efficiency.
 
+### External Codebase Benchmark (Flask, FastAPI, Requests)
+
+CTX outperforms BM25 on all three held-out external codebases in code-to-code structural retrieval:
+
+| Codebase | Files | CTX R@5 | BM25 R@5 | Δ |
+|----------|-------|---------|----------|---|
+| Flask | 79 | **0.542** | 0.347 | **+0.194** |
+| FastAPI | 928 | **0.331** | 0.174 | **+0.156** |
+| Requests | 35 | **0.626** | 0.489 | **+0.136** |
+| **Mean** | — | **0.499** | 0.337 | **+0.162** |
+
+*Bootstrap 95% CI: external mean [0.441, 0.550]*
+
 ### COIR External Benchmark (CodeSearchNet Python)
 
 | Strategy | Recall@1 | Recall@5 | MRR |
