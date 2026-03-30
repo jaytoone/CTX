@@ -38,8 +38,8 @@ Primary language auto-detected by file count. Related extensions co-indexed (e.g
 ## Installation
 
 ```bash
-# 1. Copy hook
-cp hooks/ctx_real_loader.py ~/.claude/hooks/
+# 1. Copy hooks
+cp hooks/ctx_real_loader.py hooks/ctx_session_tracker.py ~/.claude/hooks/
 
 # 2. Set your CTX path (line 25 in ctx_real_loader.py)
 # CTX_PROJECT = "/path/to/your/CTX"   ← edit this
@@ -92,7 +92,7 @@ To measure the impact of the CTX hook on Claude Code session quality:
 3. Score each session independently
 
 ### Expected hypothesis
-Based on LLM quality experiments (CTX pass@1=0.733 vs Full=0.200):
+Based on LLM code generation experiments (CTX pass@1=0.265 vs Full=0.102, n=49; paper Section 4.7):
 - CTX hook should reduce turns-to-answer by 20–40%
 - CTX hook should reduce unnecessary file reads by 50–70%
 
@@ -105,6 +105,3 @@ Based on LLM quality experiments (CTX pass@1=0.733 vs Full=0.200):
 | OneViral | TypeScript | 651 | ~270ms |
 | >2000 files | any | — | skipped (dir exclusion) |
 
-## Related
-- [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
-- [[projects/CTX/decisions/20260326-path-derived-module-to-file|20260326-path-derived-module-to-file]]
