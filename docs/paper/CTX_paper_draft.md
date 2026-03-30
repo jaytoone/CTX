@@ -348,7 +348,7 @@ These fixes required 30 lines of code changes and were motivated by examining fa
 
 ### 4.8 COIR-Style External Benchmark (CodeSearchNet)
 
-To position CTX against the broader code retrieval literature, we evaluate on a COIR-style benchmark constructed from the CodeSearchNet Python test set (Husain et al., 2019). We sample 100 queries (function docstrings) and construct a corpus of 1,000 functions (100 targets + 900 distractors). This evaluates natural-language-to-code retrieval, a complementary task to CTX's primary code-to-code structural retrieval.
+To position CTX against the broader code retrieval literature, we evaluate on a COIR-style benchmark (Li et al., 2024) constructed from the CodeSearchNet Python test set (Husain et al., 2019). We sample 100 queries (function docstrings) and construct a corpus of 1,000 functions (100 targets + 900 distractors). This evaluates natural-language-to-code retrieval, a complementary task to CTX's primary code-to-code structural retrieval.
 
 **Table 3: COIR-Style Evaluation (CodeSearchNet Python, 100 queries, 1000 corpus)**
 
@@ -479,7 +479,7 @@ These results establish four key findings. First, code structure---specifically,
 
 **Trigger classifier accuracy**: Internal analysis of the rule-based trigger classifier on the 166-query synthetic benchmark (proxy ground truth: rule-based labeling) reports 100\% overall accuracy after fixing a pattern that missed snake\_case function identifiers in "Find the function \textit{X}"-style queries (previously classified as SEMANTIC due to missing snake\_case symbol matching). All four trigger types achieve F1=1.00 on the proxy benchmark. However, this measurement uses rule-based proxy labels as ground truth, creating a circular evaluation—so true accuracy on diverse real developer queries is likely lower. A human-annotated evaluation is required to characterize generalization. The ablation in Table 5 confirms that the classifier's primary contribution is TES (token efficiency); correct routing also improves in-distribution R@3 from 0.862 to 0.890 by directing "Find the function X" queries to the precise symbol index path rather than BM25.
 
-FastAPI (928 files) achieves R@5=0.328 (95\% CI [0.246, 0.415])---the weakest external result---suggesting scale remains a challenge for TEMPORAL and IMPLICIT triggers. An *over-anchoring* failure mode was observed (20\% of Fix/Replace scenarios): CTX context can cause LLMs to anchor on the current implementation rather than applying the desired fix. The synthetic benchmark (50 files, 166 queries) is small by standard IR evaluation scales (BEIR: 18 datasets, thousands to millions of documents each); the high synthetic Recall@5 (0.982) should be interpreted as in-distribution lookup performance rather than general retrieval generalization.
+FastAPI (928 files) achieves R@5=0.328 (95\% CI [0.246, 0.415])---the weakest external result---suggesting scale remains a challenge for TEMPORAL and IMPLICIT triggers. An *over-anchoring* failure mode was observed (20\% of Fix/Replace scenarios): CTX context can cause LLMs to anchor on the current implementation rather than applying the desired fix. The synthetic benchmark (50 files, 166 queries) is small by standard IR evaluation scales (BEIR: 18 datasets, thousands to millions of documents each); the high synthetic Recall@5 (0.982) should be interpreted as in-distribution lookup performance rather than general retrieval generalization (Thakur et al., 2021).
 
 **Future Work.** We plan to: (1) expand the LLM generation evaluation with execution-based verification and larger sample sizes across multiple models, (2) test on additional real-world repositories in multiple programming languages, (3) replace the rule-based trigger classifier with a learned model trained on developer query logs, (4) integrate `ast`-based parsing into the full CTX pipeline to close the synthetic-to-real performance gap, and (5) optimize the hybrid pipeline's token efficiency through dynamic seed-k and hop-limit selection based on query characteristics.
 
@@ -510,6 +510,10 @@ FastAPI (928 files) achieves R@5=0.328 (95\% CI [0.246, 0.415])---the weakest ex
 [11] Husain, H., Wu, H.-H., Gazit, T., Allamanis, M., & Brockschmidt, M. (2019). CodeSearchNet Challenge: Evaluating the State of Semantic Code Search. *arXiv preprint arXiv:1909.09436*.
 
 [12] jCodeMunch: Code Compression for Large Language Model Context Optimization. (2025). *arXiv preprint*.
+
+[13] Thakur, N., Reimers, N., Rücklé, A., Srivastava, A., & Gurevych, I. (2021). BEIR: A Heterogeneous Benchmark for Zero-shot Evaluation of Information Retrieval Models. In *Proceedings of the Thirty-fifth Conference on Neural Information Processing Systems Datasets and Benchmarks Track (NeurIPS 2021)*.
+
+[14] Li, H., et al. (2024). CoIR: A Comprehensive Benchmark for Code Information Retrieval Models. *arXiv preprint arXiv:2407.02883*.
 
 ---
 
