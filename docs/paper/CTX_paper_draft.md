@@ -8,7 +8,7 @@
 
 ## 1. Introduction
 
-When a programmer encounters a function call to `process_data()`, they do not read the entire codebase to understand it. Instead, their mind follows a chain of associations: the function name triggers recall of its definition, which triggers awareness of its imports, which triggers understanding of the data structures it manipulates. This associative recall---where a stimulus activates a targeted subset of memory rather than the entire store---is a hallmark of human cognition that current LLM-based code assistants fail to replicate.
+When a programmer encounters a function call to `process_data()`, they do not read the entire codebase to understand it. Instead, their mind follows a chain of associations: the function name triggers recall of its definition, which triggers awareness of its imports, which triggers understanding of the data structures it manipulates. This associative recall---where a stimulus activates a targeted subset of memory rather than the entire store (Santos et al., 2024)---is a hallmark of human cognition that current LLM-based code assistants fail to replicate.
 
 The dominant approach to providing code context to LLMs is to load as much of the codebase as possible into the context window. This strategy is fundamentally flawed. Shi et al. (2024) demonstrated a U-shaped attention degradation pattern where LLMs lose track of information placed in the middle of long contexts. The problem is particularly acute for code: LongCodeBench (2025) reports that Claude 3.5's accuracy on code tasks drops from 29% at 32K tokens to 3% at 256K tokens---an order-of-magnitude collapse that grows worse with context length. Even with perfect retrieval, context length alone causes 13.9--85% performance loss across models.
 
