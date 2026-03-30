@@ -416,6 +416,8 @@ We evaluate four ablation variants to measure each component's contribution:
 | No Classifier (C) | Remove trigger classification | 0.953 / 0.406 | 0.343 / 0.192 |
 | Fixed-k=5 (D) | Remove adaptive-k | 0.880 / 0.783 | 0.174 / 0.201 |
 
+*Full CTX (A) uses an independent benchmark sample; minor run-to-run variation accounts for the difference from main results (Table 1: Synthetic R@5=0.874, TES=0.776).*
+
 **Key findings:**
 
 1. **Import graph (A vs B):** Removing graph traversal drops IMPLICIT_CONTEXT recall from 1.0 to 0.4 on synthetic data (-60%), confirming the graph is essential for dependency queries. On real data, the effect is smaller because the synthetic MODULE_NAME pattern is absent.
