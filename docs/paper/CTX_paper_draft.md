@@ -464,7 +464,7 @@ The key architectural differences between CTX and Memori (introduced in Section 
 |-----------|--------|-----|
 | Code structure awareness | None (embedding-only) | Import graph traversal |
 | Query classification | Single retrieval path | 4-type trigger taxonomy |
-| Token efficiency | Fixed top-$k$ | Adaptive-$k$ (5.2% synthetic, 2.2% real) |
+| Token efficiency | Fixed top-$k$ | Adaptive-$k$ (5.2% synthetic, 1.1% real avg) |
 | Memory hierarchy | Flat embedding store | 3-tier (Working/Episodic/Semantic) |
 | Dependency queries (synth) | ~0.4 Recall@5 | 1.0 Recall@5 |
 
