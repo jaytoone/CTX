@@ -31,8 +31,11 @@ class Trigger:
 SYMBOL_PATTERNS = [
     # Function/method references: function_name( — call syntax
     re.compile(r'\b([a-z_][a-z0-9_]*(?:\.[a-z_][a-z0-9_]*)?\s*\()', re.IGNORECASE),
-    # Class references: CamelCase words
-    re.compile(r'\b([A-Z][a-zA-Z0-9]+(?:[A-Z][a-zA-Z0-9]+)*)\b'),
+    # Class references: true CamelCase (requires at least one internal uppercase letter).
+    # [A-Z][a-zA-Z0-9]*[A-Z] means: first uppercase, some chars, then another uppercase.
+    # This excludes ordinary capitalized words ("Return", "Updates") while matching
+    # real code identifiers ("QuantumChannel", "HBoolVal", "AdaptiveTriggerRetriever").
+    re.compile(r'\b([A-Z][a-zA-Z0-9]*[A-Z][a-zA-Z0-9]*)\b'),
     # Quoted identifiers
     re.compile(r'[`"\']([a-zA-Z_][a-zA-Z0-9_.]+)[`"\']'),
     # File paths

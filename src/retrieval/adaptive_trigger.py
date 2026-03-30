@@ -286,9 +286,24 @@ class AdaptiveTriggerRetriever:
                 if symbol_clean in content:
                     matched_files[fpath] = 0.5
 
-        # If still nothing, fall back to TF-IDF
+        # If still nothing, fall back to BM25 on full query text
         if not matched_files:
             return self._tfidf_retrieve(query_id, query_text, k)
+
+        # If all matches are via raw content (unordered, score=0.5), rerank with BM25.
+        # Raw content search finds files mentioning the symbol (e.g. in docstrings) but gives
+        # no ordering signal. BM25 on the full query text provides a reliable reranking.
+        if self.bm25 is not None and all(v == 0.5 for v in matched_files.values()):
+            full_exp = re.sub(r'([a-z])([A-Z])', r'\1 \2', query_text).replace("_", " ")
+            full_tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', full_exp.lower())
+            if full_tokens:
+                bm25_scores = self.bm25.get_scores(full_tokens)
+                bm25_max = float(np.max(bm25_scores)) if bm25_scores.max() > 0 else 1.0
+                for fpath in list(matched_files.keys()):
+                    idx = self.file_paths.index(fpath) if fpath in self.file_paths else -1
+                    if idx >= 0 and bm25_max > 0:
+                        # Blend raw match (0.3) + BM25 (0.7) for better ordering
+                        matched_files[fpath] = 0.3 + 0.7 * (float(bm25_scores[idx]) / bm25_max)
 
         # Sort by score and take top k
         sorted_files = sorted(matched_files.items(), key=lambda x: x[1], reverse=True)[:k]
@@ -314,24 +329,42 @@ class AdaptiveTriggerRetriever:
         """
         matched_files: Dict[str, float] = {}
 
-        # Step 1: BM25 primary ranker — use extracted concept, not full query_text.
-        # Full query text contains noise tokens ("find", "code", "related") that
-        # appear in all Python files and dilute the concept-specific signal.
+        # Step 1: BM25 hybrid ranker — blend concept BM25 + full-query BM25.
+        # Concept tokens provide precision (avoid noise words like "find", "code").
+        # Full-query tokens provide recall when concept extraction loses information
+        # (e.g. long docstrings, COIR-style natural-language-to-code queries).
         if self.bm25 is not None:
             concept_expanded = re.sub(r'([a-z])([A-Z])', r'\1 \2', concept).replace("_", " ")
-            query_tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', concept_expanded.lower())
+            concept_tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', concept_expanded.lower())
             # Fallback to full query_text tokens if concept is empty or trivial
-            if not query_tokens or all(len(t) <= 2 for t in query_tokens):
+            if not concept_tokens or all(len(t) <= 2 for t in concept_tokens):
                 full_exp = re.sub(r'([a-z])([A-Z])', r'\1 \2', query_text).replace("_", " ")
-                query_tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', full_exp.lower())
-            bm25_scores = self.bm25.get_scores(query_tokens)
-            max_score = float(np.max(bm25_scores)) if bm25_scores.max() > 0 else 1.0
+                concept_tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', full_exp.lower())
 
-            for i, score in enumerate(bm25_scores):
+            # Concept BM25
+            concept_scores = self.bm25.get_scores(concept_tokens)
+            concept_max = float(np.max(concept_scores)) if concept_scores.max() > 0 else 1.0
+
+            # Full-query BM25 — always computed for hybrid blend
+            full_exp = re.sub(r'([a-z])([A-Z])', r'\1 \2', query_text).replace("_", " ")
+            full_tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', full_exp.lower())
+            full_scores = self.bm25.get_scores(full_tokens) if full_tokens != concept_tokens else concept_scores
+            full_max = float(np.max(full_scores)) if full_scores.max() > 0 else 1.0
+
+            # Blend: concept precision (weight 0.6) + full recall (weight 0.4)
+            # When concept ≈ full query (few tokens lost), blend is close to concept score.
+            # When concept << full query (long docstring, COIR-style), full recall dominates.
+            concept_coverage = len(concept_tokens) / max(len(full_tokens), 1)
+            full_weight = min(0.6, 0.4 + (1.0 - concept_coverage) * 0.4)  # 0.4–0.6
+            concept_weight = 1.0 - full_weight
+
+            for i in range(len(self.file_paths)):
                 fpath = self.file_paths[i]
-                norm_score = float(score) / max_score
-                if norm_score > 0.05:
-                    matched_files[fpath] = norm_score
+                c_norm = float(concept_scores[i]) / concept_max
+                f_norm = float(full_scores[i]) / full_max
+                blended = concept_weight * c_norm + full_weight * f_norm
+                if blended > 0.05:
+                    matched_files[fpath] = blended
 
         # Step 2: concept_index boosts BM25 results only (no new injections)
         concept_lc = concept.lower()
