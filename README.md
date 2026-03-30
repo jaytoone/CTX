@@ -152,7 +152,7 @@ CTX outperforms BM25 on all three held-out external codebases in code-to-code st
 | Dense Embedding (MiniLM) | 0.960 | 1.000 | 0.978 |
 | Hybrid Dense+CTX | 0.930 | 0.950 | 0.940 |
 | BM25 | 0.920 | 0.980 | 0.946 |
-| CTX Adaptive Trigger | 0.210 | 0.380 | 0.293 |
+| CTX Adaptive Trigger | 0.720 | 0.740 | 0.728 |
 
 ### Downstream LLM Evaluation
 
@@ -172,6 +172,7 @@ G1: CTX persistent memory enables perfect cross-session recall (vs 11% without).
 - CTX **outperforms BM25 on all 3 external codebases** in code-to-code retrieval (mean +0.163 R@5)
 - CTX context improves downstream LLM task quality: **G1 +0.890**, **G2 +0.688**
 - Trigger classifier achieves **100% accuracy** (all 4 types F1=1.00) on synthetic benchmark
+- CTX Adaptive Trigger achieves **R@5=0.740 on COIR** (improved from 0.380 via BM25 hybrid + CamelCase fix)
 - Hybrid Dense+CTX achieves R@5=0.950 on COIR — best of both worlds
 - No single strategy dominates all dimensions — workload determines optimal choice
 
@@ -184,7 +185,7 @@ G1: CTX persistent memory enables perfect cross-session recall (vs 11% without).
 - Queries name **explicit symbols** (class names, function names) — EXPLICIT_SYMBOL trigger routes directly to symbol index
 
 **CTX is not designed for:**
-- **Text-to-code semantic search** (COIR-style): finding code from natural-language descriptions. CTX R@5=0.380 vs BM25=0.980 on CodeSearchNet Python — use Dense Embedding or Hybrid Dense+CTX instead
+- **Text-to-code semantic search** (COIR-style): finding code from natural-language descriptions. CTX R@5=0.740 vs BM25=0.980 on CodeSearchNet Python — still a gap; for best results use Dense Embedding or Hybrid Dense+CTX instead
 - **Large unseen codebases** (>500 files, no prior indexing): heuristic symbol extraction degrades at scale; consider AST-based indexers
 - **Natural-language concept queries** without code keywords: SEMANTIC_CONCEPT trigger falls back to BM25, losing CTX's structural advantage
 
