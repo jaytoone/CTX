@@ -157,7 +157,7 @@ G1: CTX persistent memory enables perfect cross-session recall (vs 11% without).
 
 - CTX achieves **1.9x higher TES** than BM25 with only 5.2% token usage
 - CTX achieves **perfect Recall@5 (1.0)** on IMPLICIT_CONTEXT dependency queries
-- CTX **outperforms BM25 on all 3 external codebases** in code-to-code retrieval (mean +0.162 R@5)
+- CTX **outperforms BM25 on all 3 external codebases** in code-to-code retrieval (mean +0.163 R@5)
 - CTX context improves downstream LLM task quality: **G1 +0.890**, **G2 +0.688**
 - Trigger classifier achieves **100% accuracy** (all 4 types F1=1.00) on synthetic benchmark
 - Hybrid Dense+CTX achieves R@5=0.950 on COIR — best of both worlds

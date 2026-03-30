@@ -8,7 +8,7 @@ trigger-driven context injection for every coding session.
 ## How It Works
 
 ```
-User prompt → [ctx_loader.py hook]
+User prompt → [ctx_real_loader.py hook]
                     ↓
              classify_trigger()
                     ↓
@@ -107,4 +107,4 @@ Based on LLM quality experiments (CTX pass@1=0.733 vs Full=0.200):
 
 ## Related
 - [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
-- [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]
+- [[projects/CTX/decisions/20260326-path-derived-module-to-file|20260326-path-derived-module-to-file]]
