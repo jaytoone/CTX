@@ -272,7 +272,7 @@ CTX outperforms BM25 on all three held-out external codebases (McNemar p < 0.011
 | TEMPORAL_HISTORY | **0.600** | 0.000 |
 | IMPLICIT_CONTEXT | 0.318 | 0.222 |
 
-On larger internal codebases, TEMPORAL_HISTORY remains CTX's primary advantage over BM25-based baselines (+24pp on TEMPORAL queries).
+On larger internal codebases, TEMPORAL_HISTORY remains CTX's primary advantage over BM25-based baselines (+20pp on GraphPrompt TEMPORAL queries).
 
 ### 4.6 Downstream Quality
 
