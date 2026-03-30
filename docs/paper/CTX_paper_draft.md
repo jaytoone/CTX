@@ -219,7 +219,7 @@ Full Context achieves the lowest Recall@5 (0.075) despite loading all files, emp
 | CTX vs LlamaIndex | 0.013 | <0.001 | <0.001 | 0.230 |
 | CTX vs Chroma Dense | 0.046 | <0.001 | 0.055 | 0.186 |
 
-On real data, CTX maintains its token efficiency advantage (1.0--2.1% vs. 4.9--6.2% for baselines), achieving the highest average TES (0.195) across all three real codebases despite lower absolute recall. The TES advantage is most pronounced on larger codebases: on AgentNode (596 files), CTX achieves TES of 0.175 vs. 0.125 for Dense TF-IDF (1.4x). On OneViral (299 files), CTX achieves TES of 0.232, the highest among all strategies, 2.5x higher than BM25 (0.065). CTX vs BM25 is statistically significant (McNemar p<0.05) on 3 of 4 datasets.
+On real data, CTX maintains its token efficiency advantage (1.0--2.1% vs. 4.9--6.2% for baselines), achieving the highest average TES (0.195) across all three real codebases despite lower absolute recall. The TES advantage is most pronounced on larger codebases: on AgentNode (596 files), CTX achieves TES of 0.175 vs. 0.125 for Dense TF-IDF (1.4x). On OneViral (299 files), CTX achieves TES of 0.232, the highest among all strategies, 3.6x higher than BM25 (0.065). CTX vs BM25 is statistically significant (McNemar p<0.05) on 3 of 4 datasets.
 
 ### 4.5 Trigger-Type Analysis
 
