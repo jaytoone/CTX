@@ -116,6 +116,7 @@ Code files (3/847 total):
 
 - CTX achieves **1.9x higher TES** than BM25 with only 5.2% token usage
 - CTX achieves **perfect Recall@5 (1.0)** on IMPLICIT_CONTEXT dependency queries
+- Trigger classifier achieves **100% accuracy** (all 4 types F1=1.00) on synthetic benchmark
 - Hybrid Dense+CTX achieves R@5=0.950 on COIR — best of both worlds
 - No single strategy dominates all dimensions — workload determines optimal choice
 

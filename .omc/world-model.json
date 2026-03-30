@@ -3,7 +3,12 @@
     {
       "goal": "P1 실용 임팩트 — pip install + 논문 + over-anchoring",
       "score": 0.88,
-      "score_vector": {"quality": 0.90, "completeness": 0.85, "efficiency": 0.92, "impact": 0.85},
+      "score_vector": {
+        "quality": 0.9,
+        "completeness": 0.85,
+        "efficiency": 0.92,
+        "impact": 0.85
+      },
       "iteration": 1,
       "outcome": "evolved",
       "weak_dim": "completeness"
@@ -11,8 +16,26 @@
     {
       "goal": "P2/P3 성능 개선 + README 배지",
       "score": 0.91,
-      "score_vector": {"quality": 0.92, "completeness": 0.90, "efficiency": 0.93, "impact": 0.90},
+      "score_vector": {
+        "quality": 0.92,
+        "completeness": 0.9,
+        "efficiency": 0.93,
+        "impact": 0.9
+      },
       "iteration": 2,
+      "outcome": "evolved",
+      "weak_dim": "impact"
+    },
+    {
+      "goal": "trigger classifier EXPLICIT recall fix",
+      "score": 0.946,
+      "score_vector": {
+        "quality": 0.93,
+        "completeness": 1.0,
+        "efficiency": 0.95,
+        "impact": 0.9
+      },
+      "iteration": 1,
       "outcome": "evolved",
       "weak_dim": "impact"
     }
@@ -27,20 +50,22 @@
     "_index_symbols(): regex → AST (1339 symbols, 데코레이터/async/소문자 클래스 지원)",
     "_index_concepts(): 범용 docstring 파싱 추가 (513 entries)",
     "keyword R@3: 0.724 → 0.784 (corpus 29→46 docs)",
-    "README 배지 추가: PyPI version + downloads"
+    "README 배지 추가: PyPI version + downloads",
+    "trigger_classifier.py: snake_case SYMBOL_PATTERN 추가 (function/method + underscore). EXPLICIT F1 1.000, 전체 accuracy 100%",
+    "CTX-doc R@3: 0.862 → 0.890 (+0.028). trigger accuracy 개선이 실제 검색 품질 향상으로 이어짐"
   ],
   "uncertain": [],
   "dimensions_explored": {
     "quality": 0.92,
-    "completeness": 0.90,
+    "completeness": 0.9,
     "efficiency": 0.93,
-    "impact": 0.90
+    "impact": 0.9
   },
   "best_score_vector": {
-    "quality": 0.92,
-    "completeness": 0.90,
-    "efficiency": 0.93,
-    "impact": 0.90
+    "quality": 0.93,
+    "completeness": 1.0,
+    "efficiency": 0.95,
+    "impact": 0.9
   },
   "her_hints": []
 }

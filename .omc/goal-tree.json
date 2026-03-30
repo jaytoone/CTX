@@ -1,18 +1,32 @@
 {
-  "root_goal": "CTX trigger classifier 개선 — EXPLICIT recall 0.367→0.85+: 'Find the function X' snake_case 식별자 매칭 수정",
+  "root_goal": "CTX 논문 + README 실험 수치 업데이트 — trigger accuracy 100% + R@3=0.890 반영 + abstract 개선",
   "original_goal": "CTX 시스템 품질 강화 — 연구 평론 기반 핵심 지표 개선",
   "level": 0,
-  "evolution_count": 0,
-  "evolution_history": [],
+  "evolution_count": 1,
+  "evolution_history": [
+    {
+      "iteration": 1,
+      "goal": "trigger classifier EXPLICIT recall 0.367→1.000 fix",
+      "score": 0.946,
+      "rationale": "100% trigger accuracy달성 (0.70→1.00), R@3 0.862→0.890. 이제 논문/README에 반영 필요."
+    }
+  ],
   "sub_goals": [
-    "1. SYMBOL_PATTERNS에 snake_case function/method 패턴 추가",
-    "2. trigger_accuracy.py 재실행으로 EXPLICIT F1 검증",
-    "3. 전체 벤치마크 영향도 확인 (R@3 regression 없음 확인)",
-    "4. trigger_accuracy.md 업데이트"
+    "1. CTX_paper_draft.md: trigger accuracy 수치 업데이트 (Limitations 섹션 수정)",
+    "2. CTX_paper_draft.md: synthetic R@3=0.890 반영 (0.862에서 업데이트)",
+    "3. README.md: Results 테이블 R@3 수치 업데이트",
+    "4. 테스트 통과 확인"
   ],
   "reward_spec": {
-    "primary_metric": "EXPLICIT_SYMBOL F1 score",
-    "threshold": "F1 >= 0.80, 전체 accuracy >= 0.80, R@3 regression 없음"
+    "primary_metric": "논문/README 수치 일관성",
+    "threshold": "trigger accuracy 100% 명시, R@3=0.890 반영, 기존 misleading 수치 제거"
   },
-  "history": []
+  "history": [
+    {
+      "iteration": 1,
+      "outcome": "success",
+      "score": 0.946,
+      "summary": "Trigger classifier: EXPLICIT recall 0.37→1.0, overall accuracy 60%→100%. R@3 0.862→0.890."
+    }
+  ]
 }
