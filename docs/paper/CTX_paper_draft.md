@@ -162,7 +162,7 @@ Total: 968 real files across 3 codebases, 415 total queries. For each real codeb
 
 ### 4.2 Baselines
 
-We compare CTX against six baselines spanning the spectrum from no retrieval to production-grade neural RAG and graph-based retrieval:
+We compare CTX against seven baselines spanning the spectrum from no retrieval to production-grade neural RAG and graph-based retrieval:
 
 | Strategy | Description |
 |----------|-------------|
@@ -384,9 +384,10 @@ The IMPLICIT_CONTEXT results provide the strongest evidence for CTX's core thesi
 | AST-aware chunking | LlamaIndex CodeSplitter | 0.40 |
 | Sparse keyword | BM25 / Dense TF-IDF | 0.40 |
 | Graph-based (no triggers) | GraphRAG-lite | 0.43 |
+| Dense seed + graph expansion | Hybrid Dense+CTX | 0.53 |
 | Graph-based + triggers | CTX Adaptive Trigger | **1.00** |
 
-All six baselines---including production-grade neural embeddings (Chroma Dense, 0.38) and AST-aware chunking (LlamaIndex, 0.40)---fail to resolve transitive code dependencies. AST-aware chunking improves retrieval granularity but does not change the fundamental limitation: matching on textual or semantic similarity cannot follow import chains. Only trigger-classified import graph traversal achieves this, with a margin of +133% over the best baseline.
+All seven baselines---including production-grade neural embeddings (Chroma Dense, 0.38), AST-aware chunking (LlamaIndex, 0.40), and even Hybrid Dense+CTX (0.53) which partially uses graph expansion---fail to achieve perfect dependency recall. Only fully trigger-classified import graph traversal achieves this, with a margin of +89% over the best graph-augmented approach (Hybrid Dense+CTX: 0.53) and +133% over purely text-based methods (GraphRAG-lite: 0.43).
 
 CTX's trigger classification identifies which queries require graph traversal and applies it selectively, achieving both higher recall on dependency queries and lower overall token usage.
 
