@@ -401,7 +401,7 @@ We classify CTX failure cases into two primary patterns across all datasets:
 
 **GRAPH_MISS** (import graph traversal failure): On synthetic data, import graph traversal achieves perfect recall on IMPLICIT_CONTEXT queries. On real code, graph traversal failures stem from seed identification: queries use natural language that does not match module names, causing BFS to start from irrelevant files.
 
-**Cross-strategy comparison** reveals complementary strengths. On the synthetic dataset, CTX uniquely solves 100% of IMPLICIT_CONTEXT queries that all baselines fail on. On real data, BM25 and LlamaIndex win on EXPLICIT_SYMBOL queries (broad text matching), while CTX maintains advantages on TEMPORAL_HISTORY queries (0.60 vs. 0.40 on GraphPrompt). The key insight is that failure patterns differ by trigger type, validating the trigger-type-specific retrieval architecture.
+**Cross-strategy comparison** reveals complementary strengths. On the synthetic dataset, CTX uniquely solves 100% of IMPLICIT_CONTEXT queries that all baselines fail on. On real data, BM25 and LlamaIndex win on EXPLICIT_SYMBOL queries (broad text matching), while CTX maintains advantages on TEMPORAL_HISTORY queries (0.600 vs. 0.400 on GraphPrompt). The key insight is that failure patterns differ by trigger type, validating the trigger-type-specific retrieval architecture.
 
 ### 5.3 Ablation Study
 
