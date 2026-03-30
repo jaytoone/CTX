@@ -208,12 +208,25 @@ def bm25_score(query_tokens: List[str], doc_tokens: List[str],
     return score
 
 
-def rank_bm25(query: str, docs: List[DocFile]) -> List[Tuple[str, float]]:
-    """Rank docs using BM25."""
+def _doc_tokens_with_stem(doc: "DocFile") -> List[str]:
+    """Token list including filename stem tokens (repeated 3x for boosting)."""
+    content_tokens = re.findall(r'\b[a-z]{2,}\b', doc.content.lower())
+    # Filename stem: split on hyphens/underscores, strip dates (8-digit nums)
+    stem = re.sub(r'\d{8}', '', doc.rel_path.split("/")[-1])
+    stem = re.sub(r'[-_.]', ' ', stem)
+    stem_tokens = re.findall(r'\b[a-z]{2,}\b', stem.lower())
+    # Headings (repeated 2x for boosting)
+    heading_tokens = re.findall(r'\b[a-z]{2,}\b', " ".join(doc.headings).lower())
+    return content_tokens + stem_tokens * 3 + heading_tokens * 2
+
+
+def rank_bm25(query: str, docs: List[DocFile], enrich_with_stem: bool = False) -> List[Tuple[str, float]]:
+    """Rank docs using BM25. enrich_with_stem adds filename/heading tokens (for heading queries)."""
     query_tokens = re.findall(r'\b[a-z]{2,}\b', query.lower())
-    doc_token_lists = [
-        re.findall(r'\b[a-z]{2,}\b', d.content.lower()) for d in docs
-    ]
+    if enrich_with_stem:
+        doc_token_lists = [_doc_tokens_with_stem(d) for d in docs]
+    else:
+        doc_token_lists = [re.findall(r'\b[a-z]{2,}\b', d.content.lower()) for d in docs]
     avgdl = sum(len(t) for t in doc_token_lists) / max(len(doc_token_lists), 1)
     scores = [
         (docs[i].rel_path, bm25_score(query_tokens, doc_token_lists[i], avgdl))
@@ -412,11 +425,9 @@ def main() -> None:
     )
     tfidf_matrix = vectorizer.fit_transform([d.content for d in docs])
 
-    # Build BM25 index for CTX-doc augmentation
-    doc_token_lists = [
-        re.findall(r'\b[a-z]{2,}\b', d.content.lower()) for d in docs
-    ]
-    bm25_idx = BM25Okapi(doc_token_lists)
+    # Build BM25 index for CTX-doc augmentation (enriched: stem+heading for heading queries)
+    doc_token_lists_enriched = [_doc_tokens_with_stem(d) for d in docs]
+    bm25_idx = BM25Okapi(doc_token_lists_enriched)
 
     print("Running evaluations...")
 
