@@ -250,12 +250,12 @@ SEMANTIC_CONCEPT is the strongest trigger type on external codebases (mean 0.663
 
 **CTX vs BM25 on External Codebases:**
 
-| Codebase | CTX R@5 | BM25 R@5 | Δ (CTX-BM25) |
-|----------|---------|---------|--------------|
-| Flask | **0.542** | 0.347 | **+0.194** |
-| FastAPI | **0.331** | 0.174 | **+0.156** |
-| Requests | **0.626** | 0.489 | **+0.136** |
-| **External mean** | **0.499** | 0.337 | **+0.162** |
+| Codebase | CTX R@5 | BM25 R@5 | Δ (CTX-BM25) | McNemar p |
+|----------|---------|---------|--------------|-----------|
+| Flask | **0.545** | 0.347 | **+0.198** | 0.000230 |
+| FastAPI | **0.328** | 0.174 | **+0.154** | 0.000685 |
+| Requests | **0.626** | 0.489 | **+0.137** | 0.010787 |
+| **External mean** | **0.500** | 0.337 | **+0.163** | — |
 
 CTX outperforms BM25 on all three held-out external codebases. This reverses the internal-codebase pattern from v9 where CTX lagged BM25, confirming that the trigger classifier and import graph fixes address the root causes of the prior generalization failure.
 

@@ -7,7 +7,7 @@
 [![HuggingFace Demo](https://img.shields.io/badge/HuggingFace-Demo-orange)](https://huggingface.co/spaces/Be2Jay/ctx-demo)
 [![Publish to PyPI](https://github.com/jaytoone/CTX/actions/workflows/publish.yml/badge.svg)](https://github.com/jaytoone/CTX/actions/workflows/publish.yml)
 
-CTX classifies developer queries into four trigger types and routes each to a specialized retrieval pipeline. For dependency-sensitive queries, CTX traverses the codebase import graph to resolve transitive relationships that keyword and embedding methods miss. It achieves **1.9x higher Token-Efficiency Score** than BM25 while using only **5.2% of tokens**, and **outperforms BM25 on held-out external codebases** (Flask, FastAPI, Requests — mean R@5 +0.162).
+CTX classifies developer queries into four trigger types and routes each to a specialized retrieval pipeline. For dependency-sensitive queries, CTX traverses the codebase import graph to resolve transitive relationships that keyword and embedding methods miss. It achieves **1.9x higher Token-Efficiency Score** than BM25 while using only **5.2% of tokens**, and **outperforms BM25 on held-out external codebases** (Flask, FastAPI, Requests — mean R@5 +0.163).
 
 > **Key insight**: code import graphs encode structural dependency information that text-based RAG cannot capture. CTX achieves Recall@5 = 1.0 on implicit dependency queries vs 0.4 for BM25.
 
@@ -109,10 +109,10 @@ CTX outperforms BM25 on all three held-out external codebases in code-to-code st
 
 | Codebase | Files | CTX R@5 | BM25 R@5 | Δ |
 |----------|-------|---------|----------|---|
-| Flask | 79 | **0.542** | 0.347 | **+0.194** |
-| FastAPI | 928 | **0.331** | 0.174 | **+0.156** |
-| Requests | 35 | **0.626** | 0.489 | **+0.136** |
-| **Mean** | — | **0.499** | 0.337 | **+0.162** |
+| Flask | 79 | **0.545** | 0.347 | **+0.198** |
+| FastAPI | 928 | **0.328** | 0.174 | **+0.154** |
+| Requests | 35 | **0.626** | 0.489 | **+0.137** |
+| **Mean** | — | **0.500** | 0.337 | **+0.163** |
 
 *Bootstrap 95% CI: external mean [0.441, 0.550]*
 
