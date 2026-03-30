@@ -84,6 +84,7 @@
 | [research/20260328-adaptive-trigger-generalization-fix.md](research/20260328-adaptive-trigger-generalization-fix.md) | AdaptiveTrigger 외부 코드베이스 일반화 수정 — import graph + module_to_file 범용화, IMPLICIT R@5 +362~441% |
 | [research/20260328-trigger-classifier-semantic-fix.md](research/20260328-trigger-classifier-semantic-fix.md) | TriggerClassifier SEMANTIC 수정 — "Find all code related to X" 오분류 수정, SEMANTIC R@5 near-zero→0.531~0.958 |
 | [../benchmarks/results/final_report_v10.md](../benchmarks/results/final_report_v10.md) | **P10 최종 리포트 (현재)** — Trigger+Import 두 버그 수정 후: External R@5=0.495 [CI: 0.441,0.550], 목표 0.25 달성, Bootstrap CI 추가 |
+| [research/20260330-ctx-academic-critique-web-grounded.md](research/20260330-ctx-academic-critique-web-grounded.md) | CTX 학술 비판 (web-grounded, expert-research-v2) — 합성 벤치마크 유효성, 외부 일반화 갭, TES 비표준성, G1 trivial 판정, 개선 우선순위 Top 3 |
 
 ## Related
 - [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]

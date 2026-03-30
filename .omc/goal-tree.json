@@ -1,18 +1,32 @@
 {
-  "root_goal": "CTX 배포 준비 — pyproject.toml 패키지화 + README 개선(pip install + Claude Code 훅 섹션) + HF Space 배포 가이드",
-  "original_goal": "CTX 라이브러리를 더 많은 유저가 알고 사용할 수 있도록 배포/홍보 준비",
+  "root_goal": "CTX 논문 draft 수정 — 평론 결과 반영 4개 핵심 fix: TES 정식 정의 + G2 raw delta 교체 + external gap 강조 + Nemotron 비교 제거/대체",
+  "original_goal": "CTX 현재 결론을 전문 리서치 기반으로 평론",
   "level": 0,
-  "evolution_count": 0,
-  "evolution_history": [],
+  "evolution_count": 1,
+  "evolution_history": [
+    {
+      "iteration": 1,
+      "goal": "CTX 현재 결론에 대한 전문 리서치 기반 평론",
+      "score": 0.916,
+      "rationale": "Research critique completed with 9 web-grounded facts. Impact(0.83) is weakest — findings need to be applied to paper to maximize value."
+    }
+  ],
   "sub_goals": [
-    "1. pyproject.toml 생성 (pip install ctx-retriever)",
-    "2. README 개선: 배지 + pip install + Claude Code hook 섹션",
-    "3. HF Space README + deployment 가이드",
-    "4. CONTRIBUTING.md 간략 작성"
+    "1. TES 정식 정의 섹션 추가 (ln normalization 정당화, RAGAS Context Precision 비교)",
+    "2. G2 '+0.688 normalized' → raw delta '+0.200 (0.350 vs 0.150)' 교체 및 normalization 설명",
+    "3. external R@5=0.495 결과 abstract/main results에 명시적 배치",
+    "4. Nemotron-Cascade-2 비교 제거 또는 공개 베이스라인(BM25, UniXcoder)으로 대체"
   ],
   "reward_spec": {
-    "primary_metric": "유저가 pip install 후 5분 안에 사용 가능한 상태",
-    "threshold": "pip install OK + README quickstart 완성 + HF Space 배포 가능"
+    "primary_metric": "논문 draft의 학술적 정직성 + 재현가능성 향상",
+    "threshold": "4개 fix 모두 적용 + 평론에서 지적된 misleading 수치 제거"
   },
-  "history": []
+  "history": [
+    {
+      "iteration": 1,
+      "outcome": "success",
+      "score": 0.916,
+      "summary": "Web-grounded critique completed: 9 facts from CoIR/CodeRAG-Bench/LocAgent/RAG literature. Key findings: synthetic benchmark is lookup task (not IR benchmark), external gap is catastrophic, trigger classifier at 60.2% undermines all routing claims, G2 normalization undefined."
+    }
+  ]
 }
