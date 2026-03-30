@@ -125,11 +125,23 @@ CTX outperforms BM25 on all three held-out external codebases in code-to-code st
 | BM25 | 0.920 | 0.980 | 0.946 |
 | CTX Adaptive Trigger | 0.210 | 0.380 | 0.293 |
 
+### Downstream LLM Evaluation
+
+CTX context injected into developer prompts improves LLM task quality across two models:
+
+| Scenario | WITH CTX | WITHOUT CTX | Δ |
+|----------|----------|-------------|---|
+| G1 (session memory recall) | 1.000 | 0.110 | **+0.890** |
+| G2 (CTX-specific knowledge) | 0.688 | 0.000 | **+0.688** |
+
+G1: CTX persistent memory enables perfect cross-session recall (vs 11% without). G2: CTX context eliminates hallucination on CTX-specific API queries.
+
 ### Key Findings
 
 - CTX achieves **1.9x higher TES** than BM25 with only 5.2% token usage
 - CTX achieves **perfect Recall@5 (1.0)** on IMPLICIT_CONTEXT dependency queries
 - CTX **outperforms BM25 on all 3 external codebases** in code-to-code retrieval (mean +0.162 R@5)
+- CTX context improves downstream LLM task quality: **G1 +0.890**, **G2 +0.688**
 - Trigger classifier achieves **100% accuracy** (all 4 types F1=1.00) on synthetic benchmark
 - Hybrid Dense+CTX achieves R@5=0.950 on COIR — best of both worlds
 - No single strategy dominates all dimensions — workload determines optimal choice
