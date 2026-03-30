@@ -167,26 +167,44 @@ class AdaptiveTriggerRetriever:
             pass
 
     def _index_imports(self, file_path: str, content: str) -> None:
-        """Build import dependency graph from real Python import statements."""
+        """Build import dependency graph using AST for accuracy (regex fallback)."""
+        import ast as _ast
         imports = []
+        seen = set()
 
-        # Real Python: import X, import X.Y, import X as Z
-        for m in re.finditer(r'^\s*import\s+([\w.]+)', content, re.MULTILINE):
-            mod = m.group(1).split(".")[0]
-            if mod not in imports:
+        def _add(mod: str) -> None:
+            if mod and mod not in seen:
+                seen.add(mod)
                 imports.append(mod)
 
-        # Real Python: from X import Y
-        for m in re.finditer(r'^\s*from\s+([\w.]+)\s+import', content, re.MULTILINE):
-            mod = m.group(1).split(".")[0]
-            if mod not in imports:
-                imports.append(mod)
-
-        # CTX-internal comment style (backward compat)
-        for m in re.finditer(r'#\s*import\s+([a-zA-Z_][a-zA-Z0-9_]*)', content):
-            mod = m.group(1)
-            if mod not in imports:
-                imports.append(mod)
+        try:
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", SyntaxWarning)
+                tree = _ast.parse(content)
+            for node in _ast.walk(tree):
+                if isinstance(node, _ast.Import):
+                    for alias in node.names:
+                        _add(alias.name.split(".")[0])
+                elif isinstance(node, _ast.ImportFrom):
+                    if node.module:
+                        top = node.module.split(".")[0]
+                        _add(top)
+                    # Handle relative imports: resolve against file's own package
+                    if node.level and node.level > 0:
+                        parts = file_path.replace("\\", "/").split("/")
+                        # Go up `level` directories from current file's package
+                        pkg_parts = parts[:-node.level] if node.level < len(parts) else []
+                        if node.module:
+                            pkg_parts.extend(node.module.split("."))
+                        if pkg_parts:
+                            _add(".".join(pkg_parts))
+                            _add(pkg_parts[-1])
+        except SyntaxError:
+            # Regex fallback
+            for m in re.finditer(r'^\s*import\s+([\w.]+)', content, re.MULTILINE):
+                _add(m.group(1).split(".")[0])
+            for m in re.finditer(r'^\s*from\s+([\w.]+)\s+import', content, re.MULTILINE):
+                _add(m.group(1).split(".")[0])
 
         self.import_graph[file_path] = imports
 
@@ -437,10 +455,12 @@ class AdaptiveTriggerRetriever:
             primary_files.add(self.file_paths[top_idx])
 
         # Traverse import graph to find dependencies
+        # depth scales with k: small k → focused 2-hop, large k → deeper 3-hop
+        bfs_depth = 3 if k >= 8 else 2
         all_relevant: Dict[str, float] = {}
         for pf in primary_files:
             all_relevant[pf] = 1.0
-            self._traverse_imports(pf, all_relevant, depth=2, decay=0.5)
+            self._traverse_imports(pf, all_relevant, depth=bfs_depth, decay=0.5)
 
         sorted_files = sorted(all_relevant.items(), key=lambda x: x[1], reverse=True)[:k]
         retrieved = [f for f, _ in sorted_files]
