@@ -394,7 +394,7 @@ On real data (GraphPrompt), the same pattern holds at a smaller scale: the best 
 
 ### 5.2 Error Analysis
 
-We classify CTX failure cases into four patterns across all datasets:
+We classify CTX failure cases into two primary patterns across all datasets:
 
 **FALSE_NEGATIVE** (missed relevant files): The dominant failure mode. On real codebases, CTX misses relevant files primarily because: (a) the symbol index uses regex patterns tuned for synthetic file headers, missing real Python function/class definitions that require `ast`-based extraction; (b) the concept index relies on structured `Concepts:` annotations absent in real code.
 
@@ -419,7 +419,7 @@ We evaluate four ablation variants to measure each component's contribution:
 
 1. **Import graph (A vs B):** Removing graph traversal drops IMPLICIT_CONTEXT recall from 1.0 to 0.4 on synthetic data (-60%), confirming the graph is essential for dependency queries. On real data, the effect is smaller because the synthetic MODULE_NAME pattern is absent.
 
-2. **Trigger classifier (A vs C):** Without classification, the system uses uniform TF-IDF, achieving higher raw Recall@5 (0.953) but nearly doubling token usage (22.0% vs. 5.2%), which reduces TES by 48% (0.780 → 0.406). The classifier is the primary TES driver.
+2. **Trigger classifier (A vs C):** Without classification, the system uses uniform TF-IDF, achieving higher raw Recall@5 (0.953) but quadrupling token usage (22.0% vs. 5.2%, a 4.2× increase), which reduces TES by 48% (0.780 → 0.406). The classifier is the primary TES driver.
 
 3. **Adaptive-k (A vs D):** Fixed k=5 performs nearly identically to full CTX (TES 0.783 vs. 0.780), indicating adaptive-k provides marginal benefit. The main efficiency gains come from trigger classification routing, not k-selection.
 
