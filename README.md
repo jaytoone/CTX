@@ -97,6 +97,15 @@ CTX adds no LLM calls — latency is purely algorithmic (BM25 + BFS indexing):
 
 The hook is skipped for prompts <15 chars, slash commands, `[noctx]` tags, and codebases with <3 files.
 
+**Control tags** you can add to any prompt:
+
+| Tag | Effect |
+|-----|--------|
+| `[noctx]` | Disable CTX for this prompt |
+| `[fix]` | Fix/Replace mode — adds anti-anchoring reminder so Claude doesn't copy the existing (potentially wrong) implementation |
+
+`[fix]` is also auto-triggered when the prompt starts with `fix:`, `bug:`, `refactor:`, or `replace:`.
+
 ## Trigger Types
 
 | Trigger | When Used | Mechanism |
