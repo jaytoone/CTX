@@ -46,7 +46,7 @@ Several recent systems augment LLMs with external memory for improved context ma
 
 ### 2.3 Long-Context Degradation
 
-The empirical evidence for context dilution is substantial. Shi et al. (2024) document the "Lost in the Middle" phenomenon where LLM accuracy follows a U-curve over document position. Kandpal et al. (2023) show that LLMs struggle disproportionately with long-tail knowledge. LongCodeBench (Guo et al., 2025) extends these findings to code, demonstrating that code task accuracy degrades severely beyond 32K tokens. The Head-to-Tail study (NAACL 2024) further characterizes frequency-dependent knowledge retrieval failures. These findings motivate CTX's core design: rather than expanding context windows, reduce context to only what is relevant, guided by code structure.
+The empirical evidence for context dilution is substantial. Shi et al. (2024) document the "Lost in the Middle" phenomenon where LLM accuracy follows a U-curve over document position. Kandpal et al. (2023) show that LLMs struggle disproportionately with long-tail knowledge. LongCodeBench (Guo et al., 2025) extends these findings to code, demonstrating that code task accuracy degrades severely beyond 32K tokens. The Head-to-Tail study (Sun et al., 2024) further characterizes frequency-dependent knowledge retrieval failures. These findings motivate CTX's core design: rather than expanding context windows, reduce context to only what is relevant, guided by code structure.
 
 ---
 
