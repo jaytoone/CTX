@@ -112,11 +112,14 @@ SCENARIOS = [
 ]
 
 
-def load_file_snippet(filepath: str, max_lines: int = 60) -> str:
-    """Load first max_lines of a source file as context."""
+def load_file_snippet(filepath: str, max_lines: int = 60, sig_only: bool = False) -> str:
+    """Load source file as context. sig_only=True extracts signatures only (prevents over-anchoring)."""
     full_path = ROOT / filepath
     if not full_path.exists():
         return f"[FILE NOT FOUND: {filepath}]"
+    if sig_only and filepath.endswith(".py"):
+        from src.retrieval.context_selector import load_signature_context
+        return load_signature_context(filepath, root=ROOT)
     lines = full_path.read_text(encoding="utf-8").splitlines()
     snippet = "\n".join(lines[:max_lines])
     return f"# File: {filepath}\n```python\n{snippet}\n```"
@@ -180,12 +183,12 @@ class RealEvalResult:
     target_file: str
 
 
-def run_scenarios(client) -> List[RealEvalResult]:
+def run_scenarios(client, sig_only: bool = False) -> List[RealEvalResult]:
     results = []
     for s in SCENARIOS:
         for condition in ("with_ctx", "without_ctx"):
             if condition == "with_ctx":
-                ctx = load_file_snippet(s.ctx_context_file)
+                ctx = load_file_snippet(s.ctx_context_file, sig_only=sig_only)
                 user_msg = (
                     f"Here is the relevant file from the codebase:\n\n{ctx}\n\n"
                     f"Task: {s.instruction}\n\n"
@@ -241,6 +244,12 @@ def aggregate(results: List[RealEvalResult]) -> dict:
 
 
 def main():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--sig-only", action="store_true",
+                        help="Use signature-only context (prevents over-anchoring)")
+    args = parser.parse_args()
+
     client = get_llm_client()
     backend = "MiniMax" if os.environ.get("MINIMAX_API_KEY") else "Anthropic"
     model = os.environ.get("MINIMAX_MODEL") or "claude-haiku-4-5-20251001"
@@ -249,11 +258,12 @@ def main():
         print("[ERROR] No LLM client available. Set MINIMAX_API_KEY or ANTHROPIC_API_KEY.")
         sys.exit(1)
 
-    print(f"Backend: {backend} | Model: {model}")
+    ctx_mode = "sig_only" if args.sig_only else "full_content"
+    print(f"Backend: {backend} | Model: {model} | Context mode: {ctx_mode}")
     print(f"Scenarios: {len(SCENARIOS)} real CTX codebase tasks")
     print()
 
-    results = run_scenarios(client)
+    results = run_scenarios(client, sig_only=args.sig_only)
     summary = aggregate(results)
 
     w = summary["with_ctx"]
