@@ -1,44 +1,21 @@
 {
-  "root_goal": "CTX 논문 References 보강 + 학술적 임팩트 강화 — BEIR/CoIR 직접 인용, 관련 논문 비교 명확화",
-  "original_goal": "CTX 시스템 품질 강화 — 연구 평론 기반 핵심 지표 개선",
+  "root_goal": "CTX paper draft 업데이트 — COIR R@5 0.380→0.740 (개선 +95%) 수치 반영, Abstract/Table 4/분석 섹션 정확도 보강",
+  "original_goal": "CTX 검색 성능 개선 — SEMANTIC_CONCEPT R@5 0.380→0.65+ (BM25 hybrid), 외부 코드베이스 R@5 0.152→0.40+ (AST 파서)",
   "level": 0,
   "evolution_count": 2,
   "evolution_history": [
-    {
-      "iteration": 1,
-      "goal": "trigger classifier EXPLICIT recall 0.367→1.000 fix + paper 수치 업데이트",
-      "score": 0.946,
-      "rationale": "100% trigger accuracy 달성, R@3 0.862→0.890, paper abstract/limitations 업데이트"
-    },
-    {
-      "iteration": 4,
-      "goal": "README When to Use CTX section — honest capability/limitation disclosure",
-      "score": 0.944,
-      "rationale": "CTX 적합 워크로드와 한계 명시. Pareto: completeness 향상. weak_dim: impact"
-    }
+    {"iteration": 1, "goal": "CTX 검색 성능 개선 — SEMANTIC_CONCEPT R@5 0.380→0.65+ (BM25 hybrid), 외부 코드베이스 R@5 0.152→0.40+ (AST 파서)", "score": 0.77, "rationale": "Initial: COIR fix (CamelCase + BM25 hybrid), COIR R@5 0.380→0.867"},
+    {"iteration": 2, "goal": "CTX 검색 성능 개선 — SEMANTIC_CONCEPT R@5 0.380→0.65+ (BM25 hybrid), 외부 코드베이스 R@5 0.152→0.40+ (AST 파서)", "score": 0.94, "rationale": "Fresh benchmark: COIR n=100 R@5=0.740, external mean 0.744 — both goals exceeded. Evolve to paper update."}
   ],
   "sub_goals": [
-    "1. paper References 섹션: BEIR benchmark 논문 추가 (Thakur et al. 2021)",
-    "2. paper References 섹션: CoIR benchmark 논문 추가 (Li et al. 2024)",
-    "3. paper Related Work: CTX vs CoIR baseline 비교 명확화 (text-to-code vs code-to-code 구분)",
-    "4. paper 내 benchmark 비교 정확도 검증 (BM25=0.980 출처 명시)"
+    "1. Abstract의 COIR 수치 수정: 0.380→0.740, '61% below BM25'→'24% below BM25'",
+    "2. Table 4 (Section 4.9) 수치 업데이트: CTX R@1=0.720, R@5=0.740, MRR=0.728",
+    "3. Hybrid 개선 비율 수정: '2.5× improvement (0.380→0.950)' → 정확한 수치",
+    "4. 개선 원인 추가: CamelCase fix + BM25 hybrid blend가 COIR을 개선한 이유"
   ],
   "reward_spec": {
-    "primary_metric": "논문 학술적 엄밀성",
-    "threshold": "BEIR/CoIR 인용 추가, text-to-code vs code-to-code 구분 명확화, 64 tests pass"
+    "primary_metric": "paper accuracy",
+    "threshold": "Abstract/Table 4/분석에 COIR 0.740 수치 반영, no factual errors"
   },
-  "history": [
-    {
-      "iteration": 1,
-      "outcome": "success",
-      "score": 0.946,
-      "summary": "Trigger fix + paper abstract/limitations updated"
-    },
-    {
-      "iteration": 4,
-      "outcome": "success",
-      "score": 0.944,
-      "summary": "README When to Use CTX added. Pareto improved on completeness."
-    }
-  ]
+  "history": []
 }
