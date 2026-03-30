@@ -77,6 +77,19 @@ Code files (3/847 total):
 (Use the prompt intent to decide how to treat this context.)
 ```
 
+## Hook Performance
+
+CTX adds no LLM calls — latency is purely algorithmic (BM25 + BFS indexing):
+
+| Project | Language | Files | Hook Latency |
+|---------|----------|-------|-------------|
+| Small project | Python | ~88 | ~40ms |
+| Medium project | Python | ~215 | ~165ms |
+| Large project | TypeScript | ~651 | ~270ms |
+| Very large | any | >2000 | skipped (auto-excluded) |
+
+The hook is skipped for prompts <15 chars, slash commands, `[noctx]` tags, and codebases with <3 files.
+
 ## Trigger Types
 
 | Trigger | When Used | Mechanism |
