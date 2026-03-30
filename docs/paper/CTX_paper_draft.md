@@ -265,7 +265,7 @@ CTX outperforms BM25 on all three held-out external codebases (McNemar p < 0.011
 
 **Internal Real Codebases (GraphPrompt, AgentNode) -- CTX Recall@5 by Trigger Type:**
 
-| Trigger Type | GraphPrompt (82 files) | AgentNode (217 files) |
+| Trigger Type | GraphPrompt (73 files) | AgentNode (596 files) |
 |---|---|---|
 | EXPLICIT_SYMBOL | 0.657 | 0.195 |
 | SEMANTIC_CONCEPT | 0.788 | 0.000 |
