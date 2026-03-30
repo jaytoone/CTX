@@ -38,11 +38,18 @@ Primary language auto-detected by file count. Related extensions co-indexed (e.g
 ## Installation
 
 ```bash
-# Hook installed at: ~/.claude/hooks/ctx_loader.py
-# Registered in ~/.claude/settings.json UserPromptSubmit hooks
+# 1. Copy hook
+cp hooks/ctx_real_loader.py ~/.claude/hooks/
+
+# 2. Set your CTX path (line 25 in ctx_real_loader.py)
+# CTX_PROJECT = "/path/to/your/CTX"   ← edit this
+
+# 3. Register in ~/.claude/settings.json (see README)
 ```
 
-The hook is self-contained (no external CTX imports required).
+The hook requires CTX to be available: edit `CTX_PROJECT` on line 25 to point to your CTX
+clone, or install via `pip install ctx-retriever` and update the import path accordingly.
+If the import fails, the hook silently falls back to no-op (safe for production use).
 
 ## Hook Behavior
 

@@ -52,7 +52,11 @@ CTX works best as a **live hook** that automatically injects relevant files into
 # 1. Copy the hook to Claude Code hooks directory
 cp hooks/ctx_real_loader.py ~/.claude/hooks/
 
-# 2. Register in ~/.claude/settings.json
+# 2. Set your CTX path (edit line 25 in the copied hook)
+#    CTX_PROJECT = "/path/to/your/CTX"
+#    (or install via pip and adjust the import path)
+
+# 3. Register in ~/.claude/settings.json
 ```
 
 ```json
