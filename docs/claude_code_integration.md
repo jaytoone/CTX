@@ -13,7 +13,7 @@ User prompt → [ctx_loader.py hook]
              classify_trigger()
                     ↓
         EXPLICIT_SYMBOL → symbol index lookup (precision)
-        SEMANTIC_CONCEPT → ASCII keyword scoring (recall)
+        SEMANTIC_CONCEPT → BM25 keyword scoring (recall)
         IMPLICIT_CONTEXT → BFS import graph traversal (coverage)
         TEMPORAL_HISTORY → skip (memory MCP handles)
                     ↓
