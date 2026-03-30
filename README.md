@@ -28,7 +28,7 @@ pip install -e .
 ## Quick Start
 
 ```python
-from src.retrieval.adaptive_trigger import AdaptiveTriggerRetriever
+from ctx_retriever.retrieval.adaptive_trigger import AdaptiveTriggerRetriever
 
 # Point at any codebase directory
 retriever = AdaptiveTriggerRetriever("/path/to/your/project")
