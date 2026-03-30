@@ -257,7 +257,7 @@ SEMANTIC_CONCEPT is the strongest trigger type on external codebases (mean 0.663
 | Requests | **0.626** | 0.489 | **+0.137** | 0.010787 |
 | **External mean** | **0.500** | 0.337 | **+0.163** | — |
 
-*Note: Row means are simple per-codebase averages. Query-weighted bootstrap estimate is 0.495 (Table 4, 95% CI [0.441, 0.550]).*
+*Note: Row means are simple per-codebase averages. Query-weighted bootstrap estimate is 0.495 (Table 3, 95% CI [0.441, 0.550]).*
 
 CTX outperforms BM25 on all three held-out external codebases (McNemar p < 0.011 for all), confirming that the trigger classifier and import graph generalize beyond the development codebase.
 
@@ -333,7 +333,7 @@ Stronger LLMs benefit more from CTX context (Nemotron $+1.000$ vs. MiniMax $+0.3
 
 A critical concern for production deployment is whether CTX's retrieval quality generalizes to codebases it was not optimized for. We evaluate on three held-out open-source Python projects: Flask (79 files, n=87 queries), FastAPI (928 files, n=89 queries), and Requests (35 files, n=80 queries). These codebases were not used during any system development.
 
-**Table 4: External Codebase Generalization — CTX R@5 with Bootstrap 95% CI**
+**Table 3: External Codebase Generalization — CTX R@5 with Bootstrap 95% CI**
 
 | Codebase | Files | Queries | R@5 | 95% CI |
 |----------|-------|---------|-----|--------|
@@ -352,7 +352,7 @@ These fixes required 30 lines of code changes and were motivated by examining fa
 
 To position CTX against the broader code retrieval literature, we evaluate on a COIR-style benchmark (Li et al., 2024) constructed from the CodeSearchNet Python test set (Husain et al., 2019). We sample 100 queries (function docstrings) and construct a corpus of 1,000 functions (100 targets + 900 distractors). This evaluates natural-language-to-code retrieval, a complementary task to CTX's primary code-to-code structural retrieval.
 
-**Table 3: COIR-Style Evaluation (CodeSearchNet Python, 100 queries, 1000 corpus)**
+**Table 4: COIR-Style Evaluation (CodeSearchNet Python, 100 queries, 1000 corpus)**
 
 | Strategy | Recall@1 | Recall@5 | MRR |
 |----------|----------|----------|-----|
@@ -403,6 +403,8 @@ We classify CTX failure cases into four patterns across all datasets:
 ### 5.3 Ablation Study
 
 We evaluate four ablation variants to measure each component's contribution:
+
+**Table 5: Ablation Study — Component Contribution**
 
 | Variant | Description | Synthetic R@5 / TES | Real Avg R@5 / TES |
 |---------|-------------|---------------------|---------------------|
