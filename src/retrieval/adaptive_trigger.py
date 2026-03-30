@@ -13,6 +13,7 @@ Dynamically adjusts k based on trigger confidence (CAR-style).
 
 import os
 import re
+import warnings
 from typing import Dict, List, Set
 
 import numpy as np
@@ -114,31 +115,56 @@ class AdaptiveTriggerRetriever:
             self.bm25 = BM25Okapi(self._bm25_corpus)
 
     def _index_symbols(self, file_path: str, content: str) -> None:
-        """Extract function and class names and map them to file paths."""
-        # Match def function_name(
-        for match in re.finditer(r'(?:^|\n)def\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(', content):
-            name = match.group(1)
-            self.symbol_index.setdefault(name, []).append(file_path)
-
-        # Match class ClassName:
-        for match in re.finditer(r'(?:^|\n)class\s+([A-Z][a-zA-Z0-9_]*)', content):
-            name = match.group(1)
-            self.symbol_index.setdefault(name, []).append(file_path)
+        """Extract function and class names using AST (falls back to regex on parse error)."""
+        import ast as _ast
+        try:
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", SyntaxWarning)
+                tree = _ast.parse(content)
+            for node in _ast.walk(tree):
+                if isinstance(node, (_ast.FunctionDef, _ast.AsyncFunctionDef)):
+                    self.symbol_index.setdefault(node.name, []).append(file_path)
+                elif isinstance(node, _ast.ClassDef):
+                    self.symbol_index.setdefault(node.name, []).append(file_path)
+        except SyntaxError:
+            # Graceful degradation: regex fallback for non-parseable files
+            for match in re.finditer(r'(?:^|\n)\s*(?:async\s+)?def\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(', content):
+                name = match.group(1)
+                self.symbol_index.setdefault(name, []).append(file_path)
+            for match in re.finditer(r'(?:^|\n)\s*class\s+([a-zA-Z_][a-zA-Z0-9_]*)', content):
+                name = match.group(1)
+                self.symbol_index.setdefault(name, []).append(file_path)
 
     def _index_concepts(self, file_path: str, content: str) -> None:
         """Extract concept keywords from docstrings and comments."""
-        # Extract from Concepts: line in module docstring
+        # Extract from Concepts: line in module docstring (CTX-internal)
         concept_match = re.search(r'Concepts:\s*(.+)', content)
         if concept_match:
             concepts = [c.strip() for c in concept_match.group(1).split(",")]
             for concept in concepts:
                 self.concept_index.setdefault(concept.lower(), []).append(file_path)
 
-        # Extract from Tier: line
+        # Extract from Tier: line (CTX-internal)
         tier_match = re.search(r'Tier:\s*(\w+)', content)
         if tier_match:
             tier = tier_match.group(1).lower()
             self.concept_index.setdefault(f"tier:{tier}", []).append(file_path)
+
+        # General: extract significant nouns from module-level docstring (universal)
+        import ast as _ast
+        try:
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", SyntaxWarning)
+                tree = _ast.parse(content)
+            module_doc = _ast.get_docstring(tree)
+            if module_doc:
+                # Extract words of length 4+ from first 2 lines of docstring
+                first_lines = " ".join(module_doc.splitlines()[:2])
+                words = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{3,}', first_lines.lower())
+                for w in set(words):
+                    self.concept_index.setdefault(w, []).append(file_path)
+        except SyntaxError:
+            pass
 
     def _index_imports(self, file_path: str, content: str) -> None:
         """Build import dependency graph from real Python import statements."""

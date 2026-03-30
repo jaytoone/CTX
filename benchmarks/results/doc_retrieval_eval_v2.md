@@ -1,65 +1,66 @@
 # CTX Document Retrieval Evaluation v2
 
-**Date**: 2026-03-27 17:10
-**Corpus**: 29 .md files from docs/
-**Queries**: 87 (heading_exact + heading_paraphrase + keyword)
+**Date**: 2026-03-30 14:23
+**Corpus**: 46 .md files from docs/
+**Queries**: 100 (heading_exact + heading_paraphrase + keyword)
 **Metrics**: Recall@3, Recall@5, NDCG@5, MRR
 
 ## Summary Table
 
 | Strategy | Recall@3 | Recall@5 | NDCG@5 | MRR |
 |----------|----------|----------|--------|-----|
-| CTX-doc (heading+BM25) | **0.862** | **0.954** | 0.830 | 0.795 |
-| BM25 | **0.667** | **0.839** | 0.655 | 0.611 |
-| Dense TF-IDF | **0.690** | **0.805** | 0.607 | 0.563 |
+| CTX-doc (heading+BM25) | **0.860** | **0.930** | 0.813 | 0.784 |
+| BM25 | **0.610** | **0.740** | 0.596 | 0.572 |
+| Dense TF-IDF | **0.610** | **0.650** | 0.525 | 0.518 |
 
 ## Per-Strategy Analysis
 
 ### CTX-doc (heading+BM25)
-- Hits@3: 75/87 (86.2%)
-- Hits@5: 83/87 (95.4%)
-- NDCG@5: 0.830
-- MRR: 0.795
+- Hits@3: 86/100 (86.0%)
+- Hits@5: 93/100 (93.0%)
+- NDCG@5: 0.813
+- MRR: 0.784
 
 **Misses (top 5)**:
-- [heading_exact] `original question` → expected `research/20260326-ctx-vs-claudecode-tools.md`
-- [keyword] `find docs related to repobench cosqa` → expected `research/20260327-ctx-paper-numbers-critique.md`
-- [heading_exact] `original question` → expected `research/20260326-ctx-benchmark-validation-roadmap.md`
-- [keyword] `show information about full files` → expected `paper/README.md`
+- [keyword] `find docs related to goal high` → expected `research/20260326-ctx-goal1-goal2-final.md`
+- [keyword] `find docs related to goal downstream` → expected `research/20260326-ctx-benchmark-validation-roadmap.md`
+- [heading_exact] `web facts` → expected `research/20260326-ctx-benchmark-validation-roadmap.md`
+- [heading_exact] `original question` → expected `research/20260326-ctx-vs-sota-comparison.md`
+- [keyword] `show information about without minimax` → expected `research/20260328-ctx-downstream-nemotron-eval-v2.md`
 
 ### BM25
-- Hits@3: 58/87 (66.7%)
-- Hits@5: 73/87 (83.9%)
-- NDCG@5: 0.655
-- MRR: 0.611
+- Hits@3: 61/100 (61.0%)
+- Hits@5: 74/100 (74.0%)
+- NDCG@5: 0.596
+- MRR: 0.572
 
 **Misses (top 5)**:
-- [heading_exact] `3개 mcp의 현재 상태` → expected `research/QUICK_REFERENCE.md`
-- [heading_paraphrase] `I need info on [expert-research-v2] ctx 실험 논문 가치 평론` → expected `research/20260324-ctx-paper-worthiness.md`
-- [heading_exact] `original question` → expected `research/20260326-ctx-vs-claudecode-tools.md`
-- [heading_paraphrase] `explain [expert-research-v2] ctx 현재 성과 vs 사용자 요구 평론` → expected `research/20260326-ctx-achievement-review.md`
-- [heading_exact] `2. related work` → expected `paper/CTX_paper_draft.md`
+- [heading_paraphrase] `[expert-research-v2] ctx 약점 보완 대안 기술 분석 reference` → expected `research/20260327-ctx-alternatives-research.md`
+- [heading_exact] `실험 설정` → expected `research/20260327-ctx-real-project-self-eval.md`
+- [heading_paraphrase] `where is ctx — document index documented` → expected `DOC_INDEX.md`
+- [keyword] `find docs related to goal high` → expected `research/20260326-ctx-goal1-goal2-final.md`
+- [keyword] `find docs related to goal downstream` → expected `research/20260326-ctx-benchmark-validation-roadmap.md`
 
 ### Dense TF-IDF
-- Hits@3: 60/87 (69.0%)
-- Hits@5: 70/87 (80.5%)
-- NDCG@5: 0.607
-- MRR: 0.563
+- Hits@3: 61/100 (61.0%)
+- Hits@5: 65/100 (65.0%)
+- NDCG@5: 0.525
+- MRR: 0.518
 
 **Misses (top 5)**:
-- [heading_exact] `3개 mcp의 현재 상태` → expected `research/QUICK_REFERENCE.md`
-- [heading_exact] `original question` → expected `research/20260325-ctx-paper-tier-evaluation.md`
-- [heading_paraphrase] `I need info on [expert-research-v2] ctx 실험 논문 가치 평론` → expected `research/20260324-ctx-paper-worthiness.md`
-- [keyword] `show information about retrieval cross` → expected `research/20260325-long-session-context-management.md`
 - [keyword] `show information about full context` → expected `CTX_SPEC_v1.0.md`
+- [heading_paraphrase] `[expert-research-v2] ctx 약점 보완 대안 기술 분석 reference` → expected `research/20260327-ctx-alternatives-research.md`
+- [heading_exact] `실험 설정` → expected `research/20260327-ctx-real-project-self-eval.md`
+- [heading_paraphrase] `where is ctx — document index documented` → expected `DOC_INDEX.md`
+- [heading_paraphrase] `I need info on ctx vs nemotron-cascade-2: code retrieval per` → expected `research/20260327-ctx-nemotron-comparison.md`
 
 ## Per-Query-Type Breakdown
 
 | Type | N | CTX R@3 | BM25 R@3 | Dense R@3 |
 |------|---|---------|----------|-----------|
-| heading_exact | 29 | 0.862 | 0.621 | 0.690 |
-| heading_paraphrase | 29 | 1.000 | 0.655 | 0.655 |
-| keyword | 29 | 0.724 | 0.724 | 0.724 |
+| heading_exact | 29 | 0.793 | 0.483 | 0.448 |
+| heading_paraphrase | 34 | 1.000 | 0.529 | 0.647 |
+| keyword | 37 | 0.784 | 0.784 | 0.703 |
 
 ## Method Description
 
@@ -71,6 +72,6 @@
 
 | Stat | Value |
 |------|-------|
-| Total docs | 29 |
-| Average headings/doc | 13.7 |
+| Total docs | 46 |
+| Average headings/doc | 15.3 |
 | Average keywords/doc | 15.0 |
