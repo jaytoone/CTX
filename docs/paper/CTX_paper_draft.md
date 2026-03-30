@@ -108,7 +108,7 @@ CTX can also be combined with dense retrieval in a two-stage pipeline: dense ret
 
 3. **Score combination.** Dense similarity scores and graph proximity scores are combined with equal weights: $\text{score}(f) = 0.5 \cdot s_{\text{dense}}(f) + 0.5 \cdot s_{\text{graph}}(f)$.
 
-This hybrid approach addresses CTX's primary weakness on text-to-code semantic matching (COIR R@5 = 0.38) while preserving structural dependency awareness.
+This hybrid approach addresses CTX's primary weakness on text-to-code semantic matching (COIR R@5 = 0.380) while preserving structural dependency awareness.
 
 ### 3.6 TES Metric
 
