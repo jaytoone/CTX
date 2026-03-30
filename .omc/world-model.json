@@ -1,0 +1,46 @@
+{
+  "tried_strategies": [
+    {
+      "goal": "P1 실용 임팩트 — pip install + 논문 + over-anchoring",
+      "score": 0.88,
+      "score_vector": {"quality": 0.90, "completeness": 0.85, "efficiency": 0.92, "impact": 0.85},
+      "iteration": 1,
+      "outcome": "evolved",
+      "weak_dim": "completeness"
+    },
+    {
+      "goal": "P2/P3 성능 개선 + README 배지",
+      "score": 0.91,
+      "score_vector": {"quality": 0.92, "completeness": 0.90, "efficiency": 0.93, "impact": 0.90},
+      "iteration": 2,
+      "outcome": "evolved",
+      "weak_dim": "impact"
+    }
+  ],
+  "dead_ends": [],
+  "known_facts": [
+    "pyproject.toml 수정됨: ctx_retriever = src 네임스페이스 매핑 (646936c)",
+    "import ctx_retriever 완전 동작, retrieve 0.2ms",
+    "src/retrieval/context_selector.py 생성 — AST 시그니처 추출 (2074 chars vs 8000 full)",
+    "real_codebase_downstream_eval.py --sig-only 플래그 추가",
+    "docs/paper/CTX_paper_draft.md 508줄, 완성 (Obsidian 링크 제거)",
+    "_index_symbols(): regex → AST (1339 symbols, 데코레이터/async/소문자 클래스 지원)",
+    "_index_concepts(): 범용 docstring 파싱 추가 (513 entries)",
+    "keyword R@3: 0.724 → 0.784 (corpus 29→46 docs)",
+    "README 배지 추가: PyPI version + downloads"
+  ],
+  "uncertain": [],
+  "dimensions_explored": {
+    "quality": 0.92,
+    "completeness": 0.90,
+    "efficiency": 0.93,
+    "impact": 0.90
+  },
+  "best_score_vector": {
+    "quality": 0.92,
+    "completeness": 0.90,
+    "efficiency": 0.93,
+    "impact": 0.90
+  },
+  "her_hints": []
+}

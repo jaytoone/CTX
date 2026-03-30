@@ -506,3 +506,12 @@ These results establish four key findings. First, code structure---specifically,
 
 *Manuscript prepared: 2026-03-28. Experiment version: CTX v4.0 P11 (external R@5=0.495 [CI: 0.441, 0.550], SEMANTIC fix, import graph generalization, Bootstrap CI n_boot=10,000, G1/G2 v4 downstream eval: G1 Δ=+0.890, G2 Δ=+0.688 calibrated, Nemotron G2 Δ=+1.000, SOYA deployment verdict: READY).*
 
+## Related
+- [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
+- [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]
+- [[projects/CTX/research/20260325-ctx-paper-tier-evaluation|20260325-ctx-paper-tier-evaluation]]
+- [[projects/CTX/research/20260328-trigger-classifier-semantic-fix|20260328-trigger-classifier-semantic-fix]]
+- [[projects/CTX/SOYA_DEPLOYMENT_GUIDE|SOYA_DEPLOYMENT_GUIDE]]
+- [[projects/CTX/research/20260327-ctx-nemotron-comparison|20260327-ctx-nemotron-comparison]]
+- [[projects/CTX/research/20260328-ctx-downstream-eval-complete|20260328-ctx-downstream-eval-complete]]
+- [[projects/CTX/research/20260327-ctx-downstream-eval|20260327-ctx-downstream-eval]]
