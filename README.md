@@ -1,5 +1,7 @@
 # CTX: Trigger-Driven Dynamic Context Loading for Code-Aware LLM Agents
 
+[![PyPI version](https://img.shields.io/pypi/v/ctx-retriever)](https://pypi.org/project/ctx-retriever/)
+[![PyPI downloads](https://img.shields.io/pypi/dm/ctx-retriever)](https://pypi.org/project/ctx-retriever/)
 [![Python](https://img.shields.io/badge/python-3.9%2B-blue)](https://pypi.org/project/ctx-retriever/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![HuggingFace Demo](https://img.shields.io/badge/HuggingFace-Demo-orange)](https://huggingface.co/spaces/Be2Jay/ctx-demo)
