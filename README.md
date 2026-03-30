@@ -170,7 +170,7 @@ G1: CTX persistent memory enables perfect cross-session recall (vs 11% without).
 
 **CTX excels when:**
 - You need dependency-aware retrieval: `IMPLICIT_CONTEXT` queries (e.g., "what uses AuthService?") achieve perfect Recall@5 (1.0) via BFS import graph traversal
-- Working with a **known codebase** with established symbol/import structure — code-to-code retrieval outperforms BM25 on real projects (Flask: +0.194, FastAPI: +0.156, Requests: +0.136)
+- Working with a **known codebase** with established symbol/import structure — code-to-code retrieval outperforms BM25 on real projects (Flask: +0.198, FastAPI: +0.154, Requests: +0.137)
 - Token budget is critical — CTX uses only **5.2% of tokens** vs 18.7% for BM25 (TES: 1.9x higher)
 - Queries name **explicit symbols** (class names, function names) — EXPLICIT_SYMBOL trigger routes directly to symbol index
 
