@@ -194,8 +194,13 @@ def main() -> None:
         f"[CTX] {trigger_label} | {n_loaded}/{n_total} files — ~{saved_pct}% tokens saved"
         f" | conf {confidence:.2f}{conf_tag}"
     )
-    if low_conf:
-        lines.append("  ⚠ Low confidence — add specific symbol/file names for better results")
+    if low_conf and core_files:
+        # Suggest switching to EXPLICIT_SYMBOL by naming one of the core files
+        core_names = [os.path.splitext(os.path.basename(
+            os.path.relpath(f, cwd) if os.path.isabs(f) else f
+        ))[0] for f in core_files[:2]]
+        lines.append(f"  ⚠ Low confidence — for sharper results, name a specific file or symbol"
+                     f" (e.g. \"{core_names[0]}\")")
 
     # Code files: core (★ top 3) vs auxiliary (·)
     core_files = result.retrieved_files[:TOP_CORE]
