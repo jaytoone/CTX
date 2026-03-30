@@ -151,3 +151,6 @@ if cwd and session.get("cwd", "") != cwd:
 | LLM 위임 적용 | ✅ 키워드 헤더 제거 완료 |
 
 이번 세션 모든 개선 목표 달성. 40개 테스트 전량 통과.
+
+## Related
+- [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
