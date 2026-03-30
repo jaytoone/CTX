@@ -68,13 +68,40 @@ If the import fails, the hook silently falls back to no-op (safe for production 
 - Codebase has < 3 source files
 - cwd is inside `.claude/` (meta-hook)
 
+## User Tags
+
+| Tag | Effect |
+|---|---|
+| `[noctx]` | Disable CTX entirely for this prompt |
+| `[raw]` | Same as `[noctx]` (alias) |
+| `[fix]` | Enable Fix/Replace mode — injects anti-anchoring guidance |
+
+Fix/Replace mode is also auto-detected when the prompt starts with `fix:`, `bug:`, `refactor:`, or `replace:`.
+
 ## Output Format
 
 ```
-[CTX/TypeScript] Trigger: EXPLICIT_SYMBOL | Query: VideoPlayer | Confidence: 0.70
-Relevant files (3/651 total):
-• components/VideoPlayer.tsx [VideoPlayer, useVideoState, handleSeek]
-  Video playback component with seek controls.
+[CTX] SEMANTIC_CONCEPT | 4/88 files — ~95% tokens saved | conf 0.72
+Code files (★ core  · aux):
+★ src/retrieval/adaptive_trigger.py [score=0.821]
+★ src/trigger/trigger_classifier.py [score=0.754]
+★ src/retrieval/full_context.py [score=0.641]
+· tests/test_adaptive_trigger.py [score=0.412]
+Recent session (2 files, <2h):
+• hooks/ctx_real_loader.py
+(Use the prompt intent to decide how to treat this context.)
+```
+
+When `SEMANTIC_CONCEPT` confidence < 0.5:
+```
+[CTX] SEMANTIC_CONCEPT | 4/88 files — ~95% tokens saved | conf 0.41 ⚠ low
+  ⚠ Low confidence — for sharper results, name a specific file or symbol (e.g. "adaptive_trigger")
+```
+
+When Fix/Replace mode is active:
+```
+⚠ Fix/Replace mode: the files above show the CURRENT implementation.
+  Treat it as the target to change — do NOT anchor on it as correct.
 ```
 
 ## A/B Test Design
