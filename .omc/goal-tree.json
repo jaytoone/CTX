@@ -1,32 +1,18 @@
 {
-  "root_goal": "CTX 논문 draft 수정 — 평론 결과 반영 4개 핵심 fix: TES 정식 정의 + G2 raw delta 교체 + external gap 강조 + Nemotron 비교 제거/대체",
-  "original_goal": "CTX 현재 결론을 전문 리서치 기반으로 평론",
+  "root_goal": "CTX trigger classifier 개선 — EXPLICIT recall 0.367→0.85+: 'Find the function X' snake_case 식별자 매칭 수정",
+  "original_goal": "CTX 시스템 품질 강화 — 연구 평론 기반 핵심 지표 개선",
   "level": 0,
-  "evolution_count": 1,
-  "evolution_history": [
-    {
-      "iteration": 1,
-      "goal": "CTX 현재 결론에 대한 전문 리서치 기반 평론",
-      "score": 0.916,
-      "rationale": "Research critique completed with 9 web-grounded facts. Impact(0.83) is weakest — findings need to be applied to paper to maximize value."
-    }
-  ],
+  "evolution_count": 0,
+  "evolution_history": [],
   "sub_goals": [
-    "1. TES 정식 정의 섹션 추가 (ln normalization 정당화, RAGAS Context Precision 비교)",
-    "2. G2 '+0.688 normalized' → raw delta '+0.200 (0.350 vs 0.150)' 교체 및 normalization 설명",
-    "3. external R@5=0.495 결과 abstract/main results에 명시적 배치",
-    "4. Nemotron-Cascade-2 비교 제거 또는 공개 베이스라인(BM25, UniXcoder)으로 대체"
+    "1. SYMBOL_PATTERNS에 snake_case function/method 패턴 추가",
+    "2. trigger_accuracy.py 재실행으로 EXPLICIT F1 검증",
+    "3. 전체 벤치마크 영향도 확인 (R@3 regression 없음 확인)",
+    "4. trigger_accuracy.md 업데이트"
   ],
   "reward_spec": {
-    "primary_metric": "논문 draft의 학술적 정직성 + 재현가능성 향상",
-    "threshold": "4개 fix 모두 적용 + 평론에서 지적된 misleading 수치 제거"
+    "primary_metric": "EXPLICIT_SYMBOL F1 score",
+    "threshold": "F1 >= 0.80, 전체 accuracy >= 0.80, R@3 regression 없음"
   },
-  "history": [
-    {
-      "iteration": 1,
-      "outcome": "success",
-      "score": 0.916,
-      "summary": "Web-grounded critique completed: 9 facts from CoIR/CodeRAG-Bench/LocAgent/RAG literature. Key findings: synthetic benchmark is lookup task (not IR benchmark), external gap is catastrophic, trigger classifier at 60.2% undermines all routing claims, G2 normalization undefined."
-    }
-  ]
+  "history": []
 }

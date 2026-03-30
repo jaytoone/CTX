@@ -29,7 +29,7 @@ class Trigger:
 
 # Patterns for explicit symbol detection
 SYMBOL_PATTERNS = [
-    # Function/method references: function_name, ClassName.method_name
+    # Function/method references: function_name( — call syntax
     re.compile(r'\b([a-z_][a-z0-9_]*(?:\.[a-z_][a-z0-9_]*)?\s*\()', re.IGNORECASE),
     # Class references: CamelCase words
     re.compile(r'\b([A-Z][a-zA-Z0-9]+(?:[A-Z][a-zA-Z0-9]+)*)\b'),
@@ -37,6 +37,10 @@ SYMBOL_PATTERNS = [
     re.compile(r'[`"\']([a-zA-Z_][a-zA-Z0-9_.]+)[`"\']'),
     # File paths
     re.compile(r'(?:file|module|path)\s+([a-zA-Z0-9_/]+\.py)', re.IGNORECASE),
+    # Explicit function/method declaration: "function snake_case_name"
+    # Requires underscore in name (snake_case signal) to avoid matching common English words
+    # e.g. "Find the function run_migration" ✓, "how does the function handles X" ✗
+    re.compile(r'\b(?:function|method|def)\s+([a-z_][a-z0-9_]*_[a-z][a-z0-9_]*)\b', re.IGNORECASE),
 ]
 
 # Keywords that indicate explicit symbol lookup
