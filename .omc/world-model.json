@@ -48,6 +48,6 @@
   "uncertain": [],
   "dimensions_explored": {"quality": 0.9995, "completeness": 0.995, "efficiency": 0.970, "impact": 0.985},
   "best_score_vector": {"quality": 0.9995, "completeness": 0.995, "efficiency": 0.970, "impact": 0.985},
-  "plateau_count": 0,
+  "plateau_count": 1,
   "her_hints": []
 }
