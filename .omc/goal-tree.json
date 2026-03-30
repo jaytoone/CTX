@@ -1,32 +1,44 @@
 {
-  "root_goal": "CTX 논문 + README 실험 수치 업데이트 — trigger accuracy 100% + R@3=0.890 반영 + abstract 개선",
+  "root_goal": "CTX 논문 References 보강 + 학술적 임팩트 강화 — BEIR/CoIR 직접 인용, 관련 논문 비교 명확화",
   "original_goal": "CTX 시스템 품질 강화 — 연구 평론 기반 핵심 지표 개선",
   "level": 0,
-  "evolution_count": 1,
+  "evolution_count": 2,
   "evolution_history": [
     {
       "iteration": 1,
-      "goal": "trigger classifier EXPLICIT recall 0.367→1.000 fix",
+      "goal": "trigger classifier EXPLICIT recall 0.367→1.000 fix + paper 수치 업데이트",
       "score": 0.946,
-      "rationale": "100% trigger accuracy달성 (0.70→1.00), R@3 0.862→0.890. 이제 논문/README에 반영 필요."
+      "rationale": "100% trigger accuracy 달성, R@3 0.862→0.890, paper abstract/limitations 업데이트"
+    },
+    {
+      "iteration": 4,
+      "goal": "README When to Use CTX section — honest capability/limitation disclosure",
+      "score": 0.944,
+      "rationale": "CTX 적합 워크로드와 한계 명시. Pareto: completeness 향상. weak_dim: impact"
     }
   ],
   "sub_goals": [
-    "1. CTX_paper_draft.md: trigger accuracy 수치 업데이트 (Limitations 섹션 수정)",
-    "2. CTX_paper_draft.md: synthetic R@3=0.890 반영 (0.862에서 업데이트)",
-    "3. README.md: Results 테이블 R@3 수치 업데이트",
-    "4. 테스트 통과 확인"
+    "1. paper References 섹션: BEIR benchmark 논문 추가 (Thakur et al. 2021)",
+    "2. paper References 섹션: CoIR benchmark 논문 추가 (Li et al. 2024)",
+    "3. paper Related Work: CTX vs CoIR baseline 비교 명확화 (text-to-code vs code-to-code 구분)",
+    "4. paper 내 benchmark 비교 정확도 검증 (BM25=0.980 출처 명시)"
   ],
   "reward_spec": {
-    "primary_metric": "논문/README 수치 일관성",
-    "threshold": "trigger accuracy 100% 명시, R@3=0.890 반영, 기존 misleading 수치 제거"
+    "primary_metric": "논문 학술적 엄밀성",
+    "threshold": "BEIR/CoIR 인용 추가, text-to-code vs code-to-code 구분 명확화, 64 tests pass"
   },
   "history": [
     {
       "iteration": 1,
       "outcome": "success",
       "score": 0.946,
-      "summary": "Trigger classifier: EXPLICIT recall 0.37→1.0, overall accuracy 60%→100%. R@3 0.862→0.890."
+      "summary": "Trigger fix + paper abstract/limitations updated"
+    },
+    {
+      "iteration": 4,
+      "outcome": "success",
+      "score": 0.944,
+      "summary": "README When to Use CTX added. Pareto improved on completeness."
     }
   ]
 }

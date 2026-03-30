@@ -32,7 +32,7 @@ This paper makes three contributions:
 
 Several recent systems augment LLMs with external memory for improved context management. **MemGPT** (Packer et al., 2023) introduces an OS-inspired virtual memory hierarchy that pages information between main context and external storage. While MemGPT provides a general-purpose memory management framework, it does not exploit domain-specific structure: it treats all documents uniformly regardless of whether they are code, prose, or data.
 
-**Memori** (2025) implements embedding-based memory consolidation for LLM agents, achieving approximately 5% token usage on the LoCoMo conversational benchmark---comparable to CTX's 2--5% on code repositories. However, Memori treats all documents as flat text chunks, relying solely on embedding similarity for retrieval. CTX exploits the unique structural property of code: import graphs provide *explicit, deterministic* dependency information that embedding similarity cannot capture. Our ablation study (Section 5.3) demonstrates a 60% IMPLICIT_CONTEXT recall drop when removing import graph traversal, confirming that code structure---not retrieval sophistication---is the key differentiator. Concretely, on dependency queries, text-based approaches analogous to Memori's retrieval achieve Recall@5 of 0.4, while CTX's import-graph-aware retrieval achieves 1.0---a 150% improvement attributable entirely to structural awareness.
+**Memori** (2026) implements embedding-based memory consolidation for LLM agents, achieving approximately 5% token usage on the LoCoMo conversational benchmark---comparable to CTX's 2--5% on code repositories. However, Memori treats all documents as flat text chunks, relying solely on embedding similarity for retrieval. CTX exploits the unique structural property of code: import graphs provide *explicit, deterministic* dependency information that embedding similarity cannot capture. Our ablation study (Section 5.3) demonstrates a 60% IMPLICIT_CONTEXT recall drop when removing import graph traversal, confirming that code structure---not retrieval sophistication---is the key differentiator. Concretely, on dependency queries, text-based approaches analogous to Memori's retrieval achieve Recall@5 of 0.4, while CTX's import-graph-aware retrieval achieves 1.0---a 150% improvement attributable entirely to structural awareness.
 
 **MeCo** (ACL 2025) determines retrieval necessity via learned probes on LLM internal activations---a model-dependent approach requiring white-box access to transformer hidden states. This fundamentally limits deployment: MeCo cannot be used with proprietary API-only models (GPT-4, Claude) where internal activations are inaccessible. CTX's trigger classification operates externally on query syntax and semantics, making it model-agnostic and deployable with any LLM backend. While MeCo's internal-state triggers are conceptually related to CTX's trigger classification, CTX's triggers are symbolic and deterministic---enabling transparent, reproducible classification without requiring access to model internals.
 
@@ -499,7 +499,7 @@ FastAPI (928 files) achieves R@5=0.328 (95\% CI [0.246, 0.415])---the weakest ex
 
 [5] Wang, Z., et al. (2025). MeCo: Adaptive Tool Use via Memory-Consolidated Reasoning. In *Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (ACL 2025)*.
 
-[6] Memori: Context Management for LLM Agents. (2025). *arXiv preprint*.
+[6] Memori: A Persistent Memory Layer for Efficient, Context-Aware LLM Agents. (2026). *arXiv preprint arXiv:2603.19935*.
 
 [7] Guo, D., et al. (2025). LongCodeBench: Benchmarking LLMs on Long-Context Code Understanding. *arXiv preprint*.
 
@@ -511,7 +511,7 @@ FastAPI (928 files) achieves R@5=0.328 (95\% CI [0.246, 0.415])---the weakest ex
 
 [11] Husain, H., Wu, H.-H., Gazit, T., Allamanis, M., & Brockschmidt, M. (2019). CodeSearchNet Challenge: Evaluating the State of Semantic Code Search. *arXiv preprint arXiv:1909.09436*.
 
-[12] jCodeMunch: Code Compression for Large Language Model Context Optimization. (2025). *arXiv preprint*.
+[12] Gravelle, J. (2025). jCodeMunch: Code Compression for Large Language Model Context Optimization. GitHub software tool. Retrieved from https://github.com/jgravelle/jcodemunch-mcp.
 
 [13] Thakur, N., Reimers, N., Rücklé, A., Srivastava, A., & Gurevych, I. (2021). BEIR: A Heterogeneous Benchmark for Zero-shot Evaluation of Information Retrieval Models. In *Proceedings of the Thirty-fifth Conference on Neural Information Processing Systems Datasets and Benchmarks Track (NeurIPS 2021)*.
 

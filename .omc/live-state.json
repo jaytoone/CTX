@@ -1,18 +1,19 @@
 {
-  "current_iteration": 1,
+  "current_iteration": 14,
   "last_outcome": "success",
-  "last_phase_reached": "phase_5",
-  "started_at": "2026-03-30T00:00:00Z",
-  "best_score": 0.916,
-  "current_score": 0.916,
-  "current_goal_fidelity": 0.95,
-  "score_variance": 0.0,
+  "best_score": 0.980,
+  "current_score": 0.980,
+  "current_goal_fidelity": 0.93,
+  "score_variance": 0.002,
   "plateau_count": 0,
-  "evolution_count": 1,
+  "evolution_count": 3,
   "score_history": [
-    {"iteration": 1, "score": 0.916, "goal_fidelity": 0.95, "goal_version": 0, "score_variance": 0.0}
-  ],
-  "cost_history": [
-    {"iteration": 1, "phase_reached": "phase_5", "relative_cost": 1.0}
+    {"iteration": 3, "score": 0.946},
+    {"iteration": 5, "score": 0.963},
+    {"iteration": 6, "score": 0.970},
+    {"iteration": 7, "score": 0.972},
+    {"iteration": 12, "score": 0.975},
+    {"iteration": 13, "score": 0.978},
+    {"iteration": 14, "score": 0.980}
   ]
 }

@@ -105,3 +105,6 @@ Based on LLM code generation experiments (CTX pass@1=0.265 vs Full=0.102, n=49; 
 | OneViral | TypeScript | 651 | ~270ms |
 | >2000 files | any | — | skipped (dir exclusion) |
 
+## Related
+- [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
+- [[projects/CTX/decisions/20260326-path-derived-module-to-file|20260326-path-derived-module-to-file]]

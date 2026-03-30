@@ -1,71 +1,45 @@
 {
   "tried_strategies": [
-    {
-      "goal": "P1 실용 임팩트 — pip install + 논문 + over-anchoring",
-      "score": 0.88,
-      "score_vector": {
-        "quality": 0.9,
-        "completeness": 0.85,
-        "efficiency": 0.92,
-        "impact": 0.85
-      },
-      "iteration": 1,
-      "outcome": "evolved",
-      "weak_dim": "completeness"
-    },
-    {
-      "goal": "P2/P3 성능 개선 + README 배지",
-      "score": 0.91,
-      "score_vector": {
-        "quality": 0.92,
-        "completeness": 0.9,
-        "efficiency": 0.93,
-        "impact": 0.9
-      },
-      "iteration": 2,
-      "outcome": "evolved",
-      "weak_dim": "impact"
-    },
-    {
-      "goal": "trigger classifier EXPLICIT recall fix",
-      "score": 0.946,
-      "score_vector": {
-        "quality": 0.93,
-        "completeness": 1.0,
-        "efficiency": 0.95,
-        "impact": 0.9
-      },
-      "iteration": 1,
-      "outcome": "evolved",
-      "weak_dim": "impact"
-    }
+    {"goal": "trigger EXPLICIT recall fix", "score": 0.946, "iteration": 3, "outcome": "evolved", "weak_dim": "impact"},
+    {"goal": "README When to Use CTX", "score": 0.944, "iteration": 4, "outcome": "evolved", "weak_dim": "impact"},
+    {"goal": "paper References BEIR/CoIR + 0.982 fix", "score": 0.963, "iteration": 5, "outcome": "evolved", "weak_dim": "quality"},
+    {"goal": "paper factual audit + author + footer", "score": 0.978, "iteration": 13, "outcome": "evolved", "weak_dim": "quality"},
+    {"goal": "README external codebase + downstream eval tables", "score": 0.972, "iteration": 9, "outcome": "evolved", "weak_dim": "impact"},
+    {"goal": "final paper audit: orphaned refs, conclusion 0.982 fix, abstract 600 fix", "score": 0.980, "iteration": 16, "outcome": "evolved", "weak_dim": "quality"},
+    {"goal": "CTX 논문 References 보강 + 학술적 임팩트 강화 — BEIR/CoIR 직접 인용, 관련 논문 비교 명확화", "score": 0.993, "iteration": 30, "outcome": "current", "weak_dim": "efficiency",
+     "fixes_this_session": [
+       "iter 20: Conclusion 0.25 deployment threshold phrasing fixed",
+       "iter 21: External benchmark table numbers consistent (Flask 0.545, FastAPI 0.328), McNemar p-values added",
+       "iter 22: Internal artifacts removed (v9, final_report_v10, v4 calibrated)",
+       "iter 23: Hook performance table added to README",
+       "iter 24: Hook setup docs accurate (CTX_PROJECT config step, dependency note)",
+       "iter 25: Paper section 4.9↔4.8 swap fixed, Obsidian wikilinks removed",
+       "iter 26: ctx_loader.py → ctx_real_loader.py in integration doc flow + README +0.162→+0.163",
+       "iter 27: PostToolUse session tracker added to setup, TEMPORAL_HISTORY mechanism corrected",
+       "iter 28: Quick Start import path src.→ctx_retriever. (pip namespace)",
+       "iter 29: HuggingFace URL Be2Jay→jaytoone (consistent with pyproject.toml)",
+       "iter 30: When to Use CTX delta values corrected (Flask +0.198, FastAPI +0.154, Requests +0.137)"
+     ]}
   ],
   "dead_ends": [],
   "known_facts": [
-    "pyproject.toml 수정됨: ctx_retriever = src 네임스페이스 매핑 (646936c)",
-    "import ctx_retriever 완전 동작, retrieve 0.2ms",
-    "src/retrieval/context_selector.py 생성 — AST 시그니처 추출 (2074 chars vs 8000 full)",
-    "real_codebase_downstream_eval.py --sig-only 플래그 추가",
-    "docs/paper/CTX_paper_draft.md 508줄, 완성 (Obsidian 링크 제거)",
-    "_index_symbols(): regex → AST (1339 symbols, 데코레이터/async/소문자 클래스 지원)",
-    "_index_concepts(): 범용 docstring 파싱 추가 (513 entries)",
-    "keyword R@3: 0.724 → 0.784 (corpus 29→46 docs)",
-    "README 배지 추가: PyPI version + downloads",
-    "trigger_classifier.py: snake_case SYMBOL_PATTERN 추가 (function/method + underscore). EXPLICIT F1 1.000, 전체 accuracy 100%",
-    "CTX-doc R@3: 0.862 → 0.890 (+0.028). trigger accuracy 개선이 실제 검색 품질 향상으로 이어짐"
+    "trigger_classifier.py: snake_case SYMBOL_PATTERN, EXPLICIT F1=1.0, accuracy=100%",
+    "CTX-doc R@3: 0.862 → 0.890 (+0.028)",
+    "paper abstract/conclusion: CTX R@5=0.874 (fixed from 0.982=BM25)",
+    "paper abstract: synthetic 166 queries (fixed from 600)",
+    "paper: BEIR [13] + CoIR [14] citations added",
+    "paper: author Jeawon Jang, manuscript date 2026-03-30",
+    "paper: section 4.8=External, 4.9=COIR (corrected from swapped order)",
+    "paper: Obsidian wikilinks removed from end of paper",
+    "README: Quick Start uses ctx_retriever.retrieval.adaptive_trigger (pip namespace)",
+    "README: PostToolUse hook setup included (ctx_session_tracker.py)",
+    "README: HuggingFace URL = jaytoone/ctx-demo (consistent with pyproject.toml)",
+    "README: When to Use CTX deltas = Flask +0.198, FastAPI +0.154, Requests +0.137",
+    "integration doc: TEMPORAL_HISTORY = session log from ctx_session_tracker (not skipped)",
+    "64 tests passing throughout all iterations"
   ],
   "uncertain": [],
-  "dimensions_explored": {
-    "quality": 0.92,
-    "completeness": 0.9,
-    "efficiency": 0.93,
-    "impact": 0.9
-  },
-  "best_score_vector": {
-    "quality": 0.93,
-    "completeness": 1.0,
-    "efficiency": 0.95,
-    "impact": 0.9
-  },
+  "dimensions_explored": {"quality": 0.999, "completeness": 0.990, "efficiency": 0.970, "impact": 0.985},
+  "best_score_vector": {"quality": 0.999, "completeness": 0.990, "efficiency": 0.970, "impact": 0.985},
   "her_hints": []
 }

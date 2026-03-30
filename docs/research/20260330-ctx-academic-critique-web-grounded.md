@@ -150,3 +150,13 @@ The claim "<1ms response" is for the 29-doc indexed codebase. For a real-world c
 - Recommendation 1 (classifier fix): HIGH — internal data shows 60.2% accuracy as bottleneck
 - Recommendation 2 (hybrid retrieval): HIGH — well-documented in literature
 - Recommendation 3 (LocAgent-style traversal): MEDIUM — assumes import graph is the right representation; may require codebase-specific adaptation
+
+## Related
+- [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]
+- [[projects/CTX/research/20260328-ctx-downstream-nemotron-eval-v2|20260328-ctx-downstream-nemotron-eval-v2]]
+- [[projects/CTX/research/20260328-ctx-downstream-nemotron-eval|20260328-ctx-downstream-nemotron-eval]]
+- [[projects/CTX/research/20260328-ctx-downstream-eval-nemotron-final|20260328-ctx-downstream-eval-nemotron-final]]
+- [[projects/CTX/SOYA_DEPLOYMENT_GUIDE|SOYA_DEPLOYMENT_GUIDE]]
+- [[projects/CTX/research/20260327-ctx-nemotron-comparison|20260327-ctx-nemotron-comparison]]
+- [[projects/CTX/research/20260328-ctx-downstream-eval-complete|20260328-ctx-downstream-eval-complete]]
+- [[projects/CTX/research/20260327-ctx-downstream-eval|20260327-ctx-downstream-eval]]
