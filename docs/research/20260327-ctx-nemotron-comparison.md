@@ -331,11 +331,11 @@ Perfect R@5: 151/166 (91.0%)  |  Zero R@5: 6/166 (3.6%)
 - Eval script: `/tmp/ctx_nemotron_eval.py`
 
 ## Related
-- [[projects/FromScratch/research/20260327-nemotron-mamba-experiment|20260327-nemotron-mamba-experiment]]
-- [[projects/FromScratch/data/MULTI_FILE_DATASET_IMPLEMENTATION|MULTI_FILE_DATASET_IMPLEMENTATION]]
-- [[projects/FromScratch/training/BENCHMARK_COMPARISON_V3_VS_BASELINE_20260304|BENCHMARK_COMPARISON_V3_VS_BASELINE_20260304]]
-- [[projects/FromScratch/agent-system/current-config-analysis|current-config-analysis]]
-- [[projects/FromScratch/infrastructure/NIPA_GLM-4.7_API_SETUP_GUIDE|NIPA_GLM-4.7_API_SETUP_GUIDE]]
-- [[projects/FromScratch/agent-system/hook-strategy-comparison|hook-strategy-comparison]]
-- [[projects/FromScratch/agent-system/LANGGRAPH_MULTI_AGENT_EXPERIMENT_GUIDE|LANGGRAPH_MULTI_AGENT_EXPERIMENT_GUIDE]]
-- [[projects/FromScratch/infrastructure/NIPA_Kimi-K2.5_API_SETUP_GUIDE|NIPA_Kimi-K2.5_API_SETUP_GUIDE]]
+- [[projects/CTX/research/20260328-ctx-real-codebase-g2-eval|20260328-ctx-real-codebase-g2-eval]]
+- [[projects/CTX/research/20260328-trigger-classifier-semantic-fix|20260328-trigger-classifier-semantic-fix]]
+- [[projects/CTX/research/20260326-ctx-results-review|20260326-ctx-results-review]]
+- [[projects/CTX/research/20260325-ctx-paper-tier-evaluation|20260325-ctx-paper-tier-evaluation]]
+- [[projects/CTX/research/20260328-ctx-downstream-nemotron-eval|20260328-ctx-downstream-nemotron-eval]]
+- [[projects/CTX/research/20260327-ctx-nemotron-g1g2-comparison|20260327-ctx-nemotron-g1g2-comparison]]
+- [[projects/CTX/research/20260328-ctx-downstream-eval-nemotron-final|20260328-ctx-downstream-eval-nemotron-final]]
+- [[projects/CTX/research/20260328-ctx-downstream-nemotron-eval-v2|20260328-ctx-downstream-nemotron-eval-v2]]

@@ -228,7 +228,9 @@ Nemotron R@5=0.828 (전체 0.586 대비 높음):
 | `docs/research/20260326-ctx-goal1-goal2-final.md` | G1/G2 달성 현황 원본 |
 
 ## Related
-- [[projects/FromScratch/research/20260327-ctx-nemotron-comparison|20260327-ctx-nemotron-comparison]]
-- [[projects/FromScratch/training/BENCHMARK_COMPARISON_V3_VS_BASELINE_20260304|BENCHMARK_COMPARISON_V3_VS_BASELINE_20260304]]
-- [[projects/FromScratch/agi-benchmark-problems/session-results|session-results]]
-- [[projects/FromScratch/training/THREEWAY_BENCHMARK_COMPARISON_20260305|THREEWAY_BENCHMARK_COMPARISON_20260305]]
+- [[projects/CTX/research/20260327-ctx-nemotron-comparison|20260327-ctx-nemotron-comparison]]
+- [[projects/CTX/research/20260326-ctx-final-sota-comparison|20260326-ctx-final-sota-comparison]]
+- [[projects/CTX/research/20260326-ctx-vs-sota-comparison|20260326-ctx-vs-sota-comparison]]
+- [[projects/CTX/research/20260326-ctx-goal1-goal2-final|20260326-ctx-goal1-goal2-final]]
+- [[projects/CTX/decisions/20260326-unified-doc-code-indexing|20260326-unified-doc-code-indexing]]
+- [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
