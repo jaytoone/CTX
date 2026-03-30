@@ -40,7 +40,7 @@ Several recent systems augment LLMs with external memory for improved context ma
 
 **jCodeMunch** (Gravelle, 2025) achieves up to 95% token reduction through code compression---removing whitespace, shortening identifiers, and summarizing function bodies. While impressive in token savings, compression-based approaches carry an inherent risk: compressed code loses semantic completeness, potentially removing context critical for downstream tasks. CTX instead preserves complete file semantics while selecting only relevant files through structural retrieval. The approaches are orthogonal and potentially combinable: CTX could first select relevant files, then apply jCodeMunch-style compression to further reduce token usage without the risk of compressing away critical context from unrelated files.
 
-**CAR** (Li et al., 2024) introduces dynamic retrieval size selection based on query clustering. CTX shares the principle of adaptive retrieval but differs in mechanism: CAR clusters queries by embedding similarity, while CTX classifies by trigger type---a code-specific taxonomy that maps directly to retrieval strategies. CTX's trigger types encode domain knowledge about code query patterns (symbol lookup, concept search, history reference, dependency tracing) that generic clustering cannot capture.
+**CAR** (Li et al., 2024a) introduces dynamic retrieval size selection based on query clustering. CTX shares the principle of adaptive retrieval but differs in mechanism: CAR clusters queries by embedding similarity, while CTX classifies by trigger type---a code-specific taxonomy that maps directly to retrieval strategies. CTX's trigger types encode domain knowledge about code query patterns (symbol lookup, concept search, history reference, dependency tracing) that generic clustering cannot capture.
 
 **Repository-level code generation systems** (e.g., iterative retrieval-generation loops for automated patch generation, LLM-guided file localization for issue resolution) retrieve relevant files through sliding-window enumeration or LLM-invoked tools rather than structural graph traversal. These systems are optimized for single-task generation---producing a patch that passes tests---rather than interactive multi-turn developer assistance, and they do not differentiate query types: every query triggers a full repository scan. CTX's trigger-classified, sub-millisecond retrieval is architecturally distinct: it targets interactive agent loops where latency and token budget are persistent constraints across many turns, not a post-hoc consideration. Additionally, code-specific neural retrieval models (which encode data flow or type information into embeddings) may outperform general-purpose MiniLM on the COIR text-to-code task; the current COIR evaluation (Section 4.9) uses general-purpose MiniLM as the dense baseline, and a code-specific neural baseline would represent a stronger comparison for that task.
 
@@ -352,7 +352,7 @@ These fixes required 30 lines of code changes and were motivated by examining fa
 
 ### 4.9 COIR-Style External Benchmark (CodeSearchNet)
 
-To position CTX against the broader code retrieval literature, we evaluate on a COIR-style benchmark (Li et al., 2024) constructed from the CodeSearchNet Python test set (Husain et al., 2019). We sample 100 queries (function docstrings) and construct a corpus of 1,000 functions (100 targets + 900 distractors). This evaluates natural-language-to-code retrieval, a complementary task to CTX's primary code-to-code structural retrieval.
+To position CTX against the broader code retrieval literature, we evaluate on a COIR-style benchmark (Li et al., 2024b) constructed from the CodeSearchNet Python test set (Husain et al., 2019). We sample 100 queries (function docstrings) and construct a corpus of 1,000 functions (100 targets + 900 distractors). This evaluates natural-language-to-code retrieval, a complementary task to CTX's primary code-to-code structural retrieval.
 
 **Table 4: COIR-Style Evaluation (CodeSearchNet Python, 100 queries, 1000 corpus)**
 
@@ -504,7 +504,7 @@ FastAPI (928 files) achieves R@5=0.328 (95\% CI [0.246, 0.415])---the weakest ex
 
 [3] Packer, C., Fang, V., Patil, S. G., Lin, K., Wooders, S., & Gonzalez, J. E. (2023). MemGPT: Towards LLMs as Operating Systems. *arXiv preprint arXiv:2310.08560*.
 
-[4] Li, X., et al. (2024). CAR: Cluster-based Adaptive Retrieval for Retrieval-Augmented Generation. *arXiv preprint*.
+[4] Li, X., et al. (2024a). CAR: Cluster-based Adaptive Retrieval for Retrieval-Augmented Generation. *arXiv preprint*.
 
 [5] Wang, Z., et al. (2025). MeCo: Adaptive Tool Use via Memory-Consolidated Reasoning. In *Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (ACL 2025)*.
 
@@ -524,7 +524,7 @@ FastAPI (928 files) achieves R@5=0.328 (95\% CI [0.246, 0.415])---the weakest ex
 
 [13] Thakur, N., Reimers, N., Rücklé, A., Srivastava, A., & Gurevych, I. (2021). BEIR: A Heterogeneous Benchmark for Zero-shot Evaluation of Information Retrieval Models. In *Proceedings of the Thirty-fifth Conference on Neural Information Processing Systems Datasets and Benchmarks Track (NeurIPS 2021)*.
 
-[14] Li, H., et al. (2024). CoIR: A Comprehensive Benchmark for Code Information Retrieval Models. *arXiv preprint arXiv:2407.02883*.
+[14] Li, H., et al. (2024b). CoIR: A Comprehensive Benchmark for Code Information Retrieval Models. *arXiv preprint arXiv:2407.02883*.
 
 ---
 
