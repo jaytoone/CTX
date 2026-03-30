@@ -120,6 +120,19 @@ Code files (3/847 total):
 - Hybrid Dense+CTX achieves R@5=0.950 on COIR — best of both worlds
 - No single strategy dominates all dimensions — workload determines optimal choice
 
+## When to Use CTX
+
+**CTX excels when:**
+- You need dependency-aware retrieval: `IMPLICIT_CONTEXT` queries (e.g., "what uses AuthService?") achieve perfect Recall@5 (1.0) via BFS import graph traversal
+- Working with a **known codebase** with established symbol/import structure — code-to-code retrieval outperforms BM25 on real projects (Flask: +0.194, FastAPI: +0.156, Requests: +0.136)
+- Token budget is critical — CTX uses only **5.2% of tokens** vs 18.7% for BM25 (TES: 1.9x higher)
+- Queries name **explicit symbols** (class names, function names) — EXPLICIT_SYMBOL trigger routes directly to symbol index
+
+**CTX is not designed for:**
+- **Text-to-code semantic search** (COIR-style): finding code from natural-language descriptions. CTX R@5=0.380 vs BM25=0.980 on CodeSearchNet Python — use Dense Embedding or Hybrid Dense+CTX instead
+- **Large unseen codebases** (>500 files, no prior indexing): heuristic symbol extraction degrades at scale; consider AST-based indexers
+- **Natural-language concept queries** without code keywords: SEMANTIC_CONCEPT trigger falls back to BM25, losing CTX's structural advantage
+
 ## Running Experiments
 
 ```bash
