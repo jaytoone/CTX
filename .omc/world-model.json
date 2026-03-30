@@ -43,8 +43,8 @@
   "uncertain": [
     {"item": "Reference [4] CAR arXiv ID", "risk": "incomplete citation without arXiv ID — pre-existing issue"}
   ],
-  "dimensions_explored": {"quality": 0.9995, "completeness": 0.997, "efficiency": 0.972, "impact": 0.992},
-  "best_score_vector": {"quality": 0.9995, "completeness": 0.997, "efficiency": 0.972, "impact": 0.992},
-  "plateau_count": 0,
+  "dimensions_explored": {"quality": 0.9995, "completeness": 0.997, "efficiency": 0.972, "impact": 0.993},
+  "best_score_vector": {"quality": 0.9995, "completeness": 0.997, "efficiency": 0.972, "impact": 0.993},
+  "plateau_count": 2,
   "her_hints": []
 }
