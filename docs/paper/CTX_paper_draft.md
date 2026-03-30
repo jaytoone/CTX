@@ -194,7 +194,7 @@ We report five metrics: **Recall@K** ($K \in \{1, 3, 5, 10\}$) measures the frac
 | Hybrid Dense+CTX | 0.392 | 0.701 | 0.725 | 0.757 | 0.236 | 0.303 |
 | **CTX (Ours)** | **0.511** | **0.869** | **0.874** | **0.874** | **0.052** | **0.776** |
 
-CTX achieves a TES of 0.776, which is 40.8x higher than Full Context (0.019), 1.9x higher than the best text-based baseline (BM25, 0.410), and 2.2x higher than the production RAG baseline (Chroma Dense, 0.346). LlamaIndex's AST-aware chunking achieves TES comparable to BM25 (0.405) but cannot resolve structural dependencies. While BM25 and LlamaIndex achieve marginally higher Recall@5 (0.982/0.972 vs. 0.874), they consume 3.6--3.9x more tokens (18.7--20.1% vs. 5.2%).
+CTX achieves a TES of 0.776, which is 40.8x higher than Full Context (0.019), 1.9x higher than the best text-based baseline (BM25, 0.410), and 2.2x higher than the production RAG baseline (Chroma Dense, 0.346). LlamaIndex's AST-aware chunking achieves TES of 0.405, comparable to BM25 (0.410), but cannot resolve structural dependencies. While BM25 and LlamaIndex achieve marginally higher Recall@5 (0.982/0.972 vs. 0.874), they consume 3.6--3.9x more tokens (18.7--20.1% vs. 5.2%).
 
 Full Context achieves the lowest Recall@5 (0.075) despite loading all files, empirically confirming the context dilution hypothesis: more context leads to worse retrieval performance when the retrieval mechanism is attention-based.
 
