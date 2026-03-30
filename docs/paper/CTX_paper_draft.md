@@ -1,6 +1,6 @@
 # CTX: Trigger-Driven Dynamic Context Loading for Code-Aware LLM Agents
 
-**Authors**: [Authors TBD]
+**Authors**: Jeawon Jang
 
 **Abstract**---Large language models suffer from context dilution when processing extensive codebases, a phenomenon documented as the "Lost in the Middle" problem. Existing retrieval-augmented generation (RAG) approaches treat code as flat text, ignoring structural dependency information encoded in import graphs. We present CTX, a trigger-driven dynamic context loading system that classifies code-related queries into four trigger types---EXPLICIT_SYMBOL, SEMANTIC_CONCEPT, TEMPORAL_HISTORY, and IMPLICIT_CONTEXT---and routes each to a specialized retrieval pipeline backed by a three-tier hierarchical memory architecture. CTX performs breadth-first traversal over the codebase import graph to resolve transitive dependencies invisible to keyword and embedding methods, and uses a concept-aware BM25 query to handle semantic concept queries. Evaluated on five datasets (synthetic: 600 queries; external: Flask, FastAPI, Requests, 256 queries), CTX achieves Recall@5 of 0.874 on synthetic data and 0.495 (95\% CI [0.441, 0.550]) on held-out external code-to-code retrieval codebases---above the 0.25 practical deployment threshold, though 49\% below BM25 on text-to-code retrieval (COIR-style CodeSearchNet: CTX 0.380 vs. BM25 0.980). On IMPLICIT_CONTEXT queries, CTX achieves Recall@5 of 1.0 on synthetic data vs. 0.4 for BM25. In a downstream LLM evaluation, providing CTX context yields G1 (session memory) improvement of +0.890 and G2 (knowledge recall) improvement of +0.688 (calibrated v4 benchmark) across two LLMs. Ablation studies confirm the trigger classifier and import graph are synergistic: removing the classifier halves TES (0.780→0.406), while removing the graph drops IMPLICIT recall by 60%. These results demonstrate that trigger-aware, code-structure-informed retrieval achieves both high accuracy and strong generalization to unseen external codebases.
 
@@ -517,7 +517,7 @@ FastAPI (928 files) achieves R@5=0.328 (95\% CI [0.246, 0.415])---the weakest ex
 
 ---
 
-*Manuscript prepared: 2026-03-28. Experiment version: CTX v4.0 P11 (external R@5=0.495 [CI: 0.441, 0.550], SEMANTIC fix, import graph generalization, Bootstrap CI n_boot=10,000, G1/G2 v4 downstream eval: G1 Δ=+0.890, G2 Δ=+0.688 calibrated, Nemotron G2 Δ=+1.000, SOYA deployment verdict: READY).*
+*Manuscript prepared: 2026-03-30.*
 
 ## Related
 - [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
