@@ -246,7 +246,7 @@ On EXPLICIT_SYMBOL and TEMPORAL_HISTORY queries, multiple strategies achieve nea
 
 *Bootstrap 95% CI: Flask [0.451, 0.636], FastAPI [0.246, 0.415], Requests [0.529, 0.717], External mean [0.441, 0.550]*
 
-SEMANTIC_CONCEPT is the strongest trigger type on external codebases (mean 0.663), demonstrating that BM25 concept-word retrieval generalizes effectively to unseen codebases. FastAPI (928 files) presents the largest scale challenge, with TEMPORAL_HISTORY (0.100) and IMPLICIT_CONTEXT (0.240) degrading significantly at scale. See Section 4.9 for external generalization analysis and CTX vs BM25 comparison.
+SEMANTIC_CONCEPT is the strongest trigger type on external codebases (mean 0.663), demonstrating that BM25 concept-word retrieval generalizes effectively to unseen codebases. FastAPI (928 files) presents the largest scale challenge, with TEMPORAL_HISTORY (0.100) and IMPLICIT_CONTEXT (0.240) degrading significantly at scale. See Section 4.8 for external generalization analysis and CTX vs BM25 comparison.
 
 **CTX vs BM25 on External Codebases:**
 
@@ -327,7 +327,7 @@ CTX provides perfect session memory recall across both LLMs. Without CTX, Nemotr
 
 Stronger LLMs benefit more from CTX context (Nemotron $+1.000$ vs. MiniMax $+0.375$), suggesting that CTX's value scales with the LLM's context utilization capability. G1 results are consistent across LLMs: CTX context is necessary and sufficient for perfect session memory recall. A notable failure mode---*over-anchoring*---appears in 20\% of Fix/Replace scenarios: when CTX injects the current (incorrect) implementation, the LLM anchors on it rather than the desired correction. This is a design consideration for deployment: context injection should be filtered by query intent for Fix/Replace tasks.
 
-### 4.9 External Codebase Generalization
+### 4.8 External Codebase Generalization
 
 A critical concern for production deployment is whether CTX's retrieval quality generalizes to codebases it was not optimized for. We evaluate on three held-out open-source Python projects: Flask (79 files, n=87 queries), FastAPI (928 files, n=89 queries), and Requests (35 files, n=80 queries). These codebases were not used during any system development.
 
@@ -346,7 +346,7 @@ Two engineering fixes were required for cross-codebase transfer, both addressing
 
 These fixes required 30 lines of code changes and were motivated by examining failure cases on external codebases---validating that hold-out generalization testing is necessary to detect CTX-internal assumptions.
 
-### 4.8 COIR-Style External Benchmark (CodeSearchNet)
+### 4.9 COIR-Style External Benchmark (CodeSearchNet)
 
 To position CTX against the broader code retrieval literature, we evaluate on a COIR-style benchmark (Li et al., 2024) constructed from the CodeSearchNet Python test set (Husain et al., 2019). We sample 100 queries (function docstrings) and construct a corpus of 1,000 functions (100 targets + 900 distractors). This evaluates natural-language-to-code retrieval, a complementary task to CTX's primary code-to-code structural retrieval.
 
@@ -518,13 +518,3 @@ FastAPI (928 files) achieves R@5=0.328 (95\% CI [0.246, 0.415])---the weakest ex
 ---
 
 *Manuscript prepared: 2026-03-30.*
-
-## Related
-- [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
-- [[projects/CTX/research/20260325-ctx-paper-tier-evaluation|20260325-ctx-paper-tier-evaluation]]
-- [[projects/CTX/research/20260328-trigger-classifier-semantic-fix|20260328-trigger-classifier-semantic-fix]]
-- [[projects/CTX/research/20260329-ctx-corrected-results-summary|20260329-ctx-corrected-results-summary]]
-- [[projects/CTX/research/20260327-ctx-nemotron-comparison|20260327-ctx-nemotron-comparison]]
-- [[projects/CTX/research/20260328-adaptive-trigger-generalization-fix|20260328-adaptive-trigger-generalization-fix]]
-- [[projects/CTX/decisions/20260326-unified-doc-code-indexing|20260326-unified-doc-code-indexing]]
-- [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]
