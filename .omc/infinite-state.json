@@ -1,19 +1,17 @@
 {
-  "status": "RUNNING",
+  "status": "CONVERGED",
   "session_id": "inf-20260330",
-  "current_iteration": 4,
-  "root_goal": "P5 GitHub Actions CI 배지 + arXiv 준비 체크 + 남은 개선 식별",
-  "original_goal": "P1 실용 임팩트 달성 — pip install ctx-retriever 실사용 검증 + 논문 draft 완성 + G2 over-anchoring 해결",
-  "evolution_count": 3,
-  "evolution_history": [
-    {"iter": 1, "goal": "P1 실용 임팩트", "score": 0.88, "outcome": "EVOLVED"},
-    {"iter": 2, "goal": "P2/P3 성능 + README", "score": 0.91, "outcome": "EVOLVED"},
-    {"iter": 3, "goal": "P4 교차 파일 추론 + BMS 실험", "score": 0.92, "outcome": "EVOLVED"}
-  ],
-  "best_score": 0.92,
-  "plateau_count": 0,
-  "score_history": [0.88, 0.91, 0.92],
-  "cost_history": [],
+  "current_iteration": 76,
+  "root_goal": "CTX 논문 References 보강 + 학술적 임팩트 강화 — BEIR/CoIR 직접 인용, 관련 논문 비교 명확화",
+  "original_goal": "CTX 시스템 품질 강화 — 연구 평론 기반 핵심 지표 개선",
+  "evolution_count": 2,
+  "best_score": 0.9922,
+  "final_score": 0.9922,
+  "score_vector": {"quality": 0.9997, "completeness": 0.997, "efficiency": 0.979, "impact": 0.993},
+  "plateau_count": 5,
+  "escape_attempts": 2,
+  "total_iterations": 76,
+  "total_sessions": 3,
   "world_model_path": ".omc/world-model.json",
-  "rotated_at": "2026-03-30T00:00:00Z"
+  "converged_at": "2026-03-30"
 }

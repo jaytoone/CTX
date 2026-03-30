@@ -6,7 +6,7 @@
     {"goal": "paper factual audit + author + footer", "score": 0.978, "iteration": 13, "outcome": "evolved", "weak_dim": "quality"},
     {"goal": "README external codebase + downstream eval tables", "score": 0.972, "iteration": 9, "outcome": "evolved", "weak_dim": "impact"},
     {"goal": "final paper audit: orphaned refs, conclusion 0.982 fix, abstract 600 fix", "score": 0.980, "iteration": 16, "outcome": "evolved", "weak_dim": "quality"},
-    {"goal": "CTX 논문 References 보강 + 학술적 임팩트 강화 — BEIR/CoIR 직접 인용, 관련 논문 비교 명확화", "score": 0.9920, "iteration": 68, "outcome": "current", "weak_dim": "efficiency",
+    {"goal": "CTX 논문 References 보강 + 학술적 임팩트 강화 — BEIR/CoIR 직접 인용, 관련 논문 비교 명확화", "score": 0.9922, "iteration": 76, "outcome": "CONVERGED", "weak_dim": "efficiency",
      "fixes_this_session": [
        "iter 34: Reference [6] Memori → arXiv:2603.19935 (2026) proper citation",
        "iter 34: Reference [12] jCodeMunch → GitHub software tool citation",
@@ -35,7 +35,9 @@
        "iter 65: Section 5.2 TEMPORAL_HISTORY GraphPrompt 0.50→0.60 (matches trigger-type table)",
        "iter 66: Section 4.5 +24pp→+20pp TEMPORAL delta (consistent with 0.60 vs 0.40 data)",
        "iter 67: Section 5.3 ablation note 'Table 1' wrong cross-ref fixed to 'Section 4.4'",
-       "iter 68: Section 3.5 COIR 0.38→0.380 (3-decimal consistency with Table 4)"
+       "iter 68: Section 3.5 COIR 0.38→0.380 (3-decimal consistency with Table 4)",
+       "iter 70: Conclusion IMPLICIT_CONTEXT p-value '(McNemar p=0.013)' → '(30 queries; p<0.001)' (correct per-type p-value)",
+       "iter 71: Section 5.2 TEMPORAL '0.60 vs. 0.40' → '0.600 vs. 0.400' (3-decimal consistency with Internal table)"
      ]}
   ],
   "dead_ends": [],
@@ -54,8 +56,9 @@
     "paper: OneViral TES ratio = 3.6x over BM25 (0.232/0.065=3.57) — fixed from 2.5x",
     "paper: Section 4.5 trigger table: GraphPrompt=73 files, AgentNode=596 files",
     "paper: GraphRAG-lite = 'unclassified graph baseline' NOT 'text-based' in Section 5.1",
-    "paper: TEMPORAL_HISTORY GraphPrompt CTX=0.600 (fixed from 0.500 in Sec 5.2), +20pp over BM25 0.40",
+    "paper: TEMPORAL_HISTORY GraphPrompt CTX=0.600, +20pp over BM25 0.400 (3-decimal in Sec 5.2)",
     "paper: Section 3.5 COIR reference uses 0.380 (3-decimal, consistent with Table 4)",
+    "paper: Conclusion IMPLICIT_CONTEXT p-value = '(30 queries; p<0.001)' (NOT McNemar p=0.013 which was overall)",
     "README: Quick Start uses ctx_retriever.retrieval.adaptive_trigger (pip namespace)",
     "README: PostToolUse hook setup included (ctx_session_tracker.py)",
     "README: HuggingFace URL = jaytoone/ctx-demo",
@@ -71,10 +74,9 @@
     {"item": "Reference [7] LongCodeBench arXiv ID", "risk": "incomplete citation without arXiv ID — pre-existing issue"},
     {"item": "Reference [9] Santos et al. 2024 arXiv ID", "risk": "incomplete citation without arXiv ID — pre-existing issue"}
   ],
-  "dimensions_explored": {"quality": 0.9996, "completeness": 0.997, "efficiency": 0.978, "impact": 0.993},
-  "best_score_vector": {"quality": 0.9996, "completeness": 0.997, "efficiency": 0.978, "impact": 0.993},
-  "plateau_count": 1,
-  "her_hints": [
-    {"dim": "efficiency", "delta": 0.002, "sub_goal": "Final efficiency pass: look for any remaining 2-decimal precision inconsistencies or overly verbose sentences in Sections 4-5"}
-  ]
+  "dimensions_explored": {"quality": 0.9997, "completeness": 0.997, "efficiency": 0.979, "impact": 0.993},
+  "best_score_vector": {"quality": 0.9997, "completeness": 0.997, "efficiency": 0.979, "impact": 0.993},
+  "plateau_count": 5,
+  "status": "CONVERGED",
+  "her_hints": []
 }
