@@ -167,3 +167,43 @@ class TestFalsePositivePrevention:
 
     def test_새로운_형용사(self, clf):
         assert clf.classify_intent("새로운 기능이 뭔지 알려줘") == "read"
+
+
+# ── Trigger type classification (snake_case SYMBOL_PATTERN fix) ────────────────
+
+class TestSnakeCaseSymbolPattern:
+    """Tests for EXPLICIT_SYMBOL routing of snake_case function identifiers.
+
+    Regression guard for the fix that added snake_case matching in
+    'Find the function X' / 'Where is the method X' style queries.
+    """
+
+    def test_find_the_function_snake_case(self, clf):
+        """'Find the function run_migration' → EXPLICIT_SYMBOL."""
+        from src.trigger.trigger_classifier import TriggerType
+        t = clf.classify_primary("Find the function run_migration and show its implementation")
+        assert t == TriggerType.EXPLICIT_SYMBOL
+
+    def test_find_the_method_snake_case(self, clf):
+        """'Where is the method authenticate_user' → EXPLICIT_SYMBOL."""
+        from src.trigger.trigger_classifier import TriggerType
+        t = clf.classify_primary("Where is the method authenticate_user defined")
+        assert t == TriggerType.EXPLICIT_SYMBOL
+
+    def test_function_keyword_no_underscore_stays_semantic(self, clf):
+        """'how does the function handles X' should NOT become EXPLICIT (no underscore)."""
+        from src.trigger.trigger_classifier import TriggerType
+        t = clf.classify_primary("How does the function handles authentication")
+        assert t == TriggerType.SEMANTIC_CONCEPT
+
+    def test_related_to_snake_case_stays_semantic(self, clf):
+        """'Find all code related to json_parse' → SEMANTIC_CONCEPT (concept query)."""
+        from src.trigger.trigger_classifier import TriggerType
+        t = clf.classify_primary("Find all code related to json_parse")
+        assert t == TriggerType.SEMANTIC_CONCEPT
+
+    def test_calculate_tax_explicit(self, clf):
+        """'What does the function calculate_tax do' → EXPLICIT_SYMBOL."""
+        from src.trigger.trigger_classifier import TriggerType
+        t = clf.classify_primary("What does the function calculate_tax do")
+        assert t == TriggerType.EXPLICIT_SYMBOL
