@@ -22,7 +22,7 @@ This paper makes three contributions:
 
 2. **Import graph traversal for implicit dependency retrieval.** We introduce a BFS-based traversal algorithm over the codebase import graph that resolves transitive dependencies. On synthetic data, this achieves Recall@5 of 1.0 on dependency queries, compared to 0.4 for BM25 and 0.43 for graph traversal without trigger classification.
 
-3. **The Trade-off Efficiency Score (TES) metric.** We propose TES = Recall@K / ln(1 + |retrieved|) as a context-window-budget-aware retrieval metric. The logarithmic denominator follows from Zipf-distributed file access frequencies and is validated by a strong Pearson correlation with NDCG@5 ($r = 0.87$, $p < 0.001$). TES is not yet a recognized standard metric; we introduce it to fill the gap left by existing metrics (Recall@K, NDCG@K, Context Precision) that measure retrieval quality without penalizing excessive context consumption. CTX achieves TES of 0.78 on synthetic data, 40.8x higher than full-context loading (0.019).
+3. **The Trade-off Efficiency Score (TES) metric.** We propose TES = Recall@K / ln(1 + |retrieved|) as a context-window-budget-aware retrieval metric. The logarithmic denominator follows from Zipf-distributed file access frequencies and is validated by a strong Pearson correlation with NDCG@5 ($r = 0.87$, $p < 0.001$). TES is not yet a recognized standard metric; we introduce it to fill the gap left by existing metrics (Recall@K, NDCG@K, Context Precision) that measure retrieval quality without penalizing excessive context consumption. CTX achieves TES of 0.776 on synthetic data, 40.8x higher than full-context loading (0.019).
 
 ---
 
