@@ -257,6 +257,8 @@ SEMANTIC_CONCEPT is the strongest trigger type on external codebases (mean 0.663
 | Requests | **0.626** | 0.489 | **+0.137** | 0.010787 |
 | **External mean** | **0.500** | 0.337 | **+0.163** | — |
 
+*Note: Row means are simple per-codebase averages. Query-weighted bootstrap estimate is 0.495 (Table 4, 95% CI [0.441, 0.550]).*
+
 CTX outperforms BM25 on all three held-out external codebases (McNemar p < 0.011 for all), confirming that the trigger classifier and import graph generalize beyond the development codebase.
 
 **Internal Real Codebases (GraphPrompt, AgentNode) -- CTX Recall@5 by Trigger Type:**
@@ -518,3 +520,13 @@ FastAPI (928 files) achieves R@5=0.328 (95\% CI [0.246, 0.415])---the weakest ex
 ---
 
 *Manuscript prepared: 2026-03-30.*
+
+## Related
+- [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
+- [[projects/CTX/research/20260325-ctx-paper-tier-evaluation|20260325-ctx-paper-tier-evaluation]]
+- [[projects/CTX/research/20260328-trigger-classifier-semantic-fix|20260328-trigger-classifier-semantic-fix]]
+- [[projects/CTX/research/20260329-ctx-corrected-results-summary|20260329-ctx-corrected-results-summary]]
+- [[projects/CTX/research/20260327-ctx-nemotron-comparison|20260327-ctx-nemotron-comparison]]
+- [[projects/CTX/research/20260328-adaptive-trigger-generalization-fix|20260328-adaptive-trigger-generalization-fix]]
+- [[projects/CTX/decisions/20260326-unified-doc-code-indexing|20260326-unified-doc-code-indexing]]
+- [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]
