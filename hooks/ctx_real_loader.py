@@ -68,6 +68,20 @@ def _should_skip(prompt: str) -> bool:
     )
 
 
+_FIX_PREFIXES = ("fix:", "bug:", "refactor:", "replace:")
+_FIX_TAGS = ("[fix]", "[bug]", "[refactor]")
+
+
+def _is_fix_replace(prompt: str) -> bool:
+    """Detect Fix/Replace intent to emit anti-anchoring guidance."""
+    p = prompt.lower()
+    return (
+        "[fix]" in p
+        or any(p.startswith(t) for t in _FIX_PREFIXES)
+        or any(t in p for t in _FIX_TAGS)
+    )
+
+
 def _count_src_files(cwd: str) -> int:
     count = 0
     for root, dirs, files in os.walk(cwd):
@@ -131,6 +145,7 @@ def main() -> None:
         print(EMPTY)
         return
 
+    fix_mode = _is_fix_replace(prompt)
     cwd = hook_input.get("cwd", os.getcwd())
     if cwd == os.path.expanduser("~/.claude/hooks"):
         print(EMPTY)
@@ -231,6 +246,14 @@ def main() -> None:
         lines.append(f"Persistent memory ({len(fresh_persist)} files, cross-session):")
         for fp in fresh_persist:
             lines.append(f"• {fp}")
+
+    # Anti-anchoring guidance for Fix/Replace tasks
+    if fix_mode:
+        lines.append(
+            "⚠ Fix/Replace mode: the files above show the CURRENT implementation."
+            " Treat it as the target to change — do NOT anchor on it as correct."
+            " Focus on what the prompt asks to fix, not on preserving existing patterns."
+        )
 
     # Intent guidance for Claude — use the prompt to decide:
     # read → use files as reference only
