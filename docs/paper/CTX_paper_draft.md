@@ -177,7 +177,7 @@ We compare CTX against six baselines spanning the spectrum from no retrieval to 
 
 ### 4.3 Metrics
 
-We report four metrics: **Recall@K** ($K \in \{1, 3, 5, 10\}$) measures the fraction of ground-truth relevant files present in the top-$K$ retrieved files. **Token Efficiency** measures the fraction of total codebase tokens consumed (lower is better). **TES** (Trade-off Efficiency Score) captures the recall-efficiency trade-off. **CCS** (Context Completeness Score) measures symbol overlap between retrieved and relevant files. **ASS** (Answer Supportability Score) measures query keyword coverage in retrieved context.
+We report five metrics: **Recall@K** ($K \in \{1, 3, 5, 10\}$) measures the fraction of ground-truth relevant files present in the top-$K$ retrieved files. **Token Efficiency** measures the fraction of total codebase tokens consumed (lower is better). **TES** (Trade-off Efficiency Score) captures the recall-efficiency trade-off. **CCS** (Context Completeness Score) measures symbol overlap between retrieved and relevant files. **ASS** (Answer Supportability Score) measures query keyword coverage in retrieved context.
 
 ### 4.4 Main Results
 
