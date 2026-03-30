@@ -49,7 +49,7 @@ The hook is self-contained (no external CTX imports required).
 | Trigger Type | Strategy | k (default) |
 |---|---|---|
 | `EXPLICIT_SYMBOL` | Symbol index exact/partial match | 2–3 |
-| `SEMANTIC_CONCEPT` | ASCII keyword frequency scoring | 4–6 |
+| `SEMANTIC_CONCEPT` | BM25 keyword scoring | 4–6 |
 | `IMPLICIT_CONTEXT` | BFS from seeds (depth ≤ 2) | 5–8 |
 | `TEMPORAL_HISTORY` | Skipped (memory MCP) | — |
 
@@ -97,3 +97,7 @@ Based on LLM quality experiments (CTX pass@1=0.733 vs Full=0.200):
 | AgentNode | Python | 215 | ~165ms |
 | OneViral | TypeScript | 651 | ~270ms |
 | >2000 files | any | — | skipped (dir exclusion) |
+
+## Related
+- [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
+- [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]
