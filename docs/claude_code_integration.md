@@ -15,7 +15,7 @@ User prompt → [ctx_real_loader.py hook]
         EXPLICIT_SYMBOL → symbol index lookup (precision)
         SEMANTIC_CONCEPT → BM25 keyword scoring (recall)
         IMPLICIT_CONTEXT → BFS import graph traversal (coverage)
-        TEMPORAL_HISTORY → skip (memory MCP handles)
+        TEMPORAL_HISTORY → session log lookup (ctx_session_tracker)
                     ↓
          inject file paths + symbol summary
          as additionalContext
@@ -58,7 +58,7 @@ If the import fails, the hook silently falls back to no-op (safe for production 
 | `EXPLICIT_SYMBOL` | Symbol index exact/partial match | 2–3 |
 | `SEMANTIC_CONCEPT` | BM25 keyword scoring | 4–6 |
 | `IMPLICIT_CONTEXT` | BFS from seeds (depth ≤ 2) | 5–8 |
-| `TEMPORAL_HISTORY` | Skipped (memory MCP) | — |
+| `TEMPORAL_HISTORY` | Session log from `ctx_session_tracker.py` (PostToolUse hook) | 4 |
 
 ## Skip Conditions
 

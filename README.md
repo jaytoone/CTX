@@ -49,10 +49,10 @@ for filepath in result.retrieved_files:
 CTX works best as a **live hook** that automatically injects relevant files into every Claude Code prompt:
 
 ```bash
-# 1. Copy the hook to Claude Code hooks directory
-cp hooks/ctx_real_loader.py ~/.claude/hooks/
+# 1. Copy hooks to Claude Code hooks directory
+cp hooks/ctx_real_loader.py hooks/ctx_session_tracker.py ~/.claude/hooks/
 
-# 2. Set your CTX path (edit line 25 in the copied hook)
+# 2. Set your CTX path (edit line 25 in ctx_real_loader.py)
 #    CTX_PROJECT = "/path/to/your/CTX"
 #    (or install via pip and adjust the import path)
 
@@ -64,12 +64,15 @@ cp hooks/ctx_real_loader.py ~/.claude/hooks/
   "hooks": {
     "UserPromptSubmit": [
       { "hooks": [{ "type": "command", "command": "python3 $HOME/.claude/hooks/ctx_real_loader.py" }] }
+    ],
+    "PostToolUse": [
+      { "hooks": [{ "type": "command", "command": "python3 $HOME/.claude/hooks/ctx_session_tracker.py" }] }
     ]
   }
 }
 ```
 
-After setup, CTX automatically injects relevant files as context on every prompt. See [`docs/claude_code_integration.md`](docs/claude_code_integration.md) for full setup guide.
+The `PostToolUse` hook is optional but recommended — it tracks file accesses to enable `TEMPORAL_HISTORY` queries ("what file did we look at earlier?"). After setup, CTX automatically injects relevant files as context on every prompt. See [`docs/claude_code_integration.md`](docs/claude_code_integration.md) for full setup guide.
 
 **What you get in each prompt:**
 ```
