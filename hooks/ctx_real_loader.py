@@ -27,6 +27,7 @@ SESSION_LOG  = os.path.expanduser("~/.claude/ctx_session_log.json")
 PERSIST_MEM  = os.path.expanduser("~/.claude/ctx_persistent_memory.json")
 
 MAX_FILES = 6
+TOP_CORE  = 3   # top N files shown as "core" (★), rest as auxiliary (·)
 
 EMPTY = json.dumps({
     "hookSpecificOutput": {
@@ -168,11 +169,11 @@ def main() -> None:
     primary = triggers[0] if triggers else None
     if primary:
         trigger_label = primary.trigger_type.name
-        query_value   = str(primary.value)[:60]
+        query_value   = str(primary.value).replace("\n", " ")[:50]
         confidence    = primary.confidence
     else:
         trigger_label = "DEFAULT"
-        query_value   = prompt[:40]
+        query_value   = prompt[:40].replace("\n", " ")
         confidence    = 0.5
 
     # Session + persistent context (cwd-filtered to avoid cross-project bleeding)
@@ -182,21 +183,33 @@ def main() -> None:
     # Build output
     lines = []
 
-    # Header — intent classification delegated to Claude (keyword-based was unreliable).
-    # Claude sees both this context AND the full user prompt, so it can judge intent
-    # (fix/create/read) far more accurately than regex pattern matching.
-    lines.append(
-        f"[CTX] Trigger: {trigger_label} | "
-        f"Query: {query_value} | Confidence: {confidence:.2f} | "
-        f"Intent: judge from prompt"
-    )
+    # Token savings
+    n_loaded = len(result.retrieved_files)
+    saved_pct = int((1 - n_loaded / n_total) * 100) if n_total > 0 else 0
+    low_conf  = confidence < 0.5 and trigger_label == "SEMANTIC_CONCEPT"
 
-    # Code files
-    lines.append(f"Code files ({len(result.retrieved_files)}/{n_total} total):")
-    for fp in result.retrieved_files:
+    # Header
+    conf_tag = f" ⚠ low" if low_conf else ""
+    lines.append(
+        f"[CTX] {trigger_label} | {n_loaded}/{n_total} files — ~{saved_pct}% tokens saved"
+        f" | conf {confidence:.2f}{conf_tag}"
+    )
+    if low_conf:
+        lines.append("  ⚠ Low confidence — add specific symbol/file names for better results")
+
+    # Code files: core (★ top 3) vs auxiliary (·)
+    core_files = result.retrieved_files[:TOP_CORE]
+    aux_files  = result.retrieved_files[TOP_CORE:]
+    label = "Code files (★ core  · aux):" if aux_files else "Code files:"
+    lines.append(label)
+    for fp in core_files:
         rel = os.path.relpath(fp, cwd) if os.path.isabs(fp) else fp
         score = result.scores.get(fp, 0)
-        lines.append(f"• {rel} [score={score:.3f}]")
+        lines.append(f"★ {rel} [score={score:.3f}]")
+    for fp in aux_files:
+        rel = os.path.relpath(fp, cwd) if os.path.isabs(fp) else fp
+        score = result.scores.get(fp, 0)
+        lines.append(f"· {rel} [score={score:.3f}]")
 
     # Session context (de-duped)
     retrieved_set = set(result.retrieved_files)
