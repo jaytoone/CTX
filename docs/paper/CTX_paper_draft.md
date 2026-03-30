@@ -387,7 +387,7 @@ The IMPLICIT_CONTEXT results provide the strongest evidence for CTX's core thesi
 | Dense seed + graph expansion | Hybrid Dense+CTX | 0.53 |
 | Graph-based + triggers | CTX Adaptive Trigger | **1.00** |
 
-All seven baselines---including production-grade neural embeddings (Chroma Dense, 0.38), AST-aware chunking (LlamaIndex, 0.40), and even Hybrid Dense+CTX (0.53) which partially uses graph expansion---fail to achieve perfect dependency recall. Only fully trigger-classified import graph traversal achieves this, with a margin of +89% over the best graph-augmented approach (Hybrid Dense+CTX: 0.53) and +133% over purely text-based methods (GraphRAG-lite: 0.43).
+All seven baselines---including production-grade neural embeddings (Chroma Dense, 0.38), AST-aware chunking (LlamaIndex, 0.40), and even Hybrid Dense+CTX (0.53) which partially uses graph expansion---fail to achieve perfect dependency recall. Only fully trigger-classified import graph traversal achieves this, with a margin of +89% over the best graph-augmented approach (Hybrid Dense+CTX: 0.53) and +133% over the unclassified graph baseline (GraphRAG-lite: 0.43).
 
 CTX's trigger classification identifies which queries require graph traversal and applies it selectively, achieving both higher recall on dependency queries and lower overall token usage.
 
