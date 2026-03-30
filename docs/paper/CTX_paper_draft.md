@@ -158,7 +158,7 @@ TES is undefined when no files are retrieved; in practice, all strategies retrie
 | OneViral | Real | 299 | 84 | Social media analytics platform |
 | AgentNode | Real | 596 | 85 | Multi-agent orchestration framework |
 
-Total: 968 real files across 3 codebases, 415 total queries. For each real codebase, queries were automatically generated from extracted code metadata (function names, class names, import relationships, semantic concepts) using the `RealCodebaseLoader` pipeline. Ground-truth relevant files were determined by symbol ownership (EXPLICIT_SYMBOL), concept co-occurrence (SEMANTIC_CONCEPT), temporal simulation (TEMPORAL_HISTORY), and import chain traversal (IMPLICIT_CONTEXT). Import graphs were extracted using Python's `ast` module.
+Total real codebase files: 968 across 3 projects, 249 queries (415 including synthetic). For each real codebase, queries were automatically generated from extracted code metadata (function names, class names, import relationships, semantic concepts) using the `RealCodebaseLoader` pipeline. Ground-truth relevant files were determined by symbol ownership (EXPLICIT_SYMBOL), concept co-occurrence (SEMANTIC_CONCEPT), temporal simulation (TEMPORAL_HISTORY), and import chain traversal (IMPLICIT_CONTEXT). Import graphs were extracted using Python's `ast` module.
 
 ### 4.2 Baselines
 
