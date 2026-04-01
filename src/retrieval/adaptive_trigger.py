@@ -112,11 +112,18 @@ class AdaptiveTriggerRetriever:
                     # Build import graph
                     self._index_imports(rel_path, content)
 
-                    # Tokenize for BM25
+                    # Tokenize for BM25 (unigrams + selective bigrams for multi-word concepts)
                     expanded = re.sub(r'([a-z])([A-Z])', r'\1 \2', content)
                     expanded = expanded.replace("_", " ")
                     tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', expanded.lower())
-                    self._bm25_corpus.append(tokens)
+                    # Add bigrams from adjacent meaningful tokens (len>3) to capture
+                    # compound concepts like "request_context", "route_handler".
+                    bigrams = [
+                        f"{tokens[i]}_{tokens[i+1]}"
+                        for i in range(len(tokens) - 1)
+                        if len(tokens[i]) > 3 and len(tokens[i+1]) > 3
+                    ]
+                    self._bm25_corpus.append(tokens + bigrams)
 
         if self._bm25_corpus:
             self.bm25 = BM25Okapi(self._bm25_corpus)
@@ -399,6 +406,14 @@ class AdaptiveTriggerRetriever:
                 full_exp = re.sub(r'([a-z])([A-Z])', r'\1 \2', query_text).replace("_", " ")
                 concept_tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', full_exp.lower())
 
+            # Add bigrams to concept query (matches bigrams in BM25 corpus index)
+            concept_bigrams = [
+                f"{concept_tokens[i]}_{concept_tokens[i+1]}"
+                for i in range(len(concept_tokens) - 1)
+                if len(concept_tokens[i]) > 3 and len(concept_tokens[i+1]) > 3
+            ]
+            concept_tokens = concept_tokens + concept_bigrams
+
             # Concept BM25
             concept_scores = self.bm25.get_scores(concept_tokens)
             concept_max = float(np.max(concept_scores)) if concept_scores.max() > 0 else 1.0
@@ -406,6 +421,12 @@ class AdaptiveTriggerRetriever:
             # Full-query BM25 — always computed for hybrid blend
             full_exp = re.sub(r'([a-z])([A-Z])', r'\1 \2', query_text).replace("_", " ")
             full_tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', full_exp.lower())
+            full_bigrams = [
+                f"{full_tokens[i]}_{full_tokens[i+1]}"
+                for i in range(len(full_tokens) - 1)
+                if len(full_tokens[i]) > 3 and len(full_tokens[i+1]) > 3
+            ]
+            full_tokens = full_tokens + full_bigrams
             full_scores = self.bm25.get_scores(full_tokens) if full_tokens != concept_tokens else concept_scores
             full_max = float(np.max(full_scores)) if full_scores.max() > 0 else 1.0
 
@@ -573,7 +594,12 @@ class AdaptiveTriggerRetriever:
         if self.bm25 is not None:
             expanded = re.sub(r'([a-z])([A-Z])', r'\1 \2', query_text).replace("_", " ")
             query_tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', expanded.lower())
-            bm25_scores_arr = self.bm25.get_scores(query_tokens)
+            bigrams = [
+                f"{query_tokens[i]}_{query_tokens[i+1]}"
+                for i in range(len(query_tokens) - 1)
+                if len(query_tokens[i]) > 3 and len(query_tokens[i+1]) > 3
+            ]
+            bm25_scores_arr = self.bm25.get_scores(query_tokens + bigrams)
 
         if not primary_files and bm25_scores_arr is not None:
             top_idx = int(np.argmax(bm25_scores_arr))
@@ -669,7 +695,12 @@ class AdaptiveTriggerRetriever:
 
         expanded = re.sub(r'([a-z])([A-Z])', r'\1 \2', query_text).replace("_", " ")
         query_tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', expanded.lower())
-        raw_scores = self.bm25.get_scores(query_tokens)
+        bigrams = [
+            f"{query_tokens[i]}_{query_tokens[i+1]}"
+            for i in range(len(query_tokens) - 1)
+            if len(query_tokens[i]) > 3 and len(query_tokens[i+1]) > 3
+        ]
+        raw_scores = self.bm25.get_scores(query_tokens + bigrams)
 
         top_indices = np.argsort(raw_scores)[::-1][:k]
         retrieved = [self.file_paths[i] for i in top_indices]

@@ -26,6 +26,20 @@
       "outcome": "evolved",
       "weak_dim": "external_r5",
       "notes": "Flask IMPL +4.6%p, FastAPI SEMA +5.5%p, FastAPI overall +2.4%p. Large-repo IMPLICIT fallback tried and REVERTED (made things worse)."
+    },
+    {
+      "goal": "bigram_BM25_corpus + bigram_query_expansion_in_concept_tfidf_implicit",
+      "score": 0.864,
+      "score_vector": {
+        "coir_r5": 1.0,
+        "repobench_r5": 0.975,
+        "external_r5": 0.5623,
+        "impact": 0.9
+      },
+      "iteration": 4,
+      "outcome": "evolved",
+      "weak_dim": "external_r5",
+      "notes": "Flask EXPL +9.5%p, FastAPI EXPL +4.6%p, mean external +2.2%p. IMPL slightly degraded from IDF shifts."
     }
   ],
   "dead_ends": [
@@ -73,7 +87,8 @@
     },
     "BM25 blend in _implicit_retrieve (adaptive fallback when graph<k) helps Flask IMPL +4.6%p",
     "Path boost in _concept_retrieve helps FastAPI SEMA +5.5%p",
-    "FastAPI IMPL near 0 regardless of approach \u2014 structural signal absent in 928-file corpus"
+    "FastAPI IMPL near 0 regardless of approach \u2014 structural signal absent in 928-file corpus",
+    "Bigram BM25 corpus dramatically helps EXPL +9.5%p (Flask) by matching compound symbol patterns; minor IMPL regression from IDF shifts (~3/24 queries)"
   ],
   "uncertain": [
     {
@@ -93,7 +108,7 @@
   "best_score_vector": {
     "coir_r5": 1.0,
     "repobench_r5": 0.975,
-    "external_r5": 0.5406,
+    "external_r5": 0.5623,
     "impact": 0.9
   },
   "plateau_count": 5,

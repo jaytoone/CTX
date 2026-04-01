@@ -1,11 +1,11 @@
 {
   "status": "RUNNING",
   "session_id": "inf-20260401",
-  "current_iteration": 3,
+  "current_iteration": 4,
   "root_goal": "\uacf5\uc778 \ubca4\uce58\ub9c8\ud06c(COIR, RepoBench) \uae30\uc900\uc73c\ub85c CTX\ub97c SOTA\uae09\uc73c\ub85c \ub9cc\ub4e4\uae30",
   "original_goal": "\uacf5\uc778 \ubca4\uce58\ub9c8\ud06c(COIR, RepoBench) \uae30\uc900\uc73c\ub85c CTX\ub97c SOTA\uae09\uc73c\ub85c \ub9cc\ub4e4\uae30",
   "evolution_count": 0,
-  "best_score": 0.854,
+  "best_score": 0.864,
   "plateau_count": 0,
   "escape_attempts": 0,
   "total_sessions": 1,
@@ -27,7 +27,7 @@
   "score_vector": {
     "coir_r5": 1.0,
     "repobench_r5": 0.975,
-    "external_r5": 0.5406,
+    "external_r5": 0.5623,
     "impact": 0.9
   },
   "last_iter_summary": "iter3: reverse_import_graph + path_boost + BM25_blend_implicit; external mean R@5 0.5259\u21920.5406"
