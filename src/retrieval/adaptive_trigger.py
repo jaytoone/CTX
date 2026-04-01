@@ -430,12 +430,20 @@ class AdaptiveTriggerRetriever:
             full_scores = self.bm25.get_scores(full_tokens) if full_tokens != concept_tokens else concept_scores
             full_max = float(np.max(full_scores)) if full_scores.max() > 0 else 1.0
 
-            # Blend: concept precision (weight 0.6) + full recall (weight 0.4)
-            # When concept ≈ full query (few tokens lost), blend is close to concept score.
-            # When concept << full query (long docstring, COIR-style), full recall dominates.
-            concept_coverage = len(concept_tokens) / max(len(full_tokens), 1)
-            full_weight = min(0.6, 0.4 + (1.0 - concept_coverage) * 0.4)  # 0.4–0.6
-            concept_weight = 1.0 - full_weight
+            # Blend: concept precision + full recall.
+            # Short concepts (≤3 tokens, e.g. "ctx", "deprecated") are already distilled
+            # signals — trust concept BM25 more to avoid noise from generic query words
+            # like "find", "code", "related" in the full query.
+            # Long concepts (COIR-style docstrings) may have dropped information vs the
+            # full query, so full recall gets more weight.
+            if len(concept_tokens) <= 3:
+                # Short/specific concept: trust BM25 precision (0.75 concept, 0.25 full)
+                concept_weight = 0.75
+                full_weight = 0.25
+            else:
+                concept_coverage = len(concept_tokens) / max(len(full_tokens), 1)
+                full_weight = min(0.6, 0.4 + (1.0 - concept_coverage) * 0.4)  # 0.4–0.6
+                concept_weight = 1.0 - full_weight
 
             for i in range(len(self.file_paths)):
                 fpath = self.file_paths[i]
@@ -453,19 +461,67 @@ class AdaptiveTriggerRetriever:
                     if f in matched_files:
                         matched_files[f] *= 1.15  # 15% rank boost
 
-        # Step 2b: Path-score boost — filename/directory match is a strong signal.
-        # If query terms match the file path (e.g. "routing" in "routing.py"), boost.
-        # Only applies to already-scored files (no new injections).
+        # Step 2a: Symbol-index cross-boost — if a significant query word is a known
+        # defined symbol (function/class), inject those files at a moderate score.
+        # This helps SEMA queries like "Find all code related to register" where
+        # BM25 ranks generic registration-related files highly but the specific
+        # defining module (e.g. auth.py with `def register()`) scores low due to
+        # low corpus frequency. Only inject for specific symbols (≤5 matching files)
+        # to avoid flooding results with common function names like "run".
+        _sema_stop = frozenset(['find', 'show', 'code', 'all', 'related', 'about', 'list',
+                                 'with', 'from', 'import', 'used', 'that', 'this', 'where'])
+        query_lc = query_text.lower()
+        for token in re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{2,}', query_lc):
+            if token in _sema_stop:
+                continue
+            sym_files = self.symbol_index.get(token, [])
+            if 1 <= len(sym_files) <= 5:
+                seen = set()
+                for f in sym_files:
+                    if f not in seen:
+                        seen.add(f)
+                        if f not in matched_files:
+                            matched_files[f] = 0.60  # inject at moderate confidence
+                        else:
+                            # Boost existing match: symbol definition is a strong signal
+                            matched_files[f] = min(1.0, matched_files[f] * 1.2)
+
+        # Step 2b: Path-score boost + filename-stem injection.
+        # Two effects:
+        #   (a) Boost already-scored files whose path contains query terms.
+        #   (b) Inject files whose basename STEM exactly matches a query word —
+        #       even if BM25 missed them (e.g. "ctx" query → inject ctx.py directly).
+        #       This handles high-IDF suppression where the term is too common in the
+        #       codebase for BM25 to rank the defining file highly.
         query_words = set(re.findall(r'[a-zA-Z]{3,}', query_text.lower()))
         if query_words:
+            # (a) Boost already-matched files
             for fpath in list(matched_files.keys()):
                 fpath_norm = fpath.lower().replace("/", " ").replace("\\", " ").replace("_", " ").replace("-", " ")
                 path_words = set(re.findall(r'[a-zA-Z]{3,}', fpath_norm))
                 overlap = query_words & path_words
                 if overlap:
-                    # Boost: 15% per matching path word, capped at 50% total boost
                     boost = min(1.5, 1.0 + len(overlap) * 0.15)
                     matched_files[fpath] = matched_files[fpath] * boost
+
+            # (b) Stem boost: if a file's single-word basename stem (e.g. "ctx", "views")
+            # exactly matches a query word, boost it to a high confidence score.
+            # Applies whether or not the file is already in matched_files — if the file
+            # has a low BM25 score due to high corpus frequency (e.g. "__init__.py",
+            # "__version__.py"), we still want to surface it.
+            # Score 0.85 (authoritative naming). Limit 5 files total.
+            stem_injected = 0
+            for fpath in self.file_paths:
+                if stem_injected >= 5:
+                    break
+                basename_no_ext = os.path.splitext(os.path.basename(fpath))[0]
+                stem_parts = re.findall(r'[a-zA-Z]{3,}', basename_no_ext.lower())
+                # Only match single-word stems (e.g. ctx, views, init, version)
+                if len(stem_parts) == 1 and stem_parts[0] in query_words:
+                    current = matched_files.get(fpath, 0.0)
+                    if current < 0.85:
+                        matched_files[fpath] = 0.85
+                    stem_injected += 1
 
         # Step 3: Dense embedding re-rank (benchmark mode only, use_dense=True)
         # For long NL queries (COIR-style docstrings), dense similarity dramatically
@@ -526,7 +582,7 @@ class AdaptiveTriggerRetriever:
 
         topic_words = [
             w for w in raw_topic.split()
-            if len(w) > 2 and w not in _STOP and w.isalpha()
+            if len(w) > 2 and w not in _STOP and w.isalnum()  # isalnum: allow "py310" etc.
         ]
 
         matched_files: Dict[str, float] = {}
@@ -537,6 +593,24 @@ class AdaptiveTriggerRetriever:
                 for f in file_list:
                     matched_files.setdefault(f, 0.0)
                     matched_files[f] = max(matched_files[f], 0.75)
+
+        # Priority 1.5: Symbol index match — if a topic word exactly matches OR is a
+        # prefix of a known function/class name, inject the defining files at 0.75.
+        # Helps: "abort" → helpers.py (abort), "dispatch" → views.py (dispatch_request).
+        # Deduplicates file lists before checking the count threshold (avoids false
+        # rejection when a file is indexed multiple times for the same symbol).
+        for word in topic_words:
+            if len(word) < 4:
+                continue
+            candidate_files: Dict[str, float] = {}
+            for sym_name, file_list in self.symbol_index.items():
+                if sym_name == word or sym_name.startswith(word + "_") or sym_name.startswith(word.capitalize()):
+                    for f in file_list:
+                        candidate_files[f] = 0.75
+            if 1 <= len(candidate_files) <= 8:
+                for f, score in candidate_files.items():
+                    matched_files.setdefault(f, 0.0)
+                    matched_files[f] = max(matched_files[f], score)
 
         # Priority 2: path-based match — filename stem contains topic word (score 0.85)
         # This is higher than concept index since a file named "logging.py" IS the logging module
@@ -581,11 +655,51 @@ class AdaptiveTriggerRetriever:
         """Retrieve using import-chain traversal for implicit context."""
         # First find the primary file mentioned
         primary_files: Set[str] = set()
+        path_seeded = False  # True if seeds found via direct path matching (high confidence)
 
-        # Check for module names in the query
+        # Check for module names in the query.
+        # Use letter-boundary matching (not substring) to avoid short names like "a"
+        # matching inside longer words like "understand".
+        # We use [a-zA-Z0-9] (not [a-zA-Z0-9_]) so "auth" matches in "test_auth"
+        # (underscore is a separator, not a letter boundary) but "a" does not match in "understand".
         for mod_name, fpath in self.module_to_file.items():
-            if mod_name in query_text:
+            if len(mod_name) < 2:
+                continue
+            if re.search(r'(?<![a-zA-Z0-9])' + re.escape(mod_name) + r'(?![a-zA-Z0-9])',
+                         query_text, re.IGNORECASE):
                 primary_files.add(fpath)
+
+        # Path-based seed selection (NEW): extract long snake_case identifiers from
+        # the query (≥8 chars) and match them against file basenames directly.
+        # This handles queries like "understand test_security_api_key_header_description"
+        # where the module name maps 1:1 to a filename.
+        # Much more reliable than BM25 for named-module queries.
+        if not primary_files:
+            # Extract long identifiers (snake_case, 8+ chars) from query
+            identifiers = re.findall(r'[a-z][a-z0-9_]{7,}', query_text.lower())
+            _skip = frozenset(['modules', 'needed', 'fully', 'understand', 'related',
+                                'previous', 'discussed', 'following', 'function', 'whatever'])
+            candidates: Dict[str, List[str]] = {}  # identifier → list of matching fpaths
+            for ident in identifiers:
+                if ident in _skip:
+                    continue
+                ident_clean = ident.replace('_', '')
+                for fpath in self.file_paths:
+                    basename = os.path.splitext(os.path.basename(fpath))[0].lower()
+                    basename_clean = basename.replace('_', '')
+                    if basename == ident or basename_clean == ident_clean:
+                        candidates.setdefault(ident, []).append(fpath)
+            # Use candidates: prefer unique matches (1 file → definitive)
+            for ident, fpaths in candidates.items():
+                if len(fpaths) == 1:
+                    # Unique match: use as high-confidence seed
+                    primary_files.add(fpaths[0])
+                    path_seeded = True
+                elif len(fpaths) <= 4:
+                    # Ambiguous but limited: add all candidates, let graph resolve
+                    for fp in fpaths:
+                        primary_files.add(fp)
+                    path_seeded = True
 
         # Always compute BM25 scores — used both for seed selection and final blend.
         # Blending with BM25 is critical for large codebases (e.g. FastAPI 928 files)
