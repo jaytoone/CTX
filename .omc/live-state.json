@@ -1,21 +1,33 @@
 {
   "current_iteration": 3,
   "last_outcome": "success",
-  "best_score": 0.94,
-  "current_score": 0.94,
-  "current_goal_fidelity": 1.0,
-  "score_variance": 0.02,
+  "best_score": 0.65,
+  "current_score": 0.72,
+  "current_goal_fidelity": 0.92,
+  "score_variance": 0.05,
   "plateau_count": 0,
   "evolution_count": 2,
   "score_history": [
-    {"iteration": 1, "score": 0.77, "goal_fidelity": 1.0, "goal_version": 0, "score_variance": 0.02},
-    {"iteration": 2, "score": 0.82, "goal_fidelity": 0.92, "goal_version": 1, "score_variance": 0.02},
-    {"iteration": 2, "score": 0.94, "goal_fidelity": 1.0, "goal_version": 1, "score_variance": 0.02}
+    {"iteration": 1, "score": 0.4, "goal_fidelity": 1.0, "goal_version": 0, "score_variance": 0.08},
+    {"iteration": 2, "score": 0.65, "goal_fidelity": 0.9, "goal_version": 1, "score_variance": 0.06},
+    {"iteration": 3, "score": 0.72, "goal_fidelity": 0.92, "goal_version": 2, "score_variance": 0.05}
   ],
   "cost_history": [
-    {"iteration": 1, "phase_reached": "phase_5", "relative_cost": 1.0},
-    {"iteration": 2, "phase_reached": "phase_5", "relative_cost": 0.5},
-    {"iteration": 3, "phase_reached": "phase_0", "relative_cost": 0.0}
+    {"iteration": 1, "phase_reached": "phase_4", "relative_cost": 1.0},
+    {"iteration": 2, "phase_reached": "phase_4", "relative_cost": 1.2},
+    {"iteration": 3, "phase_reached": "phase_4", "relative_cost": 1.1}
   ],
-  "started_at": "2026-03-30T22:44:00"
+  "started_at": "2026-03-31T00:00:00",
+  "channels_completed": [
+    "Dev.to post (https://dev.to/jaytoone/ctx-i-built-a-llm-free-code-context-loader-that-uses-52-of-tokens-35kd)",
+    "GitHub Aider #948 comment",
+    "GitHub Aider #3362 comment",
+    "HN submission (https://news.ycombinator.com/item?id=47584248)",
+    "disquiet.io log post (id:6378, duplicates 6379/6380 deleted)",
+    "TLDR AI newsletter email (ai@tldr.tech)"
+  ],
+  "channels_pending": [
+    "HN Show HN (needs karma buildup - account: jaytoone / CTXproj2026!)",
+    "GeekNews (4/7 이후 - nave94 계정)"
+  ]
 }

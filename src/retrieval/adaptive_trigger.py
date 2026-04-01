@@ -48,6 +48,8 @@ class AdaptiveTriggerRetriever:
         self.concept_index: Dict[str, List[str]] = {}
         # Import graph: maps file -> files it imports (by module name)
         self.import_graph: Dict[str, List[str]] = {}
+        # Reverse import graph: maps file -> files that import it (callers)
+        self.reverse_import_graph: Dict[str, List[str]] = {}
         # Module name -> file path mapping
         self.module_to_file: Dict[str, str] = {}
 
@@ -119,6 +121,9 @@ class AdaptiveTriggerRetriever:
         if self._bm25_corpus:
             self.bm25 = BM25Okapi(self._bm25_corpus)
 
+        # Build reverse import graph from complete import_graph + module_to_file
+        self._build_reverse_imports()
+
         # Build dense embeddings if enabled
         if self.use_dense and self.file_paths:
             self._build_dense_index()
@@ -136,6 +141,19 @@ class AdaptiveTriggerRetriever:
         except Exception:
             self._dense_model = None
             self._dense_embeddings = None
+
+    def _build_reverse_imports(self) -> None:
+        """Build reverse import graph: imported_file -> list of files that import it.
+
+        Requires import_graph and module_to_file to be fully built first.
+        Used in _implicit_retrieve to traverse caller chains (not just dependencies).
+        """
+        for fpath, imports in self.import_graph.items():
+            for mod_name in imports:
+                if mod_name in self.module_to_file:
+                    imported_file = self.module_to_file[mod_name]
+                    if imported_file != fpath:  # avoid self-loops
+                        self.reverse_import_graph.setdefault(imported_file, []).append(fpath)
 
     def _dense_scores(self, query_text: str) -> np.ndarray | None:
         """Return cosine similarity scores between query and all files."""
@@ -414,6 +432,20 @@ class AdaptiveTriggerRetriever:
                     if f in matched_files:
                         matched_files[f] *= 1.15  # 15% rank boost
 
+        # Step 2b: Path-score boost — filename/directory match is a strong signal.
+        # If query terms match the file path (e.g. "routing" in "routing.py"), boost.
+        # Only applies to already-scored files (no new injections).
+        query_words = set(re.findall(r'[a-zA-Z]{3,}', query_text.lower()))
+        if query_words:
+            for fpath in list(matched_files.keys()):
+                fpath_norm = fpath.lower().replace("/", " ").replace("\\", " ").replace("_", " ").replace("-", " ")
+                path_words = set(re.findall(r'[a-zA-Z]{3,}', fpath_norm))
+                overlap = query_words & path_words
+                if overlap:
+                    # Boost: 15% per matching path word, capped at 50% total boost
+                    boost = min(1.5, 1.0 + len(overlap) * 0.15)
+                    matched_files[fpath] = matched_files[fpath] * boost
+
         # Step 3: Dense embedding re-rank (benchmark mode only, use_dense=True)
         # For long NL queries (COIR-style docstrings), dense similarity dramatically
         # outperforms BM25. Blend BM25 (0.25) + Dense (0.75) when dense is available.
@@ -534,21 +566,63 @@ class AdaptiveTriggerRetriever:
             if mod_name in query_text:
                 primary_files.add(fpath)
 
-        # If no module name found, use BM25 to find the primary file
-        if not primary_files and self.bm25 is not None:
+        # Always compute BM25 scores — used both for seed selection and final blend.
+        # Blending with BM25 is critical for large codebases (e.g. FastAPI 928 files)
+        # where import traversal finds no internal deps (external libs not in corpus).
+        bm25_scores_arr: "np.ndarray | None" = None
+        if self.bm25 is not None:
             expanded = re.sub(r'([a-z])([A-Z])', r'\1 \2', query_text).replace("_", " ")
             query_tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', expanded.lower())
-            scores = self.bm25.get_scores(query_tokens)
-            top_idx = int(np.argmax(scores))
+            bm25_scores_arr = self.bm25.get_scores(query_tokens)
+
+        if not primary_files and bm25_scores_arr is not None:
+            top_idx = int(np.argmax(bm25_scores_arr))
             primary_files.add(self.file_paths[top_idx])
 
-        # Traverse import graph to find dependencies
-        # depth scales with k: small k → focused 2-hop, large k → deeper 3-hop
+        # Traverse import graph to find dependencies.
+        # depth scales with k: small k → focused 2-hop, large k → deeper 3-hop.
         bfs_depth = 3 if k >= 8 else 2
         all_relevant: Dict[str, float] = {}
         for pf in primary_files:
             all_relevant[pf] = 1.0
             self._traverse_imports(pf, all_relevant, depth=bfs_depth, decay=0.5)
+
+        # Traverse reverse import graph (callers) — only for low-fan-out files.
+        # High-fan-out hubs (e.g. __init__.py) introduce noise.
+        for pf in list(primary_files):
+            callers = self.reverse_import_graph.get(pf, [])
+            if len(callers) <= 10:
+                for caller in callers:
+                    if caller not in all_relevant:
+                        all_relevant[caller] = 0.3
+                        self._traverse_imports(caller, all_relevant, depth=1, decay=0.15)
+
+        # BM25 fallback: inject BM25 results when graph traversal under-fills k slots.
+        # For large codebases (external libs not in corpus), import traversal often
+        # returns only the seed file. BM25 fills the remaining k slots with lexical matches.
+        # For small repos with good graph coverage, BM25 is skipped (avoids noise).
+        graph_count = len(all_relevant)
+        if bm25_scores_arr is not None and len(bm25_scores_arr) == len(self.file_paths):
+            bm25_max = float(np.max(bm25_scores_arr)) if bm25_scores_arr.max() > 0 else 1.0
+            if graph_count < k:
+                # Graph under-filled: use BM25 to complete the result set
+                # Blend already-included files; inject new ones at reduced weight
+                top_bm25 = np.argsort(bm25_scores_arr)[::-1][:k]
+                for idx in top_bm25:
+                    fpath = self.file_paths[idx]
+                    bm25_norm = float(bm25_scores_arr[idx]) / bm25_max
+                    if fpath in all_relevant:
+                        all_relevant[fpath] = 0.5 * all_relevant[fpath] + 0.5 * bm25_norm
+                    elif bm25_norm > 0.1:
+                        all_relevant[fpath] = 0.4 * bm25_norm
+            else:
+                # Graph well-filled: only blend for already-included files (rerank)
+                top_bm25 = np.argsort(bm25_scores_arr)[::-1][:graph_count]
+                for idx in top_bm25:
+                    fpath = self.file_paths[idx]
+                    if fpath in all_relevant:
+                        bm25_norm = float(bm25_scores_arr[idx]) / bm25_max
+                        all_relevant[fpath] = 0.6 * all_relevant[fpath] + 0.4 * bm25_norm
 
         sorted_files = sorted(all_relevant.items(), key=lambda x: x[1], reverse=True)[:k]
         retrieved = [f for f, _ in sorted_files]

@@ -1,17 +1,34 @@
 {
-  "status": "CONVERGED",
-  "session_id": "inf-20260330",
-  "current_iteration": 76,
-  "root_goal": "CTX 논문 References 보강 + 학술적 임팩트 강화 — BEIR/CoIR 직접 인용, 관련 논문 비교 명확화",
-  "original_goal": "CTX 시스템 품질 강화 — 연구 평론 기반 핵심 지표 개선",
-  "evolution_count": 2,
-  "best_score": 0.9922,
-  "final_score": 0.9922,
-  "score_vector": {"quality": 0.9997, "completeness": 0.997, "efficiency": 0.979, "impact": 0.993},
-  "plateau_count": 5,
-  "escape_attempts": 2,
-  "total_iterations": 76,
-  "total_sessions": 3,
+  "status": "RUNNING",
+  "session_id": "inf-20260401",
+  "current_iteration": 3,
+  "root_goal": "\uacf5\uc778 \ubca4\uce58\ub9c8\ud06c(COIR, RepoBench) \uae30\uc900\uc73c\ub85c CTX\ub97c SOTA\uae09\uc73c\ub85c \ub9cc\ub4e4\uae30",
+  "original_goal": "\uacf5\uc778 \ubca4\uce58\ub9c8\ud06c(COIR, RepoBench) \uae30\uc900\uc73c\ub85c CTX\ub97c SOTA\uae09\uc73c\ub85c \ub9cc\ub4e4\uae30",
+  "evolution_count": 0,
+  "best_score": 0.854,
+  "plateau_count": 0,
+  "escape_attempts": 0,
+  "total_sessions": 1,
   "world_model_path": ".omc/world-model.json",
-  "converged_at": "2026-03-30"
+  "started_at": "2026-04-01T11:40:12.431665",
+  "score_dimensions": [
+    "coir_r5",
+    "repobench_r5",
+    "external_r5",
+    "impact"
+  ],
+  "baseline": {
+    "coir_r5": 0.74,
+    "repobench_r5": 0.767,
+    "external_r5": 0.495,
+    "bm25_coir": 0.98,
+    "bm25_repobench": 0.767
+  },
+  "score_vector": {
+    "coir_r5": 1.0,
+    "repobench_r5": 0.975,
+    "external_r5": 0.5406,
+    "impact": 0.9
+  },
+  "last_iter_summary": "iter3: reverse_import_graph + path_boost + BM25_blend_implicit; external mean R@5 0.5259\u21920.5406"
 }

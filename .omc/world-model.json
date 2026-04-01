@@ -1,59 +1,58 @@
 {
   "tried_strategies": [
-    {"goal": "trigger EXPLICIT recall fix", "score": 0.946, "iteration": 3, "outcome": "evolved", "weak_dim": "impact"},
-    {"goal": "README When to Use CTX", "score": 0.944, "iteration": 4, "outcome": "evolved", "weak_dim": "impact"},
-    {"goal": "paper References BEIR/CoIR + 0.982 fix", "score": 0.963, "iteration": 5, "outcome": "evolved", "weak_dim": "quality"},
-    {"goal": "paper factual audit + author + footer", "score": 0.978, "iteration": 13, "outcome": "evolved", "weak_dim": "quality"},
-    {"goal": "README external codebase + downstream eval tables", "score": 0.972, "iteration": 9, "outcome": "evolved", "weak_dim": "impact"},
-    {"goal": "final paper audit: orphaned refs, conclusion 0.982 fix, abstract 600 fix", "score": 0.980, "iteration": 16, "outcome": "evolved", "weak_dim": "quality"},
-    {"goal": "CTX 논문 References 보강 + 학술적 임팩트 강화 — BEIR/CoIR 직접 인용, 관련 논문 비교 명확화", "score": 0.9922, "iteration": 76, "outcome": "CONVERGED", "weak_dim": "efficiency",
-     "fixes_this_session": [
-       "iter 34: Reference [6] Memori → arXiv:2603.19935 (2026) proper citation",
-       "iter 34: Reference [12] jCodeMunch → GitHub software tool citation",
-       "iter 34: Memori in-text year 2025 → 2026",
-       "iter 35: Table 3 (COIR) ↔ Table 4 (External) numbering fixed to sequential order",
-       "iter 35: Table 5 label added to Ablation Study",
-       "iter 36: G2 benchmark versioning note tightened (104→60 words)",
-       "iter 37: 'halves TES' → 'reduces TES by 48%' in abstract, Section 5.3, Conclusion",
-       "iter 39: Contribution 1 sharpened: 'deterministic, zero-latency, model-agnostic'",
-       "iter 39: Limitations: ground-truth circularity for IMPLICIT_CONTEXT added",
-       "iter 39: Conclusion: deployment guidance added (CTX vs Hybrid vs BM25)",
-       "iter 40: Future Work: concretized with quantitative targets (pytest oracle, CCS 0.180→0.72, n≥500)",
-       "iter 44: COIR '150% improvement over CTX alone' → '2.5× improvement over CTX alone (0.380→0.950)'",
-       "iter 44: Section 5.7 opener trimmed (3 redundant sentences → 1 cross-ref sentence)",
-       "iter 44: Limitations '(WITHOUT inflated to 0.333)' → '(the WITHOUT-CTX baseline was inflated to 0.333 on Nemotron before calibration)'",
-       "iter 44: Section 3.5 'Furthermore, CTX can' → 'CTX can also'",
-       "iter 56: Section 2.2 jCodeMunch citation added: 'jCodeMunch (Gravelle, 2025) achieves up to 95% token reduction'",
-       "iter 57: Section 4.4 OneViral TES ratio 2.5x→3.6x (0.232/0.065=3.57≈3.6)",
-       "iter 58: Section 5.7 Table real token% 2.2%→1.1% (actual table avg=1.1%)",
-       "iter 59: Section 4.1 '415 total queries' → '249 queries (415 including synthetic)' — clarified split",
-       "iter 60: Duplicate Li et al. 2024 citations disambiguated → 2024a (CAR) and 2024b (CoIR)",
-       "iter 61: Section 2.1 Memori token% 'CTX 2--5%' → '5.2% synthetic (1.1% real avg)'",
-       "iter 62: Section 4.5 trigger table file counts GraphPrompt 82→73, AgentNode 217→596",
-       "iter 63: Section 5.3 ablation note added (run-to-run variation explanation) + wrong 'Table 1' ref → 'Section 4.4'",
-       "iter 64: Section 5.1 GraphRAG-lite 'purely text-based methods' → 'unclassified graph baseline'",
-       "iter 65: Section 5.2 TEMPORAL_HISTORY GraphPrompt 0.50→0.60 (matches trigger-type table)",
-       "iter 66: Section 4.5 +24pp→+20pp TEMPORAL delta (consistent with 0.60 vs 0.40 data)",
-       "iter 67: Section 5.3 ablation note 'Table 1' wrong cross-ref fixed to 'Section 4.4'",
-       "iter 68: Section 3.5 COIR 0.38→0.380 (3-decimal consistency with Table 4)",
-       "iter 70: Conclusion IMPLICIT_CONTEXT p-value '(McNemar p=0.013)' → '(30 queries; p<0.001)' (correct per-type p-value)",
-       "iter 71: Section 5.2 TEMPORAL '0.60 vs. 0.40' → '0.600 vs. 0.400' (3-decimal consistency with Internal table)"
-     ]}
+    {
+      "goal": "Dense embedding for external real codebase",
+      "score": 0.44,
+      "score_vector": {
+        "coir_r5": 1.0,
+        "repobench_r5": 0.975,
+        "external_r5": 0.441,
+        "impact": 0.8
+      },
+      "iteration": 2,
+      "outcome": "NEGATIVE \u2014 dense hurts external",
+      "weak_dim": "external_r5"
+    },
+    {
+      "goal": "reverse_import_graph + path_boost_concept_retrieve + BM25_blend_implicit",
+      "score": 0.854,
+      "score_vector": {
+        "coir_r5": 1.0,
+        "repobench_r5": 0.975,
+        "external_r5": 0.5406,
+        "impact": 0.9
+      },
+      "iteration": 3,
+      "outcome": "evolved",
+      "weak_dim": "external_r5",
+      "notes": "Flask IMPL +4.6%p, FastAPI SEMA +5.5%p, FastAPI overall +2.4%p. Large-repo IMPLICIT fallback tried and REVERTED (made things worse)."
+    }
   ],
-  "dead_ends": [],
+  "dead_ends": [
+    {
+      "goal": "use_dense=True for external codebase retrieval",
+      "score": 0.441,
+      "reason": "Dense embedding degrades Code\u2192Code retrieval (external R@5: 0.547\u21920.441). Structural signals (symbol/import graph) dominate for developer workflow queries."
+    },
+    {
+      "goal": "IMPLICIT_CONTEXT large-repo fallback to concept_retrieve (>200 files)",
+      "score": 0.0,
+      "reason": "FastAPI IMPL 0.051\u21920.025 (worse). concept_ref for IMPLICIT queries not compatible with concept_retrieve BM25 approach"
+    }
+  ],
   "known_facts": [
     "trigger_classifier.py: snake_case SYMBOL_PATTERN, EXPLICIT F1=1.0, accuracy=100%",
-    "paper: section 4.8=External (Table 3), 4.9=COIR (Table 4) — correct sequential order",
+    "paper: section 4.8=External (Table 3), 4.9=COIR (Table 4) \u2014 correct sequential order",
     "paper: Table 5 = Ablation Study (labeled)",
     "paper: Reference [6] Memori = arXiv:2603.19935 (2026)",
     "paper: Reference [12] jCodeMunch = GitHub software tool (jgravelle/jcodemunch-mcp)",
     "paper: Contribution 1 = deterministic, zero-latency, model-agnostic (vs learned classifiers)",
     "paper: Limitations includes ground-truth circularity for IMPLICIT_CONTEXT",
     "paper: Conclusion includes deployment guidance (CTX/Hybrid/BM25 workload conditions)",
-    "paper: Future Work has quantitative targets (pytest, CCS 0.180→0.72, n≥500)",
-    "paper: COIR hybrid improvement = '2.5× over CTX alone' (NOT 150% — reserved for IMPLICIT_CONTEXT)",
+    "paper: Future Work has quantitative targets (pytest, CCS 0.180\u21920.72, n\u2265500)",
+    "paper: COIR hybrid improvement = '2.5\u00d7 over CTX alone' (NOT 150% \u2014 reserved for IMPLICIT_CONTEXT)",
     "paper: All three '150%' uses are exclusively IMPLICIT_CONTEXT (lines 35, 447, 473)",
-    "paper: OneViral TES ratio = 3.6x over BM25 (0.232/0.065=3.57) — fixed from 2.5x",
+    "paper: OneViral TES ratio = 3.6x over BM25 (0.232/0.065=3.57) \u2014 fixed from 2.5x",
     "paper: Section 4.5 trigger table: GraphPrompt=73 files, AgentNode=596 files",
     "paper: GraphRAG-lite = 'unclassified graph baseline' NOT 'text-based' in Section 5.1",
     "paper: TEMPORAL_HISTORY GraphPrompt CTX=0.600, +20pp over BM25 0.400 (3-decimal in Sec 5.2)",
@@ -65,18 +64,41 @@
     "README: When to Use CTX deltas = Flask +0.198, FastAPI +0.154, Requests +0.137",
     "integration doc: TEMPORAL_HISTORY = session log from ctx_session_tracker",
     "64 tests passing throughout all iterations",
-    "uncertain: Reference [4] CAR (Li et al. 2024a) lacks arXiv ID — pre-existing",
-    "uncertain: Reference [7] LongCodeBench lacks arXiv ID — pre-existing",
-    "uncertain: Reference [9] Santos et al. 2024 lacks arXiv ID — pre-existing"
+    "uncertain: Reference [4] CAR (Li et al. 2024a) lacks arXiv ID \u2014 pre-existing",
+    "uncertain: Reference [7] LongCodeBench lacks arXiv ID \u2014 pre-existing",
+    "uncertain: Reference [9] Santos et al. 2024 lacks arXiv ID \u2014 pre-existing",
+    {
+      "fact": "Dense embedding (MiniLM) helps NL\u2192Code (COIR: +0.260) but hurts Code\u2192Code (Flask: -0.106)",
+      "discovered_iter": 2
+    },
+    "BM25 blend in _implicit_retrieve (adaptive fallback when graph<k) helps Flask IMPL +4.6%p",
+    "Path boost in _concept_retrieve helps FastAPI SEMA +5.5%p",
+    "FastAPI IMPL near 0 regardless of approach \u2014 structural signal absent in 928-file corpus"
   ],
   "uncertain": [
-    {"item": "Reference [4] CAR arXiv ID", "risk": "incomplete citation without arXiv ID — pre-existing issue"},
-    {"item": "Reference [7] LongCodeBench arXiv ID", "risk": "incomplete citation without arXiv ID — pre-existing issue"},
-    {"item": "Reference [9] Santos et al. 2024 arXiv ID", "risk": "incomplete citation without arXiv ID — pre-existing issue"}
+    {
+      "item": "Reference [4] CAR arXiv ID",
+      "risk": "incomplete citation without arXiv ID \u2014 pre-existing issue"
+    },
+    {
+      "item": "Reference [7] LongCodeBench arXiv ID",
+      "risk": "incomplete citation without arXiv ID \u2014 pre-existing issue"
+    },
+    {
+      "item": "Reference [9] Santos et al. 2024 arXiv ID",
+      "risk": "incomplete citation without arXiv ID \u2014 pre-existing issue"
+    }
   ],
-  "dimensions_explored": {"quality": 0.9997, "completeness": 0.997, "efficiency": 0.979, "impact": 0.993},
-  "best_score_vector": {"quality": 0.9997, "completeness": 0.997, "efficiency": 0.979, "impact": 0.993},
+  "dimensions_explored": {},
+  "best_score_vector": {
+    "coir_r5": 1.0,
+    "repobench_r5": 0.975,
+    "external_r5": 0.5406,
+    "impact": 0.9
+  },
   "plateau_count": 5,
   "status": "CONVERGED",
-  "her_hints": []
+  "her_hints": [],
+  "skill_routing_history": [],
+  "current_goal": "\uacf5\uc778 \ubca4\uce58\ub9c8\ud06c CTX SOTA\ud654"
 }
