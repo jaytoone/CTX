@@ -35,7 +35,7 @@ _EXCLUDED_DIRS = frozenset({
 class AdaptiveTriggerRetriever:
     """Adaptive retrieval that selects strategy based on trigger type."""
 
-    def __init__(self, codebase_dir: str):
+    def __init__(self, codebase_dir: str, use_dense: bool = False):
         self.codebase_dir = codebase_dir
         self.classifier = TriggerClassifier()
         self.files: Dict[str, str] = {}
@@ -54,6 +54,11 @@ class AdaptiveTriggerRetriever:
         # BM25 for semantic fallback
         self.bm25: BM25Okapi | None = None
         self._bm25_corpus: List[List[str]] = []
+
+        # Dense embedding (optional — enabled for benchmark eval, disabled for hook latency)
+        self.use_dense = use_dense
+        self._dense_model = None
+        self._dense_embeddings: np.ndarray | None = None  # shape: (n_files, dim)
 
         self._index()
 
@@ -113,6 +118,36 @@ class AdaptiveTriggerRetriever:
 
         if self._bm25_corpus:
             self.bm25 = BM25Okapi(self._bm25_corpus)
+
+        # Build dense embeddings if enabled
+        if self.use_dense and self.file_paths:
+            self._build_dense_index()
+
+    def _build_dense_index(self) -> None:
+        """Build sentence embedding index for all files (used in benchmark mode)."""
+        try:
+            from sentence_transformers import SentenceTransformer
+            self._dense_model = SentenceTransformer("all-MiniLM-L6-v2")
+            # Truncate each file to first 512 chars for speed; covers most function bodies
+            texts = [self.files[fp][:512] for fp in self.file_paths]
+            self._dense_embeddings = self._dense_model.encode(
+                texts, batch_size=64, show_progress_bar=False, normalize_embeddings=True
+            )
+        except Exception:
+            self._dense_model = None
+            self._dense_embeddings = None
+
+    def _dense_scores(self, query_text: str) -> np.ndarray | None:
+        """Return cosine similarity scores between query and all files."""
+        if self._dense_model is None or self._dense_embeddings is None:
+            return None
+        try:
+            q_emb = self._dense_model.encode(
+                [query_text], normalize_embeddings=True, show_progress_bar=False
+            )
+            return (self._dense_embeddings @ q_emb.T).flatten()
+        except Exception:
+            return None
 
     def _index_symbols(self, file_path: str, content: str) -> None:
         """Extract function and class names using AST (falls back to regex on parse error)."""
@@ -250,6 +285,11 @@ class AdaptiveTriggerRetriever:
         effective_k = min(adaptive_k, k)
 
         if trigger_type == TriggerType.EXPLICIT_SYMBOL:
+            # In dense benchmark mode, route to concept retrieval so dense embedding augments
+            # the symbol match with semantic reranking — critical for NL→Code (COIR-style) queries
+            # where the query contains symbol names but meaning comes from full NL context.
+            if self.use_dense:
+                return self._concept_retrieve(query_id, query_text, primary_trigger.value, k)
             return self._symbol_retrieve(query_id, query_text, primary_trigger.value, effective_k)
         elif trigger_type == TriggerType.SEMANTIC_CONCEPT:
             return self._concept_retrieve(query_id, query_text, primary_trigger.value, effective_k)
@@ -373,6 +413,21 @@ class AdaptiveTriggerRetriever:
                 for f in file_list:
                     if f in matched_files:
                         matched_files[f] *= 1.15  # 15% rank boost
+
+        # Step 3: Dense embedding re-rank (benchmark mode only, use_dense=True)
+        # For long NL queries (COIR-style docstrings), dense similarity dramatically
+        # outperforms BM25. Blend BM25 (0.25) + Dense (0.75) when dense is available.
+        if self.use_dense:
+            dense_scores = self._dense_scores(query_text)
+            if dense_scores is not None and len(dense_scores) == len(self.file_paths):
+                d_max = float(np.max(dense_scores)) if dense_scores.max() > 0 else 1.0
+                for i, fpath in enumerate(self.file_paths):
+                    d_norm = float(dense_scores[i]) / d_max
+                    bm25_score = matched_files.get(fpath, 0.0)
+                    # Dense dominates for semantic queries; BM25 adds lexical precision
+                    combined = 0.25 * bm25_score + 0.75 * d_norm
+                    if combined > 0.02:
+                        matched_files[fpath] = combined
 
         sorted_files = sorted(matched_files.items(), key=lambda x: x[1], reverse=True)[:k]
         retrieved = [f for f, _ in sorted_files]

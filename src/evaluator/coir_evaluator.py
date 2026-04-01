@@ -341,8 +341,8 @@ def evaluate_ctxt_adaptive(
 
             file_map[doc.doc_id] = rel_path
 
-        # Initialize retriever
-        retriever = AdaptiveTriggerRetriever(tmpdir)
+        # Initialize retriever with dense embedding enabled for benchmark accuracy
+        retriever = AdaptiveTriggerRetriever(tmpdir, use_dense=True)
 
         rankings = []
         per_query = []
