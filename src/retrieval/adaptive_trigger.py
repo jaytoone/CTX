@@ -73,57 +73,81 @@ class AdaptiveTriggerRetriever:
                 if d not in _EXCLUDED_DIRS and not d.endswith('.egg-info')
             ]
             for fname in filenames:
-                if fname.endswith(".py"):
-                    fpath = os.path.join(root, fname)
-                    rel_path = os.path.relpath(fpath, self.codebase_dir)
-                    try:
-                        with open(fpath, "r", encoding="utf-8", errors="replace") as f:
-                            content = f.read()
-                    except OSError:
-                        continue
+                is_py = fname.endswith(".py")
+                is_doc = fname.endswith((".md", ".txt", ".rst"))
+                if not (is_py or is_doc):
+                    continue
 
-                    self.files[rel_path] = content
-                    self.file_paths.append(rel_path)
-                    self.total_tokens += estimate_tokens(content)
+                fpath = os.path.join(root, fname)
+                rel_path = os.path.relpath(fpath, self.codebase_dir)
+                try:
+                    with open(fpath, "r", encoding="utf-8", errors="replace") as f:
+                        content = f.read()
+                except OSError:
+                    continue
 
-                    # Extract module name from MODULE_NAME constant (CTX-internal)
-                    mod_match = re.search(r'MODULE_NAME\s*=\s*"([^"]+)"', content)
-                    if mod_match:
-                        mod_name = mod_match.group(1)
-                        self.module_to_file[mod_name] = rel_path
+                self.files[rel_path] = content
+                self.file_paths.append(rel_path)
+                self.total_tokens += estimate_tokens(content)
 
-                    # Derive module name from file path structure (universal)
-                    stem = rel_path.replace("\\", "/")
-                    if stem.endswith(".py"):
-                        stem = stem[:-3]
-                    parts = [p for p in stem.split("/") if p and p != "__init__"]
-                    if parts:
-                        for i in range(len(parts)):
-                            mod_key = ".".join(parts[i:])
-                            if mod_key not in self.module_to_file:
-                                self.module_to_file[mod_key] = rel_path
+                # Doc files: index headings as symbols, content words as concepts
+                if is_doc:
+                    # Extract markdown headings → symbol_index
+                    headings = re.findall(r'^#+\s+(.+)$', content, re.MULTILINE)
+                    for heading in headings:
+                        h_clean = re.sub(r'[^a-zA-Z0-9_\s]', '', heading).strip().lower()
+                        h_words = [w for w in h_clean.split() if len(w) > 3]
+                        for word in h_words:
+                            self.symbol_index.setdefault(word, []).append(rel_path)
+                    # Filename stem → module_to_file (e.g., "CLAUDE" → CLAUDE.md)
+                    doc_stem = os.path.splitext(fname)[0]
+                    if doc_stem:
+                        self.module_to_file[doc_stem.lower()] = rel_path
+                    # Add doc content to BM25 corpus (so docs appear in BM25 searches)
+                    doc_expanded = content.replace("#", " ").replace("*", " ").replace("-", " ")
+                    doc_tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', doc_expanded.lower())
+                    self._bm25_corpus.append(doc_tokens)
+                    continue  # skip Python-specific indexing below
 
-                    # Build symbol index
-                    self._index_symbols(rel_path, content)
+                if not is_py:
+                    continue
 
-                    # Build concept index
-                    self._index_concepts(rel_path, content)
+                # Extract module name from MODULE_NAME constant (CTX-internal)
+                mod_match = re.search(r'MODULE_NAME\s*=\s*"([^"]+)"', content)
+                if mod_match:
+                    mod_name = mod_match.group(1)
+                    self.module_to_file[mod_name] = rel_path
 
-                    # Build import graph
-                    self._index_imports(rel_path, content)
+                # Derive module name from file path structure (universal)
+                stem = rel_path.replace("\\", "/")
+                if stem.endswith(".py"):
+                    stem = stem[:-3]
+                parts = [p for p in stem.split("/") if p and p != "__init__"]
+                if parts:
+                    for i in range(len(parts)):
+                        mod_key = ".".join(parts[i:])
+                        if mod_key not in self.module_to_file:
+                            self.module_to_file[mod_key] = rel_path
 
-                    # Tokenize for BM25 (unigrams + selective bigrams for multi-word concepts)
-                    expanded = re.sub(r'([a-z])([A-Z])', r'\1 \2', content)
-                    expanded = expanded.replace("_", " ")
-                    tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', expanded.lower())
-                    # Add bigrams from adjacent meaningful tokens (len>3) to capture
-                    # compound concepts like "request_context", "route_handler".
-                    bigrams = [
-                        f"{tokens[i]}_{tokens[i+1]}"
-                        for i in range(len(tokens) - 1)
-                        if len(tokens[i]) > 3 and len(tokens[i+1]) > 3
-                    ]
-                    self._bm25_corpus.append(tokens + bigrams)
+                # Build symbol index
+                self._index_symbols(rel_path, content)
+
+                # Build concept index
+                self._index_concepts(rel_path, content)
+
+                # Build import graph
+                self._index_imports(rel_path, content)
+
+                # Tokenize for BM25 (unigrams + selective bigrams for multi-word concepts)
+                expanded = re.sub(r'([a-z])([A-Z])', r'\1 \2', content)
+                expanded = expanded.replace("_", " ")
+                tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', expanded.lower())
+                bigrams = [
+                    f"{tokens[i]}_{tokens[i+1]}"
+                    for i in range(len(tokens) - 1)
+                    if len(tokens[i]) > 3 and len(tokens[i+1]) > 3
+                ]
+                self._bm25_corpus.append(tokens + bigrams)
 
         if self._bm25_corpus:
             self.bm25 = BM25Okapi(self._bm25_corpus)
@@ -315,6 +339,43 @@ class AdaptiveTriggerRetriever:
 
         return min(k, total_files)
 
+    # High-level query patterns that should prioritize documentation files
+    _HIGH_LEVEL_PATTERNS = frozenset([
+        "project about", "project overview", "architecture", "main structure",
+        "source code packages", "what is this", "how does this project",
+        "design decision", "technical decision", "why was", "why did",
+        "known weakness", "improvement area", "next step", "future work",
+        "benchmark metric", "performance metric", "project purpose",
+        "roadmap", "planned", "what are the main",
+    ])
+
+    def _is_high_level_query(self, query_text: str) -> bool:
+        """Detect high-level project understanding queries."""
+        q_lower = query_text.lower()
+        return any(pat in q_lower for pat in self._HIGH_LEVEL_PATTERNS)
+
+    def _boost_docs_in_result(self, result: "RetrievalResult", k: int) -> "RetrievalResult":
+        """Boost documentation files (.md) to top of results for high-level queries."""
+        doc_files = [(f, s) for f, s in result.scores.items() if f.endswith((".md", ".txt", ".rst"))]
+        code_files = [(f, s) for f, s in result.scores.items() if not f.endswith((".md", ".txt", ".rst"))]
+
+        # Docs get priority — boost by 0.5
+        doc_files = [(f, min(s + 0.5, 1.5)) for f, s in doc_files]
+
+        combined = sorted(doc_files + code_files, key=lambda x: x[1], reverse=True)[:k]
+        retrieved = [f for f, _ in combined]
+        scores = {f: s for f, s in combined}
+
+        tokens_used = sum(estimate_tokens(self.files.get(f, "")) for f in retrieved)
+        return RetrievalResult(
+            query_id=result.query_id,
+            retrieved_files=retrieved,
+            scores=scores,
+            tokens_used=tokens_used,
+            total_tokens=self.total_tokens,
+            strategy="adaptive_trigger",
+        )
+
     def retrieve(self, query_id: str, query_text: str, k: int = 10) -> RetrievalResult:
         """Retrieve files using adaptive trigger-based strategy."""
         triggers = self.classifier.classify(query_text)
@@ -331,21 +392,28 @@ class AdaptiveTriggerRetriever:
         # Use the smaller of adaptive_k and requested k
         effective_k = min(adaptive_k, k)
 
+        # High-level query detection: boost docs in results
+        is_high_level = self._is_high_level_query(query_text)
+
         if trigger_type == TriggerType.EXPLICIT_SYMBOL:
-            # In dense benchmark mode, route to concept retrieval so dense embedding augments
-            # the symbol match with semantic reranking — critical for NL→Code (COIR-style) queries
-            # where the query contains symbol names but meaning comes from full NL context.
             if self.use_dense:
-                return self._concept_retrieve(query_id, query_text, primary_trigger.value, k)
-            return self._symbol_retrieve(query_id, query_text, primary_trigger.value, effective_k)
+                result = self._concept_retrieve(query_id, query_text, primary_trigger.value, k)
+            else:
+                result = self._symbol_retrieve(query_id, query_text, primary_trigger.value, effective_k)
         elif trigger_type == TriggerType.SEMANTIC_CONCEPT:
-            return self._concept_retrieve(query_id, query_text, primary_trigger.value, effective_k)
+            result = self._concept_retrieve(query_id, query_text, primary_trigger.value, effective_k)
         elif trigger_type == TriggerType.TEMPORAL_HISTORY:
-            return self._temporal_retrieve(query_id, query_text, primary_trigger.value, effective_k)
+            result = self._temporal_retrieve(query_id, query_text, primary_trigger.value, effective_k)
         elif trigger_type == TriggerType.IMPLICIT_CONTEXT:
-            return self._implicit_retrieve(query_id, query_text, primary_trigger.value, effective_k)
+            result = self._implicit_retrieve(query_id, query_text, primary_trigger.value, effective_k)
         else:
-            return self._tfidf_retrieve(query_id, query_text, effective_k)
+            result = self._tfidf_retrieve(query_id, query_text, effective_k)
+
+        # High-level queries: boost documentation files to top
+        if is_high_level:
+            result = self._boost_docs_in_result(result, effective_k)
+
+        return result
 
     def _symbol_retrieve(self, query_id: str, query_text: str, symbol: str, k: int) -> RetrievalResult:
         """Retrieve by exact symbol name matching."""
