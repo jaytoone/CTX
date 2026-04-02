@@ -1,8 +1,8 @@
 {
   "status": "RUNNING",
   "session_id": "inf-20260402",
-  "current_iteration": 10,
-  "root_goal": "FastAPI IMPLICIT_CONTEXT improvement (0.265 → 0.60+)",
+  "current_iteration": 11,
+  "root_goal": "External R@5 improvement: Flask/Requests SEMANTIC+TEMPORAL gains, FastAPI structural ceiling",
   "original_goal": "external R@5 >= 0.70 (3-repo mean)",
   "evolution_count": 3,
   "best_score": 0.896,
@@ -44,17 +44,21 @@
   "score_vector": {
     "coir_r5": 1.0,
     "repobench_r5": 0.767,
-    "external_r5": 0.7435,
+    "external_r5": 0.6067,
     "g1_publication": 0.884,
     "g2_publication": 0.740,
     "impact": 0.9
   },
-  "last_iter_summary": "iter9: Publication scores calculated. G1=0.884, G2=0.740, Overall=0.798. FastAPI is bottleneck (0.673)",
-  "iter9_results": {
-    "g1_publication": 0.884,
-    "g2_publication": 0.740,
-    "overall_composite": 0.798,
-    "fastapi_gap": 0.127
+  "last_iter_summary": "iter11: reverse_import threshold 10→30, 2-hop reverse, temporal noise reduction, BM25 large-repo boost. Flask +6.1%p, Requests +6.0%p, FastAPI +0.2%p. Mean external R@5 0.5661→0.6067 (+4.1%p)",
+  "iter11_results": {
+    "flask_r5": 0.6609,
+    "fastapi_r5": 0.4067,
+    "requests_r5": 0.7526,
+    "external_mean_r5": 0.6067,
+    "flask_semantic_delta": 0.1429,
+    "flask_temporal_delta": 0.2000,
+    "requests_semantic_delta": 0.1892,
+    "requests_temporal_delta": 0.1000
   },
-  "next_strategy": "Improve FastAPI R@5 from 0.673 to 0.80+ → overall mean 0.80+"
+  "next_strategy": "FastAPI has structural ceiling (IMPLICIT ground truth 41-55 files, R@5 max ~0.12). Pivot to RepoBench R@5 (0.767→0.85+) or G2 publication score improvement"
 }

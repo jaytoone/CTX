@@ -636,12 +636,29 @@ class AdaptiveTriggerRetriever:
 
         # Priority 2: path-based match — filename stem contains topic word (score 0.85)
         # This is higher than concept index since a file named "logging.py" IS the logging module
+        # Iter 11: Noise reduction — if a topic word matches >5 files, it's too generic
+        # (e.g. "items" in FastAPI matches dozens). Downweight to avoid drowning specific matches.
         if topic_words:
+            # First pass: count per-word matches to detect noisy words
+            word_match_counts: Dict[str, int] = {}
+            for word in topic_words:
+                if len(word) <= 2:
+                    continue
+                cnt = sum(1 for fpath in self.file_paths
+                          if word in fpath.lower().replace("/", " ").replace("_", " ").replace("-", " "))
+                word_match_counts[word] = cnt
+
             for fpath in self.file_paths:
                 fpath_lower = fpath.lower().replace("/", " ").replace("_", " ").replace("-", " ")
                 path_matches = sum(1 for word in topic_words if len(word) > 2 and word in fpath_lower)
                 if path_matches > 0:
-                    score = min(0.95, 0.7 + path_matches * 0.15)
+                    # Check if ALL matching words are noisy (>5 files each)
+                    matching_words = [w for w in topic_words if len(w) > 2 and w in fpath_lower]
+                    all_noisy = all(word_match_counts.get(w, 0) > 5 for w in matching_words)
+                    if all_noisy:
+                        score = min(0.45, 0.25 + path_matches * 0.10)  # downweighted
+                    else:
+                        score = min(0.95, 0.7 + path_matches * 0.15)  # original
                     matched_files.setdefault(fpath, 0.0)
                     matched_files[fpath] = max(matched_files[fpath], score)
 
@@ -782,26 +799,37 @@ class AdaptiveTriggerRetriever:
                     if target not in all_relevant:
                         all_relevant[target] = 0.25  # Lower weight — indirect
 
-        # Traverse reverse import graph (callers) — only for low-fan-out files.
-        # High-fan-out hubs (e.g. __init__.py) introduce noise.
+        # Traverse reverse import graph (callers) — threshold raised for large repos.
+        # Iter 11: 10→30 threshold, 2-hop reverse traversal for better IMPLICIT coverage.
+        # FastAPI has high-fan-out hubs; ≤30 covers useful caller clusters without noise.
         for pf in list(primary_files):
             callers = self.reverse_import_graph.get(pf, [])
-            if len(callers) <= 10:
+            if len(callers) <= 30:
                 for caller in callers:
                     if caller not in all_relevant:
                         all_relevant[caller] = 0.3
                         self._traverse_imports(caller, all_relevant, depth=1, decay=0.15)
+                # 2-hop reverse: callers of callers (transitive dependents)
+                for caller in callers[:15]:  # limit to top 15 to avoid explosion
+                    callers2 = self.reverse_import_graph.get(caller, [])
+                    if len(callers2) <= 15:
+                        for c2 in callers2:
+                            if c2 not in all_relevant:
+                                all_relevant[c2] = 0.15  # weaker: 2-hop away
 
         # BM25 fallback: inject BM25 results when graph traversal under-fills k slots.
         # For large codebases (external libs not in corpus), import traversal often
         # returns only the seed file. BM25 fills the remaining k slots with lexical matches.
         # For small repos with good graph coverage, BM25 is skipped (avoids noise).
         graph_count = len(all_relevant)
+        is_large_repo = len(self.file_paths) > 200
         if bm25_scores_arr is not None and len(bm25_scores_arr) == len(self.file_paths):
             bm25_max = float(np.max(bm25_scores_arr)) if bm25_scores_arr.max() > 0 else 1.0
             if graph_count < k:
                 # Graph under-filled: use BM25 to complete the result set
-                # Blend already-included files; inject new ones at reduced weight
+                # Iter 11: For large repos with very sparse graphs (< k/2), boost BM25 weight
+                # since import traversal is unreliable (external libs not in corpus).
+                bm25_inject_weight = 0.55 if (is_large_repo and graph_count < k // 2) else 0.4
                 top_bm25 = np.argsort(bm25_scores_arr)[::-1][:k]
                 for idx in top_bm25:
                     fpath = self.file_paths[idx]
@@ -809,7 +837,7 @@ class AdaptiveTriggerRetriever:
                     if fpath in all_relevant:
                         all_relevant[fpath] = 0.5 * all_relevant[fpath] + 0.5 * bm25_norm
                     elif bm25_norm > 0.1:
-                        all_relevant[fpath] = 0.4 * bm25_norm
+                        all_relevant[fpath] = bm25_inject_weight * bm25_norm
             else:
                 # Graph well-filled: only blend for already-included files (rerank)
                 top_bm25 = np.argsort(bm25_scores_arr)[::-1][:graph_count]

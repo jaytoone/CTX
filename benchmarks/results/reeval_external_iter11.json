@@ -1,0 +1,1890 @@
+{
+  "flask": {
+    "repo": "flask",
+    "n_files": 83,
+    "n_queries": 87,
+    "overall_r5": 0.6608517068287183,
+    "old_r5": 0.6003411552262126,
+    "delta": 0.060510551602505736,
+    "by_type": {
+      "EXPLICIT_SYMBOL": {
+        "r5": 0.7619047619047619,
+        "old_r5": 0.7619047619047619,
+        "n": 42
+      },
+      "IMPLICIT_CONTEXT": {
+        "r5": 0.34682878849545506,
+        "old_r5": 0.31975647808981134,
+        "n": 15
+      },
+      "SEMANTIC_CONCEPT": {
+        "r5": 0.6645833333333333,
+        "old_r5": 0.5216666666666667,
+        "n": 20
+      },
+      "TEMPORAL_HISTORY": {
+        "r5": 0.7,
+        "old_r5": 0.5,
+        "n": 10
+      }
+    },
+    "details": [
+      {
+        "query_id": "q_0000",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0001",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0002",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0003",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0004",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0005",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0006",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0007",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0008",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0009",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0010",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0011",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0012",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0013",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0014",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0015",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0016",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0017",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0018",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0019",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0020",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0021",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0022",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0023",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0024",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0025",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0026",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0027",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0028",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0029",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0030",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0031",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0032",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0033",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0034",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0035",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0036",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0037",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0038",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0039",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0040",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0041",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0042",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 1.0,
+        "n_relevant": 3,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0043",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 1.0,
+        "n_relevant": 2,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0044",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 0.4,
+        "n_relevant": 5,
+        "old_recall@5": 0.2
+      },
+      {
+        "query_id": "q_0045",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 0.625,
+        "n_relevant": 8,
+        "old_recall@5": 0.5
+      },
+      {
+        "query_id": "q_0046",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 0.4,
+        "n_relevant": 5,
+        "old_recall@5": 0.2
+      },
+      {
+        "query_id": "q_0047",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 1.0,
+        "n_relevant": 2,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0048",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 0.6666666666666666,
+        "n_relevant": 3,
+        "old_recall@5": 0.3333333333333333
+      },
+      {
+        "query_id": "q_0049",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 1.0,
+        "n_relevant": 2,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0050",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 0.0,
+        "n_relevant": 7,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0051",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 1.0,
+        "n_relevant": 2,
+        "old_recall@5": 0.5
+      },
+      {
+        "query_id": "q_0052",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 0.2,
+        "n_relevant": 5,
+        "old_recall@5": 0.2
+      },
+      {
+        "query_id": "q_0053",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 1.0,
+        "n_relevant": 2,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0054",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 0.5,
+        "n_relevant": 2,
+        "old_recall@5": 0.5
+      },
+      {
+        "query_id": "q_0055",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 1.0,
+        "n_relevant": 2,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0056",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 1.0,
+        "n_relevant": 2,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0057",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 0.5,
+        "n_relevant": 2,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0058",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 0.5,
+        "n_relevant": 2,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0059",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 0.0,
+        "n_relevant": 2,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0060",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 1.0,
+        "n_relevant": 2,
+        "old_recall@5": 0.5
+      },
+      {
+        "query_id": "q_0061",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 0.5,
+        "n_relevant": 2,
+        "old_recall@5": 0.5
+      },
+      {
+        "query_id": "q_0062",
+        "trigger_type": "TEMPORAL_HISTORY",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0063",
+        "trigger_type": "TEMPORAL_HISTORY",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0064",
+        "trigger_type": "TEMPORAL_HISTORY",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0065",
+        "trigger_type": "TEMPORAL_HISTORY",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0066",
+        "trigger_type": "TEMPORAL_HISTORY",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0067",
+        "trigger_type": "TEMPORAL_HISTORY",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0068",
+        "trigger_type": "TEMPORAL_HISTORY",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0069",
+        "trigger_type": "TEMPORAL_HISTORY",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0070",
+        "trigger_type": "TEMPORAL_HISTORY",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0071",
+        "trigger_type": "TEMPORAL_HISTORY",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0072",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.5,
+        "n_relevant": 8,
+        "old_recall@5": 0.5
+      },
+      {
+        "query_id": "q_0073",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 1.0,
+        "n_relevant": 3,
+        "old_recall@5": 0.6666666666666666
+      },
+      {
+        "query_id": "q_0074",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.15384615384615385,
+        "n_relevant": 26,
+        "old_recall@5": 0.15384615384615385
+      },
+      {
+        "query_id": "q_0075",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.1111111111111111,
+        "n_relevant": 27,
+        "old_recall@5": 0.1111111111111111
+      },
+      {
+        "query_id": "q_0076",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.625,
+        "n_relevant": 8,
+        "old_recall@5": 0.625
+      },
+      {
+        "query_id": "q_0077",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.17857142857142858,
+        "n_relevant": 28,
+        "old_recall@5": 0.14285714285714285
+      },
+      {
+        "query_id": "q_0078",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.5,
+        "n_relevant": 4,
+        "old_recall@5": 0.5
+      },
+      {
+        "query_id": "q_0079",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.11538461538461539,
+        "n_relevant": 26,
+        "old_recall@5": 0.11538461538461539
+      },
+      {
+        "query_id": "q_0080",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.18518518518518517,
+        "n_relevant": 27,
+        "old_recall@5": 0.14814814814814814
+      },
+      {
+        "query_id": "q_0081",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 1.0,
+        "n_relevant": 2,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0082",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.11538461538461539,
+        "n_relevant": 26,
+        "old_recall@5": 0.11538461538461539
+      },
+      {
+        "query_id": "q_0083",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.3333333333333333,
+        "n_relevant": 6,
+        "old_recall@5": 0.3333333333333333
+      },
+      {
+        "query_id": "q_0084",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.11538461538461539,
+        "n_relevant": 26,
+        "old_recall@5": 0.11538461538461539
+      },
+      {
+        "query_id": "q_0085",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.15384615384615385,
+        "n_relevant": 26,
+        "old_recall@5": 0.15384615384615385
+      },
+      {
+        "query_id": "q_0086",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.11538461538461539,
+        "n_relevant": 26,
+        "old_recall@5": 0.11538461538461539
+      }
+    ]
+  },
+  "fastapi": {
+    "repo": "fastapi",
+    "n_files": 1120,
+    "n_queries": 89,
+    "overall_r5": 0.4067006042889847,
+    "old_r5": 0.405077633003092,
+    "delta": 0.0016229712858926715,
+    "by_type": {
+      "EXPLICIT_SYMBOL": {
+        "r5": 0.5454545454545454,
+        "old_r5": 0.5454545454545454,
+        "n": 44
+      },
+      "IMPLICIT_CONTEXT": {
+        "r5": 0.06938654841093865,
+        "old_r5": 0.06938654841093865,
+        "n": 15
+      },
+      "SEMANTIC_CONCEPT": {
+        "r5": 0.5077777777777779,
+        "old_r5": 0.5005555555555555,
+        "n": 20
+      },
+      "TEMPORAL_HISTORY": {
+        "r5": 0.1,
+        "old_r5": 0.1,
+        "n": 10
+      }
+    },
+    "details": [
+      {
+        "query_id": "q_0000",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0001",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0002",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0003",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0004",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0005",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0006",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0007",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0008",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0009",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0010",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0011",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0012",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0013",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0014",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0015",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0016",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0017",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0018",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0019",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0020",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0021",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0022",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0023",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0024",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0025",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0026",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0027",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0028",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0029",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0030",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0031",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0032",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0033",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0034",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0035",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0036",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0037",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0038",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0039",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0040",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0041",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0042",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0043",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0044",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 1.0,
+        "n_relevant": 4,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0045",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 1.0,
+        "n_relevant": 4,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0046",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 0.0,
+        "n_relevant": 2,
+        "old_recall@5": 0.5
+      },
+      {
+        "query_id": "q_0047",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 0.5,
+        "n_relevant": 8,
+        "old_recall@5": 0.5
+      },
+      {
+        "query_id": "q_0048",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 1.0,
+        "n_relevant": 2,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0049",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 0.0,
+        "n_relevant": 2,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0050",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 0.3333333333333333,
+        "n_relevant": 3,
+        "old_recall@5": 0.3333333333333333
+      },
+      {
+        "query_id": "q_0051",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 1.0,
+        "n_relevant": 2,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0052",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 1.0,
+        "n_relevant": 5,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0053",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 0.25,
+        "n_relevant": 4,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0054",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 0.6666666666666666,
+        "n_relevant": 3,
+        "old_recall@5": 0.6666666666666666
+      },
+      {
+        "query_id": "q_0055",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 0.3333333333333333,
+        "n_relevant": 3,
+        "old_recall@5": 0.3333333333333333
+      },
+      {
+        "query_id": "q_0056",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 0.75,
+        "n_relevant": 4,
+        "old_recall@5": 0.5
+      },
+      {
+        "query_id": "q_0057",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 1.0,
+        "n_relevant": 2,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0058",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 0.2222222222222222,
+        "n_relevant": 9,
+        "old_recall@5": 0.4444444444444444
+      },
+      {
+        "query_id": "q_0059",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 0.2,
+        "n_relevant": 10,
+        "old_recall@5": 0.2
+      },
+      {
+        "query_id": "q_0060",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 0.16666666666666666,
+        "n_relevant": 6,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0061",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 0.4,
+        "n_relevant": 5,
+        "old_recall@5": 0.2
+      },
+      {
+        "query_id": "q_0062",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 0.0,
+        "n_relevant": 2,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0063",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 0.3333333333333333,
+        "n_relevant": 3,
+        "old_recall@5": 0.3333333333333333
+      },
+      {
+        "query_id": "q_0064",
+        "trigger_type": "TEMPORAL_HISTORY",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0065",
+        "trigger_type": "TEMPORAL_HISTORY",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0066",
+        "trigger_type": "TEMPORAL_HISTORY",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0067",
+        "trigger_type": "TEMPORAL_HISTORY",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0068",
+        "trigger_type": "TEMPORAL_HISTORY",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0069",
+        "trigger_type": "TEMPORAL_HISTORY",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0070",
+        "trigger_type": "TEMPORAL_HISTORY",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0071",
+        "trigger_type": "TEMPORAL_HISTORY",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0072",
+        "trigger_type": "TEMPORAL_HISTORY",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0073",
+        "trigger_type": "TEMPORAL_HISTORY",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0074",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.0,
+        "n_relevant": 9,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0075",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.07317073170731707,
+        "n_relevant": 41,
+        "old_recall@5": 0.07317073170731707
+      },
+      {
+        "query_id": "q_0076",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.05454545454545454,
+        "n_relevant": 55,
+        "old_recall@5": 0.05454545454545454
+      },
+      {
+        "query_id": "q_0077",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.1111111111111111,
+        "n_relevant": 45,
+        "old_recall@5": 0.1111111111111111
+      },
+      {
+        "query_id": "q_0078",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.12195121951219512,
+        "n_relevant": 41,
+        "old_recall@5": 0.12195121951219512
+      },
+      {
+        "query_id": "q_0079",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.0,
+        "n_relevant": 46,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0080",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.0,
+        "n_relevant": 9,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0081",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.08888888888888889,
+        "n_relevant": 45,
+        "old_recall@5": 0.08888888888888889
+      },
+      {
+        "query_id": "q_0082",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.0,
+        "n_relevant": 2,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0083",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.12195121951219512,
+        "n_relevant": 41,
+        "old_recall@5": 0.12195121951219512
+      },
+      {
+        "query_id": "q_0084",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.05454545454545454,
+        "n_relevant": 55,
+        "old_recall@5": 0.05454545454545454
+      },
+      {
+        "query_id": "q_0085",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.12195121951219512,
+        "n_relevant": 41,
+        "old_recall@5": 0.12195121951219512
+      },
+      {
+        "query_id": "q_0086",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.0975609756097561,
+        "n_relevant": 41,
+        "old_recall@5": 0.0975609756097561
+      },
+      {
+        "query_id": "q_0087",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.0975609756097561,
+        "n_relevant": 41,
+        "old_recall@5": 0.0975609756097561
+      },
+      {
+        "query_id": "q_0088",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.0975609756097561,
+        "n_relevant": 41,
+        "old_recall@5": 0.0975609756097561
+      }
+    ]
+  },
+  "requests": {
+    "repo": "requests",
+    "n_files": 36,
+    "n_queries": 80,
+    "overall_r5": 0.7526165555935294,
+    "old_r5": 0.6928248889268627,
+    "delta": 0.05979166666666669,
+    "by_type": {
+      "EXPLICIT_SYMBOL": {
+        "r5": 0.8285714285714286,
+        "old_r5": 0.8285714285714286,
+        "n": 35
+      },
+      "IMPLICIT_CONTEXT": {
+        "r5": 0.3961771853877117,
+        "old_r5": 0.3961771853877117,
+        "n": 15
+      },
+      "SEMANTIC_CONCEPT": {
+        "r5": 0.8633333333333333,
+        "old_r5": 0.6741666666666666,
+        "n": 20
+      },
+      "TEMPORAL_HISTORY": {
+        "r5": 0.8,
+        "old_r5": 0.7,
+        "n": 10
+      }
+    },
+    "details": [
+      {
+        "query_id": "q_0000",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0001",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0002",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0003",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0004",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0005",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0006",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0007",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0008",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0009",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0010",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0011",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0012",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0013",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0014",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0015",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0016",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0017",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0018",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0019",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0020",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0021",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0022",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0023",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0024",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0025",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0026",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0027",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0028",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0029",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0030",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0031",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0032",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0033",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0034",
+        "trigger_type": "EXPLICIT_SYMBOL",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0035",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 0.75,
+        "n_relevant": 4,
+        "old_recall@5": 0.75
+      },
+      {
+        "query_id": "q_0036",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 0.5,
+        "n_relevant": 2,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0037",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 0.75,
+        "n_relevant": 4,
+        "old_recall@5": 0.5
+      },
+      {
+        "query_id": "q_0038",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 0.6666666666666666,
+        "n_relevant": 3,
+        "old_recall@5": 0.6666666666666666
+      },
+      {
+        "query_id": "q_0039",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 1.0,
+        "n_relevant": 2,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0040",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 1.0,
+        "n_relevant": 2,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0041",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 1.0,
+        "n_relevant": 2,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0042",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 0.0,
+        "n_relevant": 3,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0043",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 1.0,
+        "n_relevant": 2,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0044",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 1.0,
+        "n_relevant": 2,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0045",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 1.0,
+        "n_relevant": 3,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0046",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 1.0,
+        "n_relevant": 2,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0047",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 1.0,
+        "n_relevant": 2,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0048",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 1.0,
+        "n_relevant": 2,
+        "old_recall@5": 0.5
+      },
+      {
+        "query_id": "q_0049",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 1.0,
+        "n_relevant": 2,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0050",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 1.0,
+        "n_relevant": 3,
+        "old_recall@5": 0.6666666666666666
+      },
+      {
+        "query_id": "q_0051",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 0.6,
+        "n_relevant": 5,
+        "old_recall@5": 0.4
+      },
+      {
+        "query_id": "q_0052",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 1.0,
+        "n_relevant": 2,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0053",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 1.0,
+        "n_relevant": 2,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0054",
+        "trigger_type": "SEMANTIC_CONCEPT",
+        "recall@5": 1.0,
+        "n_relevant": 2,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0055",
+        "trigger_type": "TEMPORAL_HISTORY",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0056",
+        "trigger_type": "TEMPORAL_HISTORY",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0057",
+        "trigger_type": "TEMPORAL_HISTORY",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0058",
+        "trigger_type": "TEMPORAL_HISTORY",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0059",
+        "trigger_type": "TEMPORAL_HISTORY",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0060",
+        "trigger_type": "TEMPORAL_HISTORY",
+        "recall@5": 0.0,
+        "n_relevant": 1,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0061",
+        "trigger_type": "TEMPORAL_HISTORY",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0062",
+        "trigger_type": "TEMPORAL_HISTORY",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0063",
+        "trigger_type": "TEMPORAL_HISTORY",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0064",
+        "trigger_type": "TEMPORAL_HISTORY",
+        "recall@5": 1.0,
+        "n_relevant": 1,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0065",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.125,
+        "n_relevant": 8,
+        "old_recall@5": 0.125
+      },
+      {
+        "query_id": "q_0066",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.7142857142857143,
+        "n_relevant": 7,
+        "old_recall@5": 0.7142857142857143
+      },
+      {
+        "query_id": "q_0067",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.0,
+        "n_relevant": 2,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0068",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.2631578947368421,
+        "n_relevant": 19,
+        "old_recall@5": 0.2631578947368421
+      },
+      {
+        "query_id": "q_0069",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.15,
+        "n_relevant": 20,
+        "old_recall@5": 0.15
+      },
+      {
+        "query_id": "q_0070",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.0,
+        "n_relevant": 7,
+        "old_recall@5": 0.0
+      },
+      {
+        "query_id": "q_0071",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 1.0,
+        "n_relevant": 2,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0072",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.23809523809523808,
+        "n_relevant": 21,
+        "old_recall@5": 0.23809523809523808
+      },
+      {
+        "query_id": "q_0073",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.18181818181818182,
+        "n_relevant": 22,
+        "old_recall@5": 0.18181818181818182
+      },
+      {
+        "query_id": "q_0074",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.2631578947368421,
+        "n_relevant": 19,
+        "old_recall@5": 0.2631578947368421
+      },
+      {
+        "query_id": "q_0075",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.4,
+        "n_relevant": 10,
+        "old_recall@5": 0.4
+      },
+      {
+        "query_id": "q_0076",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.25,
+        "n_relevant": 4,
+        "old_recall@5": 0.25
+      },
+      {
+        "query_id": "q_0077",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 1.0,
+        "n_relevant": 2,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0078",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 1.0,
+        "n_relevant": 3,
+        "old_recall@5": 1.0
+      },
+      {
+        "query_id": "q_0079",
+        "trigger_type": "IMPLICIT_CONTEXT",
+        "recall@5": 0.35714285714285715,
+        "n_relevant": 14,
+        "old_recall@5": 0.35714285714285715
+      }
+    ]
+  }
+}
