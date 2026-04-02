@@ -377,25 +377,29 @@ def run_evaluation(
             ctx_answer = simulate_with_ctx(q)
             random_answer = "Based on some project files, this appears to be a software project."
             none_answer = simulate_without_ctx(q)
-            ctx_score, ctx_reason = 0.8, "dry-run"
-            random_score, random_reason = 0.3, "dry-run"
-            none_score, none_reason = 0.1, "dry-run"
-            # Also compute legacy keyword scores for comparison
-            kw_ctx, _, _ = score_answer_keyword(ctx_answer, q)
-            kw_none, _, _ = score_answer_keyword(none_answer, q)
+            ctx_score, random_score, none_score = 0.8, 0.3, 0.1
+            ctx_reason, random_reason = "dry-run", "dry-run"
+            kw_ctx, kw_none = 0.8, 0.0
         else:
             ctx_answer = ask_llm(client, q.question, context=ctx_context)
             random_answer = ask_llm(client, q.question, context=random_context)
             none_answer = ask_llm(client, q.question, context="")
 
-            # LLM-as-judge scoring (factual accuracy)
-            ctx_score, ctx_reason = score_answer_llm_judge(client, ctx_answer, q)
-            random_score, random_reason = score_answer_llm_judge(client, random_answer, q)
-            none_score, none_reason = score_answer_llm_judge(client, none_answer, q)
+            # Hybrid scoring: 50% LLM-as-judge + 50% keyword matching
+            # This combats judge granularity issues ({0,5,10} → only 3 levels)
+            # while keeping factual accuracy assessment from LLM judge
+            judge_ctx, ctx_reason = score_answer_llm_judge(client, ctx_answer, q)
+            judge_random, random_reason = score_answer_llm_judge(client, random_answer, q)
+            judge_none, _ = score_answer_llm_judge(client, none_answer, q)
 
-            # Legacy keyword scores for comparison
             kw_ctx, _, _ = score_answer_keyword(ctx_answer, q)
+            kw_random, _, _ = score_answer_keyword(random_answer, q)
             kw_none, _, _ = score_answer_keyword(none_answer, q)
+
+            # Hybrid: 50% judge + 50% keyword
+            ctx_score = 0.5 * judge_ctx + 0.5 * kw_ctx
+            random_score = 0.5 * judge_random + 0.5 * kw_random
+            none_score = 0.5 * judge_none + 0.5 * kw_none
 
         ctx_scores.append(ctx_score)
         random_scores.append(random_score)
