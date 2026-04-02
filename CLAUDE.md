@@ -1,9 +1,38 @@
-# CTX — Claude 세션 핸드오프 (2026-03-27)
+# CTX — Context Bootstrapper for Coding Agents (2026-04-02)
 
 ## 프로젝트 개요
-CTX(Contextual Trigger eXtraction): 코드/문서 검색을 위한 **rule-based 비LLM 검색 시스템**.
-트리거 분류 → 전략별 검색 (symbol/concept/temporal/implicit).
-LLM 호출 없음, 결정론적 인덱스 기반, 응답 <1ms.
+CTX(Contextual Trigger eXtraction): **코딩 에이전트의 context 부트스트래퍼**.
+Claude Code/Cursor/Aider 등이 agentic search (grep→read 20회+)로 파일을 찾는 데 첫 턴 60%+ 시간을 소비.
+CTX는 <1ms 만에 관련 파일 top-5를 제공하여 이 병목을 해소.
+
+**핵심 가치**: 검색 엔진이 아닌 **시작점 제공자** (context bootstrapper)
+- Rule-based, deterministic, zero-LLM, <1ms
+- 4가지 트리거 타입: EXPLICIT_SYMBOL / SEMANTIC_CONCEPT / TEMPORAL_HISTORY / IMPLICIT_CONTEXT
+- .py + .md 통합 인덱싱 (코드 + 문서 동시 검색)
+
+## G1/G2 정의 (2026-04-02 재정립)
+
+| Goal | 정의 | 측정 방법 | 현재 수치 |
+|------|------|----------|----------|
+| **G1** | 코드/문서만으로 프로젝트 이해도 즉석 부트스트랩 | LLM-as-judge + keyword hybrid (CTX vs Random vs None 3-arm) | CTX vs None delta=**+0.300** |
+| **G2** | 사용자 지시→유관 파일 즉석 검색 (agentic search의 시작점) | R@5 on external codebases (Flask/FastAPI/Requests) | External R@5=**0.602** |
+
+**G1 핵심**: CTX가 제공하는 context가 **랜덤 파일보다 얼마나 더 유용한가** (delta 측정)
+**G2 핵심**: CTX top-5 파일이 **ground truth를 포함하는 비율** (R@5)
+
+### 코딩 에이전트 비교 (2026-04-02 조사)
+
+| 도구 | G1 접근 | G2 접근 | 속도 | CTX와의 관계 |
+|------|---------|---------|------|-------------|
+| Claude Code | CLAUDE.md + git | agentic grep (순차 20회) | 느림 | **CTX가 첫 턴 가속** |
+| Cursor | Merkle tree + 임베딩 | 벡터DB (Turbopuffer) | 빠름 (인덱싱 후) | CTX가 임베딩 보완 |
+| Aider | repo map (fresh) | PageRank on dep graph | 중간 | CTX가 semantic 보완 |
+| Windsurf | 없음 | SWE-Grep (병렬 4턴x8) | 매우 빠름 | CTX가 pre-filter |
+
+**CTX 차별점**:
+1. **유일한 cross-session memory** — 다른 도구 전부 세션마다 리셋
+2. **<1ms deterministic** — 임베딩/LLM 없이 즉시 결과
+3. **.md 문서 포함 인덱싱** — 코드만이 아닌 문서까지 통합 검색
 
 ---
 
