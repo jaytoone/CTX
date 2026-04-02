@@ -137,6 +137,7 @@ class BenchmarkRunner:
         "dense_tfidf": DenseRetriever,
         "graph_rag": GraphRAGRetriever,
         "adaptive_trigger": AdaptiveTriggerRetriever,
+        "adaptive_trigger_dense": lambda d: AdaptiveTriggerRetriever(d, use_dense=True),
         "llamaindex": LlamaIndexRetriever,
         "chroma_dense": ChromaDenseRetriever,
         "hybrid_dense_ctx": HybridDenseCTXRetriever,

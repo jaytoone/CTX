@@ -40,6 +40,20 @@
       "outcome": "evolved",
       "weak_dim": "external_r5",
       "notes": "Flask EXPL +9.5%p, FastAPI EXPL +4.6%p, mean external +2.2%p. IMPL slightly degraded from IDF shifts."
+    },
+    {
+      "goal": "concept_weight(short)=0.75 + stem_boost_override + temporal_symbol_prefix",
+      "score": 0.896,
+      "score_vector": {
+        "coir_r5": 1.0,
+        "repobench_r5": 0.975,
+        "external_r5": 0.6033,
+        "impact": 0.9
+      },
+      "iteration": 5,
+      "outcome": "evolved",
+      "weak_dim": "external_r5",
+      "notes": "Flask SEMA +14.3%p, Requests SEMA +11.4%p, Flask TEMP +20%p, Requests TEMP +10%p. External mean 0.5649→0.6033 (+3.8%p). Crossed 0.600 target. FastAPI ceiling ~0.41 due to benchmark data quality issues (duplicate queries, 928-file corpus)."
     }
   ],
   "dead_ends": [
@@ -108,11 +122,11 @@
   "best_score_vector": {
     "coir_r5": 1.0,
     "repobench_r5": 0.975,
-    "external_r5": 0.5623,
+    "external_r5": 0.6033,
     "impact": 0.9
   },
-  "plateau_count": 5,
-  "status": "CONVERGED",
+  "plateau_count": 0,
+  "status": "RUNNING",
   "her_hints": [],
   "skill_routing_history": [],
   "current_goal": "\uacf5\uc778 \ubca4\uce58\ub9c8\ud06c CTX SOTA\ud654"

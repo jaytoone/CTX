@@ -2,6 +2,7 @@
 
 | 파일 | 설명 |
 |------|------|
+| [ARCHITECTURE.md](ARCHITECTURE.md) | CTX 전체 아키텍처 개념도 — 트리거 분류 → 4개 검색 파이프라인 → 평가 레이어 |
 | [CTX_SPEC_v1.0.md](CTX_SPEC_v1.0.md) | 실험 상세 스펙 문서 v1.0 — 트리거 기반 동적 메모리 호출 실험 설계 |
 | [research/20260329-ctx-hook-improvement-report.md](research/20260329-ctx-hook-improvement-report.md) | CTX 훅 개선 세션 Before/After 성과 리포트 — FP 85.7%→0%, 전체 정확도 85%→100% |
 | [research/20260324-ctx-paper-worthiness.md](research/20260324-ctx-paper-worthiness.md) | CTX 논문 가치 평론 — expert-research-v2 결과 |
@@ -85,6 +86,13 @@
 | [research/20260328-trigger-classifier-semantic-fix.md](research/20260328-trigger-classifier-semantic-fix.md) | TriggerClassifier SEMANTIC 수정 — "Find all code related to X" 오분류 수정, SEMANTIC R@5 near-zero→0.531~0.958 |
 | [../benchmarks/results/final_report_v10.md](../benchmarks/results/final_report_v10.md) | **P10 최종 리포트 (현재)** — Trigger+Import 두 버그 수정 후: External R@5=0.495 [CI: 0.441,0.550], 목표 0.25 달성, Bootstrap CI 추가 |
 | [research/20260330-ctx-academic-critique-web-grounded.md](research/20260330-ctx-academic-critique-web-grounded.md) | CTX 학술 비판 (web-grounded, expert-research-v2) — 합성 벤치마크 유효성, 외부 일반화 갭, TES 비표준성, G1 trivial 판정, 개선 우선순위 Top 3 |
+| [research/20260402-omc-live-infinite-progress-report.md](research/20260402-omc-live-infinite-progress-report.md) | omc-live-infinite Iter 1–5 진행 보고서 — concept_weight(short)+stem_boost_override+temporal_symbol_prefix, external R@5 0.495→0.6033 |
+
+| [marketing/hacker_news_show_hn.md](marketing/hacker_news_show_hn.md) | Show HN 포스트 초안 — LLM-free 컨텍스트 로더, 5.2% 토큰, R@5=1.0 수치 요약 |
+| [marketing/reddit_localllama.md](marketing/reddit_localllama.md) | r/LocalLLaMA 포스트 초안 — 4 트리거 타입 설명 + 87-query 벤치마크 테이블 |
+| [marketing/devto_post.md](marketing/devto_post.md) | Dev.to 게시글 초안 — 코드 예제 + COIR 벤치마크 포함 마크다운 포스트 |
+| [marketing/geek_news_scheduled.md](marketing/geek_news_scheduled.md) | GeekNews 예약 포스트 (2026-04-07 이후) — 계정 nave94, news.hada.io/write 제출 |
+| [marketing/okky_post.md](marketing/okky_post.md) | OKKY 포스트 초안 — 한국어 커뮤니티 대상, 문제의식 + 성과 수치 요약 |
 
 ## Related
 - [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]

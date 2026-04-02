@@ -1,14 +1,14 @@
 {
   "status": "RUNNING",
   "session_id": "inf-20260401",
-  "current_iteration": 4,
+  "current_iteration": 5,
   "root_goal": "\uacf5\uc778 \ubca4\uce58\ub9c8\ud06c(COIR, RepoBench) \uae30\uc900\uc73c\ub85c CTX\ub97c SOTA\uae09\uc73c\ub85c \ub9cc\ub4e4\uae30",
   "original_goal": "\uacf5\uc778 \ubca4\uce58\ub9c8\ud06c(COIR, RepoBench) \uae30\uc900\uc73c\ub85c CTX\ub97c SOTA\uae09\uc73c\ub85c \ub9cc\ub4e4\uae30",
   "evolution_count": 0,
-  "best_score": 0.864,
+  "best_score": 0.896,
   "plateau_count": 0,
   "escape_attempts": 0,
-  "total_sessions": 1,
+  "total_sessions": 2,
   "world_model_path": ".omc/world-model.json",
   "started_at": "2026-04-01T11:40:12.431665",
   "score_dimensions": [
@@ -27,8 +27,8 @@
   "score_vector": {
     "coir_r5": 1.0,
     "repobench_r5": 0.975,
-    "external_r5": 0.5623,
+    "external_r5": 0.6033,
     "impact": 0.9
   },
-  "last_iter_summary": "iter3: reverse_import_graph + path_boost + BM25_blend_implicit; external mean R@5 0.5259\u21920.5406"
+  "last_iter_summary": "iter5: concept_weight(short)=0.75, stem_boost_override, temporal_symbol_prefix; external mean R@5 0.5649\u21920.6033"
 }

@@ -227,10 +227,19 @@ class AdaptiveTriggerRetriever:
             pass
 
     def _index_imports(self, file_path: str, content: str) -> None:
-        """Build import dependency graph using AST for accuracy (regex fallback)."""
+        """Build import dependency graph using AST for accuracy (regex fallback).
+
+        Also builds import_alias_map for IMPLICIT_CONTEXT: maps local aliases
+        like 'from X import Y as Z' to their source module ('X.Y').
+        """
         import ast as _ast
         imports = []
         seen = set()
+        # NEW (Iter 6): Track local import aliases for better IMPLICIT_CONTEXT traversal
+        self.import_alias_map: Dict[str, Dict[str, str]] = getattr(
+            self, 'import_alias_map', {}
+        )
+        alias_map: Dict[str, str] = {}  # alias -> source_module for this file
 
         def _add(mod: str) -> None:
             if mod and mod not in seen:
@@ -249,6 +258,12 @@ class AdaptiveTriggerRetriever:
                     if node.module:
                         top = node.module.split(".")[0]
                         _add(top)
+                        # NEW (Iter 6): Track alias -> source mapping
+                        for alias in node.names:
+                            if alias.asname:
+                                # 'from X import Y as Z' -> alias_map[Z] = X.Y
+                                source = f"{node.module}.{alias.name}"
+                                alias_map[alias.asname] = source
                     # Handle relative imports: resolve against file's own package
                     if node.level and node.level > 0:
                         parts = file_path.replace("\\", "/").split("/")
@@ -260,11 +275,18 @@ class AdaptiveTriggerRetriever:
                             _add(".".join(pkg_parts))
                             _add(pkg_parts[-1])
         except SyntaxError:
-            # Regex fallback
+            # Regex fallback for import aliases
+            for m in re.finditer(r'from\s+([\w.]+)\s+import\s+([\w]+)\s+as\s+(\w+)', content, re.MULTILINE):
+                source = f"{m.group(1)}.{m.group(2)}"
+                alias_map[m.group(3)] = source
             for m in re.finditer(r'^\s*import\s+([\w.]+)', content, re.MULTILINE):
                 _add(m.group(1).split(".")[0])
             for m in re.finditer(r'^\s*from\s+([\w.]+)\s+import', content, re.MULTILINE):
                 _add(m.group(1).split(".")[0])
+
+        # NEW (Iter 6): Store alias map for this file
+        if alias_map:
+            self.import_alias_map[file_path] = alias_map
 
         self.import_graph[file_path] = imports
 
@@ -726,6 +748,20 @@ class AdaptiveTriggerRetriever:
         for pf in primary_files:
             all_relevant[pf] = 1.0
             self._traverse_imports(pf, all_relevant, depth=bfs_depth, decay=0.5)
+
+        # NEW (Iter 6): Follow import aliases for better IMPLICIT coverage.
+        # When a file imports 'from X import Y as Z', we should also fetch
+        # files that export Y (the actual symbol). This helps when queries
+        # reference aliased imports.
+        alias_map = getattr(self, 'import_alias_map', {})
+        for fpath in list(all_relevant.keys()):
+            fwd_aliases = alias_map.get(fpath, {})
+            for alias_name, source_module in fwd_aliases.items():
+                # Source module might map to a file via module_to_file
+                if source_module in self.module_to_file:
+                    target = self.module_to_file[source_module]
+                    if target not in all_relevant:
+                        all_relevant[target] = 0.25  # Lower weight — indirect
 
         # Traverse reverse import graph (callers) — only for low-fan-out files.
         # High-fan-out hubs (e.g. __init__.py) introduce noise.
