@@ -742,12 +742,31 @@ class AdaptiveTriggerRetriever:
             primary_files.add(self.file_paths[top_idx])
 
         # Traverse import graph to find dependencies.
-        # depth scales with k: small k → focused 2-hop, large k → deeper 3-hop.
-        bfs_depth = 3 if k >= 8 else 2
+        # Iter 10: depth scales with k: small k → focused 2-hop, large k → deeper 4-hop.
+        # FastAPI (928 files) needs deeper traversal for better IMPLICIT recall.
+        bfs_depth = 4 if k >= 8 else 2
         all_relevant: Dict[str, float] = {}
         for pf in primary_files:
             all_relevant[pf] = 1.0
             self._traverse_imports(pf, all_relevant, depth=bfs_depth, decay=0.5)
+
+        # Iter 10 NEW: Path boost for import chain — files closer in import chain
+        # get higher weight (e.g., direct imports > 2-hop > 3-hop).
+        # Normalize by hop distance from primary file.
+        for fpath, score in list(all_relevant.items()):
+            # Track original traversal depth from primary files
+            if fpath in primary_files:
+                all_relevant[fpath] = max(score, 1.0)  # Primary files always at max
+            else:
+                # Check if this file was found via shallow traverse (depth 1)
+                # Files at depth 1 should score higher than depth 2+
+                in_shallow = False
+                for pf in primary_files:
+                    if fpath in self.import_graph.get(pf, []):
+                        in_shallow = True
+                        break
+                if in_shallow:
+                    all_relevant[fpath] = max(score, 0.8)  # Boost shallow deps
 
         # NEW (Iter 6): Follow import aliases for better IMPLICIT coverage.
         # When a file imports 'from X import Y as Z', we should also fetch

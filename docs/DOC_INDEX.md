@@ -2,6 +2,7 @@
 
 | 파일 | 설명 |
 |------|------|
+| [benchmark/g1_g2_publication_framework.md](benchmark/g1_g2_publication_framework.md) | G1/G2 publication-quality 벤치 프레임워크 — COIR/RepoBench/MEMORYCODE 매핑 |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | CTX 전체 아키텍처 개념도 — 트리거 분류 → 4개 검색 파이프라인 → 평가 레이어 |
 | [CTX_SPEC_v1.0.md](CTX_SPEC_v1.0.md) | 실험 상세 스펙 문서 v1.0 — 트리거 기반 동적 메모리 호출 실험 설계 |
 | [research/20260329-ctx-hook-improvement-report.md](research/20260329-ctx-hook-improvement-report.md) | CTX 훅 개선 세션 Before/After 성과 리포트 — FP 85.7%→0%, 전체 정확도 85%→100% |
@@ -99,7 +100,7 @@
 - [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]
 - [[projects/CTX/research/20260325-ctx-paper-tier-evaluation|20260325-ctx-paper-tier-evaluation]]
 - [[projects/CTX/research/20260330-ctx-academic-critique-web-grounded|20260330-ctx-academic-critique-web-grounded]]
+- [[projects/CTX/research/20260402-omc-live-infinite-progress-report|20260402-omc-live-infinite-progress-report]]
 - [[projects/CTX/research/20260328-ctx-downstream-nemotron-eval-v2|20260328-ctx-downstream-nemotron-eval-v2]]
 - [[projects/CTX/research/20260328-ctx-downstream-minimax-eval|20260328-ctx-downstream-minimax-eval]]
 - [[projects/CTX/research/20260328-ctx-downstream-nemotron-eval|20260328-ctx-downstream-nemotron-eval]]
-- [[projects/CTX/research/20260328-ctx-real-codebase-g2-eval|20260328-ctx-real-codebase-g2-eval]]

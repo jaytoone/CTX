@@ -1,7 +1,7 @@
 # CTX Document Retrieval Evaluation v2
 
-**Date**: 2026-03-30 15:07
-**Corpus**: 47 .md files from docs/
+**Date**: 2026-04-02 16:43
+**Corpus**: 58 .md files from docs/
 **Queries**: 100 (heading_exact + heading_paraphrase + keyword)
 **Metrics**: Recall@3, Recall@5, NDCG@5, MRR
 
@@ -9,57 +9,58 @@
 
 | Strategy | Recall@3 | Recall@5 | NDCG@5 | MRR |
 |----------|----------|----------|--------|-----|
-| CTX-doc (heading+BM25) | **0.890** | **0.960** | 0.816 | 0.773 |
-| BM25 | **0.670** | **0.790** | 0.633 | 0.601 |
-| Dense TF-IDF | **0.640** | **0.720** | 0.560 | 0.535 |
+| CTX-doc (heading+BM25) | **0.870** | **0.940** | 0.834 | 0.806 |
+| BM25 | **0.630** | **0.780** | 0.602 | 0.561 |
+| Dense TF-IDF | **0.610** | **0.690** | 0.561 | 0.548 |
 
 ## Per-Strategy Analysis
 
 ### CTX-doc (heading+BM25)
-- Hits@3: 89/100 (89.0%)
-- Hits@5: 96/100 (96.0%)
-- NDCG@5: 0.816
-- MRR: 0.773
+- Hits@3: 87/100 (87.0%)
+- Hits@5: 94/100 (94.0%)
+- NDCG@5: 0.834
+- MRR: 0.806
 
 **Misses (top 5)**:
-- [keyword] `find docs related to retrieval recall` → expected `research/20260326-ctx-goal1-goal2-final.md`
-- [keyword] `find docs related to downstream coir` → expected `research/20260326-ctx-benchmark-validation-roadmap.md`
-- [keyword] `find docs related to prefix dotted` → expected `decisions/20260326-path-derived-module-to-file.md`
+- [keyword] `find docs related to benchmark retrieval` → expected `research/20260330-ctx-academic-critique-web-grounded.md`
+- [keyword] `show information about minimax without` → expected `research/20260328-ctx-downstream-eval-complete.md`
 - [keyword] `which document covers trigger retrieval` → expected `paper_draft_outline.md`
+- [keyword] `find docs related to memory cross` → expected `research/20260325-long-session-context-management.md`
+- [heading_exact] `original question` → expected `research/20260326-ctx-vs-industry-comparison.md`
 
 ### BM25
-- Hits@3: 67/100 (67.0%)
-- Hits@5: 79/100 (79.0%)
-- NDCG@5: 0.633
-- MRR: 0.601
+- Hits@3: 63/100 (63.0%)
+- Hits@5: 78/100 (78.0%)
+- NDCG@5: 0.602
+- MRR: 0.561
 
 **Misses (top 5)**:
-- [heading_paraphrase] `ctx vs sota — 최종 성능 비교 테이블 v2 reference` → expected `research/20260326-ctx-sota-final-v2.md`
-- [heading_paraphrase] `where is ctx — document index documented` → expected `DOC_INDEX.md`
-- [heading_exact] `ctx 수정된 실험 결과 종합 요약 (논문 기준)` → expected `research/20260329-ctx-corrected-results-summary.md`
-- [heading_paraphrase] `adaptivetriggerretriever 외부 코드베이스 일반화 개선 reference` → expected `research/20260328-adaptive-trigger-generalization-fix.md`
-- [heading_exact] `실험 조건` → expected `research/20260328-ctx-downstream-minimax-eval.md`
+- [keyword] `find docs related to benchmark retrieval` → expected `research/20260330-ctx-academic-critique-web-grounded.md`
+- [heading_exact] `실험 설계` → expected `research/20260327-ctx-downstream-eval.md`
+- [heading_exact] `[expert-research-v2] ctx 약점 보완 대안 기술 분석` → expected `research/20260327-ctx-alternatives-research.md`
+- [heading_exact] `사용자 최초 목표 (재확인)` → expected `research/20260326-ctx-goal1-goal2-final.md`
+- [heading_exact] `ctx 프로젝트 루트에서 직접 실행` → expected `research/20260327-ctx-real-project-self-eval.md`
 
 ### Dense TF-IDF
-- Hits@3: 64/100 (64.0%)
-- Hits@5: 72/100 (72.0%)
-- NDCG@5: 0.560
-- MRR: 0.535
+- Hits@3: 61/100 (61.0%)
+- Hits@5: 69/100 (69.0%)
+- NDCG@5: 0.561
+- MRR: 0.548
 
 **Misses (top 5)**:
-- [keyword] `show information about full context` → expected `CTX_SPEC_v1.0.md`
-- [heading_paraphrase] `ctx vs sota — 최종 성능 비교 테이블 v2 reference` → expected `research/20260326-ctx-sota-final-v2.md`
-- [heading_paraphrase] `where is ctx — document index documented` → expected `DOC_INDEX.md`
-- [keyword] `context memory documentation` → expected `research/20260325-long-session-context-management.md`
-- [heading_exact] `ctx 수정된 실험 결과 종합 요약 (논문 기준)` → expected `research/20260329-ctx-corrected-results-summary.md`
+- [keyword] `find docs related to benchmark retrieval` → expected `research/20260330-ctx-academic-critique-web-grounded.md`
+- [heading_exact] `실험 설계` → expected `research/20260327-ctx-downstream-eval.md`
+- [heading_exact] `[expert-research-v2] ctx 약점 보완 대안 기술 분석` → expected `research/20260327-ctx-alternatives-research.md`
+- [heading_paraphrase] `find documentation about [expert-research-v2] ctx goal 1&2 v` → expected `research/20260326-ctx-vs-sota-comparison.md`
+- [heading_exact] `사용자 최초 목표 (재확인)` → expected `research/20260326-ctx-goal1-goal2-final.md`
 
 ## Per-Query-Type Breakdown
 
 | Type | N | CTX R@3 | BM25 R@3 | Dense R@3 |
 |------|---|---------|----------|-----------|
-| heading_exact | 29 | 0.897 | 0.690 | 0.655 |
-| heading_paraphrase | 32 | 1.000 | 0.500 | 0.625 |
-| keyword | 39 | 0.795 | 0.795 | 0.641 |
+| heading_exact | 35 | 0.943 | 0.543 | 0.514 |
+| heading_paraphrase | 33 | 1.000 | 0.697 | 0.606 |
+| keyword | 32 | 0.656 | 0.656 | 0.719 |
 
 ## Method Description
 
@@ -71,6 +72,6 @@
 
 | Stat | Value |
 |------|-------|
-| Total docs | 47 |
-| Average headings/doc | 15.4 |
-| Average keywords/doc | 15.0 |
+| Total docs | 58 |
+| Average headings/doc | 13.6 |
+| Average keywords/doc | 14.8 |
