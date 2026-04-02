@@ -1,78 +1,21 @@
 {
   "status": "RUNNING",
-  "session_id": "inf-20260402",
-  "current_iteration": 11,
-  "root_goal": "External R@5 improvement: Flask/Requests SEMANTIC+TEMPORAL gains, FastAPI structural ceiling",
-  "original_goal": "external R@5 >= 0.70 (3-repo mean)",
-  "evolution_count": 3,
-  "best_score": 0.896,
+  "session_id": "inf-g1-20260402",
+  "current_iteration": 1,
+  "root_goal": "G1 프로젝트 이해도 벤치마크: 코드/문서만으로 작업 히스토리+방향 이해도를 측정하는 eval 설계 및 구현",
+  "original_goal": "G1: 코드/문서만으로 프로젝트 작업 히스토리/방향에 대한 이해도 측정",
+  "evolution_count": 0,
+  "best_score": 0.0,
   "plateau_count": 0,
   "escape_attempts": 0,
-  "total_sessions": 4,
-  "iter10_status": "COMPLETED",
-  "iter10_start": "2026-04-02T11:30:00Z",
-  "iter10_end": "2026-04-02T11:35:00Z",
-  "iter10_changes": {
-    "bfs_depth_increase": "3 → 4 for k>=8",
-    "alias_resolution": "enhanced",
-    "path_boost": "added for import chain"
-  },
-  "iter10_changes_applied": ["bfs_depth 3→4", "path_boost"],
-  "iter10_verification": "verified via code test on FastAPI",
-  "iter10_notes": "Testedadaptive_trigger on FastAPI: applications.py retrieved. Code changes applied.",
-  "next_iteration": 11,
-  "current_iteration": 11,
-  "world_model_path": ".omc/world-model.json",
-  "started_at": "2026-04-01T11:40:12.431665",
+  "total_sessions": 1,
+  "started_at": "2026-04-02T18:10:00",
   "score_dimensions": [
-    "coir_r5",
-    "repobench_r5",
-    "external_r5",
-    "g1_publication",
-    "g2_publication",
-    "impact"
+    "eval_design_quality",
+    "eval_implementation",
+    "eval_coverage",
+    "baseline_measured",
+    "g1_score_meaningful"
   ],
-  "baseline": {
-    "coir_r5": 0.74,
-    "repobench_r5": 0.767,
-    "external_r5": 0.495,
-    "g1_publication": 0.0,
-    "g2_publication": 0.0,
-    "bm25_coir": 0.98,
-    "bm25_repobench": 0.767
-  },
-  "score_vector": {
-    "coir_r5": 1.0,
-    "repobench_r5": 0.767,
-    "external_r5": 0.6067,
-    "g1_publication": 0.905,
-    "g2_publication": 0.740,
-    "impact": 0.9
-  },
-  "last_iter_summary": "iter11: reverse_import threshold 10→30, 2-hop reverse, temporal noise reduction, BM25 large-repo boost. Flask +6.1%p, Requests +6.0%p, FastAPI +0.2%p. Mean external R@5 0.5661→0.6067 (+4.1%p)",
-  "iter11_results": {
-    "flask_r5": 0.6609,
-    "fastapi_r5": 0.4067,
-    "requests_r5": 0.7526,
-    "external_mean_r5": 0.6067,
-    "flask_semantic_delta": 0.1429,
-    "flask_temporal_delta": 0.2000,
-    "requests_semantic_delta": 0.1892,
-    "requests_temporal_delta": 0.1000
-  },
-  "iter12_results": {
-    "g1_zero_storage_medium_r5": 0.738,
-    "g1_zero_storage_flask_r5": 0.756,
-    "g1_zero_storage_requests_r5": 0.925,
-    "g1_bottleneck": "concept strict R@5=0.495 (benchmark ambiguity), group R@5=0.965",
-    "g1_zero_storage_overall": {
-      "module_name": 0.960,
-      "implicit": 1.000,
-      "concept_strict": 0.495,
-      "concept_group": 0.965,
-      "overall_weighted": 0.905
-    },
-    "doc_co_occurrence_boost": "implemented but not fully evaluated"
-  },
-  "next_strategy": "Improve G1 zero-storage concept queries from 0.495 to 0.70+ on medium dataset. SEMANTIC_CONCEPT retrieve is the bottleneck."
+  "world_model_path": ".omc/world-model.json"
 }

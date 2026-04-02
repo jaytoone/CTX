@@ -1,0 +1,174 @@
+{
+  "eval_type": "project_understanding_g1",
+  "project_path": "/home/jayone/Project/CTX",
+  "timestamp": "2026-04-02T18:31:01.144182",
+  "n_questions": 8,
+  "k": 5,
+  "dry_run": false,
+  "overall": {
+    "with_ctx_accuracy": 0.3083,
+    "without_ctx_accuracy": 0.1667,
+    "delta": 0.1417
+  },
+  "by_category": {
+    "H": {
+      "n": 2,
+      "with_ctx": 0.0,
+      "without_ctx": 0.0
+    },
+    "A": {
+      "n": 3,
+      "with_ctx": 0.6,
+      "without_ctx": 0.333
+    },
+    "D": {
+      "n": 1,
+      "with_ctx": 0.0,
+      "without_ctx": 0.0
+    },
+    "K": {
+      "n": 2,
+      "with_ctx": 0.333,
+      "without_ctx": 0.167
+    }
+  },
+  "per_question": [
+    {
+      "qid": "pu_000",
+      "category": "A",
+      "question": "What are the main sections/topics covered in this project's documentation?",
+      "difficulty": "easy",
+      "with_ctx_accuracy": 0.0,
+      "without_ctx_accuracy": 0.0,
+      "delta": 0.0,
+      "with_matched": [],
+      "with_missed": [
+        "2026"
+      ],
+      "without_matched": []
+    },
+    {
+      "qid": "pu_001",
+      "category": "K",
+      "question": "What are the key performance metrics (like R@5, NDCG) and their values?",
+      "difficulty": "medium",
+      "with_ctx_accuracy": 0.333,
+      "without_ctx_accuracy": 0.333,
+      "delta": 0.0,
+      "with_matched": [
+        "R@5",
+        "R@5"
+      ],
+      "with_missed": [
+        "R@3",
+        "0.152",
+        "0.379",
+        "0.152"
+      ],
+      "without_matched": [
+        "R@5",
+        "R@5"
+      ]
+    },
+    {
+      "qid": "pu_002",
+      "category": "D",
+      "question": "What are the planned next steps or future work for this project?",
+      "difficulty": "medium",
+      "with_ctx_accuracy": 0.0,
+      "without_ctx_accuracy": 0.0,
+      "delta": 0.0,
+      "with_matched": [],
+      "with_missed": [
+        "docs",
+        "FromScratch"
+      ],
+      "without_matched": []
+    },
+    {
+      "qid": "pu_003",
+      "category": "K",
+      "question": "What key technical decisions were made in this project (e.g., algorithm choices)?",
+      "difficulty": "hard",
+      "with_ctx_accuracy": 0.333,
+      "without_ctx_accuracy": 0.0,
+      "delta": 0.333,
+      "with_matched": [
+        "BM25"
+      ],
+      "with_missed": [
+        "structural",
+        "heuristic"
+      ],
+      "without_matched": []
+    },
+    {
+      "qid": "pu_004",
+      "category": "A",
+      "question": "What are the main source code modules/packages in this project?",
+      "difficulty": "easy",
+      "with_ctx_accuracy": 0.8,
+      "without_ctx_accuracy": 0.0,
+      "delta": 0.8,
+      "with_matched": [
+        "analysis",
+        "evaluator",
+        "retrieval",
+        "trigger"
+      ],
+      "with_missed": [
+        "data"
+      ],
+      "without_matched": []
+    },
+    {
+      "qid": "pu_005",
+      "category": "A",
+      "question": "What is the role of build/lib/ctx_retriever/evaluator/doc_retrieval_eval.py in this project?",
+      "difficulty": "medium",
+      "with_ctx_accuracy": 1.0,
+      "without_ctx_accuracy": 1.0,
+      "delta": 0.0,
+      "with_matched": [
+        "doc_retrieval_eval"
+      ],
+      "with_missed": [],
+      "without_matched": [
+        "doc_retrieval_eval"
+      ]
+    },
+    {
+      "qid": "pu_006",
+      "category": "H",
+      "question": "What is this project about? Give a brief description.",
+      "difficulty": "easy",
+      "with_ctx_accuracy": 0.0,
+      "without_ctx_accuracy": 0.0,
+      "delta": 0.0,
+      "with_matched": [],
+      "with_missed": [
+        "CTX: Trigger-Driven Dynamic Context Loading for Code-Aware LLM Agents",
+        "json",
+        "hooks",
+        "UserPromptSubmit"
+      ],
+      "without_matched": []
+    },
+    {
+      "qid": "pu_007",
+      "category": "H",
+      "question": "What research or investigation has been done recently in this project?",
+      "difficulty": "medium",
+      "with_ctx_accuracy": 0.0,
+      "without_ctx_accuracy": 0.0,
+      "delta": 0.0,
+      "with_matched": [],
+      "with_missed": [
+        "20260402-omc-live-infinite-pro",
+        "20260330-ctx-academic-critique",
+        "20260329-ctx-paper-gap-analysi"
+      ],
+      "without_matched": []
+    }
+  ]
+}
