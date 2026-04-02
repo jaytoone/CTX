@@ -63,197 +63,131 @@ class ProjectQuestion:
     difficulty: str = "medium"  # easy/medium/hard
 
 
-def extract_ground_truth_from_project(project_path: str) -> List[ProjectQuestion]:
-    """Auto-generate questions + ground truth from project structure.
+def build_ctx_specific_questions() -> List[ProjectQuestion]:
+    """CTX-project-specific curated questions with language-independent keywords.
 
-    Reads CLAUDE.md, docs/, README.md to extract factual claims about the project,
-    then generates questions that test understanding of those facts.
+    These questions test whether an LLM can understand the CTX project's
+    history, architecture, direction, and key decisions using only code/docs.
+    All keywords are English technical terms to ensure cross-language matching.
     """
-    questions = []
-    qid = 0
+    return [
+        # ── H (History): What has been done? ──
+        ProjectQuestion(
+            qid="pu_h01", category="H", difficulty="easy",
+            question="What is this project about? Describe its core purpose in 2-3 sentences.",
+            keywords=["retrieval", "trigger", "context", "code", "deterministic"],
+            ground_truth="CTX is a rule-based code/doc retrieval system using trigger classification",
+            ctx_query="Show me the project overview and main README",
+        ),
+        ProjectQuestion(
+            qid="pu_h02", category="H", difficulty="medium",
+            question="What retrieval algorithm does this project use? Was it changed from an earlier approach?",
+            keywords=["BM25", "TF-IDF", "adaptive_trigger"],
+            ground_truth="Switched from TF-IDF to BM25 for better keyword retrieval",
+            ctx_query="Find code related to BM25 and retrieval algorithm",
+        ),
+        ProjectQuestion(
+            qid="pu_h03", category="H", difficulty="medium",
+            question="What external codebases were used for evaluation? Name at least two.",
+            keywords=["Flask", "FastAPI", "Requests"],
+            ground_truth="Evaluated on Flask, FastAPI, and Requests codebases",
+            ctx_query="Find benchmark evaluation code for external codebases",
+        ),
+        # ── A (Architecture): How is it structured? ──
+        ProjectQuestion(
+            qid="pu_a01", category="A", difficulty="easy",
+            question="What are the main source code packages/directories in this project?",
+            keywords=["retrieval", "trigger", "analysis"],
+            ground_truth="src/retrieval/, src/trigger/, src/analysis/",
+            ctx_query="Show me the project source code structure and main modules",
+        ),
+        ProjectQuestion(
+            qid="pu_a02", category="A", difficulty="medium",
+            question="What are the four trigger types used in query classification?",
+            keywords=["EXPLICIT_SYMBOL", "SEMANTIC_CONCEPT", "TEMPORAL_HISTORY", "IMPLICIT_CONTEXT"],
+            ground_truth="EXPLICIT_SYMBOL, SEMANTIC_CONCEPT, TEMPORAL_HISTORY, IMPLICIT_CONTEXT",
+            ctx_query="Show me the trigger classifier and its trigger types",
+        ),
+        ProjectQuestion(
+            qid="pu_a03", category="A", difficulty="medium",
+            question="What is the role of adaptive_trigger.py? What class does it define?",
+            keywords=["AdaptiveTriggerRetriever", "retrieve", "BM25", "symbol_index", "import_graph"],
+            ground_truth="adaptive_trigger.py defines AdaptiveTriggerRetriever — the core retrieval engine",
+            ctx_query="Show me the code for adaptive_trigger",
+        ),
+        ProjectQuestion(
+            qid="pu_a04", category="A", difficulty="hard",
+            question="How does the import graph work in this retrieval system?",
+            keywords=["import_graph", "reverse_import", "traverse", "BFS", "module_to_file"],
+            ground_truth="Import graph maps file dependencies; BFS traversal finds related files",
+            ctx_query="Find code related to import graph traversal and dependency tracking",
+        ),
+        # ── D (Direction): What's next? ──
+        ProjectQuestion(
+            qid="pu_d01", category="D", difficulty="medium",
+            question="What are the known weaknesses or areas for improvement in this project?",
+            keywords=["external", "FastAPI", "IMPLICIT_CONTEXT", "keyword"],
+            ground_truth="FastAPI R@5 is low, IMPLICIT_CONTEXT needs improvement, keyword queries limited",
+            ctx_query="Find documentation about project weaknesses and improvement areas",
+        ),
+        ProjectQuestion(
+            qid="pu_d02", category="D", difficulty="hard",
+            question="What benchmark metrics does this project track? Name the key ones.",
+            keywords=["R@5", "NDCG", "MRR", "TES"],
+            ground_truth="R@5, NDCG@5, MRR, TES (Token Efficiency Score)",
+            ctx_query="Find benchmark evaluation metrics and scoring code",
+        ),
+        # ── K (Knowledge): Why were decisions made? ──
+        ProjectQuestion(
+            qid="pu_k01", category="K", difficulty="medium",
+            question="Why was BM25 chosen over TF-IDF for this project?",
+            keywords=["BM25", "keyword", "TF-IDF", "IDF"],
+            ground_truth="BM25 replaced TF-IDF for better keyword query handling; IDF was harmful on small corpora",
+            ctx_query="Find documentation about BM25 vs TF-IDF decision",
+        ),
+        ProjectQuestion(
+            qid="pu_k02", category="K", difficulty="hard",
+            question="What is the trigger classification approach? Is it ML-based or rule-based?",
+            keywords=["rule-based", "deterministic", "heuristic", "pattern", "regex"],
+            ground_truth="Rule-based trigger classification using regex patterns — no ML, deterministic",
+            ctx_query="Show me the trigger classifier implementation",
+        ),
+        ProjectQuestion(
+            qid="pu_k03", category="K", difficulty="hard",
+            question="How does this project handle large codebases differently from small ones?",
+            keywords=["large", "BM25", "fallback", "import_graph", "sparse"],
+            ground_truth="Large repos use BM25 fallback when import graph is sparse; special handling for >200 files",
+            ctx_query="Find code related to large codebase handling and BM25 fallback",
+        ),
+    ]
 
-    # ── Source 1: CLAUDE.md (richest source of project state)
-    claude_md = os.path.join(project_path, "CLAUDE.md")
-    if os.path.exists(claude_md):
-        with open(claude_md, "r", errors="replace") as f:
-            content = f.read()
 
-        # H: History questions from "현재 성과" or "Phase" sections
-        # Extract section headings as topics — use ASCII-friendly keywords
-        headings = re.findall(r'^##\s+(.+)$', content, re.MULTILINE)
-        if headings:
-            # Extract English/numeric tokens from headings for matching
-            heading_keywords = []
-            for h in headings[:5]:
-                tokens = re.findall(r'[a-zA-Z]{3,}|R@\d+|\d{4}', h)
-                heading_keywords.extend(tokens[:2])
-            heading_keywords = list(set(heading_keywords))[:5]
-            if heading_keywords:
-                questions.append(ProjectQuestion(
-                    qid=f"pu_{qid:03d}", category="A", difficulty="easy",
-                    question="What are the main sections/topics covered in this project's documentation?",
-                    keywords=heading_keywords,
-                    ground_truth=f"Main sections: {', '.join(headings[:5])}",
-                    ctx_query="Show me the project overview and main documentation structure",
-                ))
-                qid += 1
+def extract_ground_truth_from_project(project_path: str) -> List[ProjectQuestion]:
+    """Generate project understanding questions.
 
-        # Extract key metrics/numbers — use numeric values as keywords
-        metrics = re.findall(r'(R@\d+)\s*[=:]\s*([\d.]+)', content)
-        if metrics:
-            # Use metric names AND values as keywords (language-independent)
-            metric_keywords = [m[0] for m in metrics[:3]] + [m[1] for m in metrics[:3]]
-            questions.append(ProjectQuestion(
-                qid=f"pu_{qid:03d}", category="K", difficulty="medium",
-                question="What are the key performance metrics (like R@5, NDCG) and their values?",
-                keywords=metric_keywords,
-                ground_truth=f"Key metrics: {', '.join(f'{m[0]}={m[1]}' for m in metrics[:3])}",
-                ctx_query="Find code related to benchmark evaluation and retrieval metrics",
-            ))
-            qid += 1
+    Uses curated CTX-specific questions (high quality, language-independent)
+    supplemented by auto-generated questions from project structure.
+    """
+    questions = build_ctx_specific_questions()
 
-        # D: Direction questions from "다음 세션" or "TODO" or "후보 작업" sections
-        next_steps = re.findall(
-            r'(?:다음|next|TODO|future|planned|후보|즉시|중기|장기)[^\n]*\n((?:\s*[-*\d].+\n)+)',
-            content, re.IGNORECASE)
-        if next_steps:
-            steps_text = next_steps[0].strip()
-            step_items = re.findall(r'[-*\d]+\.?\s*(.+)', steps_text)
-            if step_items:
-                # Extract English/technical keywords from step items
-                step_keywords = []
-                for item in step_items[:3]:
-                    tokens = re.findall(r'[a-zA-Z_]{4,}|R@\d+|[\d.]+(?:%|%p)', item)
-                    step_keywords.extend(tokens[:2])
-                step_keywords = list(set(step_keywords))[:5]
-                if step_keywords:
-                    questions.append(ProjectQuestion(
-                        qid=f"pu_{qid:03d}", category="D", difficulty="medium",
-                        question="What are the planned next steps or future work for this project?",
-                        keywords=step_keywords,
-                        ground_truth=f"Next steps: {'; '.join(step_items[:3])}",
-                        ctx_query="Show me project roadmap and planned improvements",
-                    ))
-                    qid += 1
-
-        # K: Key decisions — extract technical terms
-        decision_blocks = re.findall(
-            r'(?:BM25|TF-IDF|dense|heuristic|import.graph|AST)[^\n]+',
-            content, re.IGNORECASE)
-        if decision_blocks:
-            decision_keywords = []
-            for block in decision_blocks[:3]:
-                tokens = re.findall(r'[a-zA-Z_]{4,}|BM25|TF-IDF|R@\d+', block)
-                decision_keywords.extend(tokens[:2])
-            decision_keywords = list(set(decision_keywords))[:5]
-            if decision_keywords:
-                questions.append(ProjectQuestion(
-                    qid=f"pu_{qid:03d}", category="K", difficulty="hard",
-                    question="What key technical decisions were made in this project (e.g., algorithm choices)?",
-                    keywords=decision_keywords,
-                    ground_truth=f"Technical decisions: {'; '.join(decision_blocks[:3])}",
-                    ctx_query="Find documentation about technical decisions and algorithm choices",
-                ))
-                qid += 1
-
-    # ── Source 2: Code structure (architecture questions)
+    # Also add auto-generated architecture questions from code structure
     src_dir = os.path.join(project_path, "src")
+    qid = len(questions)
     if os.path.isdir(src_dir):
-        # Find top-level modules
         modules = []
         for item in sorted(os.listdir(src_dir)):
             item_path = os.path.join(src_dir, item)
             if os.path.isdir(item_path) and not item.startswith("_"):
                 modules.append(item)
-            elif item.endswith(".py") and not item.startswith("_"):
-                modules.append(item.replace(".py", ""))
-
-        if modules:
+        # Only add if we have modules not already covered
+        if modules and len(modules) > 3:
             questions.append(ProjectQuestion(
                 qid=f"pu_{qid:03d}", category="A", difficulty="easy",
-                question="What are the main source code modules/packages in this project?",
+                question="List all source code packages in this project.",
                 keywords=modules[:5],
-                ground_truth=f"Main modules: {', '.join(modules[:5])}",
-                ctx_query="Show me the project source code structure and main modules",
+                ground_truth=f"Packages: {', '.join(modules[:5])}",
+                ctx_query="Show me the project source code structure",
             ))
-            qid += 1
-
-    # ── Source 3: Key Python files (architecture deep-dive)
-    key_files = []
-    for root_d, dirs, files in os.walk(project_path):
-        dirs[:] = [d for d in dirs if not d.startswith(".") and d != "__pycache__"
-                   and d != "node_modules" and d != ".git"]
-        for fname in files:
-            if fname.endswith(".py") and not fname.startswith("test_"):
-                fpath = os.path.relpath(os.path.join(root_d, fname), project_path)
-                key_files.append(fpath)
-
-    if key_files:
-        # Find the "main" entry point or core module
-        core_candidates = [f for f in key_files if any(kw in f.lower()
-                          for kw in ["main", "app", "core", "engine", "trigger", "retrieval"])]
-        if core_candidates:
-            core_file = core_candidates[0]
-            questions.append(ProjectQuestion(
-                qid=f"pu_{qid:03d}", category="A", difficulty="medium",
-                question=f"What is the role of {core_file} in this project?",
-                keywords=[os.path.basename(core_file).replace(".py", "")],
-                ground_truth=f"{core_file} is a core module in the project",
-                ctx_query=f"Show me the code for {os.path.basename(core_file).replace('.py', '')}",
-            ))
-            qid += 1
-
-    # ── Source 4: README.md
-    readme = os.path.join(project_path, "README.md")
-    if os.path.exists(readme):
-        with open(readme, "r", errors="replace") as f:
-            readme_content = f.read()[:3000]
-
-        # Extract project name/description from first heading + paragraph
-        first_heading = re.search(r'^#\s+(.+)$', readme_content, re.MULTILINE)
-        first_para = re.search(r'^#.+\n\n(.+?)(?:\n\n|\n#)', readme_content, re.MULTILINE | re.DOTALL)
-
-        if first_heading:
-            project_name = first_heading.group(1).strip()
-            desc = first_para.group(1).strip() if first_para else ""
-            desc_keywords = [w for w in re.findall(r'\b[a-zA-Z]{4,}\b', desc) if w.lower() not in
-                            {"this", "that", "with", "from", "have", "been", "will", "your"}][:5]
-            questions.append(ProjectQuestion(
-                qid=f"pu_{qid:03d}", category="H", difficulty="easy",
-                question="What is this project about? Give a brief description.",
-                keywords=[project_name] + desc_keywords[:3],
-                ground_truth=f"{project_name}: {desc[:200]}",
-                ctx_query="Show me the project overview and description",
-            ))
-            qid += 1
-
-    # ── Source 5: docs/ directory structure
-    docs_dir = os.path.join(project_path, "docs")
-    if os.path.isdir(docs_dir):
-        doc_files = []
-        for root_d, dirs, files in os.walk(docs_dir):
-            dirs[:] = [d for d in dirs if not d.startswith(".")]
-            for fname in files:
-                if fname.endswith(".md"):
-                    rel = os.path.relpath(os.path.join(root_d, fname), docs_dir)
-                    doc_files.append(rel)
-
-        if doc_files:
-            # Recent research docs (by filename date pattern)
-            dated_docs = sorted(
-                [d for d in doc_files if re.search(r'2026\d{4}', d)],
-                reverse=True
-            )
-            if dated_docs:
-                recent = dated_docs[:3]
-                questions.append(ProjectQuestion(
-                    qid=f"pu_{qid:03d}", category="H", difficulty="medium",
-                    question="What research or investigation has been done recently in this project?",
-                    keywords=[os.path.basename(d).replace(".md", "")[:30] for d in recent],
-                    ground_truth=f"Recent docs: {', '.join(recent[:3])}",
-                    ctx_query="Find recent research documents and investigation notes",
-                ))
-                qid += 1
 
     return questions
 

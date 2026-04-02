@@ -1,95 +1,64 @@
 {
   "eval_type": "project_understanding_g1",
   "project_path": "/home/jayone/Project/CTX",
-  "timestamp": "2026-04-02T18:31:01.144182",
-  "n_questions": 8,
+  "timestamp": "2026-04-02T18:47:43.757597",
+  "n_questions": 13,
   "k": 5,
   "dry_run": false,
   "overall": {
-    "with_ctx_accuracy": 0.3083,
-    "without_ctx_accuracy": 0.1667,
-    "delta": 0.1417
+    "with_ctx_accuracy": 0.6872,
+    "without_ctx_accuracy": 0.2385,
+    "delta": 0.4487
   },
   "by_category": {
     "H": {
-      "n": 2,
-      "with_ctx": 0.0,
-      "without_ctx": 0.0
+      "n": 3,
+      "with_ctx": 0.578,
+      "without_ctx": 0.067
     },
     "A": {
-      "n": 3,
-      "with_ctx": 0.6,
-      "without_ctx": 0.333
+      "n": 5,
+      "with_ctx": 0.88,
+      "without_ctx": 0.27
     },
     "D": {
-      "n": 1,
-      "with_ctx": 0.0,
+      "n": 2,
+      "with_ctx": 0.5,
       "without_ctx": 0.0
     },
     "K": {
-      "n": 2,
-      "with_ctx": 0.333,
-      "without_ctx": 0.167
+      "n": 3,
+      "with_ctx": 0.6,
+      "without_ctx": 0.517
     }
   },
   "per_question": [
     {
-      "qid": "pu_000",
-      "category": "A",
-      "question": "What are the main sections/topics covered in this project's documentation?",
+      "qid": "pu_h01",
+      "category": "H",
+      "question": "What is this project about? Describe its core purpose in 2-3 sentences.",
       "difficulty": "easy",
-      "with_ctx_accuracy": 0.0,
-      "without_ctx_accuracy": 0.0,
-      "delta": 0.0,
-      "with_matched": [],
-      "with_missed": [
-        "2026"
-      ],
-      "without_matched": []
-    },
-    {
-      "qid": "pu_001",
-      "category": "K",
-      "question": "What are the key performance metrics (like R@5, NDCG) and their values?",
-      "difficulty": "medium",
-      "with_ctx_accuracy": 0.333,
-      "without_ctx_accuracy": 0.333,
-      "delta": 0.0,
+      "with_ctx_accuracy": 0.4,
+      "without_ctx_accuracy": 0.2,
+      "delta": 0.2,
       "with_matched": [
-        "R@5",
-        "R@5"
+        "context",
+        "code"
       ],
       "with_missed": [
-        "R@3",
-        "0.152",
-        "0.379",
-        "0.152"
+        "retrieval",
+        "trigger",
+        "deterministic"
       ],
       "without_matched": [
-        "R@5",
-        "R@5"
+        "context"
       ]
     },
     {
-      "qid": "pu_002",
-      "category": "D",
-      "question": "What are the planned next steps or future work for this project?",
+      "qid": "pu_h02",
+      "category": "H",
+      "question": "What retrieval algorithm does this project use? Was it changed from an earlier approach?",
       "difficulty": "medium",
-      "with_ctx_accuracy": 0.0,
-      "without_ctx_accuracy": 0.0,
-      "delta": 0.0,
-      "with_matched": [],
-      "with_missed": [
-        "docs",
-        "FromScratch"
-      ],
-      "without_matched": []
-    },
-    {
-      "qid": "pu_003",
-      "category": "K",
-      "question": "What key technical decisions were made in this project (e.g., algorithm choices)?",
-      "difficulty": "hard",
       "with_ctx_accuracy": 0.333,
       "without_ctx_accuracy": 0.0,
       "delta": 0.333,
@@ -97,15 +66,210 @@
         "BM25"
       ],
       "with_missed": [
-        "structural",
-        "heuristic"
+        "TF-IDF",
+        "adaptive_trigger"
       ],
       "without_matched": []
     },
     {
-      "qid": "pu_004",
+      "qid": "pu_h03",
+      "category": "H",
+      "question": "What external codebases were used for evaluation? Name at least two.",
+      "difficulty": "medium",
+      "with_ctx_accuracy": 1.0,
+      "without_ctx_accuracy": 0.0,
+      "delta": 1.0,
+      "with_matched": [
+        "Flask",
+        "FastAPI",
+        "Requests"
+      ],
+      "with_missed": [],
+      "without_matched": []
+    },
+    {
+      "qid": "pu_a01",
       "category": "A",
-      "question": "What are the main source code modules/packages in this project?",
+      "question": "What are the main source code packages/directories in this project?",
+      "difficulty": "easy",
+      "with_ctx_accuracy": 1.0,
+      "without_ctx_accuracy": 0.0,
+      "delta": 1.0,
+      "with_matched": [
+        "retrieval",
+        "trigger",
+        "analysis"
+      ],
+      "with_missed": [],
+      "without_matched": []
+    },
+    {
+      "qid": "pu_a02",
+      "category": "A",
+      "question": "What are the four trigger types used in query classification?",
+      "difficulty": "medium",
+      "with_ctx_accuracy": 1.0,
+      "without_ctx_accuracy": 0.75,
+      "delta": 0.25,
+      "with_matched": [
+        "EXPLICIT_SYMBOL",
+        "SEMANTIC_CONCEPT",
+        "TEMPORAL_HISTORY",
+        "IMPLICIT_CONTEXT"
+      ],
+      "with_missed": [],
+      "without_matched": [
+        "EXPLICIT_SYMBOL",
+        "SEMANTIC_CONCEPT",
+        "IMPLICIT_CONTEXT"
+      ]
+    },
+    {
+      "qid": "pu_a03",
+      "category": "A",
+      "question": "What is the role of adaptive_trigger.py? What class does it define?",
+      "difficulty": "medium",
+      "with_ctx_accuracy": 1.0,
+      "without_ctx_accuracy": 0.0,
+      "delta": 1.0,
+      "with_matched": [
+        "AdaptiveTriggerRetriever",
+        "retrieve",
+        "BM25",
+        "symbol_index",
+        "import_graph"
+      ],
+      "with_missed": [],
+      "without_matched": []
+    },
+    {
+      "qid": "pu_a04",
+      "category": "A",
+      "question": "How does the import graph work in this retrieval system?",
+      "difficulty": "hard",
+      "with_ctx_accuracy": 0.6,
+      "without_ctx_accuracy": 0.6,
+      "delta": 0.0,
+      "with_matched": [
+        "import_graph",
+        "reverse_import",
+        "module_to_file"
+      ],
+      "with_missed": [
+        "traverse",
+        "BFS"
+      ],
+      "without_matched": [
+        "import_graph",
+        "reverse_import",
+        "module_to_file"
+      ]
+    },
+    {
+      "qid": "pu_d01",
+      "category": "D",
+      "question": "What are the known weaknesses or areas for improvement in this project?",
+      "difficulty": "medium",
+      "with_ctx_accuracy": 0.25,
+      "without_ctx_accuracy": 0.0,
+      "delta": 0.25,
+      "with_matched": [
+        "IMPLICIT_CONTEXT"
+      ],
+      "with_missed": [
+        "external",
+        "FastAPI",
+        "keyword"
+      ],
+      "without_matched": []
+    },
+    {
+      "qid": "pu_d02",
+      "category": "D",
+      "question": "What benchmark metrics does this project track? Name the key ones.",
+      "difficulty": "hard",
+      "with_ctx_accuracy": 0.75,
+      "without_ctx_accuracy": 0.0,
+      "delta": 0.75,
+      "with_matched": [
+        "NDCG",
+        "MRR",
+        "TES"
+      ],
+      "with_missed": [
+        "R@5"
+      ],
+      "without_matched": []
+    },
+    {
+      "qid": "pu_k01",
+      "category": "K",
+      "question": "Why was BM25 chosen over TF-IDF for this project?",
+      "difficulty": "medium",
+      "with_ctx_accuracy": 1.0,
+      "without_ctx_accuracy": 0.75,
+      "delta": 0.25,
+      "with_matched": [
+        "BM25",
+        "keyword",
+        "TF-IDF",
+        "IDF"
+      ],
+      "with_missed": [],
+      "without_matched": [
+        "BM25",
+        "TF-IDF",
+        "IDF"
+      ]
+    },
+    {
+      "qid": "pu_k02",
+      "category": "K",
+      "question": "What is the trigger classification approach? Is it ML-based or rule-based?",
+      "difficulty": "hard",
+      "with_ctx_accuracy": 0.6,
+      "without_ctx_accuracy": 0.4,
+      "delta": 0.2,
+      "with_matched": [
+        "rule-based",
+        "pattern",
+        "regex"
+      ],
+      "with_missed": [
+        "deterministic",
+        "heuristic"
+      ],
+      "without_matched": [
+        "rule-based",
+        "pattern"
+      ]
+    },
+    {
+      "qid": "pu_k03",
+      "category": "K",
+      "question": "How does this project handle large codebases differently from small ones?",
+      "difficulty": "hard",
+      "with_ctx_accuracy": 0.2,
+      "without_ctx_accuracy": 0.4,
+      "delta": -0.2,
+      "with_matched": [
+        "large"
+      ],
+      "with_missed": [
+        "BM25",
+        "fallback",
+        "import_graph",
+        "sparse"
+      ],
+      "without_matched": [
+        "large",
+        "import_graph"
+      ]
+    },
+    {
+      "qid": "pu_012",
+      "category": "A",
+      "question": "List all source code packages in this project.",
       "difficulty": "easy",
       "with_ctx_accuracy": 0.8,
       "without_ctx_accuracy": 0.0,
@@ -118,55 +282,6 @@
       ],
       "with_missed": [
         "data"
-      ],
-      "without_matched": []
-    },
-    {
-      "qid": "pu_005",
-      "category": "A",
-      "question": "What is the role of build/lib/ctx_retriever/evaluator/doc_retrieval_eval.py in this project?",
-      "difficulty": "medium",
-      "with_ctx_accuracy": 1.0,
-      "without_ctx_accuracy": 1.0,
-      "delta": 0.0,
-      "with_matched": [
-        "doc_retrieval_eval"
-      ],
-      "with_missed": [],
-      "without_matched": [
-        "doc_retrieval_eval"
-      ]
-    },
-    {
-      "qid": "pu_006",
-      "category": "H",
-      "question": "What is this project about? Give a brief description.",
-      "difficulty": "easy",
-      "with_ctx_accuracy": 0.0,
-      "without_ctx_accuracy": 0.0,
-      "delta": 0.0,
-      "with_matched": [],
-      "with_missed": [
-        "CTX: Trigger-Driven Dynamic Context Loading for Code-Aware LLM Agents",
-        "json",
-        "hooks",
-        "UserPromptSubmit"
-      ],
-      "without_matched": []
-    },
-    {
-      "qid": "pu_007",
-      "category": "H",
-      "question": "What research or investigation has been done recently in this project?",
-      "difficulty": "medium",
-      "with_ctx_accuracy": 0.0,
-      "without_ctx_accuracy": 0.0,
-      "delta": 0.0,
-      "with_matched": [],
-      "with_missed": [
-        "20260402-omc-live-infinite-pro",
-        "20260330-ctx-academic-critique",
-        "20260329-ctx-paper-gap-analysi"
       ],
       "without_matched": []
     }

@@ -1,21 +1,32 @@
 {
   "status": "RUNNING",
-  "session_id": "inf-g1-20260402",
-  "current_iteration": 1,
-  "root_goal": "G1 프로젝트 이해도 벤치마크: 코드/문서만으로 작업 히스토리+방향 이해도를 측정하는 eval 설계 및 구현",
-  "original_goal": "G1: 코드/문서만으로 프로젝트 작업 히스토리/방향에 대한 이해도 측정",
+  "session_id": "inf-g1g2-eval-20260402",
+  "current_iteration": 2,
+  "root_goal": "G1/G2 평가 실험 환경 구성 + adaptive_trigger 개선으로 G1>=0.70, G2>=0.70 달성",
+  "original_goal": "G1(프로젝트 이해도)/G2(지시→파일 검색)에 맞는 적절한 평가 방법 구축 + 수렴까지 개선",
   "evolution_count": 0,
-  "best_score": 0.0,
+  "best_score": 0.308,
   "plateau_count": 0,
   "escape_attempts": 0,
   "total_sessions": 1,
-  "started_at": "2026-04-02T18:10:00",
+  "started_at": "2026-04-02T18:40:00",
   "score_dimensions": [
-    "eval_design_quality",
-    "eval_implementation",
+    "g1_with_ctx_accuracy",
+    "g1_delta",
+    "g2_external_r5",
     "eval_coverage",
-    "baseline_measured",
-    "g1_score_meaningful"
+    "no_regression"
   ],
-  "world_model_path": ".omc/world-model.json"
+  "baseline": {
+    "g1_with_ctx": 0.308,
+    "g1_without_ctx": 0.167,
+    "g1_delta": 0.142,
+    "g2_external_r5": 0.602,
+    "g2_doc_r5": 0.940
+  },
+  "world_model_path": ".omc/world-model.json",
+  "research_docs": [
+    "docs/research/20260402-project-understanding-evaluation-framework.md",
+    "docs/research/20260402-g2-evaluation-methods-research.md"
+  ]
 }
