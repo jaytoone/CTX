@@ -79,7 +79,12 @@
     {
       "goal": "IMPLICIT_CONTEXT large-repo fallback to concept_retrieve (>200 files)",
       "score": 0.0,
-      "reason": "FastAPI IMPL 0.051\u21920.025 (worse). concept_ref for IMPLICIT queries not compatible with concept_retrieve BM25 approach"
+      "reason": "FastAPI IMPL 0.051→0.025 (worse). concept_ref for IMPLICIT queries not compatible with concept_retrieve BM25 approach"
+    },
+    {
+      "goal": "FastAPI external R@5 improvement beyond 0.41",
+      "score": 0.407,
+      "reason": "Structural ceiling: (1) EXPLICIT 10/44 queries have identical text+different answers (impossible), (2) EXPLICIT 10/44 have highly ambiguous symbols (get_app, run, create_item), (3) IMPLICIT ground truth 41-55 files making R@5 max ~0.12. Combined: ~50% of FastAPI queries are structurally unsolvable by any retrieval system."
     }
   ],
   "known_facts": [

@@ -193,18 +193,38 @@ def generate_queries(docs: List[DocFile], seed: int = 42) -> List[DocQuery]:
 
 def bm25_score(query_tokens: List[str], doc_tokens: List[str],
                avgdl: float, k1: float = 1.5, b: float = 0.75) -> float:
-    """Compute BM25 score for a query against one document."""
+    """Compute BM25 score for a query against one document.
+
+    Iter 12: Added co-occurrence density boost — docs where ALL content-bearing
+    query tokens appear get a 30% boost vs docs matching only some.
+    This helps keyword queries like "benchmark retrieval" prefer docs containing
+    BOTH terms over docs with many occurrences of just one.
+    """
+    _STOPWORDS = frozenset([
+        "find", "show", "docs", "related", "about", "which", "document",
+        "covers", "information", "the", "and", "for", "that", "this",
+    ])
     score = 0.0
     n = len(doc_tokens)
     tf_map: Dict[str, int] = {}
     for t in doc_tokens:
         tf_map[t] = tf_map.get(t, 0) + 1
+
+    content_tokens = [t for t in query_tokens if t not in _STOPWORDS and len(t) > 2]
+    matched_content = 0
+
     for token in query_tokens:
         tf = tf_map.get(token, 0)
         if tf == 0:
             continue
         # IDF (simplified, no corpus DF here — just TF factor)
         score += (tf * (k1 + 1)) / (tf + k1 * (1 - b + b * n / avgdl))
+        if token in content_tokens:
+            matched_content += 1
+
+    # Co-occurrence density boost: if ALL content-bearing tokens present, boost 30%
+    if content_tokens and matched_content == len(content_tokens):
+        score *= 1.3
     return score
 
 
