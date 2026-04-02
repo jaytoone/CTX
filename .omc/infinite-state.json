@@ -5,7 +5,22 @@
   "root_goal": "Eval Framework 재구축: /harness 비판 3대 문제 해결 후 정직한 eval로 CTX 개선 수렴",
   "original_goal": "G1/G2에 맞는 적절한 평가 방법 구축 + 수렴까지 개선 (eval gaming 없이)",
   "evolution_count": 0,
-  "best_score": 0.0,
+  "best_score": 0.039,
+  "iter1_results": {
+    "ctx_accuracy": 0.615,
+    "random_accuracy": 0.577,
+    "none_accuracy": 0.615,
+    "ctx_vs_random_delta": 0.039,
+    "ctx_vs_none_delta": 0.000,
+    "judge_scoring": "coarse {0, 0.5, 1.0}",
+    "best_question": "K1 (Why BM25) CTX=1.0 Random=0.0 delta=+1.0",
+    "worst_question": "H1 (Project about) CTX=0.5 Random=1.0 delta=-0.5"
+  },
+  "next_actions": [
+    "Diagnose which files CTX retrieves for each question — are they relevant?",
+    "Improve ctx_query strings to be more specific",
+    "Fix judge granularity — 0-10 scale outputs only {0,5,10}"
+  ],
   "plateau_count": 0,
   "escape_attempts": 0,
   "total_sessions": 1,
