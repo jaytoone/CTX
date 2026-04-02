@@ -1,35 +1,35 @@
 {
   "eval_type": "project_understanding_g1",
   "project_path": "/home/jayone/Project/CTX",
-  "timestamp": "2026-04-02T18:47:43.757597",
+  "timestamp": "2026-04-02T18:52:17.542921",
   "n_questions": 13,
   "k": 5,
   "dry_run": false,
   "overall": {
-    "with_ctx_accuracy": 0.6872,
-    "without_ctx_accuracy": 0.2385,
-    "delta": 0.4487
+    "with_ctx_accuracy": 0.7051,
+    "without_ctx_accuracy": 0.1564,
+    "delta": 0.5487
   },
   "by_category": {
     "H": {
       "n": 3,
-      "with_ctx": 0.578,
-      "without_ctx": 0.067
+      "with_ctx": 0.444,
+      "without_ctx": 0.133
     },
     "A": {
       "n": 5,
       "with_ctx": 0.88,
-      "without_ctx": 0.27
+      "without_ctx": 0.12
     },
     "D": {
       "n": 2,
-      "with_ctx": 0.5,
-      "without_ctx": 0.0
+      "with_ctx": 0.75,
+      "without_ctx": 0.125
     },
     "K": {
       "n": 3,
-      "with_ctx": 0.6,
-      "without_ctx": 0.517
+      "with_ctx": 0.644,
+      "without_ctx": 0.261
     }
   },
   "per_question": [
@@ -38,20 +38,20 @@
       "category": "H",
       "question": "What is this project about? Describe its core purpose in 2-3 sentences.",
       "difficulty": "easy",
-      "with_ctx_accuracy": 0.4,
-      "without_ctx_accuracy": 0.2,
-      "delta": 0.2,
-      "with_matched": [
-        "context",
-        "code"
-      ],
+      "with_ctx_accuracy": 0.0,
+      "without_ctx_accuracy": 0.4,
+      "delta": -0.4,
+      "with_matched": [],
       "with_missed": [
         "retrieval",
         "trigger",
+        "context",
+        "code",
         "deterministic"
       ],
       "without_matched": [
-        "context"
+        "context",
+        "code"
       ]
     },
     {
@@ -109,8 +109,8 @@
       "question": "What are the four trigger types used in query classification?",
       "difficulty": "medium",
       "with_ctx_accuracy": 1.0,
-      "without_ctx_accuracy": 0.75,
-      "delta": 0.25,
+      "without_ctx_accuracy": 0.0,
+      "delta": 1.0,
       "with_matched": [
         "EXPLICIT_SYMBOL",
         "SEMANTIC_CONCEPT",
@@ -118,11 +118,7 @@
         "IMPLICIT_CONTEXT"
       ],
       "with_missed": [],
-      "without_matched": [
-        "EXPLICIT_SYMBOL",
-        "SEMANTIC_CONCEPT",
-        "IMPLICIT_CONTEXT"
-      ]
+      "without_matched": []
     },
     {
       "qid": "pu_a03",
@@ -170,15 +166,15 @@
       "category": "D",
       "question": "What are the known weaknesses or areas for improvement in this project?",
       "difficulty": "medium",
-      "with_ctx_accuracy": 0.25,
+      "with_ctx_accuracy": 0.75,
       "without_ctx_accuracy": 0.0,
-      "delta": 0.25,
+      "delta": 0.75,
       "with_matched": [
+        "external",
+        "FastAPI",
         "IMPLICIT_CONTEXT"
       ],
       "with_missed": [
-        "external",
-        "FastAPI",
         "keyword"
       ],
       "without_matched": []
@@ -189,8 +185,8 @@
       "question": "What benchmark metrics does this project track? Name the key ones.",
       "difficulty": "hard",
       "with_ctx_accuracy": 0.75,
-      "without_ctx_accuracy": 0.0,
-      "delta": 0.75,
+      "without_ctx_accuracy": 0.25,
+      "delta": 0.5,
       "with_matched": [
         "NDCG",
         "MRR",
@@ -199,7 +195,9 @@
       "with_missed": [
         "R@5"
       ],
-      "without_matched": []
+      "without_matched": [
+        "TES"
+      ]
     },
     {
       "qid": "pu_k01",
@@ -207,8 +205,8 @@
       "question": "Why was BM25 chosen over TF-IDF for this project?",
       "difficulty": "medium",
       "with_ctx_accuracy": 1.0,
-      "without_ctx_accuracy": 0.75,
-      "delta": 0.25,
+      "without_ctx_accuracy": 0.25,
+      "delta": 0.75,
       "with_matched": [
         "BM25",
         "keyword",
@@ -217,9 +215,7 @@
       ],
       "with_missed": [],
       "without_matched": [
-        "BM25",
-        "TF-IDF",
-        "IDF"
+        "BM25"
       ]
     },
     {
@@ -228,8 +224,8 @@
       "question": "What is the trigger classification approach? Is it ML-based or rule-based?",
       "difficulty": "hard",
       "with_ctx_accuracy": 0.6,
-      "without_ctx_accuracy": 0.4,
-      "delta": 0.2,
+      "without_ctx_accuracy": 0.2,
+      "delta": 0.4,
       "with_matched": [
         "rule-based",
         "pattern",
@@ -240,30 +236,30 @@
         "heuristic"
       ],
       "without_matched": [
-        "rule-based",
-        "pattern"
+        "rule-based"
       ]
     },
     {
       "qid": "pu_k03",
       "category": "K",
-      "question": "How does this project handle large codebases differently from small ones?",
+      "question": "What specific R@5 score does CTX achieve on Flask vs FastAPI external codebases?",
       "difficulty": "hard",
-      "with_ctx_accuracy": 0.2,
-      "without_ctx_accuracy": 0.4,
-      "delta": -0.2,
+      "with_ctx_accuracy": 0.333,
+      "without_ctx_accuracy": 0.333,
+      "delta": 0.0,
       "with_matched": [
-        "large"
+        "Flask",
+        "FastAPI"
       ],
       "with_missed": [
-        "BM25",
-        "fallback",
-        "import_graph",
-        "sparse"
+        "0.66",
+        "0.65",
+        "0.40",
+        "0.41"
       ],
       "without_matched": [
-        "large",
-        "import_graph"
+        "Flask",
+        "FastAPI"
       ]
     },
     {

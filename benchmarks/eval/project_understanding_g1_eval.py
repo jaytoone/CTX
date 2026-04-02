@@ -128,7 +128,7 @@ def build_ctx_specific_questions() -> List[ProjectQuestion]:
             question="What are the known weaknesses or areas for improvement in this project?",
             keywords=["external", "FastAPI", "IMPLICIT_CONTEXT", "keyword"],
             ground_truth="FastAPI R@5 is low, IMPLICIT_CONTEXT needs improvement, keyword queries limited",
-            ctx_query="Find documentation about project weaknesses and improvement areas",
+            ctx_query="Find code related to FastAPI evaluation and IMPLICIT_CONTEXT weakness",
         ),
         ProjectQuestion(
             qid="pu_d02", category="D", difficulty="hard",
@@ -154,10 +154,10 @@ def build_ctx_specific_questions() -> List[ProjectQuestion]:
         ),
         ProjectQuestion(
             qid="pu_k03", category="K", difficulty="hard",
-            question="How does this project handle large codebases differently from small ones?",
-            keywords=["large", "BM25", "fallback", "import_graph", "sparse"],
-            ground_truth="Large repos use BM25 fallback when import graph is sparse; special handling for >200 files",
-            ctx_query="Find code related to large codebase handling and BM25 fallback",
+            question="What specific R@5 score does CTX achieve on Flask vs FastAPI external codebases?",
+            keywords=["0.66", "0.65", "0.40", "0.41", "Flask", "FastAPI"],
+            ground_truth="Flask R@5~0.66, FastAPI R@5~0.41 — large gap due to FastAPI structural issues",
+            ctx_query="Find benchmark results for Flask and FastAPI external codebase evaluation",
         ),
     ]
 
