@@ -1,32 +1,29 @@
 {
   "status": "RUNNING",
-  "session_id": "inf-g1g2-eval-20260402",
-  "current_iteration": 2,
-  "root_goal": "G1/G2 평가 실험 환경 구성 + adaptive_trigger 개선으로 G1>=0.70, G2>=0.70 달성",
-  "original_goal": "G1(프로젝트 이해도)/G2(지시→파일 검색)에 맞는 적절한 평가 방법 구축 + 수렴까지 개선",
+  "session_id": "inf-eval-rebuild-20260402",
+  "current_iteration": 1,
+  "root_goal": "Eval Framework 재구축: /harness 비판 3대 문제 해결 후 정직한 eval로 CTX 개선 수렴",
+  "original_goal": "G1/G2에 맞는 적절한 평가 방법 구축 + 수렴까지 개선 (eval gaming 없이)",
   "evolution_count": 0,
-  "best_score": 0.308,
+  "best_score": 0.0,
   "plateau_count": 0,
   "escape_attempts": 0,
   "total_sessions": 1,
-  "started_at": "2026-04-02T18:40:00",
+  "started_at": "2026-04-02T19:10:00",
   "score_dimensions": [
-    "g1_with_ctx_accuracy",
-    "g1_delta",
+    "g1_factual_accuracy",
+    "g1_ctx_vs_random_delta",
     "g2_external_r5",
-    "eval_coverage",
-    "no_regression"
+    "eval_honesty",
+    "sample_size"
   ],
-  "baseline": {
-    "g1_with_ctx": 0.308,
-    "g1_without_ctx": 0.167,
-    "g1_delta": 0.142,
-    "g2_external_r5": 0.602,
-    "g2_doc_r5": 0.940
+  "harness_critique": {
+    "critical_1": "G1 scoring is keyword bingo, not understanding",
+    "critical_2": "G1 downstream feeds oracle context, never calls CTX retrieve()",
+    "critical_3": "G1 score 0.308→0.705 came from changing eval, not system",
+    "fix_1": "LLM-as-judge factual accuracy scoring",
+    "fix_2": "G1 must call CTX adaptive_trigger.retrieve() for context",
+    "fix_3": "Add random retrieval baseline (CTX vs random files)"
   },
-  "world_model_path": ".omc/world-model.json",
-  "research_docs": [
-    "docs/research/20260402-project-understanding-evaluation-framework.md",
-    "docs/research/20260402-g2-evaluation-methods-research.md"
-  ]
+  "world_model_path": ".omc/world-model.json"
 }

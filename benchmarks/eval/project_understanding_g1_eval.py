@@ -192,30 +192,84 @@ def extract_ground_truth_from_project(project_path: str) -> List[ProjectQuestion
     return questions
 
 
-def score_answer(response: str, question: ProjectQuestion) -> Tuple[float, List[str], List[str]]:
-    """Score LLM response against ground truth keywords.
-
-    Returns (accuracy, matched_keywords, missed_keywords).
-    """
+def score_answer_keyword(response: str, question: ProjectQuestion) -> Tuple[float, List[str], List[str]]:
+    """Legacy keyword-based scoring (kept for comparison only)."""
     response_lower = response.lower()
     matched = []
     missed = []
-
     for kw in question.keywords:
         kw_lower = kw.lower().strip()
         if not kw_lower:
             continue
-        # Check for keyword presence (allow partial matches for long keywords)
         if kw_lower in response_lower:
             matched.append(kw)
         elif len(kw_lower) > 5 and any(part in response_lower for part in kw_lower.split("_")):
-            matched.append(kw)  # partial match for compound terms
+            matched.append(kw)
         else:
             missed.append(kw)
-
     total = len(matched) + len(missed)
     accuracy = len(matched) / total if total > 0 else 0.0
     return accuracy, matched, missed
+
+
+def score_answer_llm_judge(
+    client, response: str, question: ProjectQuestion
+) -> Tuple[float, str]:
+    """LLM-as-judge factual accuracy scoring.
+
+    Instead of keyword matching, asks a separate LLM call to judge whether
+    the response factually answers the question correctly.
+
+    Returns (score 0.0-1.0, judge_reasoning).
+    """
+    judge_prompt = f"""Rate this answer's factual accuracy from 0 to 10.
+
+Question: {question.question}
+Correct answer: {question.ground_truth}
+Key facts: {', '.join(question.keywords)}
+
+Answer to rate:
+{response[:800]}
+
+Reply with ONLY a number from 0 to 10. Nothing else."""
+
+    try:
+        msg = client.messages.create(
+            model=os.environ.get("MINIMAX_MODEL", "MiniMax-M2.5"),
+            max_tokens=100,
+            system="You are a strict, objective answer quality judge. Be conservative with scores.",
+            messages=[{"role": "user", "content": judge_prompt}],
+        )
+        text_parts = []
+        for block in msg.content:
+            if hasattr(block, "text"):
+                text_parts.append(block.text)
+        judge_text = " ".join(text_parts).strip()
+
+        # Parse: expect a single number 0-10
+        numbers = re.findall(r'(\d+(?:\.\d+)?)', judge_text)
+        if numbers:
+            raw = float(numbers[0])
+            score = raw / 10.0 if raw > 1.0 else raw  # normalize to 0-1
+            score = max(0.0, min(1.0, score))
+            return score, judge_text[:100]
+        return 0.5, f"[PARSE FAIL: {judge_text[:80]}]"
+    except Exception as e:
+        return 0.5, f"[JUDGE ERROR: {e}]"
+
+
+def build_random_context(retriever: AdaptiveTriggerRetriever, k: int = 5) -> str:
+    """Build context from k RANDOM files (baseline for CTX comparison)."""
+    import random as _random
+    _random.seed(42)
+    if not retriever.file_paths:
+        return ""
+    selected = _random.sample(retriever.file_paths, min(k, len(retriever.file_paths)))
+    context_parts = []
+    for fpath in selected:
+        content = retriever.files.get(fpath, "")
+        context_parts.append(f"--- {fpath} ---\n{content[:2000]}")
+    return "\n\n".join(context_parts)
 
 
 def build_ctx_context(retriever: AdaptiveTriggerRetriever, query: str, k: int = 5) -> str:
@@ -303,45 +357,72 @@ def run_evaluation(
             print("WARN: No LLM client available, falling back to dry-run")
             dry_run = True
 
-    # Evaluate each question
+    # Build random baseline context (same for all questions — fair comparison)
+    random_context = build_random_context(retriever, k=k)
+
+    # Evaluate each question with 3-arm comparison
     results = []
-    with_scores = []
-    without_scores = []
+    ctx_scores, random_scores, none_scores = [], [], []
 
     for q in questions:
-        # WITH CTX: retrieve context, then ask LLM
+        print(f"  Evaluating [{q.category}] {q.question[:40]}...")
+
+        # ARM 1: CTX retrieval (actual adaptive_trigger.retrieve() call)
         ctx_context = build_ctx_context(retriever, q.ctx_query, k=k)
 
+        # ARM 2: Random files (baseline — isolates CTX contribution)
+        # ARM 3: No context (general knowledge only)
+
         if dry_run:
-            with_answer = simulate_with_ctx(q)
-            without_answer = simulate_without_ctx(q)
+            ctx_answer = simulate_with_ctx(q)
+            random_answer = "Based on some project files, this appears to be a software project."
+            none_answer = simulate_without_ctx(q)
+            ctx_score, ctx_reason = 0.8, "dry-run"
+            random_score, random_reason = 0.3, "dry-run"
+            none_score, none_reason = 0.1, "dry-run"
+            # Also compute legacy keyword scores for comparison
+            kw_ctx, _, _ = score_answer_keyword(ctx_answer, q)
+            kw_none, _, _ = score_answer_keyword(none_answer, q)
         else:
-            with_answer = ask_llm(client, q.question, context=ctx_context)
-            without_answer = ask_llm(client, q.question, context="")
+            ctx_answer = ask_llm(client, q.question, context=ctx_context)
+            random_answer = ask_llm(client, q.question, context=random_context)
+            none_answer = ask_llm(client, q.question, context="")
 
-        with_acc, with_matched, with_missed = score_answer(with_answer, q)
-        without_acc, without_matched, without_missed = score_answer(without_answer, q)
+            # LLM-as-judge scoring (factual accuracy)
+            ctx_score, ctx_reason = score_answer_llm_judge(client, ctx_answer, q)
+            random_score, random_reason = score_answer_llm_judge(client, random_answer, q)
+            none_score, none_reason = score_answer_llm_judge(client, none_answer, q)
 
-        with_scores.append(with_acc)
-        without_scores.append(without_acc)
+            # Legacy keyword scores for comparison
+            kw_ctx, _, _ = score_answer_keyword(ctx_answer, q)
+            kw_none, _, _ = score_answer_keyword(none_answer, q)
+
+        ctx_scores.append(ctx_score)
+        random_scores.append(random_score)
+        none_scores.append(none_score)
 
         results.append({
             "qid": q.qid,
             "category": q.category,
             "question": q.question,
             "difficulty": q.difficulty,
-            "with_ctx_accuracy": round(with_acc, 3),
-            "without_ctx_accuracy": round(without_acc, 3),
-            "delta": round(with_acc - without_acc, 3),
-            "with_matched": with_matched,
-            "with_missed": with_missed,
-            "without_matched": without_matched,
+            # LLM-as-judge scores (primary metric)
+            "ctx_score": round(ctx_score, 3),
+            "random_score": round(random_score, 3),
+            "none_score": round(none_score, 3),
+            "ctx_vs_random_delta": round(ctx_score - random_score, 3),
+            "ctx_vs_none_delta": round(ctx_score - none_score, 3),
+            "judge_reason_ctx": ctx_reason,
+            "judge_reason_random": random_reason,
+            # Legacy keyword scores (for comparison only)
+            "keyword_ctx": round(kw_ctx, 3),
+            "keyword_none": round(kw_none, 3),
         })
 
     # Aggregates
-    mean_with = float(np.mean(with_scores)) if with_scores else 0.0
-    mean_without = float(np.mean(without_scores)) if without_scores else 0.0
-    delta = mean_with - mean_without
+    mean_ctx = float(np.mean(ctx_scores)) if ctx_scores else 0.0
+    mean_random = float(np.mean(random_scores)) if random_scores else 0.0
+    mean_none = float(np.mean(none_scores)) if none_scores else 0.0
 
     # Per-category
     by_category = {}
@@ -350,21 +431,26 @@ def run_evaluation(
         if cat_results:
             by_category[cat] = {
                 "n": len(cat_results),
-                "with_ctx": round(float(np.mean([r["with_ctx_accuracy"] for r in cat_results])), 3),
-                "without_ctx": round(float(np.mean([r["without_ctx_accuracy"] for r in cat_results])), 3),
+                "ctx": round(float(np.mean([r["ctx_score"] for r in cat_results])), 3),
+                "random": round(float(np.mean([r["random_score"] for r in cat_results])), 3),
+                "none": round(float(np.mean([r["none_score"] for r in cat_results])), 3),
             }
 
     output = {
-        "eval_type": "project_understanding_g1",
+        "eval_type": "project_understanding_g1_v2",
+        "scoring": "llm_as_judge (factual accuracy)",
+        "arms": ["CTX_retrieve", "random_files", "no_context"],
         "project_path": project_path,
         "timestamp": datetime.now().isoformat(),
         "n_questions": len(questions),
         "k": k,
         "dry_run": dry_run,
         "overall": {
-            "with_ctx_accuracy": round(mean_with, 4),
-            "without_ctx_accuracy": round(mean_without, 4),
-            "delta": round(delta, 4),
+            "ctx_accuracy": round(mean_ctx, 4),
+            "random_accuracy": round(mean_random, 4),
+            "none_accuracy": round(mean_none, 4),
+            "ctx_vs_random_delta": round(mean_ctx - mean_random, 4),
+            "ctx_vs_none_delta": round(mean_ctx - mean_none, 4),
         },
         "by_category": by_category,
         "per_question": results,
@@ -408,18 +494,20 @@ def main():
         return
 
     print(f"\n{'='*60}")
-    print(f"RESULTS — G1 Project Understanding")
+    print(f"RESULTS — G1 Project Understanding (LLM-as-Judge)")
     print(f"{'='*60}")
     o = result["overall"]
-    print(f"WITH CTX accuracy:    {o['with_ctx_accuracy']:.4f}")
-    print(f"WITHOUT CTX accuracy: {o['without_ctx_accuracy']:.4f}")
-    print(f"Delta (CTX benefit):  {o['delta']:+.4f}")
+    print(f"CTX accuracy:         {o['ctx_accuracy']:.4f}")
+    print(f"Random accuracy:      {o['random_accuracy']:.4f}")
+    print(f"No-context accuracy:  {o['none_accuracy']:.4f}")
+    print(f"CTX vs Random delta:  {o['ctx_vs_random_delta']:+.4f}  ← CTX contribution")
+    print(f"CTX vs None delta:    {o['ctx_vs_none_delta']:+.4f}")
 
     print(f"\nBy category:")
     cat_names = {"H": "History", "A": "Architecture", "D": "Direction", "K": "Knowledge"}
     for cat, data in result.get("by_category", {}).items():
         name = cat_names.get(cat, cat)
-        print(f"  {name:<15} WITH={data['with_ctx']:.3f}  WITHOUT={data['without_ctx']:.3f}  n={data['n']}")
+        print(f"  {name:<15} CTX={data['ctx']:.3f}  Random={data['random']:.3f}  None={data['none']:.3f}  n={data['n']}")
 
     # Save
     out_path = RESULTS_DIR / "project_understanding_g1_results.json"
