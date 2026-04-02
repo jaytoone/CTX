@@ -1,31 +1,18 @@
 {
-  "root_goal": "CTX 능동 홍보 — Reddit karma 장벽 우회, 즉시 도달 가능한 고품질 채널 집중 공략",
-  "original_goal": "GeekNews 같이 많은 대중에게 CTX를 홍보할만한 채널 리서치하고 마케팅 진행",
+  "root_goal": "G1 zero-storage 개선: persistent_memory/session_log 없이 adaptive_trigger만으로 작업 파일 즉석 복원 R@5 향상. medium dataset strict R@5 0.738→0.85+, concept_group R@5 0.965 유지, external repos (Flask 0.756, Requests 0.925) 개선",
+  "original_goal": "G1 zero-storage 개선: persistent_memory/session_log 없이 adaptive_trigger만으로 작업 파일 즉석 복원 R@5 향상",
   "level": 0,
-  "evolution_count": 2,
-  "evolution_history": [
-    {
-      "iteration": 1,
-      "goal": "CTX를 개발자 커뮤니티에 홍보 — 즉시 제출 가능한 채널 리서치 후 실제 게시",
-      "score": 0.4,
-      "rationale": "단순 포스팅은 도달 범위 제한적"
-    },
-    {
-      "iteration": 2,
-      "goal": "CTX 능동 홍보 — 기존 토론 참여 (GitHub Aider 이슈 댓글 완료)",
-      "score": 0.65,
-      "rationale": "Reddit은 신규 계정 봇 검열로 불가. 더 효과적인 채널 필요"
-    }
-  ],
+  "evolution_count": 0,
+  "evolution_history": [],
   "sub_goals": [
-    "1. Hacker News Show HN — 계정 생성 후 제출 (karma 0도 가능)",
-    "2. continue.dev Discord — 개발자 집중 채널, 직접 참여",
-    "3. TLDR AI 뉴스레터 제출 — 50만+ 구독자",
-    "4. disquiet.io — 국내 indie dev 커뮤니티 (karma 없음)"
+    "1. medium dataset concept strict R@5 0.495→0.65+ (disambiguation)",
+    "2. medium dataset module_name R@5 0.960→0.98+ (near-perfect)",
+    "3. Flask symbol R@5 0.667→0.80+",
+    "4. 전체 검증: 기존 벤치마크 (COIR, doc retrieval) regression 없음 확인"
   ],
   "reward_spec": {
-    "primary_metric": "실제 도달한 개발자 수 (추정)",
-    "threshold": "HN Show HN 제출 + 뉴스레터 1개 + 국내 1개 채널"
+    "primary_metric": "zero_storage_g1 overall R@5 on medium dataset",
+    "threshold": ">= 0.85 strict R@5"
   },
   "history": []
 }

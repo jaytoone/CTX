@@ -44,6 +44,10 @@ SYMBOL_PATTERNS = [
     # Requires underscore in name (snake_case signal) to avoid matching common English words
     # e.g. "Find the function run_migration" ✓, "how does the function handles X" ✗
     re.compile(r'\b(?:function|method|def)\s+([a-z_][a-z0-9_]*_[a-z][a-z0-9_]*)\b', re.IGNORECASE),
+    # PascalCase or short identifier after explicit keyword: "function View", "class Request"
+    # Captures single-word identifiers (≥3 chars, starts uppercase) following function/method/class.
+    # The ≥3 char limit avoids matching "the", "and", etc.
+    re.compile(r'\b(?:function|method|class)\s+([A-Z][a-zA-Z0-9]{2,})\b'),
 ]
 
 # Keywords that indicate explicit symbol lookup
