@@ -84,14 +84,14 @@ def build_ctx_specific_questions() -> List[ProjectQuestion]:
             question="What retrieval algorithm does this project use? Was it changed from an earlier approach?",
             keywords=["BM25", "TF-IDF", "adaptive_trigger"],
             ground_truth="Switched from TF-IDF to BM25 for better keyword retrieval",
-            ctx_query="Find code related to BM25 and retrieval algorithm",
+            ctx_query="What modules are needed to understand adaptive_trigger",
         ),
         ProjectQuestion(
             qid="pu_h03", category="H", difficulty="medium",
             question="What external codebases were used for evaluation? Name at least two.",
             keywords=["Flask", "FastAPI", "Requests"],
             ground_truth="Evaluated on Flask, FastAPI, and Requests codebases",
-            ctx_query="Find benchmark evaluation code for external codebases",
+            ctx_query="Find code related to Flask FastAPI Requests evaluation",
         ),
         # ── A (Architecture): How is it structured? ──
         ProjectQuestion(
@@ -99,7 +99,7 @@ def build_ctx_specific_questions() -> List[ProjectQuestion]:
             question="What are the main source code packages/directories in this project?",
             keywords=["retrieval", "trigger", "analysis"],
             ground_truth="src/retrieval/, src/trigger/, src/analysis/",
-            ctx_query="Show me the project source code structure and main modules",
+            ctx_query="Show me the code for retrieval trigger analysis modules",
         ),
         ProjectQuestion(
             qid="pu_a02", category="A", difficulty="medium",
@@ -113,7 +113,7 @@ def build_ctx_specific_questions() -> List[ProjectQuestion]:
             question="What is the role of adaptive_trigger.py? What class does it define?",
             keywords=["AdaptiveTriggerRetriever", "retrieve", "BM25", "symbol_index", "import_graph"],
             ground_truth="adaptive_trigger.py defines AdaptiveTriggerRetriever — the core retrieval engine",
-            ctx_query="Show me the code for adaptive_trigger",
+            ctx_query="Find the function AdaptiveTriggerRetriever and show its implementation",
         ),
         ProjectQuestion(
             qid="pu_a04", category="A", difficulty="hard",

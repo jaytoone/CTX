@@ -355,12 +355,23 @@ class AdaptiveTriggerRetriever:
         return any(pat in q_lower for pat in self._HIGH_LEVEL_PATTERNS)
 
     def _boost_docs_in_result(self, result: "RetrievalResult", k: int) -> "RetrievalResult":
-        """Boost documentation files (.md) to top of results for high-level queries."""
+        """Boost documentation files (.md) to top of results for high-level queries.
+
+        README.md and CLAUDE.md get extra boost — they contain project overview and decisions.
+        """
+        _KEY_DOCS = {"README.md", "CLAUDE.md", "ARCHITECTURE.md", "CONTRIBUTING.md"}
         doc_files = [(f, s) for f, s in result.scores.items() if f.endswith((".md", ".txt", ".rst"))]
         code_files = [(f, s) for f, s in result.scores.items() if not f.endswith((".md", ".txt", ".rst"))]
 
-        # Docs get priority — boost by 0.5
-        doc_files = [(f, min(s + 0.5, 1.5)) for f, s in doc_files]
+        # Key project docs get highest boost (+1.0), other docs get +0.5
+        boosted_docs = []
+        for f, s in doc_files:
+            basename = os.path.basename(f)
+            if basename in _KEY_DOCS:
+                boosted_docs.append((f, min(s + 1.0, 2.0)))  # Key docs: strong boost
+            else:
+                boosted_docs.append((f, min(s + 0.5, 1.5)))  # Other docs: moderate boost
+        doc_files = boosted_docs
 
         combined = sorted(doc_files + code_files, key=lambda x: x[1], reverse=True)[:k]
         retrieved = [f for f, _ in combined]
