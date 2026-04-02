@@ -1,44 +1,38 @@
 {
   "status": "RUNNING",
   "session_id": "inf-eval-rebuild-20260402",
-  "current_iteration": 1,
-  "root_goal": "Eval Framework 재구축: /harness 비판 3대 문제 해결 후 정직한 eval로 CTX 개선 수렴",
+  "current_iteration": 3,
+  "root_goal": "G1/G2 정직한 eval에서 CTX 실제 기여 개선: CTX vs Random delta >= 0.30",
   "original_goal": "G1/G2에 맞는 적절한 평가 방법 구축 + 수렴까지 개선 (eval gaming 없이)",
   "evolution_count": 0,
-  "best_score": 0.039,
-  "iter1_results": {
-    "ctx_accuracy": 0.615,
-    "random_accuracy": 0.577,
-    "none_accuracy": 0.615,
-    "ctx_vs_random_delta": 0.039,
-    "ctx_vs_none_delta": 0.000,
-    "judge_scoring": "coarse {0, 0.5, 1.0}",
-    "best_question": "K1 (Why BM25) CTX=1.0 Random=0.0 delta=+1.0",
-    "worst_question": "H1 (Project about) CTX=0.5 Random=1.0 delta=-0.5"
-  },
-  "next_actions": [
-    "Diagnose which files CTX retrieves for each question — are they relevant?",
-    "Improve ctx_query strings to be more specific",
-    "Fix judge granularity — 0-10 scale outputs only {0,5,10}"
-  ],
+  "best_score": 0.054,
   "plateau_count": 0,
   "escape_attempts": 0,
-  "total_sessions": 1,
+  "total_sessions": 2,
   "started_at": "2026-04-02T19:10:00",
   "score_dimensions": [
-    "g1_factual_accuracy",
     "g1_ctx_vs_random_delta",
+    "g1_ctx_vs_none_delta",
     "g2_external_r5",
-    "eval_honesty",
-    "sample_size"
+    "no_regression"
   ],
-  "harness_critique": {
-    "critical_1": "G1 scoring is keyword bingo, not understanding",
-    "critical_2": "G1 downstream feeds oracle context, never calls CTX retrieve()",
-    "critical_3": "G1 score 0.308→0.705 came from changing eval, not system",
-    "fix_1": "LLM-as-judge factual accuracy scoring",
-    "fix_2": "G1 must call CTX adaptive_trigger.retrieve() for context",
-    "fix_3": "Add random retrieval baseline (CTX vs random files)"
+  "iter1_results": {
+    "ctx_vs_random_delta": 0.039,
+    "ctx_vs_none_delta": 0.000,
+    "fix": "LLM-as-judge + 3-arm eval built"
   },
+  "iter2_results": {
+    "ctx_vs_random_delta": 0.054,
+    "ctx_vs_none_delta": 0.077,
+    "fix": ".md doc indexing + doc-priority boost + indentation bug fix",
+    "h1_improvement": "CTX=0.5→1.0 (README now retrievable)",
+    "coir_regression": "none (R@5=1.000)"
+  },
+  "next_actions": [
+    "Judge granularity: MiniMax returns {0,5,10} → need finer scale or different judge approach",
+    "4 questions where Random>CTX: diagnose which files CTX retrieves vs random",
+    "Consider: keyword scoring as secondary signal alongside judge (triangulation)",
+    "G2 external R@5 hasn't been re-measured with .md indexing — check for improvement"
+  ],
   "world_model_path": ".omc/world-model.json"
 }
