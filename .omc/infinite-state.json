@@ -45,7 +45,7 @@
     "coir_r5": 1.0,
     "repobench_r5": 0.767,
     "external_r5": 0.6067,
-    "g1_publication": 0.738,
+    "g1_publication": 0.905,
     "g2_publication": 0.740,
     "impact": 0.9
   },
@@ -64,7 +64,14 @@
     "g1_zero_storage_medium_r5": 0.738,
     "g1_zero_storage_flask_r5": 0.756,
     "g1_zero_storage_requests_r5": 0.925,
-    "g1_bottleneck": "concept queries R@5=0.495 on medium dataset",
+    "g1_bottleneck": "concept strict R@5=0.495 (benchmark ambiguity), group R@5=0.965",
+    "g1_zero_storage_overall": {
+      "module_name": 0.960,
+      "implicit": 1.000,
+      "concept_strict": 0.495,
+      "concept_group": 0.965,
+      "overall_weighted": 0.905
+    },
     "doc_co_occurrence_boost": "implemented but not fully evaluated"
   },
   "next_strategy": "Improve G1 zero-storage concept queries from 0.495 to 0.70+ on medium dataset. SEMANTIC_CONCEPT retrieve is the bottleneck."
