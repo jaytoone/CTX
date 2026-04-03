@@ -3,22 +3,22 @@
     "repo": "flask",
     "n_files": 83,
     "n_queries": 87,
-    "overall_r5": 0.6570202892041972,
+    "overall_r5": 0.6492133664547458,
     "old_r5": 0.6003411552262126,
-    "delta": 0.05667913397798463,
+    "delta": 0.04887221122853325,
     "by_type": {
       "EXPLICIT_SYMBOL": {
-        "r5": 0.7619047619047619,
+        "r5": 0.7380952380952381,
         "old_r5": 0.7619047619047619,
         "n": 42
       },
       "IMPLICIT_CONTEXT": {
-        "r5": 0.32460656627323287,
+        "r5": 0.2615486365486366,
         "old_r5": 0.31975647808981134,
         "n": 15
       },
       "SEMANTIC_CONCEPT": {
-        "r5": 0.6645833333333333,
+        "r5": 0.7279166666666667,
         "old_r5": 0.5216666666666667,
         "n": 20
       },
@@ -263,7 +263,7 @@
       {
         "query_id": "q_0033",
         "trigger_type": "EXPLICIT_SYMBOL",
-        "recall@5": 1.0,
+        "recall@5": 0.0,
         "n_relevant": 1,
         "old_recall@5": 1.0
       },
@@ -326,7 +326,7 @@
       {
         "query_id": "q_0042",
         "trigger_type": "SEMANTIC_CONCEPT",
-        "recall@5": 1.0,
+        "recall@5": 0.6666666666666666,
         "n_relevant": 3,
         "old_recall@5": 1.0
       },
@@ -340,7 +340,7 @@
       {
         "query_id": "q_0044",
         "trigger_type": "SEMANTIC_CONCEPT",
-        "recall@5": 0.4,
+        "recall@5": 0.8,
         "n_relevant": 5,
         "old_recall@5": 0.2
       },
@@ -354,7 +354,7 @@
       {
         "query_id": "q_0046",
         "trigger_type": "SEMANTIC_CONCEPT",
-        "recall@5": 0.4,
+        "recall@5": 0.6,
         "n_relevant": 5,
         "old_recall@5": 0.2
       },
@@ -431,7 +431,7 @@
       {
         "query_id": "q_0057",
         "trigger_type": "SEMANTIC_CONCEPT",
-        "recall@5": 0.5,
+        "recall@5": 1.0,
         "n_relevant": 2,
         "old_recall@5": 0.0
       },
@@ -445,7 +445,7 @@
       {
         "query_id": "q_0059",
         "trigger_type": "SEMANTIC_CONCEPT",
-        "recall@5": 0.0,
+        "recall@5": 0.5,
         "n_relevant": 2,
         "old_recall@5": 0.0
       },
@@ -536,7 +536,7 @@
       {
         "query_id": "q_0072",
         "trigger_type": "IMPLICIT_CONTEXT",
-        "recall@5": 0.5,
+        "recall@5": 0.25,
         "n_relevant": 8,
         "old_recall@5": 0.5
       },
@@ -550,7 +550,7 @@
       {
         "query_id": "q_0074",
         "trigger_type": "IMPLICIT_CONTEXT",
-        "recall@5": 0.15384615384615385,
+        "recall@5": 0.11538461538461539,
         "n_relevant": 26,
         "old_recall@5": 0.15384615384615385
       },
@@ -564,7 +564,7 @@
       {
         "query_id": "q_0076",
         "trigger_type": "IMPLICIT_CONTEXT",
-        "recall@5": 0.625,
+        "recall@5": 0.375,
         "n_relevant": 8,
         "old_recall@5": 0.625
       },
@@ -592,7 +592,7 @@
       {
         "query_id": "q_0080",
         "trigger_type": "IMPLICIT_CONTEXT",
-        "recall@5": 0.18518518518518517,
+        "recall@5": 0.1111111111111111,
         "n_relevant": 27,
         "old_recall@5": 0.14814814814814814
       },
@@ -606,35 +606,35 @@
       {
         "query_id": "q_0082",
         "trigger_type": "IMPLICIT_CONTEXT",
-        "recall@5": 0.11538461538461539,
+        "recall@5": 0.15384615384615385,
         "n_relevant": 26,
         "old_recall@5": 0.11538461538461539
       },
       {
         "query_id": "q_0083",
         "trigger_type": "IMPLICIT_CONTEXT",
-        "recall@5": 0.3333333333333333,
+        "recall@5": 0.0,
         "n_relevant": 6,
         "old_recall@5": 0.3333333333333333
       },
       {
         "query_id": "q_0084",
         "trigger_type": "IMPLICIT_CONTEXT",
-        "recall@5": 0.11538461538461539,
+        "recall@5": 0.07692307692307693,
         "n_relevant": 26,
         "old_recall@5": 0.11538461538461539
       },
       {
         "query_id": "q_0085",
         "trigger_type": "IMPLICIT_CONTEXT",
-        "recall@5": 0.15384615384615385,
+        "recall@5": 0.11538461538461539,
         "n_relevant": 26,
         "old_recall@5": 0.15384615384615385
       },
       {
         "query_id": "q_0086",
         "trigger_type": "IMPLICIT_CONTEXT",
-        "recall@5": 0.11538461538461539,
+        "recall@5": 0.15384615384615385,
         "n_relevant": 26,
         "old_recall@5": 0.11538461538461539
       }
@@ -644,9 +644,9 @@
     "repo": "fastapi",
     "n_files": 1120,
     "n_queries": 89,
-    "overall_r5": 0.3954646492328049,
+    "overall_r5": 0.3664439683211949,
     "old_r5": 0.405077633003092,
-    "delta": -0.009612983770287131,
+    "delta": -0.038633664681897106,
     "by_type": {
       "EXPLICIT_SYMBOL": {
         "r5": 0.5227272727272727,
@@ -654,17 +654,17 @@
         "n": 44
       },
       "IMPLICIT_CONTEXT": {
-        "r5": 0.06938654841093865,
+        "r5": 0.019049026853904905,
         "old_r5": 0.06938654841093865,
         "n": 15
       },
       "SEMANTIC_CONCEPT": {
-        "r5": 0.5077777777777779,
+        "r5": 0.46638888888888896,
         "old_r5": 0.5005555555555555,
         "n": 20
       },
       "TEMPORAL_HISTORY": {
-        "r5": 0.1,
+        "r5": 0.0,
         "old_r5": 0.1,
         "n": 10
       }
@@ -862,7 +862,7 @@
       {
         "query_id": "q_0027",
         "trigger_type": "EXPLICIT_SYMBOL",
-        "recall@5": 1.0,
+        "recall@5": 0.0,
         "n_relevant": 1,
         "old_recall@5": 1.0
       },
@@ -883,7 +883,7 @@
       {
         "query_id": "q_0030",
         "trigger_type": "EXPLICIT_SYMBOL",
-        "recall@5": 0.0,
+        "recall@5": 1.0,
         "n_relevant": 1,
         "old_recall@5": 0.0
       },
@@ -1037,14 +1037,14 @@
       {
         "query_id": "q_0052",
         "trigger_type": "SEMANTIC_CONCEPT",
-        "recall@5": 1.0,
+        "recall@5": 0.8,
         "n_relevant": 5,
         "old_recall@5": 1.0
       },
       {
         "query_id": "q_0053",
         "trigger_type": "SEMANTIC_CONCEPT",
-        "recall@5": 0.25,
+        "recall@5": 0.0,
         "n_relevant": 4,
         "old_recall@5": 0.0
       },
@@ -1079,21 +1079,21 @@
       {
         "query_id": "q_0058",
         "trigger_type": "SEMANTIC_CONCEPT",
-        "recall@5": 0.2222222222222222,
+        "recall@5": 0.1111111111111111,
         "n_relevant": 9,
         "old_recall@5": 0.4444444444444444
       },
       {
         "query_id": "q_0059",
         "trigger_type": "SEMANTIC_CONCEPT",
-        "recall@5": 0.2,
+        "recall@5": 0.1,
         "n_relevant": 10,
         "old_recall@5": 0.2
       },
       {
         "query_id": "q_0060",
         "trigger_type": "SEMANTIC_CONCEPT",
-        "recall@5": 0.16666666666666666,
+        "recall@5": 0.0,
         "n_relevant": 6,
         "old_recall@5": 0.0
       },
@@ -1135,7 +1135,7 @@
       {
         "query_id": "q_0066",
         "trigger_type": "TEMPORAL_HISTORY",
-        "recall@5": 1.0,
+        "recall@5": 0.0,
         "n_relevant": 1,
         "old_recall@5": 1.0
       },
@@ -1198,28 +1198,28 @@
       {
         "query_id": "q_0075",
         "trigger_type": "IMPLICIT_CONTEXT",
-        "recall@5": 0.07317073170731707,
+        "recall@5": 0.024390243902439025,
         "n_relevant": 41,
         "old_recall@5": 0.07317073170731707
       },
       {
         "query_id": "q_0076",
         "trigger_type": "IMPLICIT_CONTEXT",
-        "recall@5": 0.05454545454545454,
+        "recall@5": 0.03636363636363636,
         "n_relevant": 55,
         "old_recall@5": 0.05454545454545454
       },
       {
         "query_id": "q_0077",
         "trigger_type": "IMPLICIT_CONTEXT",
-        "recall@5": 0.1111111111111111,
+        "recall@5": 0.022222222222222223,
         "n_relevant": 45,
         "old_recall@5": 0.1111111111111111
       },
       {
         "query_id": "q_0078",
         "trigger_type": "IMPLICIT_CONTEXT",
-        "recall@5": 0.12195121951219512,
+        "recall@5": 0.04878048780487805,
         "n_relevant": 41,
         "old_recall@5": 0.12195121951219512
       },
@@ -1240,7 +1240,7 @@
       {
         "query_id": "q_0081",
         "trigger_type": "IMPLICIT_CONTEXT",
-        "recall@5": 0.08888888888888889,
+        "recall@5": 0.044444444444444446,
         "n_relevant": 45,
         "old_recall@5": 0.08888888888888889
       },
@@ -1254,42 +1254,42 @@
       {
         "query_id": "q_0083",
         "trigger_type": "IMPLICIT_CONTEXT",
-        "recall@5": 0.12195121951219512,
+        "recall@5": 0.04878048780487805,
         "n_relevant": 41,
         "old_recall@5": 0.12195121951219512
       },
       {
         "query_id": "q_0084",
         "trigger_type": "IMPLICIT_CONTEXT",
-        "recall@5": 0.05454545454545454,
+        "recall@5": 0.03636363636363636,
         "n_relevant": 55,
         "old_recall@5": 0.05454545454545454
       },
       {
         "query_id": "q_0085",
         "trigger_type": "IMPLICIT_CONTEXT",
-        "recall@5": 0.12195121951219512,
+        "recall@5": 0.024390243902439025,
         "n_relevant": 41,
         "old_recall@5": 0.12195121951219512
       },
       {
         "query_id": "q_0086",
         "trigger_type": "IMPLICIT_CONTEXT",
-        "recall@5": 0.0975609756097561,
+        "recall@5": 0.0,
         "n_relevant": 41,
         "old_recall@5": 0.0975609756097561
       },
       {
         "query_id": "q_0087",
         "trigger_type": "IMPLICIT_CONTEXT",
-        "recall@5": 0.0975609756097561,
+        "recall@5": 0.0,
         "n_relevant": 41,
         "old_recall@5": 0.0975609756097561
       },
       {
         "query_id": "q_0088",
         "trigger_type": "IMPLICIT_CONTEXT",
-        "recall@5": 0.0975609756097561,
+        "recall@5": 0.0,
         "n_relevant": 41,
         "old_recall@5": 0.0975609756097561
       }
@@ -1299,9 +1299,9 @@
     "repo": "requests",
     "n_files": 36,
     "n_queries": 80,
-    "overall_r5": 0.7526165555935294,
+    "overall_r5": 0.7594915555935293,
     "old_r5": 0.6928248889268627,
-    "delta": 0.05979166666666669,
+    "delta": 0.06666666666666665,
     "by_type": {
       "EXPLICIT_SYMBOL": {
         "r5": 0.8285714285714286,
@@ -1309,12 +1309,12 @@
         "n": 35
       },
       "IMPLICIT_CONTEXT": {
-        "r5": 0.3961771853877117,
+        "r5": 0.39951051872104504,
         "old_r5": 0.3961771853877117,
         "n": 15
       },
       "SEMANTIC_CONCEPT": {
-        "r5": 0.8633333333333333,
+        "r5": 0.8883333333333333,
         "old_r5": 0.6741666666666666,
         "n": 20
       },
@@ -1370,7 +1370,7 @@
       {
         "query_id": "q_0006",
         "trigger_type": "EXPLICIT_SYMBOL",
-        "recall@5": 0.0,
+        "recall@5": 1.0,
         "n_relevant": 1,
         "old_recall@5": 0.0
       },
@@ -1503,7 +1503,7 @@
       {
         "query_id": "q_0025",
         "trigger_type": "EXPLICIT_SYMBOL",
-        "recall@5": 1.0,
+        "recall@5": 0.0,
         "n_relevant": 1,
         "old_recall@5": 1.0
       },
@@ -1580,7 +1580,7 @@
       {
         "query_id": "q_0036",
         "trigger_type": "SEMANTIC_CONCEPT",
-        "recall@5": 0.5,
+        "recall@5": 1.0,
         "n_relevant": 2,
         "old_recall@5": 0.0
       },
@@ -1811,7 +1811,7 @@
       {
         "query_id": "q_0069",
         "trigger_type": "IMPLICIT_CONTEXT",
-        "recall@5": 0.15,
+        "recall@5": 0.1,
         "n_relevant": 20,
         "old_recall@5": 0.15
       },
@@ -1853,7 +1853,7 @@
       {
         "query_id": "q_0075",
         "trigger_type": "IMPLICIT_CONTEXT",
-        "recall@5": 0.4,
+        "recall@5": 0.5,
         "n_relevant": 10,
         "old_recall@5": 0.4
       },

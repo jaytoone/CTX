@@ -78,6 +78,15 @@ class AdaptiveTriggerRetriever:
                 if not (is_py or is_doc):
                     continue
 
+                # Only index .md files from root or docs/ directory
+                # Deep .md files (examples/, tests/, changelogs) add noise to BM25
+                if is_doc:
+                    rel_dir = os.path.relpath(root, self.codebase_dir)
+                    depth = len(rel_dir.split(os.sep)) if rel_dir != "." else 0
+                    is_root_or_docs = (depth == 0 or rel_dir.startswith("docs"))
+                    if not is_root_or_docs:
+                        continue  # skip deep .md files
+
                 fpath = os.path.join(root, fname)
                 rel_path = os.path.relpath(fpath, self.codebase_dir)
                 try:
@@ -103,10 +112,10 @@ class AdaptiveTriggerRetriever:
                     doc_stem = os.path.splitext(fname)[0]
                     if doc_stem:
                         self.module_to_file[doc_stem.lower()] = rel_path
-                    # Add doc content to BM25 corpus (so docs appear in BM25 searches)
-                    doc_expanded = content.replace("#", " ").replace("*", " ").replace("-", " ")
-                    doc_tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', doc_expanded.lower())
-                    self._bm25_corpus.append(doc_tokens)
+                    # Doc files are NOT added to BM25 corpus — they dilute code retrieval.
+                    # Instead, docs are injected via _boost_docs_in_result() for high-level queries.
+                    # Placeholder entry in corpus to keep file_paths/corpus indices aligned.
+                    self._bm25_corpus.append([])
                     continue  # skip Python-specific indexing below
 
                 if not is_py:

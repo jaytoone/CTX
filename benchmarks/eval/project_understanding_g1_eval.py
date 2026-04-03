@@ -273,12 +273,17 @@ def build_random_context(retriever: AdaptiveTriggerRetriever, k: int = 5) -> str
 
 
 def build_ctx_context(retriever: AdaptiveTriggerRetriever, query: str, k: int = 5) -> str:
-    """Get CTX-retrieved context for a query."""
+    """Get CTX-retrieved context for a query.
+
+    Note: Compact summary approach was tested and DECREASED performance (delta 0.300→0.173).
+    For project understanding, LLM needs actual content, not just signatures.
+    SWE-ContextBench finding (compact > full) applies to bug fixing, NOT understanding.
+    """
     result = retriever.retrieve("g1_eval", query, k=k)
     context_parts = []
     for fpath in result.retrieved_files[:k]:
         content = retriever.files.get(fpath, "")
-        # Truncate to first 2000 chars per file
+        # Full content (truncated at 2000 chars) — proven better than compact summary
         context_parts.append(f"--- {fpath} ---\n{content[:2000]}")
     return "\n\n".join(context_parts)
 
