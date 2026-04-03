@@ -281,10 +281,25 @@ def build_ctx_context(retriever: AdaptiveTriggerRetriever, query: str, k: int = 
     """
     result = retriever.retrieve("g1_eval", query, k=k)
     context_parts = []
+    query_words = set(re.findall(r'[a-zA-Z]{3,}', query.lower()))
     for fpath in result.retrieved_files[:k]:
         content = retriever.files.get(fpath, "")
-        # Full content (truncated at 2000 chars) — proven better than compact summary
-        context_parts.append(f"--- {fpath} ---\n{content[:2000]}")
+        if len(content) <= 2000:
+            context_parts.append(f"--- {fpath} ---\n{content}")
+        else:
+            # For long files: extract query-relevant paragraphs instead of first 2000 chars
+            paragraphs = re.split(r'\n\n+', content)
+            relevant = []
+            total_chars = 0
+            for para in paragraphs:
+                para_lower = para.lower()
+                relevance = sum(1 for w in query_words if w in para_lower)
+                if relevance > 0 or total_chars < 500:  # always include first 500 chars
+                    relevant.append(para)
+                    total_chars += len(para)
+                    if total_chars > 2000:
+                        break
+            context_parts.append(f"--- {fpath} ---\n" + "\n\n".join(relevant))
     return "\n\n".join(context_parts)
 
 
