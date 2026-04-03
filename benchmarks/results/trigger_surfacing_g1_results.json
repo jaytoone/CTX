@@ -1,0 +1,598 @@
+{
+  "eval_type": "trigger_surfacing_g1",
+  "project_path": "/home/jayone/Project/CTX",
+  "timestamp": "2026-04-03T10:16:17.275890",
+  "k": 5,
+  "n_tasks": 30,
+  "n_py_files": 322,
+  "overall": {
+    "ctx_hit_at_k": 0.7667,
+    "ctx_file_recall": 0.65,
+    "random_hit_at_k": 0.0333,
+    "random_file_recall": 0.0333,
+    "hit_delta": 0.7333,
+    "recall_delta": 0.6167
+  },
+  "per_task": [
+    {
+      "commit": "dd7f602c",
+      "trigger": "20260403 live-inf CONVERGED: plateau 7 iterations, escape attempts exhausted",
+      "n_gt_files": 1,
+      "hit_at_k": 0.0,
+      "file_recall": 0.0,
+      "precision": 0.0,
+      "gt_files": [
+        "benchmarks/eval/project_understanding_g1_eval.py"
+      ],
+      "retrieved": [
+        "hooks/ctx_session_tracker.py",
+        "run_llm_eval_openrouter.py",
+        "benchmarks/eval/trigger_surfacing_g1_eval.py"
+      ],
+      "overlap": []
+    },
+    {
+      "commit": "839f26fc",
+      "trigger": "20260403 live-inf iter 7/\u221e: H03 ctx_query improved + History 0.55\u21920.661",
+      "n_gt_files": 1,
+      "hit_at_k": 1.0,
+      "file_recall": 1.0,
+      "precision": 0.333,
+      "gt_files": [
+        "benchmarks/eval/project_understanding_g1_eval.py"
+      ],
+      "retrieved": [
+        "benchmarks/eval/latency_profiler.py",
+        "benchmarks/eval/decision_drr.py",
+        "benchmarks/eval/project_understanding_g1_eval.py"
+      ],
+      "overlap": [
+        "benchmarks/eval/project_understanding_g1_eval.py"
+      ]
+    },
+    {
+      "commit": "c6950b79",
+      "trigger": "20260403 live-inf iter 6/\u221e: docs fully separated from BM25 corpus + file_paths",
+      "n_gt_files": 1,
+      "hit_at_k": 1.0,
+      "file_recall": 1.0,
+      "precision": 0.333,
+      "gt_files": [
+        "src/retrieval/adaptive_trigger.py"
+      ],
+      "retrieved": [
+        "src/retrieval/adaptive_trigger.py",
+        "benchmarks/eval/doc_retrieval_eval_v2.py",
+        "benchmarks/eval/trigger_surfacing_g1_eval.py"
+      ],
+      "overlap": [
+        "src/retrieval/adaptive_trigger.py"
+      ]
+    },
+    {
+      "commit": "85ccac04",
+      "trigger": "20260403 live-inf iter 5/\u221e: docs excluded from BM25 corpus + compact summary rev",
+      "n_gt_files": 2,
+      "hit_at_k": 1.0,
+      "file_recall": 0.5,
+      "precision": 0.333,
+      "gt_files": [
+        "src/retrieval/adaptive_trigger.py",
+        "benchmarks/eval/project_understanding_g1_eval.py"
+      ],
+      "retrieved": [
+        "src/retrieval/adaptive_trigger.py",
+        "benchmarks/eval/doc_retrieval_eval_v2.py",
+        "benchmarks/eval/trigger_surfacing_g1_eval.py"
+      ],
+      "overlap": [
+        "src/retrieval/adaptive_trigger.py"
+      ]
+    },
+    {
+      "commit": "1e84ef92",
+      "trigger": "live iter 2/5: hybrid scoring (50% judge + 50% keyword) \u2014 CTX vs None delta=+0.3",
+      "n_gt_files": 1,
+      "hit_at_k": 1.0,
+      "file_recall": 1.0,
+      "precision": 0.333,
+      "gt_files": [
+        "benchmarks/eval/project_understanding_g1_eval.py"
+      ],
+      "retrieved": [
+        "docs/research/generate_ctx_bm25_report.py",
+        "benchmarks/eval/project_understanding_g1_eval.py",
+        "benchmarks/eval/trigger_surfacing_g1_eval.py"
+      ],
+      "overlap": [
+        "benchmarks/eval/project_understanding_g1_eval.py"
+      ]
+    },
+    {
+      "commit": "1c3bdf4a",
+      "trigger": "live iter 1/5: ctx_query optimization + key doc boost (README/CLAUDE +1.0)",
+      "n_gt_files": 2,
+      "hit_at_k": 1.0,
+      "file_recall": 0.5,
+      "precision": 0.333,
+      "gt_files": [
+        "src/retrieval/adaptive_trigger.py",
+        "benchmarks/eval/project_understanding_g1_eval.py"
+      ],
+      "retrieved": [
+        "src/retrieval/adaptive_trigger.py",
+        "benchmarks/eval/doc_retrieval_eval_v2.py",
+        "benchmarks/eval/claude_sonnet_ctx_eval.py"
+      ],
+      "overlap": [
+        "src/retrieval/adaptive_trigger.py"
+      ]
+    },
+    {
+      "commit": "453ce8f5",
+      "trigger": ".md doc indexing + doc-priority boost for high-level queries",
+      "n_gt_files": 1,
+      "hit_at_k": 1.0,
+      "file_recall": 1.0,
+      "precision": 0.25,
+      "gt_files": [
+        "src/retrieval/adaptive_trigger.py"
+      ],
+      "retrieved": [
+        "src/retrieval/adaptive_trigger.py",
+        "src/trigger/trigger_classifier.py",
+        "src/evaluator/llm_quality.py",
+        "benchmarks/eval/multi_dataset_cross_session_eval.py"
+      ],
+      "overlap": [
+        "src/retrieval/adaptive_trigger.py"
+      ]
+    },
+    {
+      "commit": "22f31377",
+      "trigger": "G1 eval rebuilt \u2014 LLM-as-judge + 3-arm + random baseline",
+      "n_gt_files": 1,
+      "hit_at_k": 1.0,
+      "file_recall": 1.0,
+      "precision": 0.333,
+      "gt_files": [
+        "benchmarks/eval/project_understanding_g1_eval.py"
+      ],
+      "retrieved": [
+        "benchmarks/eval/downstream_llm_eval.py",
+        "benchmarks/eval/project_understanding_g1_eval.py",
+        "benchmarks/eval/real_codebase_downstream_eval.py"
+      ],
+      "overlap": [
+        "benchmarks/eval/project_understanding_g1_eval.py"
+      ]
+    },
+    {
+      "commit": "e9b90968",
+      "trigger": "G1=0.705 achieved | target 0.70 reached",
+      "n_gt_files": 1,
+      "hit_at_k": 0.0,
+      "file_recall": 0.0,
+      "precision": 0.0,
+      "gt_files": [
+        "benchmarks/eval/project_understanding_g1_eval.py"
+      ],
+      "retrieved": [
+        "benchmarks/eval/nemotron_ctx_eval_v2.py",
+        "benchmarks/eval/claude_sonnet_ctx_eval.py",
+        "benchmarks/eval/nemotron_ctx_eval_v4.py",
+        "benchmarks/eval/nemotron_ctx_eval.py"
+      ],
+      "overlap": []
+    },
+    {
+      "commit": "bc80c5e2",
+      "trigger": "G1 eval redesign \u2014 curated questions, language-independent keywords",
+      "n_gt_files": 1,
+      "hit_at_k": 1.0,
+      "file_recall": 1.0,
+      "precision": 0.2,
+      "gt_files": [
+        "benchmarks/eval/project_understanding_g1_eval.py"
+      ],
+      "retrieved": [
+        "benchmarks/eval/nemotron_ctx_eval_v3.py",
+        "benchmarks/eval/claude_sonnet_ctx_eval.py",
+        "benchmarks/eval/nemotron_ctx_eval_v2.py",
+        "benchmarks/eval/nemotron_ctx_eval.py",
+        "benchmarks/eval/project_understanding_g1_eval.py"
+      ],
+      "overlap": [
+        "benchmarks/eval/project_understanding_g1_eval.py"
+      ]
+    },
+    {
+      "commit": "5ff6f222",
+      "trigger": "G1 project-understanding eval framework",
+      "n_gt_files": 1,
+      "hit_at_k": 1.0,
+      "file_recall": 1.0,
+      "precision": 0.2,
+      "gt_files": [
+        "benchmarks/eval/project_understanding_g1_eval.py"
+      ],
+      "retrieved": [
+        "src/__init__.py",
+        "benchmarks/eval/claude_sonnet_ctx_eval.py",
+        "benchmarks/eval/zero_storage_g1_eval.py",
+        "benchmarks/eval/project_understanding_g1_eval.py",
+        "benchmarks/eval/trigger_surfacing_g1_eval.py"
+      ],
+      "overlap": [
+        "benchmarks/eval/project_understanding_g1_eval.py"
+      ]
+    },
+    {
+      "commit": "4de18722",
+      "trigger": "omc-live iter 2: PascalCase SYMBOL_PATTERN tuned (8+ chars only)",
+      "n_gt_files": 1,
+      "hit_at_k": 1.0,
+      "file_recall": 1.0,
+      "precision": 0.333,
+      "gt_files": [
+        "src/trigger/trigger_classifier.py"
+      ],
+      "retrieved": [
+        "tests/test_trigger_classifier_ko.py",
+        "benchmarks/eval/trigger_surfacing_g1_eval.py",
+        "src/trigger/trigger_classifier.py"
+      ],
+      "overlap": [
+        "src/trigger/trigger_classifier.py"
+      ]
+    },
+    {
+      "commit": "66516979",
+      "trigger": "omc-live iter 1: SYMBOL_PATTERN fix \u2014 PascalCase after function/class keyword",
+      "n_gt_files": 1,
+      "hit_at_k": 1.0,
+      "file_recall": 1.0,
+      "precision": 1.0,
+      "gt_files": [
+        "src/trigger/trigger_classifier.py"
+      ],
+      "retrieved": [
+        "src/trigger/trigger_classifier.py"
+      ],
+      "overlap": [
+        "src/trigger/trigger_classifier.py"
+      ]
+    },
+    {
+      "commit": "8f658a27",
+      "trigger": "G1 redefined \u2014 zero-storage instant retrieval",
+      "n_gt_files": 2,
+      "hit_at_k": 1.0,
+      "file_recall": 0.5,
+      "precision": 0.2,
+      "gt_files": [
+        "benchmarks/eval/doc_retrieval_eval_v2.py",
+        "benchmarks/eval/zero_storage_g1_eval.py"
+      ],
+      "retrieved": [
+        "benchmarks/eval/nemotron_ctx_eval_v3.py",
+        "benchmarks/eval/claude_sonnet_ctx_eval.py",
+        "benchmarks/eval/nemotron_ctx_eval_v2.py",
+        "benchmarks/eval/nemotron_ctx_eval.py",
+        "benchmarks/eval/zero_storage_g1_eval.py"
+      ],
+      "overlap": [
+        "benchmarks/eval/zero_storage_g1_eval.py"
+      ]
+    },
+    {
+      "commit": "5ba6a7c9",
+      "trigger": "reverse_import 10\u219230, temporal noise reduction, BM25 large-repo boost",
+      "n_gt_files": 2,
+      "hit_at_k": 1.0,
+      "file_recall": 0.5,
+      "precision": 0.333,
+      "gt_files": [
+        "src/retrieval/adaptive_trigger.py",
+        "benchmarks/eval/reeval_external.py"
+      ],
+      "retrieved": [
+        "src/evaluator/repobench_evaluator.py",
+        "src/retrieval/adaptive_trigger.py",
+        "benchmarks/eval/coir_repobench_integrated_eval.py"
+      ],
+      "overlap": [
+        "src/retrieval/adaptive_trigger.py"
+      ]
+    },
+    {
+      "commit": "3b1ac9ab",
+      "trigger": "checkpoint uncommitted changes from iter 6-10",
+      "n_gt_files": 1,
+      "hit_at_k": 1.0,
+      "file_recall": 1.0,
+      "precision": 0.2,
+      "gt_files": [
+        "src/retrieval/adaptive_trigger.py"
+      ],
+      "retrieved": [
+        "benchmarks/eval/reeval_external.py",
+        "benchmarks/eval/nemotron_ctx_eval_v4.py",
+        "src/retrieval/adaptive_trigger.py",
+        "benchmarks/eval/decision_drr.py",
+        "benchmarks/eval/trigger_surfacing_g1_eval.py"
+      ],
+      "overlap": [
+        "src/retrieval/adaptive_trigger.py"
+      ]
+    },
+    {
+      "commit": "d5032201",
+      "trigger": "import_alias_map for IMPLICIT_CONTEXT depth + alias traversal",
+      "n_gt_files": 2,
+      "hit_at_k": 1.0,
+      "file_recall": 0.5,
+      "precision": 0.25,
+      "gt_files": [
+        "src/evaluator/benchmark_runner.py",
+        "src/retrieval/adaptive_trigger.py"
+      ],
+      "retrieved": [
+        "hf_space/app.py",
+        "src/retrieval/adaptive_trigger.py",
+        "src/data/real_codebase_loader.py",
+        "src/retrieval/hybrid_dense_ctx.py"
+      ],
+      "overlap": [
+        "src/retrieval/adaptive_trigger.py"
+      ]
+    },
+    {
+      "commit": "8ff9bfe7",
+      "trigger": "external R@5 0.5649\u21920.6033 (+3.8%)",
+      "n_gt_files": 1,
+      "hit_at_k": 0.0,
+      "file_recall": 0.0,
+      "precision": 0.0,
+      "gt_files": [
+        "src/retrieval/adaptive_trigger.py"
+      ],
+      "retrieved": [
+        "benchmarks/eval/reeval_external.py",
+        "src/evaluator/doc_retrieval_eval.py",
+        "benchmarks/eval/project_understanding_g1_eval.py",
+        "src/evaluator/hook_effectiveness_eval.py",
+        "src/retrieval/llamaindex_retriever.py"
+      ],
+      "overlap": []
+    },
+    {
+      "commit": "d012467b",
+      "trigger": "external R@5 0.5406\u21920.5623 | bigram BM25 + query expansion",
+      "n_gt_files": 1,
+      "hit_at_k": 0.0,
+      "file_recall": 0.0,
+      "precision": 0.0,
+      "gt_files": [
+        "src/retrieval/adaptive_trigger.py"
+      ],
+      "retrieved": [
+        "src/retrieval/hybrid_dense_ctx.py",
+        "benchmarks/eval/doc_retrieval_eval_v2.py",
+        "src/retrieval/bm25_retriever.py"
+      ],
+      "overlap": []
+    },
+    {
+      "commit": "f02c5b7f",
+      "trigger": "external R@5 0.5259\u21920.5406 | goal_v0: reverse_import_graph + path_boost + BM25_b",
+      "n_gt_files": 1,
+      "hit_at_k": 1.0,
+      "file_recall": 1.0,
+      "precision": 0.2,
+      "gt_files": [
+        "src/retrieval/adaptive_trigger.py"
+      ],
+      "retrieved": [
+        "src/retrieval/hybrid_dense_ctx.py",
+        "benchmarks/eval/claude_sonnet_ctx_eval.py",
+        "benchmarks/eval/unified_g2v4_eval.py",
+        "benchmarks/eval/nemotron_ctx_eval_v2.py",
+        "src/retrieval/adaptive_trigger.py"
+      ],
+      "overlap": [
+        "src/retrieval/adaptive_trigger.py"
+      ]
+    },
+    {
+      "commit": "22668ca8",
+      "trigger": "COIR R@5 0.740\u21921.000, RepoBench 0.558\u21920.975",
+      "n_gt_files": 2,
+      "hit_at_k": 0.0,
+      "file_recall": 0.0,
+      "precision": 0.0,
+      "gt_files": [
+        "src/retrieval/adaptive_trigger.py",
+        "src/evaluator/coir_evaluator.py"
+      ],
+      "retrieved": [
+        "src/evaluator/repobench_evaluator.py",
+        "benchmarks/eval/coir_repobench_integrated_eval.py",
+        "src/evaluator/ranger_comparison.py"
+      ],
+      "overlap": []
+    },
+    {
+      "commit": "2051a111",
+      "trigger": "perf: SEMANTIC_CONCEPT R@5 0.500\u21920.867 on COIR \u2014 two fixes",
+      "n_gt_files": 2,
+      "hit_at_k": 1.0,
+      "file_recall": 0.5,
+      "precision": 0.333,
+      "gt_files": [
+        "src/retrieval/adaptive_trigger.py",
+        "src/trigger/trigger_classifier.py"
+      ],
+      "retrieved": [
+        "hf_space/app.py",
+        "src/trigger/trigger_classifier.py",
+        "benchmarks/eval/latency_profiler.py"
+      ],
+      "overlap": [
+        "src/trigger/trigger_classifier.py"
+      ]
+    },
+    {
+      "commit": "c4b8536a",
+      "trigger": "feat(hook): anti-anchoring guidance for Fix/Replace tasks",
+      "n_gt_files": 1,
+      "hit_at_k": 0.0,
+      "file_recall": 0.0,
+      "precision": 0.0,
+      "gt_files": [
+        "hooks/ctx_real_loader.py"
+      ],
+      "retrieved": [
+        "benchmarks/datasets/small/codebase/config/config_mod_wgne.py",
+        "benchmarks/datasets/small/codebase/config/config_mod_ksbr.py",
+        "benchmarks/datasets/medium/codebase/config/config_mod_wgne.py"
+      ],
+      "overlap": []
+    },
+    {
+      "commit": "d285a223",
+      "trigger": "feat(hook): dynamic file suggestion in low-confidence SEMANTIC_CONCEPT warning",
+      "n_gt_files": 1,
+      "hit_at_k": 0.0,
+      "file_recall": 0.0,
+      "precision": 0.0,
+      "gt_files": [
+        "hooks/ctx_real_loader.py"
+      ],
+      "retrieved": [
+        "benchmarks/datasets/small/codebase/config/config_mod_wgne.py",
+        "benchmarks/datasets/small/codebase/config/config_mod_ksbr.py",
+        "benchmarks/datasets/medium/codebase/config/config_mod_wgne.py"
+      ],
+      "overlap": []
+    },
+    {
+      "commit": "dd04f73d",
+      "trigger": "CTX hook UX \u2014 \ud1a0\ud070\uc808\uac10% + core/aux \uad6c\ubd84 + \ub0ae\uc740 confidence \uacbd\uace0",
+      "n_gt_files": 1,
+      "hit_at_k": 1.0,
+      "file_recall": 1.0,
+      "precision": 0.333,
+      "gt_files": [
+        "hooks/ctx_real_loader.py"
+      ],
+      "retrieved": [
+        "hooks/ctx_real_loader.py",
+        "benchmarks/eval/claude_sonnet_ctx_eval.py",
+        "src/evaluator/hook_effectiveness_eval.py"
+      ],
+      "overlap": [
+        "hooks/ctx_real_loader.py"
+      ]
+    },
+    {
+      "commit": "9d479c47",
+      "trigger": "snake_case \ud2b8\ub9ac\uac70 \ubd84\ub958 \ud68c\uadc0 \ud14c\uc2a4\ud2b8 \ucd94\uac00",
+      "n_gt_files": 1,
+      "hit_at_k": 1.0,
+      "file_recall": 1.0,
+      "precision": 0.2,
+      "gt_files": [
+        "tests/test_trigger_classifier_ko.py"
+      ],
+      "retrieved": [
+        "src/retrieval/dense_retriever.py",
+        "src/trigger/trigger_classifier.py",
+        "src/retrieval/chroma_retriever.py",
+        "tests/test_trigger_classifier_ko.py",
+        "src/retrieval/llamaindex_retriever.py"
+      ],
+      "overlap": [
+        "tests/test_trigger_classifier_ko.py"
+      ]
+    },
+    {
+      "commit": "a54c6e08",
+      "trigger": "trigger classifier EXPLICIT recall 0.367\u21921.000",
+      "n_gt_files": 1,
+      "hit_at_k": 1.0,
+      "file_recall": 1.0,
+      "precision": 0.5,
+      "gt_files": [
+        "src/trigger/trigger_classifier.py"
+      ],
+      "retrieved": [
+        "tests/test_trigger_classifier_ko.py",
+        "src/trigger/trigger_classifier.py"
+      ],
+      "overlap": [
+        "src/trigger/trigger_classifier.py"
+      ]
+    },
+    {
+      "commit": "ea77b9d8",
+      "trigger": "AST \uac1c\uc120 \ud14c\uc2a4\ud2b8 \ucd94\uac00 (19 tests)",
+      "n_gt_files": 1,
+      "hit_at_k": 1.0,
+      "file_recall": 1.0,
+      "precision": 0.333,
+      "gt_files": [
+        "tests/test_ast_improvements.py"
+      ],
+      "retrieved": [
+        "src/retrieval/ranger_approx.py",
+        "benchmarks/eval/decision_drr.py",
+        "tests/test_ast_improvements.py"
+      ],
+      "overlap": [
+        "tests/test_ast_improvements.py"
+      ]
+    },
+    {
+      "commit": "0e8d2846",
+      "trigger": "\ubbf8\ucee4\ubc0b \ud30c\uc77c \uc815\ub9ac \ucee4\ubc0b",
+      "n_gt_files": 2,
+      "hit_at_k": 1.0,
+      "file_recall": 0.5,
+      "precision": 0.2,
+      "gt_files": [
+        "docs/research/generate_ctx_nemotron_report.py",
+        "docs/research/generate_ctx_bm25_report.py"
+      ],
+      "retrieved": [
+        "docs/research/generate_ctx_bm25_report.py",
+        "benchmarks/eval/nemotron_ctx_eval_v2.py",
+        "run_coir_eval.py",
+        "benchmarks/eval/nemotron_ctx_eval.py",
+        "benchmarks/eval/decision_drr.py"
+      ],
+      "overlap": [
+        "docs/research/generate_ctx_bm25_report.py"
+      ]
+    },
+    {
+      "commit": "e4385787",
+      "trigger": "BM25 stem \uac15\ud654 \uc2e4\ud5d8 (neutral)",
+      "n_gt_files": 1,
+      "hit_at_k": 1.0,
+      "file_recall": 1.0,
+      "precision": 0.333,
+      "gt_files": [
+        "benchmarks/eval/doc_retrieval_eval_v2.py"
+      ],
+      "retrieved": [
+        "src/retrieval/adaptive_trigger.py",
+        "benchmarks/eval/doc_retrieval_eval_v2.py",
+        "benchmarks/eval/real_codebase_downstream_eval.py"
+      ],
+      "overlap": [
+        "benchmarks/eval/doc_retrieval_eval_v2.py"
+      ]
+    }
+  ]
+}

@@ -430,9 +430,30 @@ class AdaptiveTriggerRetriever:
         else:
             result = self._tfidf_retrieve(query_id, query_text, effective_k)
 
-        # High-level queries: boost documentation files to top
+        # High-level queries: inject documentation files
+        # Non-high-level queries: filter OUT doc files (they leak via symbol_index/module_to_file)
         if is_high_level:
             result = self._boost_docs_in_result(result, effective_k)
+        else:
+            # Remove doc files from code-level query results
+            code_only = [(f, s) for f, s in result.scores.items()
+                         if not any(f.endswith(ext) for ext in (".md", ".txt", ".rst"))]
+            if not code_only:
+                # All results are docs — fall back to BM25 on code files only
+                result = self._tfidf_retrieve(query_id, query_text, effective_k)
+            elif len(code_only) < len(result.scores):
+                code_only = sorted(code_only, key=lambda x: x[1], reverse=True)[:effective_k]
+                retrieved = [f for f, _ in code_only]
+                scores = {f: s for f, s in code_only}
+                tokens_used = sum(estimate_tokens(self.files.get(f, "")) for f in retrieved)
+                result = RetrievalResult(
+                    query_id=result.query_id,
+                    retrieved_files=retrieved,
+                    scores=scores,
+                    tokens_used=tokens_used,
+                    total_tokens=self.total_tokens,
+                    strategy="adaptive_trigger",
+                )
 
         return result
 
