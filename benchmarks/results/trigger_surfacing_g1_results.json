@@ -1,19 +1,39 @@
 {
   "eval_type": "trigger_surfacing_g1",
   "project_path": "/home/jayone/Project/CTX",
-  "timestamp": "2026-04-03T10:16:17.275890",
+  "timestamp": "2026-04-03T10:18:36.552861",
   "k": 5,
   "n_tasks": 30,
   "n_py_files": 322,
   "overall": {
     "ctx_hit_at_k": 0.7667,
-    "ctx_file_recall": 0.65,
-    "random_hit_at_k": 0.0333,
-    "random_file_recall": 0.0333,
-    "hit_delta": 0.7333,
-    "recall_delta": 0.6167
+    "ctx_file_recall": 0.6333,
+    "random_hit_at_k": 0.0,
+    "random_file_recall": 0.0,
+    "hit_delta": 0.7667,
+    "recall_delta": 0.6333
   },
   "per_task": [
+    {
+      "commit": "f6c9bd8d",
+      "trigger": "20260403 live-inf iter 1/\u221e: G1 BREAKTHROUGH \u2014 trigger\u2192surfacing eval + doc-fallb",
+      "n_gt_files": 2,
+      "hit_at_k": 1.0,
+      "file_recall": 0.5,
+      "precision": 0.333,
+      "gt_files": [
+        "benchmarks/eval/trigger_surfacing_g1_eval.py",
+        "src/retrieval/adaptive_trigger.py"
+      ],
+      "retrieved": [
+        "benchmarks/eval/trigger_surfacing_g1_eval.py",
+        "benchmarks/eval/claude_sonnet_ctx_eval.py",
+        "benchmarks/eval/nemotron_ctx_eval_v2.py"
+      ],
+      "overlap": [
+        "benchmarks/eval/trigger_surfacing_g1_eval.py"
+      ]
+    },
     {
       "commit": "dd7f602c",
       "trigger": "20260403 live-inf CONVERGED: plateau 7 iterations, escape attempts exhausted",
@@ -42,9 +62,9 @@
         "benchmarks/eval/project_understanding_g1_eval.py"
       ],
       "retrieved": [
+        "benchmarks/eval/project_understanding_g1_eval.py",
         "benchmarks/eval/latency_profiler.py",
-        "benchmarks/eval/decision_drr.py",
-        "benchmarks/eval/project_understanding_g1_eval.py"
+        "benchmarks/eval/decision_drr.py"
       ],
       "overlap": [
         "benchmarks/eval/project_understanding_g1_eval.py"
@@ -61,9 +81,9 @@
         "src/retrieval/adaptive_trigger.py"
       ],
       "retrieved": [
-        "src/retrieval/adaptive_trigger.py",
         "benchmarks/eval/doc_retrieval_eval_v2.py",
-        "benchmarks/eval/trigger_surfacing_g1_eval.py"
+        "benchmarks/eval/trigger_surfacing_g1_eval.py",
+        "src/retrieval/adaptive_trigger.py"
       ],
       "overlap": [
         "src/retrieval/adaptive_trigger.py"
@@ -77,13 +97,13 @@
       "file_recall": 0.5,
       "precision": 0.333,
       "gt_files": [
-        "src/retrieval/adaptive_trigger.py",
-        "benchmarks/eval/project_understanding_g1_eval.py"
+        "benchmarks/eval/project_understanding_g1_eval.py",
+        "src/retrieval/adaptive_trigger.py"
       ],
       "retrieved": [
-        "src/retrieval/adaptive_trigger.py",
         "benchmarks/eval/doc_retrieval_eval_v2.py",
-        "benchmarks/eval/trigger_surfacing_g1_eval.py"
+        "benchmarks/eval/trigger_surfacing_g1_eval.py",
+        "src/retrieval/adaptive_trigger.py"
       ],
       "overlap": [
         "src/retrieval/adaptive_trigger.py"
@@ -100,9 +120,9 @@
         "benchmarks/eval/project_understanding_g1_eval.py"
       ],
       "retrieved": [
-        "docs/research/generate_ctx_bm25_report.py",
         "benchmarks/eval/project_understanding_g1_eval.py",
-        "benchmarks/eval/trigger_surfacing_g1_eval.py"
+        "benchmarks/eval/trigger_surfacing_g1_eval.py",
+        "docs/research/generate_ctx_bm25_report.py"
       ],
       "overlap": [
         "benchmarks/eval/project_understanding_g1_eval.py"
@@ -116,12 +136,12 @@
       "file_recall": 0.5,
       "precision": 0.333,
       "gt_files": [
-        "src/retrieval/adaptive_trigger.py",
-        "benchmarks/eval/project_understanding_g1_eval.py"
+        "benchmarks/eval/project_understanding_g1_eval.py",
+        "src/retrieval/adaptive_trigger.py"
       ],
       "retrieved": [
-        "src/retrieval/adaptive_trigger.py",
         "benchmarks/eval/doc_retrieval_eval_v2.py",
+        "src/retrieval/adaptive_trigger.py",
         "benchmarks/eval/claude_sonnet_ctx_eval.py"
       ],
       "overlap": [
@@ -139,10 +159,10 @@
         "src/retrieval/adaptive_trigger.py"
       ],
       "retrieved": [
-        "src/retrieval/adaptive_trigger.py",
-        "src/trigger/trigger_classifier.py",
         "src/evaluator/llm_quality.py",
-        "benchmarks/eval/multi_dataset_cross_session_eval.py"
+        "src/retrieval/adaptive_trigger.py",
+        "benchmarks/eval/multi_dataset_cross_session_eval.py",
+        "src/trigger/trigger_classifier.py"
       ],
       "overlap": [
         "src/retrieval/adaptive_trigger.py"
@@ -159,8 +179,8 @@
         "benchmarks/eval/project_understanding_g1_eval.py"
       ],
       "retrieved": [
-        "benchmarks/eval/downstream_llm_eval.py",
         "benchmarks/eval/project_understanding_g1_eval.py",
+        "benchmarks/eval/downstream_llm_eval.py",
         "benchmarks/eval/real_codebase_downstream_eval.py"
       ],
       "overlap": [
@@ -178,10 +198,10 @@
         "benchmarks/eval/project_understanding_g1_eval.py"
       ],
       "retrieved": [
+        "benchmarks/eval/nemotron_ctx_eval.py",
         "benchmarks/eval/nemotron_ctx_eval_v2.py",
         "benchmarks/eval/claude_sonnet_ctx_eval.py",
-        "benchmarks/eval/nemotron_ctx_eval_v4.py",
-        "benchmarks/eval/nemotron_ctx_eval.py"
+        "benchmarks/eval/nemotron_ctx_eval_v4.py"
       ],
       "overlap": []
     },
@@ -197,10 +217,10 @@
       ],
       "retrieved": [
         "benchmarks/eval/nemotron_ctx_eval_v3.py",
-        "benchmarks/eval/claude_sonnet_ctx_eval.py",
         "benchmarks/eval/nemotron_ctx_eval_v2.py",
         "benchmarks/eval/nemotron_ctx_eval.py",
-        "benchmarks/eval/project_understanding_g1_eval.py"
+        "benchmarks/eval/project_understanding_g1_eval.py",
+        "benchmarks/eval/claude_sonnet_ctx_eval.py"
       ],
       "overlap": [
         "benchmarks/eval/project_understanding_g1_eval.py"
@@ -218,10 +238,10 @@
       ],
       "retrieved": [
         "src/__init__.py",
-        "benchmarks/eval/claude_sonnet_ctx_eval.py",
         "benchmarks/eval/zero_storage_g1_eval.py",
         "benchmarks/eval/project_understanding_g1_eval.py",
-        "benchmarks/eval/trigger_surfacing_g1_eval.py"
+        "benchmarks/eval/trigger_surfacing_g1_eval.py",
+        "benchmarks/eval/claude_sonnet_ctx_eval.py"
       ],
       "overlap": [
         "benchmarks/eval/project_understanding_g1_eval.py"
@@ -238,8 +258,8 @@
         "src/trigger/trigger_classifier.py"
       ],
       "retrieved": [
-        "tests/test_trigger_classifier_ko.py",
         "benchmarks/eval/trigger_surfacing_g1_eval.py",
+        "tests/test_trigger_classifier_ko.py",
         "src/trigger/trigger_classifier.py"
       ],
       "overlap": [
@@ -276,10 +296,10 @@
       ],
       "retrieved": [
         "benchmarks/eval/nemotron_ctx_eval_v3.py",
-        "benchmarks/eval/claude_sonnet_ctx_eval.py",
         "benchmarks/eval/nemotron_ctx_eval_v2.py",
         "benchmarks/eval/nemotron_ctx_eval.py",
-        "benchmarks/eval/zero_storage_g1_eval.py"
+        "benchmarks/eval/zero_storage_g1_eval.py",
+        "benchmarks/eval/claude_sonnet_ctx_eval.py"
       ],
       "overlap": [
         "benchmarks/eval/zero_storage_g1_eval.py"
@@ -293,13 +313,13 @@
       "file_recall": 0.5,
       "precision": 0.333,
       "gt_files": [
-        "src/retrieval/adaptive_trigger.py",
-        "benchmarks/eval/reeval_external.py"
+        "benchmarks/eval/reeval_external.py",
+        "src/retrieval/adaptive_trigger.py"
       ],
       "retrieved": [
-        "src/evaluator/repobench_evaluator.py",
+        "benchmarks/eval/coir_repobench_integrated_eval.py",
         "src/retrieval/adaptive_trigger.py",
-        "benchmarks/eval/coir_repobench_integrated_eval.py"
+        "src/evaluator/repobench_evaluator.py"
       ],
       "overlap": [
         "src/retrieval/adaptive_trigger.py"
@@ -316,11 +336,11 @@
         "src/retrieval/adaptive_trigger.py"
       ],
       "retrieved": [
-        "benchmarks/eval/reeval_external.py",
-        "benchmarks/eval/nemotron_ctx_eval_v4.py",
         "src/retrieval/adaptive_trigger.py",
+        "benchmarks/eval/reeval_external.py",
         "benchmarks/eval/decision_drr.py",
-        "benchmarks/eval/trigger_surfacing_g1_eval.py"
+        "benchmarks/eval/trigger_surfacing_g1_eval.py",
+        "benchmarks/eval/nemotron_ctx_eval_v4.py"
       ],
       "overlap": [
         "src/retrieval/adaptive_trigger.py"
@@ -334,14 +354,14 @@
       "file_recall": 0.5,
       "precision": 0.25,
       "gt_files": [
-        "src/evaluator/benchmark_runner.py",
-        "src/retrieval/adaptive_trigger.py"
+        "src/retrieval/adaptive_trigger.py",
+        "src/evaluator/benchmark_runner.py"
       ],
       "retrieved": [
+        "src/retrieval/hybrid_dense_ctx.py",
         "hf_space/app.py",
         "src/retrieval/adaptive_trigger.py",
-        "src/data/real_codebase_loader.py",
-        "src/retrieval/hybrid_dense_ctx.py"
+        "src/data/real_codebase_loader.py"
       ],
       "overlap": [
         "src/retrieval/adaptive_trigger.py"
@@ -358,10 +378,10 @@
         "src/retrieval/adaptive_trigger.py"
       ],
       "retrieved": [
-        "benchmarks/eval/reeval_external.py",
         "src/evaluator/doc_retrieval_eval.py",
-        "benchmarks/eval/project_understanding_g1_eval.py",
+        "benchmarks/eval/reeval_external.py",
         "src/evaluator/hook_effectiveness_eval.py",
+        "benchmarks/eval/project_understanding_g1_eval.py",
         "src/retrieval/llamaindex_retriever.py"
       ],
       "overlap": []
@@ -377,8 +397,8 @@
         "src/retrieval/adaptive_trigger.py"
       ],
       "retrieved": [
-        "src/retrieval/hybrid_dense_ctx.py",
         "benchmarks/eval/doc_retrieval_eval_v2.py",
+        "src/retrieval/hybrid_dense_ctx.py",
         "src/retrieval/bm25_retriever.py"
       ],
       "overlap": []
@@ -394,11 +414,11 @@
         "src/retrieval/adaptive_trigger.py"
       ],
       "retrieved": [
-        "src/retrieval/hybrid_dense_ctx.py",
-        "benchmarks/eval/claude_sonnet_ctx_eval.py",
-        "benchmarks/eval/unified_g2v4_eval.py",
+        "src/retrieval/adaptive_trigger.py",
         "benchmarks/eval/nemotron_ctx_eval_v2.py",
-        "src/retrieval/adaptive_trigger.py"
+        "src/retrieval/hybrid_dense_ctx.py",
+        "benchmarks/eval/unified_g2v4_eval.py",
+        "benchmarks/eval/claude_sonnet_ctx_eval.py"
       ],
       "overlap": [
         "src/retrieval/adaptive_trigger.py"
@@ -412,12 +432,12 @@
       "file_recall": 0.0,
       "precision": 0.0,
       "gt_files": [
-        "src/retrieval/adaptive_trigger.py",
-        "src/evaluator/coir_evaluator.py"
+        "src/evaluator/coir_evaluator.py",
+        "src/retrieval/adaptive_trigger.py"
       ],
       "retrieved": [
-        "src/evaluator/repobench_evaluator.py",
         "benchmarks/eval/coir_repobench_integrated_eval.py",
+        "src/evaluator/repobench_evaluator.py",
         "src/evaluator/ranger_comparison.py"
       ],
       "overlap": []
@@ -434,9 +454,9 @@
         "src/trigger/trigger_classifier.py"
       ],
       "retrieved": [
+        "benchmarks/eval/latency_profiler.py",
         "hf_space/app.py",
-        "src/trigger/trigger_classifier.py",
-        "benchmarks/eval/latency_profiler.py"
+        "src/trigger/trigger_classifier.py"
       ],
       "overlap": [
         "src/trigger/trigger_classifier.py"
@@ -453,9 +473,9 @@
         "hooks/ctx_real_loader.py"
       ],
       "retrieved": [
-        "benchmarks/datasets/small/codebase/config/config_mod_wgne.py",
+        "benchmarks/datasets/medium/codebase/config/config_mod_wgne.py",
         "benchmarks/datasets/small/codebase/config/config_mod_ksbr.py",
-        "benchmarks/datasets/medium/codebase/config/config_mod_wgne.py"
+        "benchmarks/datasets/small/codebase/config/config_mod_wgne.py"
       ],
       "overlap": []
     },
@@ -470,9 +490,9 @@
         "hooks/ctx_real_loader.py"
       ],
       "retrieved": [
-        "benchmarks/datasets/small/codebase/config/config_mod_wgne.py",
+        "benchmarks/datasets/medium/codebase/config/config_mod_wgne.py",
         "benchmarks/datasets/small/codebase/config/config_mod_ksbr.py",
-        "benchmarks/datasets/medium/codebase/config/config_mod_wgne.py"
+        "benchmarks/datasets/small/codebase/config/config_mod_wgne.py"
       ],
       "overlap": []
     },
@@ -506,11 +526,11 @@
         "tests/test_trigger_classifier_ko.py"
       ],
       "retrieved": [
-        "src/retrieval/dense_retriever.py",
-        "src/trigger/trigger_classifier.py",
-        "src/retrieval/chroma_retriever.py",
         "tests/test_trigger_classifier_ko.py",
-        "src/retrieval/llamaindex_retriever.py"
+        "src/retrieval/dense_retriever.py",
+        "src/retrieval/llamaindex_retriever.py",
+        "src/trigger/trigger_classifier.py",
+        "src/retrieval/chroma_retriever.py"
       ],
       "overlap": [
         "tests/test_trigger_classifier_ko.py"
@@ -545,9 +565,9 @@
         "tests/test_ast_improvements.py"
       ],
       "retrieved": [
-        "src/retrieval/ranger_approx.py",
+        "tests/test_ast_improvements.py",
         "benchmarks/eval/decision_drr.py",
-        "tests/test_ast_improvements.py"
+        "src/retrieval/ranger_approx.py"
       ],
       "overlap": [
         "tests/test_ast_improvements.py"
@@ -565,33 +585,14 @@
         "docs/research/generate_ctx_bm25_report.py"
       ],
       "retrieved": [
-        "docs/research/generate_ctx_bm25_report.py",
         "benchmarks/eval/nemotron_ctx_eval_v2.py",
         "run_coir_eval.py",
         "benchmarks/eval/nemotron_ctx_eval.py",
-        "benchmarks/eval/decision_drr.py"
+        "benchmarks/eval/decision_drr.py",
+        "docs/research/generate_ctx_bm25_report.py"
       ],
       "overlap": [
         "docs/research/generate_ctx_bm25_report.py"
-      ]
-    },
-    {
-      "commit": "e4385787",
-      "trigger": "BM25 stem \uac15\ud654 \uc2e4\ud5d8 (neutral)",
-      "n_gt_files": 1,
-      "hit_at_k": 1.0,
-      "file_recall": 1.0,
-      "precision": 0.333,
-      "gt_files": [
-        "benchmarks/eval/doc_retrieval_eval_v2.py"
-      ],
-      "retrieved": [
-        "src/retrieval/adaptive_trigger.py",
-        "benchmarks/eval/doc_retrieval_eval_v2.py",
-        "benchmarks/eval/real_codebase_downstream_eval.py"
-      ],
-      "overlap": [
-        "benchmarks/eval/doc_retrieval_eval_v2.py"
       ]
     }
   ]
