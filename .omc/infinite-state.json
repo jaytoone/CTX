@@ -1,29 +1,46 @@
 {
   "status": "RUNNING",
-  "session_id": "inf-positioning-20260402",
-  "current_iteration": 4,
-  "root_goal": "CTX를 context bootstrapper로 재포지셔닝 + 정직한 eval에서 G1 delta>=0.30, G2 R@5>=0.60",
+  "session_id": "inf-g1g2-improve-20260403",
+  "current_iteration": 8,
+  "root_goal": "CTX G1/G2 개선 — 리서치 기반 수렴까지",
   "original_goal": "G1/G2에 맞는 적절한 평가 방법 구축 + 수렴까지 개선",
   "evolution_count": 1,
-  "best_score": 0.300,
-  "plateau_count": 0,
-  "total_sessions": 3,
-  "score_history": [
-    {"iteration": 1, "metric": "g1_ctx_vs_random_delta", "value": 0.039, "note": "LLM-as-judge only, coarse"},
-    {"iteration": 2, "metric": "g1_ctx_vs_none_delta", "value": 0.077, "note": ".md indexing + doc boost"},
-    {"iteration": 3, "metric": "g1_ctx_vs_none_delta", "value": 0.300, "note": "hybrid scoring + query optimization"}
-  ],
-  "current_positioning": {
-    "identity": "Context bootstrapper for coding agents (not a search engine)",
-    "g1_value": "Cross-session memory (unique — no other tool has this)",
-    "g2_value": "<1ms pre-filter for agentic search (speeds up Claude Code first-turn)",
-    "competitors_researched": ["Claude Code", "Cursor", "Aider", "Windsurf/SWE-Grep", "Copilot", "Codex"],
-    "differentiation": "Only tool with persistent cross-session memory + <1ms deterministic + .md indexing"
+  "best_score": 0.270,
+  "plateau_count": 1,
+  "total_sessions": 4,
+  "score_dimensions": ["g1_ctx_vs_none_delta", "g1_ctx_vs_random_delta", "g2_external_r5"],
+  "best_score_vector": {
+    "g1_ctx_vs_none_delta": 0.270,
+    "g1_ctx_vs_random_delta": 0.215,
+    "g2_external_r5": 0.593
   },
-  "eval_framework": {
-    "g1_eval": "project_understanding_g1_eval.py — 3-arm (CTX/Random/None) + hybrid scoring (50% judge + 50% keyword)",
-    "g2_eval": "reeval_external.py — R@5 on Flask/FastAPI/Requests",
-    "g1_current": {"ctx_accuracy": 0.690, "ctx_vs_none_delta": 0.300, "ctx_vs_random_delta": 0.112},
-    "g2_current": {"external_mean_r5": 0.602, "flask": 0.657, "fastapi": 0.396, "requests": 0.753}
-  }
+  "iter8_3run_average": {
+    "ctx_accuracy": 0.637,
+    "random_accuracy": 0.421,
+    "none_accuracy": 0.367,
+    "ctx_vs_random_delta": 0.215,
+    "ctx_vs_none_delta": 0.270,
+    "std_delta": 0.075,
+    "note": "Judge variance ~0.07 per run. 3-run average is reliable."
+  },
+  "g2_external": {
+    "flask": 0.650,
+    "fastapi": 0.376,
+    "requests": 0.753,
+    "mean": 0.593
+  },
+  "tried_improvements": [
+    "compact summary context → FAILED (delta dropped 0.30→0.17)",
+    "concept weight tuning for large repos → NO EFFECT on FastAPI",
+    ".md in BM25 corpus → REGRESSION (IDF distortion), reverted to separate storage",
+    "ctx_query optimization → HELPED (3 questions improved)",
+    "key doc boost (README/CLAUDE +1.0) → HELPED for high-level queries",
+    "hybrid scoring (50% judge + 50% keyword) → CRITICAL (fixed granularity issue)"
+  ],
+  "dead_ends": [
+    "FastAPI external R@5 improvement beyond 0.40 (structural: duplicate queries, 1120 files)",
+    "Compact summary for G1 (project understanding needs full content, not signatures)",
+    "Dynamic concept_weight by repo size (no measurable improvement)"
+  ],
+  "world_model_path": ".omc/world-model.json"
 }
