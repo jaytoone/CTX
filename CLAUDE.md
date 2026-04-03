@@ -10,15 +10,18 @@ CTX는 <1ms 만에 관련 파일 top-5를 제공하여 이 병목을 해소.
 - 4가지 트리거 타입: EXPLICIT_SYMBOL / SEMANTIC_CONCEPT / TEMPORAL_HISTORY / IMPLICIT_CONTEXT
 - .py + .md 통합 인덱싱 (코드 + 문서 동시 검색)
 
-## G1/G2 정의 (2026-04-02 재정립)
+## G1/G2 정의 (2026-04-03 명료화)
 
-| Goal | 정의 | 측정 방법 | 현재 수치 |
-|------|------|----------|----------|
-| **G1** | 코드/문서만으로 프로젝트 이해도 즉석 부트스트랩 | LLM-as-judge + keyword hybrid (CTX vs Random vs None 3-arm) | CTX vs None delta=**+0.300** |
-| **G2** | 사용자 지시→유관 파일 즉석 검색 (agentic search의 시작점) | R@5 on external codebases (Flask/FastAPI/Requests) | External R@5=**0.602** |
+| | G1: 의사결정 기억 | G2: 파일 검색 |
+|--|---|---|
+| **무엇을** | 작업 결정과 그 이유 | 관련 파일/문서 |
+| **축** | 시간 축 (세션을 넘어서) | 공간 축 (현재 코드베이스 내) |
+| **왜 필요** | 방향 희석 방지 ("왜 BM25로 바꿨지?") | 작업 효율 ("BM25 코드 어디있지?") |
+| **측정** | 의사결정 recall + 이유 정확도 | R@5 on external codebases |
+| **현재 수치** | 미측정 (eval 미구축) | External R@5=**0.595** |
 
-**G1 핵심**: CTX가 제공하는 context가 **랜덤 파일보다 얼마나 더 유용한가** (delta 측정)
-**G2 핵심**: CTX top-5 파일이 **ground truth를 포함하는 비율** (R@5)
+**G1 ≠ G2**: G1은 "파일을 찾는 것"이 아니라 "이전 결정과 그 이유를 기억하는 것"
+**G2**: 사용자 지시 → 유관 파일 즉석 검색 (R@5)
 
 ### 코딩 에이전트 비교 (2026-04-02 조사)
 
