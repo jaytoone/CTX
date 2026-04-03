@@ -91,7 +91,7 @@ def build_ctx_specific_questions() -> List[ProjectQuestion]:
             question="What external codebases were used for evaluation? Name at least two.",
             keywords=["Flask", "FastAPI", "Requests"],
             ground_truth="Evaluated on Flask, FastAPI, and Requests codebases",
-            ctx_query="Find code related to Flask FastAPI Requests evaluation",
+            ctx_query="Find the function reeval_external and show Flask FastAPI Requests benchmark",
         ),
         # ── A (Architecture): How is it structured? ──
         ProjectQuestion(
