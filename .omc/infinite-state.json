@@ -1,13 +1,19 @@
 {
-  "status": "RUNNING",
+  "status": "CONVERGED",
   "session_id": "inf-g1-essence-20260403",
-  "current_iteration": 1,
-  "root_goal": "G1 본질 재구현: 트리거→자동 서피싱 측정. 프롬프트 입력 시 관련 작업 파일이 자동으로 떠오르는가를 측정",
+  "current_iteration": 4,
+  "root_goal": "G1 본질 재구현: 트리거→자동 서피싱 측정",
   "original_goal": "G1 본질: 프롬프트 입력→유관 작업 기억 자동 서피싱",
   "evolution_count": 0,
-  "best_score": 0.0,
-  "plateau_count": 0,
-  "escape_attempts": 0,
-  "total_sessions": 5,
-  "world_model_path": ".omc/world-model.json"
+  "best_score": 0.767,
+  "plateau_count": 7,
+  "final_scores": {
+    "g1_trigger_hit_at_5": 0.767,
+    "g1_trigger_file_recall": 0.650,
+    "g1_vs_random_delta": 0.733,
+    "g2_external_r5": 0.595,
+    "coir_r5": 1.000
+  },
+  "breakthrough": "Doc-only fallback to BM25 → Hit@5 0.40→0.77 (+93%)",
+  "convergence_reason": "Remaining 23% misses are structural BM25 limits (abstract triggers). No further improvement without semantic understanding."
 }
