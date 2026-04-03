@@ -1,6 +1,24 @@
 {
-  "benchmark": "COIR-CodeSearchNet-Python-10K",
-  "corpus_size": 24909,
-  "n_queries": 50,
-  "bm25_hit_at_5": 0.78
+  "benchmark": "COIR-CodeSearchNet-Python",
+  "results": [
+    {
+      "corpus_size": 300,
+      "n_queries": 30,
+      "bm25_hit_at_5": 1.0,
+      "note": "CTX self-eval (saturated)"
+    },
+    {
+      "corpus_size": 24909,
+      "n_queries": 50,
+      "bm25_hit_at_5": 0.78,
+      "note": "subset with relevant docs"
+    },
+    {
+      "corpus_size": 280310,
+      "n_queries": 50,
+      "bm25_hit_at_5": 0.64,
+      "note": "full CodeSearchNet Python"
+    }
+  ],
+  "conclusion": "BM25 Hit@5 drops with corpus size: 1.0\u21920.78\u21920.64. CTX External R@5=0.595 is comparable to full-scale BM25."
 }
