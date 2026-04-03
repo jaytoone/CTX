@@ -1,46 +1,13 @@
 {
   "status": "RUNNING",
-  "session_id": "inf-g1g2-improve-20260403",
-  "current_iteration": 8,
-  "root_goal": "CTX G1/G2 개선 — 리서치 기반 수렴까지",
-  "original_goal": "G1/G2에 맞는 적절한 평가 방법 구축 + 수렴까지 개선",
-  "evolution_count": 1,
-  "best_score": 0.270,
-  "plateau_count": 1,
-  "total_sessions": 4,
-  "score_dimensions": ["g1_ctx_vs_none_delta", "g1_ctx_vs_random_delta", "g2_external_r5"],
-  "best_score_vector": {
-    "g1_ctx_vs_none_delta": 0.270,
-    "g1_ctx_vs_random_delta": 0.215,
-    "g2_external_r5": 0.593
-  },
-  "iter8_3run_average": {
-    "ctx_accuracy": 0.637,
-    "random_accuracy": 0.421,
-    "none_accuracy": 0.367,
-    "ctx_vs_random_delta": 0.215,
-    "ctx_vs_none_delta": 0.270,
-    "std_delta": 0.075,
-    "note": "Judge variance ~0.07 per run. 3-run average is reliable."
-  },
-  "g2_external": {
-    "flask": 0.650,
-    "fastapi": 0.376,
-    "requests": 0.753,
-    "mean": 0.593
-  },
-  "tried_improvements": [
-    "compact summary context → FAILED (delta dropped 0.30→0.17)",
-    "concept weight tuning for large repos → NO EFFECT on FastAPI",
-    ".md in BM25 corpus → REGRESSION (IDF distortion), reverted to separate storage",
-    "ctx_query optimization → HELPED (3 questions improved)",
-    "key doc boost (README/CLAUDE +1.0) → HELPED for high-level queries",
-    "hybrid scoring (50% judge + 50% keyword) → CRITICAL (fixed granularity issue)"
-  ],
-  "dead_ends": [
-    "FastAPI external R@5 improvement beyond 0.40 (structural: duplicate queries, 1120 files)",
-    "Compact summary for G1 (project understanding needs full content, not signatures)",
-    "Dynamic concept_weight by repo size (no measurable improvement)"
-  ],
+  "session_id": "inf-g1-essence-20260403",
+  "current_iteration": 1,
+  "root_goal": "G1 본질 재구현: 트리거→자동 서피싱 측정. 프롬프트 입력 시 관련 작업 파일이 자동으로 떠오르는가를 측정",
+  "original_goal": "G1 본질: 프롬프트 입력→유관 작업 기억 자동 서피싱",
+  "evolution_count": 0,
+  "best_score": 0.0,
+  "plateau_count": 0,
+  "escape_attempts": 0,
+  "total_sessions": 5,
   "world_model_path": ".omc/world-model.json"
 }
