@@ -10,7 +10,7 @@
         "impact": 0.8
       },
       "iteration": 2,
-      "outcome": "NEGATIVE \u2014 dense hurts external",
+      "outcome": "NEGATIVE — dense hurts external",
       "weak_dim": "external_r5"
     },
     {
@@ -74,7 +74,7 @@
     {
       "goal": "use_dense=True for external codebase retrieval",
       "score": 0.441,
-      "reason": "Dense embedding degrades Code\u2192Code retrieval (external R@5: 0.547\u21920.441). Structural signals (symbol/import graph) dominate for developer workflow queries."
+      "reason": "Dense embedding degrades Code→Code retrieval (external R@5: 0.547→0.441). Structural signals (symbol/import graph) dominate for developer workflow queries."
     },
     {
       "goal": "IMPLICIT_CONTEXT large-repo fallback to concept_retrieve (>200 files)",
@@ -89,17 +89,17 @@
   ],
   "known_facts": [
     "trigger_classifier.py: snake_case SYMBOL_PATTERN, EXPLICIT F1=1.0, accuracy=100%",
-    "paper: section 4.8=External (Table 3), 4.9=COIR (Table 4) \u2014 correct sequential order",
+    "paper: section 4.8=External (Table 3), 4.9=COIR (Table 4) — correct sequential order",
     "paper: Table 5 = Ablation Study (labeled)",
     "paper: Reference [6] Memori = arXiv:2603.19935 (2026)",
     "paper: Reference [12] jCodeMunch = GitHub software tool (jgravelle/jcodemunch-mcp)",
     "paper: Contribution 1 = deterministic, zero-latency, model-agnostic (vs learned classifiers)",
     "paper: Limitations includes ground-truth circularity for IMPLICIT_CONTEXT",
     "paper: Conclusion includes deployment guidance (CTX/Hybrid/BM25 workload conditions)",
-    "paper: Future Work has quantitative targets (pytest, CCS 0.180\u21920.72, n\u2265500)",
-    "paper: COIR hybrid improvement = '2.5\u00d7 over CTX alone' (NOT 150% \u2014 reserved for IMPLICIT_CONTEXT)",
+    "paper: Future Work has quantitative targets (pytest, CCS 0.180→0.72, n≥500)",
+    "paper: COIR hybrid improvement = '2.5× over CTX alone' (NOT 150% — reserved for IMPLICIT_CONTEXT)",
     "paper: All three '150%' uses are exclusively IMPLICIT_CONTEXT (lines 35, 447, 473)",
-    "paper: OneViral TES ratio = 3.6x over BM25 (0.232/0.065=3.57) \u2014 fixed from 2.5x",
+    "paper: OneViral TES ratio = 3.6x over BM25 (0.232/0.065=3.57) — fixed from 2.5x",
     "paper: Section 4.5 trigger table: GraphPrompt=73 files, AgentNode=596 files",
     "paper: GraphRAG-lite = 'unclassified graph baseline' NOT 'text-based' in Section 5.1",
     "paper: TEMPORAL_HISTORY GraphPrompt CTX=0.600, +20pp over BM25 0.400 (3-decimal in Sec 5.2)",
@@ -111,16 +111,16 @@
     "README: When to Use CTX deltas = Flask +0.198, FastAPI +0.154, Requests +0.137",
     "integration doc: TEMPORAL_HISTORY = session log from ctx_session_tracker",
     "64 tests passing throughout all iterations",
-    "uncertain: Reference [4] CAR (Li et al. 2024a) lacks arXiv ID \u2014 pre-existing",
-    "uncertain: Reference [7] LongCodeBench lacks arXiv ID \u2014 pre-existing",
-    "uncertain: Reference [9] Santos et al. 2024 lacks arXiv ID \u2014 pre-existing",
+    "uncertain: Reference [4] CAR (Li et al. 2024a) lacks arXiv ID — pre-existing",
+    "uncertain: Reference [7] LongCodeBench lacks arXiv ID — pre-existing",
+    "uncertain: Reference [9] Santos et al. 2024 lacks arXiv ID — pre-existing",
     {
-      "fact": "Dense embedding (MiniLM) helps NL\u2192Code (COIR: +0.260) but hurts Code\u2192Code (Flask: -0.106)",
+      "fact": "Dense embedding (MiniLM) helps NL→Code (COIR: +0.260) but hurts Code→Code (Flask: -0.106)",
       "discovered_iter": 2
     },
     "BM25 blend in _implicit_retrieve (adaptive fallback when graph<k) helps Flask IMPL +4.6%p",
     "Path boost in _concept_retrieve helps FastAPI SEMA +5.5%p",
-    "FastAPI IMPL near 0 regardless of approach \u2014 structural signal absent in 928-file corpus",
+    "FastAPI IMPL near 0 regardless of approach — structural signal absent in 928-file corpus",
     "Bigram BM25 corpus dramatically helps EXPL +9.5%p (Flask) by matching compound symbol patterns; minor IMPL regression from IDF shifts (~3/24 queries)",
     {
       "fact": "FastAPI IMPLICIT_CONTEXT: ground truth 41-55 files per query → R@5 ceiling ~0.12. Cannot improve with k=5",
@@ -133,20 +133,25 @@
     {
       "fact": "Reverse import threshold 10→30 + 2-hop reverse had no effect on FastAPI (import graph too sparse for 1120-file repo)",
       "discovered_iter": 11
-    }
+    },
+    "CTX repositioned as context bootstrapper for Claude Code (not search engine) — speeds up agentic grep first turn",
+    "G1 = decision memory (time axis: cross-session recall), G2 = file retrieval (space axis: current codebase)",
+    "IDF distortion: .md files in BM25 corpus caused FastAPI 1522 .md + 1120 .py → empty BM25 entries",
+    "keyword R@3 improved 0.379→0.724 via TF-only BM25 + query_type-aware routing",
+    "Claude Code spends 60%+ of first turn on agentic grep (20 serial calls) — CTX provides <1ms pre-filter"
   ],
   "uncertain": [
     {
       "item": "Reference [4] CAR arXiv ID",
-      "risk": "incomplete citation without arXiv ID \u2014 pre-existing issue"
+      "risk": "incomplete citation without arXiv ID — pre-existing issue"
     },
     {
       "item": "Reference [7] LongCodeBench arXiv ID",
-      "risk": "incomplete citation without arXiv ID \u2014 pre-existing issue"
+      "risk": "incomplete citation without arXiv ID — pre-existing issue"
     },
     {
       "item": "Reference [9] Santos et al. 2024 arXiv ID",
-      "risk": "incomplete citation without arXiv ID \u2014 pre-existing issue"
+      "risk": "incomplete citation without arXiv ID — pre-existing issue"
     }
   ],
   "dimensions_explored": {},
@@ -160,5 +165,5 @@
   "status": "RUNNING",
   "her_hints": [],
   "skill_routing_history": [],
-  "current_goal": "\uacf5\uc778 \ubca4\uce58\ub9c8\ud06c CTX SOTA\ud654"
+  "current_goal": "공인 벤치마크 CTX SOTA화"
 }
