@@ -38,8 +38,9 @@ class AdaptiveTriggerRetriever:
     def __init__(self, codebase_dir: str, use_dense: bool = False):
         self.codebase_dir = codebase_dir
         self.classifier = TriggerClassifier()
-        self.files: Dict[str, str] = {}
-        self.file_paths: List[str] = []
+        self.files: Dict[str, str] = {}       # ALL files (code + docs)
+        self.file_paths: List[str] = []        # ALL file paths (code + docs)
+        self.doc_paths: List[str] = []         # doc-only paths (for _boost_docs_in_result)
         self.total_tokens = 0
 
         # Symbol index: maps function/class names to file paths
@@ -95,12 +96,11 @@ class AdaptiveTriggerRetriever:
                 except OSError:
                     continue
 
-                self.files[rel_path] = content
-                self.file_paths.append(rel_path)
-                self.total_tokens += estimate_tokens(content)
-
-                # Doc files: index headings as symbols, content words as concepts
+                # Doc files: store separately, don't add to BM25-indexed file_paths
                 if is_doc:
+                    self.files[rel_path] = content
+                    self.doc_paths.append(rel_path)
+                    self.total_tokens += estimate_tokens(content)
                     # Extract markdown headings → symbol_index
                     headings = re.findall(r'^#+\s+(.+)$', content, re.MULTILINE)
                     for heading in headings:
@@ -108,15 +108,16 @@ class AdaptiveTriggerRetriever:
                         h_words = [w for w in h_clean.split() if len(w) > 3]
                         for word in h_words:
                             self.symbol_index.setdefault(word, []).append(rel_path)
-                    # Filename stem → module_to_file (e.g., "CLAUDE" → CLAUDE.md)
                     doc_stem = os.path.splitext(fname)[0]
                     if doc_stem:
                         self.module_to_file[doc_stem.lower()] = rel_path
-                    # Doc files are NOT added to BM25 corpus — they dilute code retrieval.
-                    # Instead, docs are injected via _boost_docs_in_result() for high-level queries.
-                    # Placeholder entry in corpus to keep file_paths/corpus indices aligned.
-                    self._bm25_corpus.append([])
-                    continue  # skip Python-specific indexing below
+                    # NOT added to file_paths or BM25 corpus — prevents IDF distortion
+                    continue
+
+                # Code files: add to file_paths + BM25 corpus
+                self.files[rel_path] = content
+                self.file_paths.append(rel_path)
+                self.total_tokens += estimate_tokens(content)
 
                 if not is_py:
                     continue
@@ -364,25 +365,25 @@ class AdaptiveTriggerRetriever:
         return any(pat in q_lower for pat in self._HIGH_LEVEL_PATTERNS)
 
     def _boost_docs_in_result(self, result: "RetrievalResult", k: int) -> "RetrievalResult":
-        """Boost documentation files (.md) to top of results for high-level queries.
+        """Inject documentation files into results for high-level queries.
 
-        README.md and CLAUDE.md get extra boost — they contain project overview and decisions.
+        Docs are stored separately (not in BM25 corpus). For high-level queries,
+        inject key docs (README, CLAUDE.md) at high scores alongside code results.
         """
         _KEY_DOCS = {"README.md", "CLAUDE.md", "ARCHITECTURE.md", "CONTRIBUTING.md"}
-        doc_files = [(f, s) for f, s in result.scores.items() if f.endswith((".md", ".txt", ".rst"))]
-        code_files = [(f, s) for f, s in result.scores.items() if not f.endswith((".md", ".txt", ".rst"))]
 
-        # Key project docs get highest boost (+1.0), other docs get +0.5
-        boosted_docs = []
-        for f, s in doc_files:
-            basename = os.path.basename(f)
+        # Start with code results from BM25
+        combined = list(result.scores.items())
+
+        # Inject docs from doc_paths (not in BM25 — injected separately)
+        for doc_path in self.doc_paths:
+            basename = os.path.basename(doc_path)
             if basename in _KEY_DOCS:
-                boosted_docs.append((f, min(s + 1.0, 2.0)))  # Key docs: strong boost
-            else:
-                boosted_docs.append((f, min(s + 0.5, 1.5)))  # Other docs: moderate boost
-        doc_files = boosted_docs
+                combined.append((doc_path, 1.5))  # Key docs: high priority
+            elif doc_path.startswith("docs/"):
+                combined.append((doc_path, 0.8))  # docs/ subdirectory: moderate
 
-        combined = sorted(doc_files + code_files, key=lambda x: x[1], reverse=True)[:k]
+        combined = sorted(combined, key=lambda x: x[1], reverse=True)[:k]
         retrieved = [f for f, _ in combined]
         scores = {f: s for f, s in combined}
 
