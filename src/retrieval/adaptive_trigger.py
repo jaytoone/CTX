@@ -431,10 +431,11 @@ class AdaptiveTriggerRetriever:
             result = self._tfidf_retrieve(query_id, query_text, effective_k)
 
         # High-level queries: inject documentation files
-        # Non-high-level queries: filter OUT doc files (they leak via symbol_index/module_to_file)
+        # Non-high-level + non-IMPLICIT queries: filter OUT doc files
+        # IMPLICIT_CONTEXT keeps docs (import graph may legitimately include .md)
         if is_high_level:
             result = self._boost_docs_in_result(result, effective_k)
-        else:
+        elif trigger_type != TriggerType.IMPLICIT_CONTEXT:
             # Remove doc files from code-level query results
             code_only = [(f, s) for f, s in result.scores.items()
                          if not any(f.endswith(ext) for ext in (".md", ".txt", ".rst"))]
