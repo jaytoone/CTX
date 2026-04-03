@@ -94,6 +94,9 @@
 | [marketing/devto_post.md](marketing/devto_post.md) | Dev.to 게시글 초안 — 코드 예제 + COIR 벤치마크 포함 마크다운 포스트 |
 | [marketing/geek_news_scheduled.md](marketing/geek_news_scheduled.md) | GeekNews 예약 포스트 (2026-04-07 이후) — 계정 nave94, news.hada.io/write 제출 |
 | [marketing/okky_post.md](marketing/okky_post.md) | OKKY 포스트 초안 — 한국어 커뮤니티 대상, 문제의식 + 성과 수치 요약 |
+| [research/20260402-g2-evaluation-methods-research.md](research/20260402-g2-evaluation-methods-research.md) | G2(Instruction-to-File Grounding) 평가 방법론 완전 연구 — 현재 40% 커버리지, 6대 갭 분석, Priority 1-3 개선안 수립 |
+| [research/20260402-g2-evaluation-methods-research-summary.md](research/20260402-g2-evaluation-methods-research-summary.md) | G2 평가 연구 요약 리포트 — executive summary + 3가지 현존 evals + 6개 gap + 구현 로드맵(1주=P1 40h, 2주=P2) |
+| [research/20260402-production-context-retrieval-research.md](research/20260402-production-context-retrieval-research.md) | 프로덕션 코드 컨텍스트 검색 도구 리서치 — Cursor/Aider/Continue.dev/LanceDB/tree-sitter/Codebase-Memory 9개 분석, Phase별 통합 로드맵(R@5 0.152→0.50) |
 
 ## Related
 - [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
@@ -104,6 +107,3 @@
 - [[projects/CTX/research/20260328-ctx-downstream-nemotron-eval-v2|20260328-ctx-downstream-nemotron-eval-v2]]
 - [[projects/CTX/research/20260328-ctx-downstream-minimax-eval|20260328-ctx-downstream-minimax-eval]]
 - [[projects/CTX/research/20260328-ctx-downstream-nemotron-eval|20260328-ctx-downstream-nemotron-eval]]
-| [research/20260402-g2-evaluation-methods-research.md](research/20260402-g2-evaluation-methods-research.md) | G2(Instruction-to-File Grounding) 평가 방법론 완전 연구 — 현재 40% 커버리지, 6대 갭 분석, Priority 1-3 개선안 수립 |
-| [research/20260402-g2-evaluation-methods-research-summary.md](research/20260402-g2-evaluation-methods-research-summary.md) | G2 평가 연구 요약 리포트 — executive summary + 3가지 현존 evals + 6개 gap + 구현 로드맵(1주=P1 40h, 2주=P2) |
-| [research/20260402-production-context-retrieval-research.md](research/20260402-production-context-retrieval-research.md) | 프로덕션 코드 컨텍스트 검색 도구 리서치 — Cursor/Aider/Continue.dev/LanceDB/tree-sitter/Codebase-Memory 9개 분석, Phase별 통합 로드맵(R@5 0.152→0.50) |
