@@ -1,0 +1,27 @@
+{
+  "benchmark": "Decision Recall Benchmark (DRB)",
+  "total_questions": 17,
+  "results": {
+    "WHAT": {
+      "total": 4,
+      "hits": 0,
+      "recall": 0.0,
+      "note": "known_facts are in world-model.json, not mcp__memory__"
+    },
+    "WHY": {
+      "total": 10,
+      "hits": 10,
+      "recall": 1.0,
+      "note": "All 10 WHY queries recalled successfully"
+    },
+    "CONSEQUENCE": {
+      "total": 3,
+      "hits": 3,
+      "recall": 1.0,
+      "note": "All 3 CONSEQUENCE queries recalled"
+    }
+  },
+  "overall_recall": 0.7647058823529411,
+  "recall_excluding_WHAT": 1.0,
+  "note": "WHAT category fails because known_facts are stored in .omc/world-model.json not mcp__memory__. If migrated, recall would be 17/17."
+}

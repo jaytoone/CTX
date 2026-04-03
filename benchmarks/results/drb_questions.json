@@ -1,0 +1,121 @@
+[
+  {
+    "qid": "drb_000",
+    "category": "WHAT",
+    "question": "What was discovered in iteration 2?",
+    "search_query": "Dense embedding (MiniLM) helps",
+    "ground_truth": "Dense embedding (MiniLM) helps NL\u2192Code (COIR: +0.260) but hurts Code\u2192Code (Flask: -0.106)"
+  },
+  {
+    "qid": "drb_001",
+    "category": "WHAT",
+    "question": "What was discovered in iteration 11?",
+    "search_query": "FastAPI IMPLICIT_CONTEXT: grou",
+    "ground_truth": "FastAPI IMPLICIT_CONTEXT: ground truth 41-55 files per query \u2192 R@5 ceiling ~0.12. Cannot improve with k=5"
+  },
+  {
+    "qid": "drb_002",
+    "category": "WHAT",
+    "question": "What was discovered in iteration 11?",
+    "search_query": "Temporal noise reduction (down",
+    "ground_truth": "Temporal noise reduction (downweight path matches when >5 files match per word) helps Flask TEMPORAL +20%p, Requests TEMPORAL +10%p"
+  },
+  {
+    "qid": "drb_003",
+    "category": "WHAT",
+    "question": "What was discovered in iteration 11?",
+    "search_query": "Reverse import threshold 10\u219230",
+    "ground_truth": "Reverse import threshold 10\u219230 + 2-hop reverse had no effect on FastAPI (import graph too sparse for 1120-file repo)"
+  },
+  {
+    "qid": "drb_004",
+    "category": "WHY",
+    "question": "Why was BM25 chosen over TF-IDF?",
+    "search_query": "why BM25",
+    "ground_truth": ""
+  },
+  {
+    "qid": "drb_005",
+    "category": "WHY",
+    "question": "Why was dense embedding rejected?",
+    "search_query": "embedding failed",
+    "ground_truth": ""
+  },
+  {
+    "qid": "drb_006",
+    "category": "WHY",
+    "question": "Why is FastAPI R@5 improvement a dead-end?",
+    "search_query": "FastAPI impossible",
+    "ground_truth": ""
+  },
+  {
+    "qid": "drb_007",
+    "category": "WHY",
+    "question": "Why was CTX repositioned as context bootstrapper?",
+    "search_query": "context bootstrapper",
+    "ground_truth": ""
+  },
+  {
+    "qid": "drb_008",
+    "category": "WHY",
+    "question": "What is the difference between G1 and G2?",
+    "search_query": "G1 vs G2",
+    "ground_truth": ""
+  },
+  {
+    "qid": "drb_009",
+    "category": "WHY",
+    "question": "Why were docs separated from BM25 corpus?",
+    "search_query": "IDF distortion",
+    "ground_truth": ""
+  },
+  {
+    "qid": "drb_010",
+    "category": "WHY",
+    "question": "What retrieval algorithm change was made?",
+    "search_query": "algorithm change",
+    "ground_truth": ""
+  },
+  {
+    "qid": "drb_011",
+    "category": "WHY",
+    "question": "How was keyword search improved?",
+    "search_query": "keyword search",
+    "ground_truth": ""
+  },
+  {
+    "qid": "drb_012",
+    "category": "WHY",
+    "question": "What structural ceiling was identified?",
+    "search_query": "structural ceiling",
+    "ground_truth": ""
+  },
+  {
+    "qid": "drb_013",
+    "category": "WHY",
+    "question": "How does CTX accelerate Claude Code?",
+    "search_query": "Claude Code acceleration",
+    "ground_truth": ""
+  },
+  {
+    "qid": "drb_014",
+    "category": "CONSEQUENCE",
+    "question": "What was the result of keyword search improvement?",
+    "search_query": "keyword search improvement",
+    "ground_truth": ""
+  },
+  {
+    "qid": "drb_015",
+    "category": "CONSEQUENCE",
+    "question": "What happened when dense embedding was applied to code retrieval?",
+    "search_query": "code to code retrieval hurt",
+    "ground_truth": ""
+  },
+  {
+    "qid": "drb_016",
+    "category": "CONSEQUENCE",
+    "question": "What effect did duplicate queries have on FastAPI evaluation?",
+    "search_query": "duplicate queries problem",
+    "ground_truth": ""
+  }
+]
