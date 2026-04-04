@@ -1,0 +1,36 @@
+{
+  "test": "G1 DRB git-log hook recall",
+  "date": "2026-04-04",
+  "projects": {
+    "CTX": {
+      "hits": 8,
+      "total": 8,
+      "recall": 1.0,
+      "world_model": "rich"
+    },
+    "FromScratch": {
+      "hits": 6,
+      "total": 7,
+      "recall": 0.857,
+      "world_model": "sparse"
+    },
+    "GraphPrompt": {
+      "hits": 4,
+      "total": 4,
+      "recall": 1.0,
+      "world_model": "none"
+    }
+  },
+  "overall": {
+    "hits": 18,
+    "total": 19,
+    "recall": 0.947
+  },
+  "previous_world_model_only": {
+    "hits": 13,
+    "total": 13,
+    "recall": 1.0,
+    "scope": "CTX only"
+  },
+  "improvement": "Works on ANY git project without world-model.json setup"
+}
