@@ -1,14 +1,25 @@
-# CTX — Context Bootstrapper for Coding Agents (2026-04-02)
+# CTX — Context Bootstrapper for Claude Code (2026-04-05)
 
-## 프로젝트 개요
-CTX(Contextual Trigger eXtraction): **코딩 에이전트의 context 부트스트래퍼**.
-Claude Code/Cursor/Aider 등이 agentic search (grep→read 20회+)로 파일을 찾는 데 첫 턴 60%+ 시간을 소비.
-CTX는 <1ms 만에 관련 파일 top-5를 제공하여 이 병목을 해소.
+## 새 CTX 정의
 
-**핵심 가치**: 검색 엔진이 아닌 **시작점 제공자** (context bootstrapper)
-- Rule-based, deterministic, zero-LLM, <1ms
-- 4가지 트리거 타입: EXPLICIT_SYMBOL / SEMANTIC_CONCEPT / TEMPORAL_HISTORY / IMPLICIT_CONTEXT
-- .py + .md 통합 인덱싱 (코드 + 문서 동시 검색)
+CTX = **Claude Code의 자동 context 주입 시스템**. 3개 hook으로 구성:
+
+| Hook | 파일 | Event | 역할 |
+|------|------|-------|------|
+| **git-memory** | `~/.claude/hooks/git-memory.py` | UserPromptSubmit | G1: git log 의사결정 기억 + G2: 프롬프트→파일 선제 발견 |
+| **g2-augment** | `~/.claude/hooks/g2-augment.py` | Pre/PostToolUse (Grep) | G2: codebase graph 검색 보강 |
+| **auto-index** | `~/.claude/hooks/auto-index.py` | SessionStart + PostToolUse(git commit) | codebase-memory-mcp 자동 인덱싱 |
+
+**모드**: `--g2` (프롬프트→파일 선제발견), `--rich` (world-model dead-ends/facts 추가)
+
+**성과**:
+- G1 recall: 82% (git-only), 100% (--rich) — 3개 프로젝트 검증
+- G2 prefetch: 프롬프트 키워드로 관련 파일 자동 발견 (32ms)
+- 강제성: deterministic hook (advisory CLAUDE.md 아님)
+- 비용: 0 (LLM 호출 없음)
+
+**구 CTX**(adaptive_trigger, trigger_classifier, BM25 검색 엔진)는 **폐기됨**.
+구 CTX 코드는 이 repo에 아카이브로 남아 있으나 hook에서 사용하지 않음.
 
 ## G1/G2 정의 (2026-04-03 명료화)
 
