@@ -1,0 +1,149 @@
+[
+  {
+    "prompt": "AdaptiveTriggerRetriever 클래스 수정",
+    "ground_truth": [
+      "src/retrieval/adaptive_trigger.py"
+    ],
+    "type": "EXPLICIT"
+  },
+  {
+    "prompt": "TriggerClassifier 버그 수정",
+    "ground_truth": [
+      "src/trigger/trigger_classifier.py"
+    ],
+    "type": "EXPLICIT"
+  },
+  {
+    "prompt": "BM25Retriever 성능 개선",
+    "ground_truth": [
+      "src/retrieval/bm25_retriever.py"
+    ],
+    "type": "EXPLICIT"
+  },
+  {
+    "prompt": "RetrievalResult 필드 추가",
+    "ground_truth": [
+      "src/retrieval/full_context.py"
+    ],
+    "type": "EXPLICIT"
+  },
+  {
+    "prompt": "doc_retrieval_eval_v2 벤치마크 재실행",
+    "ground_truth": [
+      "benchmarks/eval/doc_retrieval_eval_v2.py"
+    ],
+    "type": "EXPLICIT"
+  },
+  {
+    "prompt": "검색 엔진 성능 벤치마크 돌려봐",
+    "ground_truth": [
+      "benchmarks/eval/doc_retrieval_eval_v2.py",
+      "benchmarks/eval/reeval_external.py"
+    ],
+    "type": "SEMANTIC"
+  },
+  {
+    "prompt": "트리거 분류 로직 개선",
+    "ground_truth": [
+      "src/trigger/trigger_classifier.py"
+    ],
+    "type": "SEMANTIC"
+  },
+  {
+    "prompt": "retrieve 함수 개선해줘",
+    "ground_truth": [
+      "src/retrieval/adaptive_trigger.py",
+      "src/retrieval/ablation_variants.py"
+    ],
+    "type": "SEMANTIC"
+  },
+  {
+    "prompt": "밀도 기반 검색 코드 확인",
+    "ground_truth": [
+      "src/retrieval/dense_retriever.py",
+      "src/retrieval/chroma_retriever.py"
+    ],
+    "type": "SEMANTIC"
+  },
+  {
+    "prompt": "코드 검색 평가 스크립트 수정",
+    "ground_truth": [
+      "benchmarks/eval/reeval_external.py",
+      "benchmarks/eval/unified_g2v4_eval.py"
+    ],
+    "type": "SEMANTIC"
+  },
+  {
+    "prompt": "Flask 프로젝트에서 R@5 낮은 이유 분석",
+    "ground_truth": [
+      "benchmarks/eval/reeval_external.py"
+    ],
+    "type": "WORKFLOW"
+  },
+  {
+    "prompt": "BM25 스코어링 방식 변경",
+    "ground_truth": [
+      "src/retrieval/adaptive_trigger.py",
+      "benchmarks/eval/doc_retrieval_eval_v2.py"
+    ],
+    "type": "WORKFLOW"
+  },
+  {
+    "prompt": "임포트 그래프 탐색 깊이 조절",
+    "ground_truth": [
+      "src/retrieval/adaptive_trigger.py"
+    ],
+    "type": "WORKFLOW"
+  },
+  {
+    "prompt": "COIR 평가 결과 분석",
+    "ground_truth": [
+      "benchmarks/results/coir_standard_eval.json",
+      "benchmarks/results/coir_ctx_vs_bm25.json"
+    ],
+    "type": "WORKFLOW"
+  },
+  {
+    "prompt": "다운스트림 LLM 평가 실행",
+    "ground_truth": [
+      "benchmarks/eval/downstream_llm_eval.py"
+    ],
+    "type": "WORKFLOW"
+  },
+  {
+    "prompt": "문서 검색 정확도 올려",
+    "ground_truth": [
+      "src/retrieval/adaptive_trigger.py",
+      "benchmarks/eval/doc_retrieval_eval_v2.py"
+    ],
+    "type": "KOREAN_NL"
+  },
+  {
+    "prompt": "테스트 실행해봐",
+    "ground_truth": [
+      "tests/test_trigger_classifier_ko.py"
+    ],
+    "type": "KOREAN_NL"
+  },
+  {
+    "prompt": "외부 코드베이스 평가 재실행",
+    "ground_truth": [
+      "benchmarks/eval/reeval_external.py"
+    ],
+    "type": "KOREAN_NL"
+  },
+  {
+    "prompt": "결과 파일 확인",
+    "ground_truth": [
+      "benchmarks/results/doc_retrieval_eval_v2.json"
+    ],
+    "type": "KOREAN_NL"
+  },
+  {
+    "prompt": "HuggingFace 스페이스 코드 수정",
+    "ground_truth": [
+      "hf_space/app.py"
+    ],
+    "type": "KOREAN_NL"
+  }
+]

@@ -1,0 +1,242 @@
+{
+  "benchmark": "G2-prefetch",
+  "total": 20,
+  "hit_rate": 0.3,
+  "by_type": {
+    "EXPLICIT": 0.8,
+    "SEMANTIC": 0.2,
+    "WORKFLOW": 0.2,
+    "KOREAN_NL": 0.0
+  },
+  "details": [
+    {
+      "prompt": "AdaptiveTriggerRetriever 클래스 수정",
+      "type": "EXPLICIT",
+      "hit": 1.0,
+      "prefetched": [
+        "src/retrieval/adaptive_trigger.py"
+      ],
+      "ground_truth": [
+        "src/retrieval/adaptive_trigger.py"
+      ],
+      "precision": 1.0
+    },
+    {
+      "prompt": "TriggerClassifier 버그 수정",
+      "type": "EXPLICIT",
+      "hit": 1.0,
+      "prefetched": [
+        "src/trigger/trigger_classifier.py",
+        "tests/benchmark_before_after.py"
+      ],
+      "ground_truth": [
+        "src/trigger/trigger_classifier.py"
+      ],
+      "precision": 0.5
+    },
+    {
+      "prompt": "BM25Retriever 성능 개선",
+      "type": "EXPLICIT",
+      "hit": 1.0,
+      "prefetched": [
+        "src/retrieval/bm25_retriever.py"
+      ],
+      "ground_truth": [
+        "src/retrieval/bm25_retriever.py"
+      ],
+      "precision": 1.0
+    },
+    {
+      "prompt": "RetrievalResult 필드 추가",
+      "type": "EXPLICIT",
+      "hit": 1.0,
+      "prefetched": [
+        "src/retrieval/full_context.py"
+      ],
+      "ground_truth": [
+        "src/retrieval/full_context.py"
+      ],
+      "precision": 1.0
+    },
+    {
+      "prompt": "doc_retrieval_eval_v2 벤치마크 재실행",
+      "type": "EXPLICIT",
+      "hit": 0.0,
+      "prefetched": [],
+      "ground_truth": [
+        "benchmarks/eval/doc_retrieval_eval_v2.py"
+      ],
+      "precision": 0.0
+    },
+    {
+      "prompt": "검색 엔진 성능 벤치마크 돌려봐",
+      "type": "SEMANTIC",
+      "hit": 0.0,
+      "prefetched": [],
+      "ground_truth": [
+        "benchmarks/eval/doc_retrieval_eval_v2.py",
+        "benchmarks/eval/reeval_external.py"
+      ],
+      "precision": 0.0
+    },
+    {
+      "prompt": "트리거 분류 로직 개선",
+      "type": "SEMANTIC",
+      "hit": 0.0,
+      "prefetched": [],
+      "ground_truth": [
+        "src/trigger/trigger_classifier.py"
+      ],
+      "precision": 0.0
+    },
+    {
+      "prompt": "retrieve 함수 개선해줘",
+      "type": "SEMANTIC",
+      "hit": 1.0,
+      "prefetched": [
+        "src/retrieval/ranger_approx.py",
+        "src/retrieval/llamaindex_retriever.py",
+        "src/retrieval/ablation_variants.py"
+      ],
+      "ground_truth": [
+        "src/retrieval/adaptive_trigger.py",
+        "src/retrieval/ablation_variants.py"
+      ],
+      "precision": 0.3333333333333333
+    },
+    {
+      "prompt": "밀도 기반 검색 코드 확인",
+      "type": "SEMANTIC",
+      "hit": 0.0,
+      "prefetched": [],
+      "ground_truth": [
+        "src/retrieval/chroma_retriever.py",
+        "src/retrieval/dense_retriever.py"
+      ],
+      "precision": 0.0
+    },
+    {
+      "prompt": "코드 검색 평가 스크립트 수정",
+      "type": "SEMANTIC",
+      "hit": 0.0,
+      "prefetched": [],
+      "ground_truth": [
+        "benchmarks/eval/unified_g2v4_eval.py",
+        "benchmarks/eval/reeval_external.py"
+      ],
+      "precision": 0.0
+    },
+    {
+      "prompt": "Flask 프로젝트에서 R@5 낮은 이유 분석",
+      "type": "WORKFLOW",
+      "hit": 0.0,
+      "prefetched": [],
+      "ground_truth": [
+        "benchmarks/eval/reeval_external.py"
+      ],
+      "precision": 0.0
+    },
+    {
+      "prompt": "BM25 스코어링 방식 변경",
+      "type": "WORKFLOW",
+      "hit": 1.0,
+      "prefetched": [
+        "benchmarks/eval/doc_retrieval_eval_v2.py",
+        "hf_space/app.py"
+      ],
+      "ground_truth": [
+        "benchmarks/eval/doc_retrieval_eval_v2.py",
+        "src/retrieval/adaptive_trigger.py"
+      ],
+      "precision": 0.5
+    },
+    {
+      "prompt": "임포트 그래프 탐색 깊이 조절",
+      "type": "WORKFLOW",
+      "hit": 0.0,
+      "prefetched": [],
+      "ground_truth": [
+        "src/retrieval/adaptive_trigger.py"
+      ],
+      "precision": 0.0
+    },
+    {
+      "prompt": "COIR 평가 결과 분석",
+      "type": "WORKFLOW",
+      "hit": 0.0,
+      "prefetched": [
+        "src/evaluator/coir_evaluator.py"
+      ],
+      "ground_truth": [
+        "benchmarks/results/coir_ctx_vs_bm25.json",
+        "benchmarks/results/coir_standard_eval.json"
+      ],
+      "precision": 0.0
+    },
+    {
+      "prompt": "다운스트림 LLM 평가 실행",
+      "type": "WORKFLOW",
+      "hit": 0.0,
+      "prefetched": [
+        "benchmarks/eval/nemotron_ctx_eval_v4.py",
+        "benchmarks/eval/project_understanding_g1_eval.py",
+        "benchmarks/eval/nemotron_ctx_eval_v2.py"
+      ],
+      "ground_truth": [
+        "benchmarks/eval/downstream_llm_eval.py"
+      ],
+      "precision": 0.0
+    },
+    {
+      "prompt": "문서 검색 정확도 올려",
+      "type": "KOREAN_NL",
+      "hit": 0.0,
+      "prefetched": [],
+      "ground_truth": [
+        "benchmarks/eval/doc_retrieval_eval_v2.py",
+        "src/retrieval/adaptive_trigger.py"
+      ],
+      "precision": 0.0
+    },
+    {
+      "prompt": "테스트 실행해봐",
+      "type": "KOREAN_NL",
+      "hit": 0.0,
+      "prefetched": [],
+      "ground_truth": [
+        "tests/test_trigger_classifier_ko.py"
+      ],
+      "precision": 0.0
+    },
+    {
+      "prompt": "외부 코드베이스 평가 재실행",
+      "type": "KOREAN_NL",
+      "hit": 0.0,
+      "prefetched": [],
+      "ground_truth": [
+        "benchmarks/eval/reeval_external.py"
+      ],
+      "precision": 0.0
+    },
+    {
+      "prompt": "결과 파일 확인",
+      "type": "KOREAN_NL",
+      "hit": 0.0,
+      "prefetched": [],
+      "ground_truth": [
+        "benchmarks/results/doc_retrieval_eval_v2.json"
+      ],
+      "precision": 0.0
+    },
+    {
+      "prompt": "HuggingFace 스페이스 코드 수정",
+      "type": "KOREAN_NL",
+      "hit": 0.0,
+      "prefetched": [],
+      "ground_truth": [
+        "hf_space/app.py"
+      ],
+      "precision": 0.0
+    }
+  ]
+}
