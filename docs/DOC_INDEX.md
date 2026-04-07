@@ -2,6 +2,9 @@
 
 | 파일 | 설명 |
 |------|------|
+| [research/20260407-g1-temporal-evaluation-framework.md](research/20260407-g1-temporal-evaluation-framework.md) | G1 시간 대비 성능 평가 방법론 — Recall decay / Decision validity 2차원, 5가지 방법 + 논문 지표 |
+| [research/20260407-hook-vs-claudemd-redundancy.md](research/20260407-hook-vs-claudemd-redundancy.md) | 훅/스킬 강제 규칙의 CLAUDE.md 중복 기재 득실 — 유형A(차단)/B(자동) 구분, 제거vs단축 기준 |
+| [research/20260407-global-claude-md-critical-review.md](research/20260407-global-claude-md-critical-review.md) | 전역 CLAUDE.md 비판적 평론 — P0 버그(번호중복/규칙충돌), P1 훅 이전, P2 파일 분리 권고 |
 | [benchmark/g1_g2_publication_framework.md](benchmark/g1_g2_publication_framework.md) | G1/G2 publication-quality 벤치 프레임워크 — COIR/RepoBench/MEMORYCODE 매핑 |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | CTX 전체 아키텍처 개념도 — 트리거 분류 → 4개 검색 파이프라인 → 평가 레이어 |
 | [CTX_SPEC_v1.0.md](CTX_SPEC_v1.0.md) | 실험 상세 스펙 문서 v1.0 — 트리거 기반 동적 메모리 호출 실험 설계 |
