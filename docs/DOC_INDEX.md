@@ -2,6 +2,7 @@
 
 | 파일 | 설명 |
 |------|------|
+| [research/20260407-g1-temporal-eval-results.md](research/20260407-g1-temporal-eval-results.md) | G1 temporal eval 실측 결과 — Staleness 35.7%, Conflict 0%, 4개 프로젝트 28결정, precision ~100% |
 | [research/20260407-g1-temporal-evaluation-framework.md](research/20260407-g1-temporal-evaluation-framework.md) | G1 시간 대비 성능 평가 방법론 — Recall decay / Decision validity 2차원, 5가지 방법 + 논문 지표 |
 | [research/20260407-hook-vs-claudemd-redundancy.md](research/20260407-hook-vs-claudemd-redundancy.md) | 훅/스킬 강제 규칙의 CLAUDE.md 중복 기재 득실 — 유형A(차단)/B(자동) 구분, 제거vs단축 기준 |
 | [research/20260407-global-claude-md-critical-review.md](research/20260407-global-claude-md-critical-review.md) | 전역 CLAUDE.md 비판적 평론 — P0 버그(번호중복/규칙충돌), P1 훅 이전, P2 파일 분리 권고 |
@@ -103,10 +104,10 @@
 
 ## Related
 - [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
-- [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]
 - [[projects/CTX/research/20260325-ctx-paper-tier-evaluation|20260325-ctx-paper-tier-evaluation]]
 - [[projects/CTX/research/20260330-ctx-academic-critique-web-grounded|20260330-ctx-academic-critique-web-grounded]]
-- [[projects/CTX/research/20260402-omc-live-infinite-progress-report|20260402-omc-live-infinite-progress-report]]
 - [[projects/CTX/research/20260328-ctx-downstream-nemotron-eval-v2|20260328-ctx-downstream-nemotron-eval-v2]]
 - [[projects/CTX/research/20260328-ctx-downstream-minimax-eval|20260328-ctx-downstream-minimax-eval]]
 - [[projects/CTX/research/20260328-ctx-downstream-nemotron-eval|20260328-ctx-downstream-nemotron-eval]]
+- [[projects/CTX/research/20260402-production-context-retrieval-research|20260402-production-context-retrieval-research]]
+- [[projects/CTX/research/20260328-ctx-downstream-eval-nemotron-final|20260328-ctx-downstream-eval-nemotron-final]]
