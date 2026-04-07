@@ -108,3 +108,10 @@ Per `20260407-g1-temporal-evaluation-framework.md` recommendations:
 | Period-Recall Curve | Not measured | Needs longer commit history stratification |
 
 **Next step**: combine with Method 3 (human annotation 30-50 decisions) to get Validity@5 = VALID decisions / inject top-5.
+
+## Related
+- [[projects/CTX/research/20260407-g1-temporal-evaluation-framework|20260407-g1-temporal-evaluation-framework]]
+- [[projects/CTX/research/20260329-ctx-corrected-results-summary|20260329-ctx-corrected-results-summary]]
+- [[projects/CTX/research/20260402-project-understanding-evaluation-framework|20260402-project-understanding-evaluation-framework]]
+- [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]
+- [[projects/CTX/research/20260325-ctx-paper-tier-evaluation|20260325-ctx-paper-tier-evaluation]]

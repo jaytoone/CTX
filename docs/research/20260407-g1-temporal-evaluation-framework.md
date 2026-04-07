@@ -85,3 +85,7 @@ Human annotation 30-50개 → Validity@5 = inject 상위 5결정 중 VALID 비�
 - [ZEP: Temporal Knowledge Graph for Agent Memory](https://blog.getzep.com/content/files/2025/01/ZEP__USING_KNOWLEDGE_GRAPHS_TO_POWER_LLM_AGENT_MEMORY_2025011700.pdf)
 - [EvolveBench (ACL 2025)](https://aclanthology.org/2025.acl-long.788.pdf)
 - [Time-Aware Language Models as Temporal Knowledge Bases](https://direct.mit.edu/tacl/article/doi/10.1162/tacl_a_00459/110012)
+
+## Related
+- [[projects/CTX/research/20260326-ctx-benchmark-validation-roadmap|20260326-ctx-benchmark-validation-roadmap]]
+- [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
