@@ -2,6 +2,7 @@
 
 | 파일 | 설명 |
 |------|------|
+| [research/20260408-g1-temporal-retention-eval.md](research/20260408-g1-temporal-retention-eval.md) | G1 시간축 retention 실측 — age=[3,7,15,30] hold-out, age=15(COIR)에서 g1_raw=1.000 vs random_noise=0.333, 키워드 인플레이션 + context anchoring 이슈 |
 | [research/20260408-g1-format-ablation-results.md](research/20260408-g1-format-ablation-results.md) | G1 포맷 비교 downstream δ 실측 — 5포맷(no_ctx/random/g1_raw/g1_filtered/hybrid), CTX 프로젝트 기반 10개 Q&A, 방법론 한계 포함 |
 | [research/20260408-original-intent-gap-analysis.md](research/20260408-original-intent-gap-analysis.md) | 원래 의도 정합성 분석 — Step1(noise filter) 완료, Format comparison+Downstream δ 미수행, ByteRover/Meta-Harness SOTA 포지셔닝 |
 | [research/20260407-g1-final-eval-benchmark.md](research/20260407-g1-final-eval-benchmark.md) | G1 최종 eval 벤치마크 — NoiseRatio@7=50%, TopicCoverage@7=73%, PaintPoint 100% 노이즈 실증 |
