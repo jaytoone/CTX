@@ -91,7 +91,7 @@ def extract_decision_commits(repo_path: Path, cutoff_date: Optional[datetime] = 
     cmd = [
         "git", "log",
         "--format=%H|%aI|%s",  # hash|date|subject only (body via separate call if needed)
-        "-n", "100",  # Get last 100 commits
+        "-n", "500",  # Get last 500 commits for temporal coverage
     ]
 
     if cutoff_date:
@@ -180,25 +180,51 @@ def compute_age_bucket(commit_date: datetime, now: Optional[datetime] = None) ->
 
 
 def extract_topic(commit: DecisionCommit) -> str:
-    """Extract main topic from commit"""
+    """Extract main topic from commit, handling date-prefix format"""
+    subject = commit.subject
+
+    # Remove date prefix (YYYYMMDD format)
+    subject = re.sub(r"^\d{8}\s+", "", subject)
+
     # Remove decision type prefix
-    subject = re.sub(r"^(feat|fix|refactor|perf|security):\s*", "", commit.subject, flags=re.IGNORECASE)
-    # Take first meaningful phrase
-    words = subject.split()[:5]
-    return " ".join(words)
+    subject = re.sub(r"^(feat|fix|refactor|perf|security):\s*", "", subject, flags=re.IGNORECASE)
+
+    # Remove version prefix
+    subject = re.sub(r"^v\d+\.\d+\.\d+\s*[-:]\s*", "", subject)
+
+    # Take first meaningful phrase (up to first colon or 60 chars)
+    if ':' in subject:
+        subject = subject.split(':')[0]
+
+    # Limit length
+    words = subject.split()[:8]
+    topic = " ".join(words)
+
+    # Truncate if too long
+    if len(topic) > 60:
+        topic = topic[:60].rsplit(' ', 1)[0] + "..."
+
+    return topic.strip()
 
 
 def extract_action(commit: DecisionCommit) -> str:
-    """Extract action from commit"""
-    subject = commit.subject.lower()
-    if "add" in subject or "implement" in subject:
-        return "add " + extract_topic(commit)
-    elif "fix" in subject:
-        return "fix " + extract_topic(commit)
-    elif "refactor" in subject:
-        return "refactor " + extract_topic(commit)
+    """Extract action from commit for rationale questions"""
+    topic = extract_topic(commit)
+    subject_lower = commit.subject.lower()
+
+    # Determine verb based on commit patterns
+    if "implement" in subject_lower or re.search(r"^\d{8}", commit.subject):
+        return f"implement {topic}"
+    elif "add" in subject_lower or "feat:" in subject_lower:
+        return f"add {topic}"
+    elif "fix" in subject_lower or "fix:" in subject_lower:
+        return f"fix {topic}"
+    elif "refactor" in subject_lower:
+        return f"refactor {topic}"
+    elif "perf:" in subject_lower or "optimize" in subject_lower:
+        return f"optimize {topic}"
     else:
-        return extract_topic(commit)
+        return topic
 
 
 def has_meaningful_message(commit: DecisionCommit) -> bool:
