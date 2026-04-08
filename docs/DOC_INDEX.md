@@ -2,6 +2,7 @@
 
 | 파일 | 설명 |
 |------|------|
+| [research/20260408-g1-format-ablation-results.md](research/20260408-g1-format-ablation-results.md) | G1 포맷 비교 downstream δ 실측 — 5포맷(no_ctx/random/g1_raw/g1_filtered/hybrid), CTX 프로젝트 기반 10개 Q&A, 방법론 한계 포함 |
 | [research/20260408-original-intent-gap-analysis.md](research/20260408-original-intent-gap-analysis.md) | 원래 의도 정합성 분석 — Step1(noise filter) 완료, Format comparison+Downstream δ 미수행, ByteRover/Meta-Harness SOTA 포지셔닝 |
 | [research/20260407-g1-final-eval-benchmark.md](research/20260407-g1-final-eval-benchmark.md) | G1 최종 eval 벤치마크 — NoiseRatio@7=50%, TopicCoverage@7=73%, PaintPoint 100% 노이즈 실증 |
 | [research/20260407-g1-spiral-eval-results.md](research/20260407-g1-spiral-eval-results.md) | G1 나선형 메모리 eval 실측 — IP@7=0.000(버전 bump 크라우드아웃), DA@7 proxy, SpiralDepth 1.14 |
