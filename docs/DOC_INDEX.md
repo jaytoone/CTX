@@ -2,6 +2,7 @@
 
 | 파일 | 설명 |
 |------|------|
+| [research/20260408-original-intent-gap-analysis.md](research/20260408-original-intent-gap-analysis.md) | 원래 의도 정합성 분석 — Step1(noise filter) 완료, Format comparison+Downstream δ 미수행, ByteRover/Meta-Harness SOTA 포지셔닝 |
 | [research/20260407-g1-final-eval-benchmark.md](research/20260407-g1-final-eval-benchmark.md) | G1 최종 eval 벤치마크 — NoiseRatio@7=50%, TopicCoverage@7=73%, PaintPoint 100% 노이즈 실증 |
 | [research/20260407-g1-spiral-eval-results.md](research/20260407-g1-spiral-eval-results.md) | G1 나선형 메모리 eval 실측 — IP@7=0.000(버전 bump 크라우드아웃), DA@7 proxy, SpiralDepth 1.14 |
 | [research/20260407-g1g2-established-benchmarks.md](research/20260407-g1g2-established-benchmarks.md) | G1/G2 공인 벤치마크 조사 — G1 전용 벤치 없음(LongMemEval 근접), G2는 COIR(ACL2025) 연결 가능 |
