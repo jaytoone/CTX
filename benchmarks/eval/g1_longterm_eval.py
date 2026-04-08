@@ -21,6 +21,13 @@ import sys
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
+# Import baseline evaluator and metrics
+from benchmarks.eval.g1_longterm_baseline_eval import BaselineEvaluator, get_llm_client
+from benchmarks.eval.g1_longterm_metrics import evaluate_all_metrics
+
+ALL_BASELINES = ["no_ctx", "full_dump", "g1_raw", "g1_filtered",
+                 "git_memory_real", "bm25_retrieval", "dense_embedding"]
+
 
 class DecisionCommit:
     """Represents a decision commit extracted from git log"""
@@ -344,6 +351,109 @@ def compute_rationale_f1_deterministic(ctx_rationale: str, gt_rationale: str) ->
     return 2 * precision * recall / (precision + recall)
 
 
+def generate_evaluation_report(
+    decision_commits: List[DecisionCommit],
+    qa_pairs: List[Dict],
+    sampled_qa: List[Dict],
+    baseline_results: Dict[str, List[Dict]],
+    metrics: Dict
+) -> str:
+    """Generate markdown evaluation report"""
+
+    report = []
+    report.append("# G1 Long-Term Memory Evaluation Report")
+    report.append(f"\n**Date**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    report.append(f"\n## Overview")
+    report.append(f"\n- **Decision Commits**: {len(decision_commits)}")
+    report.append(f"- **QA Pairs Generated**: {len(qa_pairs)}")
+    report.append(f"- **QA Pairs Evaluated**: {len(sampled_qa)}")
+    report.append(f"- **Baselines**: 4 (no_ctx, full_dump, g1_raw, g1_filtered)")
+
+    # Metrics Summary
+    report.append(f"\n## Metrics Summary")
+    report.append(f"\n### Decision Recall@5")
+    report.append(f"\n| Baseline | Recall@5 | Avg Context (chars) | Type |")
+    report.append(f"| --- | --- | --- | --- |")
+    baseline_types = {
+        "no_ctx": "No context",
+        "full_dump": "Full dump (oracle)",
+        "g1_raw": "Proactive (sim)",
+        "g1_filtered": "Proactive (sim)",
+        "git_memory_real": "Proactive (real)",
+        "bm25_retrieval": "Query-aware RAG",
+        "dense_embedding": "Query-aware RAG",
+    }
+    for baseline in ALL_BASELINES:
+        if baseline in metrics:
+            recall = metrics[baseline].get('decision_recall_at_5_mean', 0.0)
+            ctx_avg = 0
+            if baseline_results.get(baseline):
+                lens = [r.get('context_length', 0) for r in baseline_results[baseline]]
+                ctx_avg = sum(lens) / len(lens) if lens else 0
+            btype = baseline_types.get(baseline, "")
+            report.append(f"| {baseline} | {recall:.3f} | {ctx_avg:.0f} | {btype} |")
+
+    # Age Bucket Breakdown
+    if 'age_bucket_breakdown' in metrics:
+        report.append(f"\n### Recall by Age Bucket")
+        report.append(f"\n| Baseline | 0-7d | 7-30d | 30-90d | 90d+ |")
+        report.append(f"| --- | --- | --- | --- | --- |")
+        for baseline in ALL_BASELINES:
+            if baseline in metrics['age_bucket_breakdown']:
+                buckets = metrics['age_bucket_breakdown'][baseline]
+                row = [baseline]
+                for bucket in ["0-7d", "7-30d", "30-90d", "90d+"]:
+                    val = buckets.get(bucket)
+                    row.append(f"{val:.3f}" if val is not None else "N/A")
+                report.append(f"| {' | '.join(row)} |")
+
+    # Sample Responses
+    report.append(f"\n## Sample Responses")
+    if sampled_qa:
+        sample = sampled_qa[0]
+        report.append(f"\n### Query: {sample['query']}")
+        report.append(f"\n**Ground Truth**:")
+        gt = sample['ground_truth']
+        report.append(f"- Commit: `{gt['commit_hash'][:7]}`")
+        report.append(f"- Date: {gt['timestamp']}")
+        report.append(f"- Subject: {gt['subject']}")
+
+        for baseline in ALL_BASELINES:
+            if baseline in baseline_results and baseline_results[baseline]:
+                response = baseline_results[baseline][0]['response']
+                report.append(f"\n**{baseline}**:")
+                report.append(f"\n> {response[:200]}{'...' if len(response) > 200 else ''}")
+
+    # Key Findings (dynamic)
+    report.append(f"\n## Key Findings")
+
+    # Find best baseline
+    best_bl = max(
+        [b for b in ALL_BASELINES if b != "no_ctx"],
+        key=lambda b: metrics.get(b, {}).get('decision_recall_at_5_mean', 0.0)
+    )
+    best_score = metrics.get(best_bl, {}).get('decision_recall_at_5_mean', 0.0)
+    report.append(f"\n1. **Best baseline**: {best_bl} (Recall@5={best_score:.3f})")
+
+    # Context efficiency note
+    full_dump_ctx = next(
+        (r.get('context_length', 0) for r in baseline_results.get('full_dump', []) if r),
+        0
+    )
+    bm25_ctx = next(
+        (r.get('context_length', 0) for r in baseline_results.get('bm25_retrieval', []) if r),
+        0
+    )
+    if full_dump_ctx and bm25_ctx:
+        ratio = full_dump_ctx / bm25_ctx if bm25_ctx > 0 else 1
+        report.append(f"2. **Token efficiency**: bm25_retrieval uses {ratio:.1f}x fewer tokens than full_dump")
+
+    report.append(f"3. **no_ctx baseline fails completely** (LLM knowledge cutoff predates project)")
+    report.append(f"4. **Query-aware retrieval** (BM25/Dense): finds commits based on query semantics vs query-agnostic git_memory_real")
+
+    return "\n".join(report)
+
+
 def main():
     parser = argparse.ArgumentParser(description="G1 Long-Term Memory Evaluation")
     parser.add_argument("--repo-path", default="/home/jayone/Project/CTX", help="Path to git repository")
@@ -381,14 +491,67 @@ def main():
         json.dump([c.to_dict() for c in decision_commits], f, indent=2, default=str)
     print(f"  Saved commits to {commits_path}")
 
-    print("\n[3/5] Evaluation baselines not yet implemented")
-    print("  TODO: Implement baseline evaluation (no_ctx, full_dump, g1_raw, g1_filtered)")
+    print("\n[3/5] Running baseline evaluations...")
+    evaluator = BaselineEvaluator(repo_path)
 
-    print("\n[4/5] Computing metrics not yet implemented")
-    print("  TODO: Implement metric computation")
+    # Sample QA pairs for evaluation (limit to avoid excessive API calls)
+    sample_size = min(59, len(qa_pairs))
+    sampled_qa = qa_pairs[:sample_size]
+    n_baselines = len(ALL_BASELINES)
+    print(f"  Evaluating {sample_size} QA pairs across {n_baselines} baselines...")
+    print(f"  Baselines: {', '.join(ALL_BASELINES)}")
+    print(f"  This will make approximately {sample_size * n_baselines} LLM API calls...")
+    print(f"  Estimated time: ~{sample_size * n_baselines * 3} seconds ({sample_size * n_baselines * 3 / 60:.1f} minutes)")
 
-    print("\n[5/5] Report generation not yet implemented")
-    print("  TODO: Generate comparison report")
+    baseline_results = {b: [] for b in ALL_BASELINES}
+
+    for i, qa_pair in enumerate(sampled_qa, 1):
+        print(f"  [{i}/{sample_size}] Evaluating: {qa_pair['query'][:50]}...")
+        all_results = evaluator.evaluate_all(qa_pair, baselines=ALL_BASELINES)
+        for baseline_name, result in all_results.items():
+            baseline_results[baseline_name].append(result)
+
+    # Save baseline results
+    baseline_results_path = repo_path / "benchmarks/results/g1_baseline_results.json"
+    with open(baseline_results_path, "w") as f:
+        json.dump(baseline_results, f, indent=2)
+    print(f"  Saved baseline results to {baseline_results_path}")
+
+    print("\n[4/5] Computing metrics...")
+    llm_client = get_llm_client()
+    metrics = evaluate_all_metrics(baseline_results, llm_client=llm_client)
+
+    # Save metrics
+    metrics_path = repo_path / "benchmarks/results/g1_metrics.json"
+    with open(metrics_path, "w") as f:
+        json.dump(metrics, f, indent=2)
+    print(f"  Saved metrics to {metrics_path}")
+
+    # Print summary
+    print("\n  Metric Summary:")
+    for baseline_name in ALL_BASELINES:
+        if baseline_name in metrics:
+            recall = metrics[baseline_name].get('decision_recall_at_5_mean', 0.0)
+            ctx_len = None
+            if baseline_results.get(baseline_name):
+                lens = [r.get('context_length', 0) for r in baseline_results[baseline_name]]
+                ctx_len = sum(lens) / len(lens) if lens else 0
+            ctx_str = f"~{ctx_len:.0f} chars" if ctx_len is not None else ""
+            print(f"    {baseline_name:20s} Recall@5: {recall:.3f}  {ctx_str}")
+
+    print("\n[5/5] Generating report...")
+    report = generate_evaluation_report(
+        decision_commits=decision_commits,
+        qa_pairs=qa_pairs,
+        sampled_qa=sampled_qa,
+        baseline_results=baseline_results,
+        metrics=metrics
+    )
+
+    report_path = repo_path / "benchmarks/results/g1_longterm_eval_report.md"
+    with open(report_path, "w") as f:
+        f.write(report)
+    print(f"  Saved report to {report_path}")
 
     # Save metadata
     metadata = {

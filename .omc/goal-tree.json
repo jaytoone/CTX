@@ -1,18 +1,21 @@
 {
-  "root_goal": "G1 zero-storage 개선: persistent_memory/session_log 없이 adaptive_trigger만으로 작업 파일 즉석 복원 R@5 향상. medium dataset strict R@5 0.738→0.85+, concept_group R@5 0.965 유지, external repos (Flask 0.756, Requests 0.925) 개선",
-  "original_goal": "G1 zero-storage 개선: persistent_memory/session_log 없이 adaptive_trigger만으로 작업 파일 즉석 복원 R@5 향상",
+  "root_goal": "DECIDE-Bench: publication-quality G1 temporal benchmark — closed-book/open-book delta, long-context + RAG baselines, temporal decay curve, statistical significance (p<0.05)",
+  "original_goal": "Design and implement a publication-quality benchmark evaluating G1 (git-memory decision recall) against long-context baselines, with time-proportional decay analysis. Target: top-tier venue (EMNLP/ACL/NeurIPS level).",
   "level": 0,
   "evolution_count": 0,
   "evolution_history": [],
-  "sub_goals": [
-    "1. medium dataset concept strict R@5 0.495→0.65+ (disambiguation)",
-    "2. medium dataset module_name R@5 0.960→0.98+ (near-perfect)",
-    "3. Flask symbol R@5 0.667→0.80+",
-    "4. 전체 검증: 기존 벤치마크 (COIR, doc retrieval) regression 없음 확인"
-  ],
+  "score_dimensions": ["quality", "completeness", "methodology_rigor", "statistical_validity", "reproducibility"],
   "reward_spec": {
-    "primary_metric": "zero_storage_g1 overall R@5 on medium dataset",
-    "threshold": ">= 0.85 strict R@5"
+    "primary_metric": "publication readiness",
+    "threshold": "methodology rivals ICLR/ACL 2025-2026 memory benchmarks (LongMemEval, MemoryAgentBench)"
   },
-  "history": []
+  "history": [],
+  "sub_goals": [
+    "1. Dataset: 30+ numeric-ground-truth commits across 4 temporal bins",
+    "2. Baselines: no_ctx, long_ctx_20/50, rag_bm25, g1_current, g1.5_hybrid",
+    "3. Closed-book/open-book delta protocol",
+    "4. Statistical analysis: Wilcoxon, bootstrap CI, exponential decay",
+    "5. Execute benchmark (MiniMax M2.5 real calls)",
+    "6. Paper-quality research doc"
+  ]
 }

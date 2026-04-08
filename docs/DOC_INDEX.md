@@ -2,6 +2,9 @@
 
 | 파일 | 설명 |
 |------|------|
+| [research/20260409-g1-fulleval-sota-comparison.md](research/20260409-g1-fulleval-sota-comparison.md) | G1 장기 기억 전체 평가 + SOTA 비교 — 7 baselines(59 QA pairs, 413 LLM calls): BM25=0.881 > full_dump=0.712 > dense=0.644 > g1_raw=0.305 > git_memory_real=0.169 > no_ctx=0.000, BM25가 17.5x 작은 context로 oracle 초과, 7-30d 재현율 BM25=0.786 vs proactive=0.000 |
+| [research/20260408-g1-longterm-eval-initial-results.md](research/20260408-g1-longterm-eval-initial-results.md) | G1 장기 기억 평가 초기 실측 결과 — 59 commits, 117 QA pairs, 4 baselines(no_ctx/full_dump/g1_raw/g1_filtered), 10-sample eval: full_dump=1.000>g1_raw=0.800>g1_filtered=0.700>no_ctx=0.000, filtering paradox 분석, 전체 5-phase 프레임워크 완성 |
+| [research/20260408-g1-longterm-memory-evaluation-framework.md](research/20260408-g1-longterm-memory-evaluation-framework.md) | G1 장기 기억 평가 프레임워크 (expert-research-v2) — SOTA 방법론 조사(LongMemEval/LoCoMo/GitGoodBench), 4-tier query taxonomy, 5개 지표, hybrid scoring, git-native ground truth 설계 |
 | [research/20260408-g1-temporal-retention-eval.md](research/20260408-g1-temporal-retention-eval.md) | G1 시간축 retention 실측 — age=[3,7,15,30] hold-out, age=15(COIR)에서 g1_raw=1.000 vs random_noise=0.333, 키워드 인플레이션 + context anchoring 이슈 |
 | [research/20260408-g1-format-ablation-results.md](research/20260408-g1-format-ablation-results.md) | G1 포맷 비교 downstream δ 실측 — 5포맷(no_ctx/random/g1_raw/g1_filtered/hybrid), CTX 프로젝트 기반 10개 Q&A, 방법론 한계 포함 |
 | [research/20260408-original-intent-gap-analysis.md](research/20260408-original-intent-gap-analysis.md) | 원래 의도 정합성 분석 — Step1(noise filter) 완료, Format comparison+Downstream δ 미수행, ByteRover/Meta-Harness SOTA 포지셔닝 |
@@ -110,10 +113,10 @@
 
 ## Related
 - [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
+- [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]
 - [[projects/CTX/research/20260325-ctx-paper-tier-evaluation|20260325-ctx-paper-tier-evaluation]]
 - [[projects/CTX/research/20260330-ctx-academic-critique-web-grounded|20260330-ctx-academic-critique-web-grounded]]
+- [[projects/CTX/research/20260402-omc-live-infinite-progress-report|20260402-omc-live-infinite-progress-report]]
 - [[projects/CTX/research/20260328-ctx-downstream-nemotron-eval-v2|20260328-ctx-downstream-nemotron-eval-v2]]
 - [[projects/CTX/research/20260328-ctx-downstream-minimax-eval|20260328-ctx-downstream-minimax-eval]]
-- [[projects/CTX/research/20260328-ctx-downstream-nemotron-eval|20260328-ctx-downstream-nemotron-eval]]
-- [[projects/CTX/research/20260402-production-context-retrieval-research|20260402-production-context-retrieval-research]]
-- [[projects/CTX/research/20260328-ctx-downstream-eval-nemotron-final|20260328-ctx-downstream-eval-nemotron-final]]
+- [[projects/CTX/research/20260407-g1-temporal-evaluation-framework|20260407-g1-temporal-evaluation-framework]]
