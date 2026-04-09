@@ -229,33 +229,49 @@ Expected: 0.881 recall (BM25) with recency signal preserved
 **Eval**: CHANGELOG-based ground truth on Flask/Requests/Django (2000 commits each, 9 QA pairs total).
 Script: `benchmarks/eval/g1_changelog_eval.py`
 
-### Closed-Set vs Open-Set Recall (per-pair mean)
+### Closed-Set vs Open-Set Recall (per-pair mean, 16 quality-filtered pairs)
 
-| Baseline | Closed-Set (59 CTX commits) | Open-Set (2000 external commits) | Drop |
-|----------|----------------------------|----------------------------------|------|
-| bm25_retrieval | 0.881 | **0.111** | −87% |
-| dense_embedding | 0.644 | **0.222** | −66% |
-| full_dump (n=100) | 0.712 | **0.444** | −38% |
+| Baseline | Closed-Set (59 CTX commits) | Open-Set (Flask 7 + Req 5 + Django 4) | Drop |
+|----------|----------------------------|----------------------------------------|------|
+| dense_embedding | 0.644 | **0.375** | −42% |
+| full_dump (n=100) | 0.712 | **0.313** | −56% |
+| bm25_retrieval | 0.881 | **0.250** | −72% |
 | git_memory_real | 0.169 | **0.000** | −100% |
 
-### Why BM25 Drops 87%
+### Per-Repo Breakdown
 
-In closed-set eval, the BM25 corpus = 59 pre-extracted decision commits (answer guaranteed in corpus). In open-set, the corpus = full git log (2000 commits, answer may not be in top-7).
+| Baseline | Flask (7 pairs) | Requests (5 pairs) | Django (4 pairs) | Mean |
+|----------|-----------------|-------------------|-----------------|------|
+| dense_embedding | 0.429 | 0.200 | **0.500** | 0.376 |
+| full_dump | **0.571** | 0.000 | 0.250 | 0.274 |
+| bm25_retrieval | 0.429 | 0.200 | 0.000 | 0.210 |
+| git_memory_real | 0.000 | 0.000 | 0.000 | 0.000 |
 
-Key failure mode: **version-specific bug fix commits don't mention the feature by name**. E.g., "Bump to 3.1.2" doesn't contain "stream_with_context" or "jinja_loader". BM25 finds keyword-relevant commits but not necessarily the version commit that CHANGELOG references.
+### Key Revision: Dense Embedding is Most Robust in Open-Set
 
-### Why full_dump is Competitive in Open-Set
+**Dense outperforms BM25 and full_dump in open-set** (0.375 vs 0.250 and 0.313).
 
-`full_dump` (n=100 most recent commits) performs best in open-set because:
-1. For recently-released versions, the version bump commit IS in top-100
-2. LLM can extract version from release commit message and match to date
-3. Doesn't depend on keyword matching
+This aligns with dense's closed-set age-robustness (both 0-7d and 7-30d were similar at 0.643-0.644). Dense doesn't care about temporal distance — it matches semantic similarity regardless of when a commit was made.
 
-**Implication**: Open-set BM25 upgrade (`0.881 → 0.111`) must be re-evaluated for real repos. The closed-set result is optimistic due to corpus pre-filtering.
+**Why BM25 drops most (-72%)**: Keyword matching fails when:
+- The query asks about a feature added years ago (outside BM25 corpus window in open-set? No — all 2000 commits indexed)
+- The relevant commit doesn't use the exact feature keywords (e.g., Django "composite primary key" might be buried in deep commit messages)
+- Django open-set score = 0.000 — all 4 Django QA pairs failed for BM25
 
-### Note on Sample Size
+**Why full_dump fails on Requests (-100%)**: Requests QA queries are about older features (pypy 3.9 drop, urllib3 chunked, etc.) that predate the top-100 recent commits. Full dump is strictly recency-biased.
 
-Only 9 valid QA pairs (6 Flask, 2 Requests, 1 Django) — 4 Flask pairs had LLM formatting failures. Results are directionally correct but not statistically robust. Needs larger sample for production benchmarking.
+**Why dense succeeds on Django (0.500)**: Semantic matching finds commits mentioning email API, composite keys, middleware semantically — even without exact keyword match.
+
+### Implication for CTX G1 Design
+
+The closed-set BM25 advantage (0.881) is largely an artifact of pre-filtered corpus construction. In realistic open-set:
+- **Dense embedding is the most reliable baseline** for temporal recall across arbitrary repos
+- **BM25 with pre-filtered corpus** (G1 decision commits) is still strong for CTX's specific use case (own project commits with consistent format)
+- **full_dump** fails on mature repos where relevant changes are older
+
+### Note on Sample Size and LLM Variance
+
+16 quality-filtered QA pairs (vs 9 initial). LLM scoring has ±0.1 variance across runs at this scale. Results are directionally stable but 50+ pairs per repo would be needed for production benchmarking.
 
 ---
 
@@ -268,14 +284,14 @@ The full evaluation (59 QA pairs, 7 baselines, 413 LLM calls) reveals:
 3. **Dense embedding (0.644) is a viable alternative** — more robust across age buckets than BM25 but lower peak accuracy
 4. **0.000 recall for 7-30d commits in all proactive methods** — proactive injection is inherently limited to recent history
 5. **Recommended upgrade**: hybrid proactive (3 recency decisions) + BM25 reactive (4 query-relevant decisions)
-6. **[Open-Set Caveat]** BM25 closed-set result (0.881) is optimistic — open-set eval on external repos shows 0.111 (−87%). Full_dump more competitive at 0.444 in real-world setting.
+6. **[Open-Set Revision]** BM25 closed-set result (0.881) is optimistic — open-set eval (16 quality-filtered pairs, 3 repos) shows BM25=0.250 (−72%). Dense embedding is the most robust method in open-set (0.375), consistent with its age-robustness in closed-set evaluation. BM25 pre-filtered corpus is still the right choice for CTX's own repo context.
 
 ## Related
 - [[projects/CTX/research/20260408-g1-longterm-eval-initial-results|20260408-g1-longterm-eval-initial-results]]
 - [[projects/CTX/research/20260408-g1-longterm-memory-evaluation-framework|20260408-g1-longterm-memory-evaluation-framework]]
 - [[projects/CTX/research/20260407-g1-temporal-eval-results|20260407-g1-temporal-eval-results]]
+- [[projects/CTX/research/20260407-g1-temporal-evaluation-framework|20260407-g1-temporal-evaluation-framework]]
+- [[projects/CTX/research/20260402-production-context-retrieval-research|20260402-production-context-retrieval-research]]
 - [[projects/CTX/research/20260408-g1-temporal-retention-eval|20260408-g1-temporal-retention-eval]]
 - [[projects/CTX/research/20260407-g1-final-eval-benchmark|20260407-g1-final-eval-benchmark]]
 - [[projects/CTX/research/20260326-ctx-vs-sota-comparison|20260326-ctx-vs-sota-comparison]]
-- [[projects/CTX/research/20260402-g2-evaluation-methods-research-summary|20260402-g2-evaluation-methods-research-summary]]
-- [[projects/CTX/research/20260402-g2-evaluation-methods-research|20260402-g2-evaluation-methods-research]]

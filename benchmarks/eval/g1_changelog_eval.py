@@ -376,10 +376,12 @@ def generate_qa_pairs(
 ) -> List[QAPair]:
     """Generate QA pairs from changelog entries using LLM."""
     # Filter to entries with dates and meaningful features
-    valid = [e for e in entries if e.date and len(e.feature) > 20][:max_pairs * 2]
+    valid = [e for e in entries if e.date and len(e.feature) > 15][:max_pairs * 3]
 
     qa_pairs = []
-    for entry in valid[:max_pairs]:
+    for entry in valid[:max_pairs * 2]:  # try 2x entries to compensate for filtering
+        if len(qa_pairs) >= max_pairs:
+            break
         # Generate a natural language question
         system = "You are generating evaluation questions for a retrieval benchmark."
         user = f"""Given this changelog entry from {repo_name}:
@@ -406,6 +408,20 @@ keywords: async, support, 2023"""
 
         if q_match and not "[LLM-ERROR" in response and not "[NO-CLIENT" in response:
             question = re.sub(r'^[-*"\'`\s]+', '', q_match.group(1).strip()).strip('"\'`')
+            # Strip nested "question:" prefix (LLM sometimes doubles it)
+            question = re.sub(r'^question:\s*', '', question, flags=re.IGNORECASE)
+            # Strip template placeholders like <the question>
+            question = re.sub(r'^<[^>]{1,30}>', '', question).strip()
+            question = question.strip('"\'`')
+
+            # Quality filter: must be a real question
+            valid_start = any(question.lower().startswith(w)
+                              for w in ['when', 'what', 'which', 'how', 'why', 'who', 'where'])
+            if len(question) < 20 or not valid_start:
+                continue
+            if '<' in question or question.lower().startswith('should'):
+                continue
+
             keywords = [k.strip() for k in (k_match.group(1) if k_match else "").split(",")]
 
             qa_pairs.append(QAPair(

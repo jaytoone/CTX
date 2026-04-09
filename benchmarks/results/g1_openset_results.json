@@ -2,367 +2,647 @@
   "Flask": [
     {
       "baseline": "no_ctx",
-      "query": "When was the fix for stream_with_context in async views",
+      "query": "When was session key access tracking added to Flask?",
       "score": 0.0,
       "context_length": 0,
-      "latency_ms": 18459.654331207275,
-      "response": "<minimax:tool_call>\n<invoke name=\"github_search_repositories\">\n<parameter name=\"query\">repo:pallets/flask stream_with_context async</parameter>\n</invoke>\n<invoke name=\"github_search_code\">\n<parameter name=\"q\">repo:pallets/flask stream_with_context async context</parameter>\n</invoke>\n</minimax:tool_c"
+      "latency_ms": 2247.6794719696045,
+      "response": "Session key access tracking was added to"
     },
     {
       "baseline": "full_dump",
-      "query": "When was the fix for stream_with_context in async views",
+      "query": "When was session key access tracking added to Flask?",
       "score": 1.0,
       "context_length": 5176,
-      "latency_ms": 4557.724952697754,
-      "response": "The fix for `stream_with_context` in async views was implemented in commit `9822a03` on **August 19, 2025** (part of the 3.1.2 release)."
+      "latency_ms": 2650.4175662994385,
+      "response": "Session key access tracking was added in commit **c17f379** on **February 18, 2026**, which was part of version 3.1.3."
     },
     {
       "baseline": "git_memory_real",
-      "query": "When was the fix for stream_with_context in async views",
+      "query": "When was session key access tracking added to Flask?",
       "score": 0.0,
       "context_length": 334,
-      "latency_ms": 3909.451961517334,
-      "response": "The user is asking about when a fix for `stream_with_context` in async views was implemented. Let me look at the git history context provided:\n\n- [2026-04-05] a31e6b7: remove werkzeug host tests\n- [2026-04-03] 83dbcb2: update dev dependencies\n- [2026-03-24] 91c6b3f: remove unicode host test\n- [2026-"
+      "latency_ms": 3420.24827003479,
+      "response": "[EMPTY]"
     },
     {
       "baseline": "bm25_retrieval",
-      "query": "When was the fix for stream_with_context in async views",
+      "query": "When was session key access tracking added to Flask?",
+      "score": 1.0,
+      "context_length": 390,
+      "latency_ms": 1893.8205242156982,
+      "response": "Session key access tracking was added in commit **c17f379** on **February 18, 2026**. This commit introduced the request context's ability to track session access."
+    },
+    {
+      "baseline": "dense_embedding",
+      "query": "When was session key access tracking added to Flask?",
+      "score": 1.0,
+      "context_length": 638,
+      "latency_ms": 2976.628303527832,
+      "response": "Session key access tracking was added in commit **c17f379** on **February 18, 2026**. The commit message \"request context tracks session access\" directly corresponds to this feature."
+    },
+    {
+      "baseline": "no_ctx",
+      "query": "When was the fix for session state with follow_redirects in the test client added?",
       "score": 0.0,
-      "context_length": 399,
-      "latency_ms": 10129.88543510437,
+      "context_length": 0,
+      "latency_ms": 4255.369186401367,
+      "response": "The user is asking about when a fix for session state with follow_redirects in the test client was added. Let me look at the git history provided to find this information.\n\nLooking through the commits, I can see:\n- \"Add support for follow_redirects to the test client\" - this added the feature\n- \"Per"
+    },
+    {
+      "baseline": "full_dump",
+      "query": "When was the fix for session state with follow_redirects in the test client added?",
+      "score": 1.0,
+      "context_length": 5176,
+      "latency_ms": 4359.677076339722,
+      "response": "The user is asking about when a fix for session state with follow_redirects in the test client was added. Let me search through the git history provided to find relevant commits.\n\nLooking through the commits, I don't see any commit message that directly mentions \"session state with follow_redirects\""
+    },
+    {
+      "baseline": "git_memory_real",
+      "query": "When was the fix for session state with follow_redirects in the test client added?",
+      "score": 0.0,
+      "context_length": 334,
+      "latency_ms": 2868.8504695892334,
+      "response": "The fix was added on **February 19, 2026** (commit `a411a24` - \"add back opening session on context push\")."
+    },
+    {
+      "baseline": "bm25_retrieval",
+      "query": "When was the fix for session state with follow_redirects in the test client added?",
+      "score": 0.0,
+      "context_length": 459,
+      "latency_ms": 2826.7858028411865,
       "response": "[EMPTY]"
     },
     {
       "baseline": "dense_embedding",
-      "query": "When was the fix for stream_with_context in async views",
-      "score": 1.0,
-      "context_length": 527,
-      "latency_ms": 2068.0291652679443,
-      "response": "The fix for `stream_with_context` in async views was implemented in commit **9822a03** on **August 19, 2025**, which refactored the function specifically for async views."
+      "query": "When was the fix for session state with follow_redirects in the test client added?",
+      "score": 0.0,
+      "context_length": 506,
+      "latency_ms": 5247.223377227783,
+      "response": "The fix for session state with follow_redirects was added in commit **81c7ff7** on **March 25, 2022**, which updated tests for relative redirects in the test client."
     },
     {
       "baseline": "no_ctx",
-      "query": "When was",
+      "query": "When was support for passing bytes IO to send_file added?",
       "score": 0.0,
       "context_length": 0,
-      "latency_ms": 2654.6339988708496,
-      "response": "Your question appears to be incomplete. Could you please specify which Flask feature or functionality you're asking about? That way I can look up when it was implemented and provide you with the specific date or version information."
-    },
-    {
-      "baseline": "full_dump",
-      "query": "When was",
-      "score": 0.0,
-      "context_length": 5176,
-      "latency_ms": 4772.896766662598,
-      "response": "The user is asking about when a feature was implemented, but they haven't provided the actual question about what feature they're asking for. They've only provided the git history context.\n\nWait, I see - the question appears to be cut off: \"When was\"\n\nThe user likely meant to ask about a specific fe"
-    },
-    {
-      "baseline": "git_memory_real",
-      "query": "When was",
-      "score": 0.0,
-      "context_length": 334,
-      "latency_ms": 2970.5162048339844,
-      "response": "Your question appears to be cut off. Could you please clarify what feature or change you're asking about? The git history shows various commits, but I need to know which specific feature you'd like me to look up."
-    },
-    {
-      "baseline": "bm25_retrieval",
-      "query": "When was",
-      "score": 0.0,
-      "context_length": 569,
-      "latency_ms": 1912.2109413146973,
-      "response": "Could you please clarify which feature or change you're asking about? Your question appears to be incomplete."
-    },
-    {
-      "baseline": "dense_embedding",
-      "query": "When was",
-      "score": 0.0,
-      "context_length": 273,
-      "latency_ms": 3001.9359588623047,
-      "response": "Your question appears to be incomplete. Could you please clarify what feature or change you'd like to know the implementation date for? The git history shows commits from 2016-2020 covering various changes like spelling fixes, bug fixes, and version releases, but I need more context about what speci"
-    },
-    {
-      "baseline": "no_ctx",
-      "query": "When was the type correction for Flask's jinja_loader property added?",
-      "score": 0.0,
-      "context_length": 0,
-      "latency_ms": 2722.856044769287,
-      "response": "The type annotation for Flask's `jinja_loader` property was added in commit **498195e**. This commit specifically added the type annotation for `Flask.jinja_loader`."
-    },
-    {
-      "baseline": "full_dump",
-      "query": "When was the type correction for Flask's jinja_loader property added?",
-      "score": 0.0,
-      "context_length": 5176,
-      "latency_ms": 5106.907844543457,
-      "response": "The user is asking about when a type correction for Flask's `jinja_loader` property was added. Let me search through the git history for relevant commits.\n\nLooking through the commits, I see:\n- `2025-09-06` dbd4c28: Changed the static annotated type of select_jinja_autoescape method in src/flask/san"
-    },
-    {
-      "baseline": "git_memory_real",
-      "query": "When was the type correction for Flask's jinja_loader property added?",
-      "score": 0.0,
-      "context_length": 334,
-      "latency_ms": 3625.9655952453613,
-      "response": "Based on the provided git history, I don't see a"
-    },
-    {
-      "baseline": "bm25_retrieval",
-      "query": "When was the type correction for Flask's jinja_loader property added?",
-      "score": 1.0,
-      "context_length": 464,
-      "latency_ms": 7351.170778274536,
-      "response": "The type correction for Flask's `jinja_loader` property was added on **January 23, 2024** (commit `ecc057d`), which fixed the jinja_loader annotation."
-    },
-    {
-      "baseline": "dense_embedding",
-      "query": "When was the type correction for Flask's jinja_loader property added?",
-      "score": 1.0,
-      "context_length": 515,
-      "latency_ms": 3268.7604427337646,
-      "response": "The type correction for Flask's `jinja_loader` property was added on **January 23, 2024**, in commit `ecc057d`. This commit fixed the jinja_loader annotation."
-    },
-    {
-      "baseline": "no_ctx",
-      "query": "Should ask about when the fix was added",
-      "score": 0.0,
-      "context_length": 0,
-      "latency_ms": 3889.4736766815186,
-      "response": "I'm not sure which fix you're referring to. Could you please clarify which specific Flask fix or feature you'd like to know the implementation date for? Once you provide more details, I can look up the relevant information from the git history."
-    },
-    {
-      "baseline": "full_dump",
-      "query": "Should ask about when the fix was added",
-      "score": 1.0,
-      "context_length": 5176,
-      "latency_ms": 3957.9548835754395,
-      "response": "The user is asking about when a fix was added, but they haven't specified which fix. Looking at the git history context provided, I can see various commits related to fixes. Let me scan through the commits to identify potential fixes:\n\nLooking at the commits:\n- \"fix typing\" (2026-02-19)\n- \"fix provi"
-    },
-    {
-      "baseline": "git_memory_real",
-      "query": "Should ask about when the fix was added",
-      "score": 0.0,
-      "context_length": 334,
-      "latency_ms": 8993.953466415405,
-      "response": "Could you clarify which fix you're asking about? Looking at the git history, I see a few potential \"fixes\":\n\n1. **\"fix typing\"** - commit `7b00886` on **2026-02-19**\n2. **\"add back opening session on context push\"** - commit `a411a24` on **2026-02-19**\n\nIf you're referring to one of these, please le"
-    },
-    {
-      "baseline": "bm25_retrieval",
-      "query": "Should ask about when the fix was added",
-      "score": 0.0,
-      "context_length": 558,
-      "latency_ms": 6825.393438339233,
-      "response": "The user is asking about when a fix was added, but they haven't specified which fix they're referring to. Looking at the git history context provided, there are several fixes and changes mentioned:\n\n1. SSLContext was added (2018-05-16)\n2. Added fix for issue 1529 (2015-07-12)\n3. Added short note abo"
-    },
-    {
-      "baseline": "dense_embedding",
-      "query": "Should ask about when the fix was added",
-      "score": 0.0,
-      "context_length": 306,
-      "latency_ms": 3540.5027866363525,
-      "response": "I don't have enough context to answer your question. The git history shows several commits related to fixes:\n\n- \"fix issue number\" - **August 8, 2022** (commit 6ab3cb8)\n- \"fix release date\" - **May 1, 2023** (commit 0afeb1d)\n- \"fix issue link\" - **July 13, 2022** (commit 4f01c68)\n- \"Added fix for is"
-    },
-    {
-      "baseline": "no_ctx",
-      "query": "question: When was the type hint for the path argument in Flask's send_file function corrected?",
-      "score": 0.0,
-      "context_length": 0,
-      "latency_ms": 13589.80107307434,
+      "latency_ms": 7387.335777282715,
       "response": "[EMPTY]"
     },
     {
       "baseline": "full_dump",
-      "query": "question: When was the type hint for the path argument in Flask's send_file function corrected?",
+      "query": "When was support for passing bytes IO to send_file added?",
       "score": 0.0,
       "context_length": 5176,
-      "latency_ms": 12480.401277542114,
-      "response": "I don't see a specific commit in the provided git history that addresses the type hint for the path argument in Flask's `send_file` function. The"
+      "latency_ms": 3037.6060009002686,
+      "response": "Support for passing bytes IO to `send_file` was added in commit `d44f1c6` on **2025-07-16**, with the commit message \"relax type hint for bytes io\"."
     },
     {
       "baseline": "git_memory_real",
-      "query": "question: When was the type hint for the path argument in Flask's send_file function corrected?",
+      "query": "When was support for passing bytes IO to send_file added?",
       "score": 0.0,
       "context_length": 334,
-      "latency_ms": 2184.7586631774902,
-      "response": "The type hint for the path argument in Flask's `send_file` function was corrected on **February 19, 2026**, in commit `7b00886` (\"fix typing\")."
+      "latency_ms": 5861.86146736145,
+      "response": "Based on the provided git history, I don't see any commits related to adding support for passing bytes IO to `send_file`. The commits shown focus on host tests, dev"
     },
     {
       "baseline": "bm25_retrieval",
-      "query": "question: When was the type hint for the path argument in Flask's send_file function corrected?",
+      "query": "When was support for passing bytes IO to send_file added?",
       "score": 0.0,
-      "context_length": 541,
-      "latency_ms": 1772.3395824432373,
-      "response": "The type hint for the path argument in Flask's `send_file` function was corrected in commit **4104f29** on **November 13, 2023**."
+      "context_length": 442,
+      "latency_ms": 3630.08451461792,
+      "response": "Support for passing bytes IO to send_file was added on **July 16, 2025** (commit d44f1c6: \"relax type hint for bytes io\")."
     },
     {
       "baseline": "dense_embedding",
-      "query": "question: When was the type hint for the path argument in Flask's send_file function corrected?",
+      "query": "When was support for passing bytes IO to send_file added?",
       "score": 0.0,
-      "context_length": 528,
-      "latency_ms": 11907.20796585083,
-      "response": "The type hint for the `path` argument in Flask's `send_file` function was corrected on **November 13, 2023** (commit 4104f29)."
+      "context_length": 499,
+      "latency_ms": 2398.9834785461426,
+      "response": "Support for passing bytes IO (like StringIO) to send_file was added on November 18, 2019 (commit 980168d)."
     },
     {
       "baseline": "no_ctx",
-      "query": "",
+      "query": "When was the signing key selection order",
       "score": 0.0,
       "context_length": 0,
-      "latency_ms": 2860.4538440704346,
-      "response": "I don't see a specific question here - you just wrote \"Question:\" without including what you'd like to know. Could you please share more details about which Flask feature you're asking about? If you have a specific feature or functionality in mind, I'd be happy to help."
+      "latency_ms": 5024.479866027832,
+      "response": "Looking at the git history, I don't see a specific commit or feature related to \"signing key selection order\" in Flask. This question seems to be about a JWT (JSON Web Token) extension for Flask, rather than Flask core itself.\n\nCould you provide more context about what feature or library you're refe"
     },
     {
       "baseline": "full_dump",
-      "query": "",
+      "query": "When was the signing key selection order",
+      "score": 1.0,
+      "context_length": 5176,
+      "latency_ms": 3026.7438888549805,
+      "response": "Based on the git history, the signing key selection order was addressed in **March 2025**. The commit \"secret key rotation: fix key list ordering\" (fb54159) on 2025-03-10 fixed the key list ordering for secret key rotation. The feature of enabling secret key rotation itself was added in commit e1337"
+    },
+    {
+      "baseline": "git_memory_real",
+      "query": "When was the signing key selection order",
+      "score": 0.0,
+      "context_length": 334,
+      "latency_ms": 2533.4880352020264,
+      "response": "I don't see any commits related to \"signing key selection order\" in the provided git history. The commits shown are focused on test removal, dependency updates, and typing fixes\u2014none appear to relate to signing key functionality.\n\nCould you clarify what feature or code change you're asking about? Wi"
+    },
+    {
+      "baseline": "bm25_retrieval",
+      "query": "When was the signing key selection order",
+      "score": 1.0,
+      "context_length": 380,
+      "latency_ms": 3446.979761123657,
+      "response": "The signing key selection order was implemented on **November 8, 2024** (commit `e13373f`), when the secret key rotation feature was enabled. The key list ordering was later fixed on March 10, 2025."
+    },
+    {
+      "baseline": "dense_embedding",
+      "query": "When was the signing key selection order",
+      "score": 1.0,
+      "context_length": 408,
+      "latency_ms": 3356.7492961883545,
+      "response": "The signing key selection order was implemented when secret key rotation was enabled, which occurred in commit **e13373f on 2024-11-08**. The ordering was later refined in March 2025 (fb54159 on 2025-03-10) and documented in cbb6c36 on 2025-03-29."
+    },
+    {
+      "baseline": "no_ctx",
+      "query": "When did Flask update the minimum dependency versions for Werkzeug, ItsDangerous, and Blinker?",
+      "score": 0.0,
+      "context_length": 0,
+      "latency_ms": 6305.169343948364,
+      "response": "[EMPTY]"
+    },
+    {
+      "baseline": "full_dump",
+      "query": "When did Flask update the minimum dependency versions for Werkzeug, ItsDangerous, and Blinker?",
+      "score": 1.0,
+      "context_length": 5176,
+      "latency_ms": 3124.1183280944824,
+      "response": "The user is asking about when Flask updated the minimum dependency versions for Werkzeug, ItsDangerous, and Blinker.\n\nLooking at the git history provided, I can see a few relevant entries:\n\n- [2024-11-08] 470e2b8: update min blinker version\n- [2024-11-08] e13373f: enable secret key rotation\n- [2024-"
+    },
+    {
+      "baseline": "git_memory_real",
+      "query": "When did Flask update the minimum dependency versions for Werkzeug, ItsDangerous, and Blinker?",
+      "score": 0.0,
+      "context_length": 334,
+      "latency_ms": 4518.467903137207,
+      "response": "[EMPTY]"
+    },
+    {
+      "baseline": "bm25_retrieval",
+      "query": "When did Flask update the minimum dependency versions for Werkzeug, ItsDangerous, and Blinker?",
+      "score": 0.0,
+      "context_length": 386,
+      "latency_ms": 2739.471912384033,
+      "response": "The user is asking about when Flask updated the minimum dependency versions for Werkzeug, ItsDangerous, and Blinker.\n\nLooking at the git history context provided:\n- [2018-02-06] af32ea0: bump dependency versions\n- [2021-05-11] 3a5532b: update pallets projects minimum versions\n- [2023-04-15] 7e6e68a:"
+    },
+    {
+      "baseline": "dense_embedding",
+      "query": "When did Flask update the minimum dependency versions for Werkzeug, ItsDangerous, and Blinker?",
+      "score": 0.0,
+      "context_length": 524,
+      "latency_ms": 3270.9579467773438,
+      "response": "The provided git history context does not include any commits specifically about updating minimum dependency versions for Werkzeug, ItsDangerous, and Blinker. The commits shown focus"
+    },
+    {
+      "baseline": "no_ctx",
+      "query": "When was mypy strict mode type checking added to Flask?",
+      "score": 0.0,
+      "context_length": 0,
+      "latency_ms": 1707.6387405395508,
+      "response": "[EMPTY]"
+    },
+    {
+      "baseline": "full_dump",
+      "query": "When was mypy strict mode type checking added to Flask?",
       "score": 0.0,
       "context_length": 5176,
-      "latency_ms": 5465.00301361084,
+      "latency_ms": 3969.1033363342285,
+      "response": "I don't see any commit in the provided git history mentioning the addition of mypy strict mode type checking to Flask. The commits shown focus on various other improvements, updates,"
+    },
+    {
+      "baseline": "git_memory_real",
+      "query": "When was mypy strict mode type checking added to Flask?",
+      "score": 0.0,
+      "context_length": 334,
+      "latency_ms": 6482.306718826294,
+      "response": "Based on the provided git history context, I don't see a specific commit that adds mypy"
+    },
+    {
+      "baseline": "bm25_retrieval",
+      "query": "When was mypy strict mode type checking added to Flask?",
+      "score": 0.0,
+      "context_length": 453,
+      "latency_ms": 2331.0258388519287,
+      "response": "Mypy strict mode type checking was added to Flask on **December 14, 2023** (commit 6000e80), which addressed mypy strict findings in the codebase."
+    },
+    {
+      "baseline": "dense_embedding",
+      "query": "When was mypy strict mode type checking added to Flask?",
+      "score": 0.0,
+      "context_length": 536,
+      "latency_ms": 2892.8823471069336,
+      "response": "The user is asking about when mypy strict mode type checking was added to Flask. Let me look at the provided git history context to see if there's any mention of mypy or type checking.\n\nLooking at the provided commits:\n- [2015-12-20] 7368a16: Clarify the python versions that flask supports\n- [2018-0"
+    },
+    {
+      "baseline": "no_ctx",
+      "query": "When was the __version__ attribute",
+      "score": 0.0,
+      "context_length": 0,
+      "latency_ms": 6748.826026916504,
+      "response": "The `__version__` attribute was made easily accessible via `flask.__version__` in commit `e493abaec`. This commit added the ability to access Flask's version directly"
+    },
+    {
+      "baseline": "full_dump",
+      "query": "When was the __version__ attribute",
+      "score": 0.0,
+      "context_length": 5176,
+      "latency_ms": 2341.078996658325,
       "response": "[EMPTY]"
     },
     {
       "baseline": "git_memory_real",
-      "query": "",
+      "query": "When was the __version__ attribute",
       "score": 0.0,
       "context_length": 334,
-      "latency_ms": 5062.038898468018,
-      "response": "I don't see a specific question about when a feature was implemented. Your message appears to be incomplete\u2014there's no feature or implementation detail mentioned after \"Question:\". Could you please clarify what you'd like to know about?"
+      "latency_ms": 2428.549289703369,
+      "response": "[EMPTY]"
     },
     {
       "baseline": "bm25_retrieval",
-      "query": "",
-      "score": 0.0,
-      "context_length": 350,
-      "latency_ms": 6209.326982498169,
-      "response": "No question was provided. Please let me know what you'd like to know about Flask."
+      "query": "When was the __version__ attribute",
+      "score": 1.0,
+      "context_length": 486,
+      "latency_ms": 2032.923936843872,
+      "response": "The `__version__` attribute was deprecated on **August 29, 2023** (commit 293041a)."
     },
     {
       "baseline": "dense_embedding",
-      "query": "",
-      "score": 0.0,
-      "context_length": 267,
-      "latency_ms": 2835.1027965545654,
-      "response": "I don't see a question included in your message. Could you please provide the specific question about when a Flask feature was implemented? Once you share the question, I'll be happy to help find the answer using the git history context provided."
+      "query": "When was the __version__ attribute",
+      "score": 1.0,
+      "context_length": 414,
+      "latency_ms": 5805.203676223755,
+      "response": "The `__version__` attribute was deprecated on **August 29, 2023** (commit 293041a), with a follow-up update on November 23, 2024 (commit b394a99)."
     }
   ],
   "Requests": [
     {
       "baseline": "no_ctx",
-      "query": "When was the CVE-2026-25645 test cleanup fix added to Requests?",
+      "query": "When was support for pypy 3.9 dropped in Requests?",
       "score": 0.0,
       "context_length": 0,
-      "latency_ms": 15684.29183959961,
-      "response": "The CVE-2026-25645 test cleanup fix was added in commit **4f8a5c7"
+      "latency_ms": 3817.4281120300293,
+      "response": "Support for PyPy 3.9 was dropped in Requests in commit `0dc4c76` on **April 25, 2022**, which added PyPy 3.10 support while removing PyPy 3.9"
     },
     {
       "baseline": "full_dump",
-      "query": "When was the CVE-2026-25645 test cleanup fix added to Requests?",
+      "query": "When was support for pypy 3.9 dropped in Requests?",
       "score": 0.0,
       "context_length": 6458,
-      "latency_ms": 5521.263599395752,
-      "response": "[EMPTY]"
+      "latency_ms": 1942.286729812622,
+      "response": "Support for PyPy 3.9 was dropped in Requests on **March 31, 2025**, as indicated by commit `579cd9f` which states \"Drop pypy 3.9 and add pypy 3.11 support\". This change was part of the version 2.33.0 release."
     },
     {
       "baseline": "git_memory_real",
-      "query": "When was the CVE-2026-25645 test cleanup fix added to Requests?",
+      "query": "When was support for pypy 3.9 dropped in Requests?",
       "score": 0.0,
       "context_length": 400,
-      "latency_ms": 14366.8851852417,
-      "response": "[EMPTY]"
+      "latency_ms": 3012.996196746826,
+      "response": "Based on the provided git history context, I cannot determine when support for pypy 3.9 was dropped in Requests. The commits shown don't include any reference to pypy 3.9 or changes to Python version support. The git history would need to show a commit that removes or updates pypy 3.9 support for me"
     },
     {
       "baseline": "bm25_retrieval",
-      "query": "When was the CVE-2026-25645 test cleanup fix added to Requests?",
+      "query": "When was support for pypy 3.9 dropped in Requests?",
       "score": 0.0,
-      "context_length": 350,
-      "latency_ms": 3390.4805183410645,
-      "response": "[EMPTY]"
+      "context_length": 412,
+      "latency_ms": 2080.5811882019043,
+      "response": "Support for pypy 3.9 was dropped on **March 31, 2025** (commit 579cd9f), when pypy 3.11 support was added."
     },
     {
       "baseline": "dense_embedding",
-      "query": "When was the CVE-2026-25645 test cleanup fix added to Requests?",
+      "query": "When was support for pypy 3.9 dropped in Requests?",
       "score": 0.0,
-      "context_length": 421,
-      "latency_ms": 5784.86442565918,
-      "response": "The user is asking about when the CVE-2026-25645 test cleanup fix was added to Requests. Let me look through the git history provided:\n\n- 2016-02-03: 458cb64: cleanup tests from merge of #2991\n- 2025-06-05: 5b4b64c: Add more tests to prevent regression of CVE 2024 47081\n- 2016-02-03: 1c5c6ee: Fixed "
+      "context_length": 437,
+      "latency_ms": 2792.5543785095215,
+      "response": "Support for PyPy 3.9 was dropped on **March 31, 2025**, in commit `579cd9f`, which also added PyPy 3.11 support."
     },
     {
       "baseline": "no_ctx",
-      "query": "When was the fix for verify=False not working on the first request added to Requests?",
+      "query": "When was the deferral of chunked requests to urllib3 implementation added to Requests?",
       "score": 0.0,
       "context_length": 0,
-      "latency_ms": 3714.0655517578125,
-      "response": "The fix for `verify=False` not working on the first request was added on **May 21, 2012**. The commit titled \"Make verify=False work on first request\" states: \"This will fix a long-standing issue where verify=False doesn't work on the first request.\""
+      "latency_ms": 5739.85481262207,
+      "response": "The user is asking about when the deferral of chunked requests to urllib3 implementation was added to Requests. Looking at the git history provided, I need to find information about when chunked requests were deferred to urllib3.\n\nLet me search through the commit messages for relevant information.\n\n"
     },
     {
       "baseline": "full_dump",
-      "query": "When was the fix for verify=False not working on the first request added to Requests?",
-      "score": 1.0,
+      "query": "When was the deferral of chunked requests to urllib3 implementation added to Requests?",
+      "score": 0.0,
       "context_length": 6458,
-      "latency_ms": 4065.7260417938232,
-      "response": "The fix for `verify=False` not working on the first request was added in commit **e188799** on **2024-05-29** (\"Don't create default SSLContext if ssl module"
+      "latency_ms": 2467.7884578704834,
+      "response": "The user is asking about when the deferral of chunked requests to urllib3 was added to Requests. Looking at the git history context provided, I need to find a relevant commit that mentions this feature.\n\nLet me scan through the commits for something related to chunked requests or deferral to urllib3"
     },
     {
       "baseline": "git_memory_real",
-      "query": "When was the fix for verify=False not working on the first request added to Requests?",
+      "query": "When was the deferral of chunked requests to urllib3 implementation added to Requests?",
       "score": 0.0,
       "context_length": 400,
-      "latency_ms": 3274.0724086761475,
-      "response": "The provided git history context does not contain information about a fix for `verify=False` not working on the first request. None of the listed commits mention this specific issue."
+      "latency_ms": 3847.0675945281982,
+      "response": "[EMPTY]"
     },
     {
       "baseline": "bm25_retrieval",
-      "query": "When was the fix for verify=False not working on the first request added to Requests?",
+      "query": "When was the deferral of chunked requests to urllib3 implementation added to Requests?",
       "score": 0.0,
-      "context_length": 412,
-      "latency_ms": 3515.97261428833,
-      "response": "The user is asking about when a fix for verify=False not working on the first request was added to Requests.\n\nLooking at the git history context provided:\n- [2020-08-16] 02eb5a2: Document the dangers of using verify=False\n- [2015-10-16] b675377: added fix for #2826\n- [2015-08-31] 7c958ee: Document t"
+      "context_length": 399,
+      "latency_ms": 7105.928421020508,
+      "response": "The deferral of chunked requests to urllib3 was added on **July 2, 2019** (commit 2da7fe0: \"Use urllib for chunked requests\"). However, this was later reverted on February 18, 2020 (commit 24bcb9e)."
     },
     {
       "baseline": "dense_embedding",
-      "query": "When was the fix for verify=False not working on the first request added to Requests?",
+      "query": "When was the deferral of chunked requests to urllib3 implementation added to Requests?",
       "score": 0.0,
-      "context_length": 610,
-      "latency_ms": 5172.860860824585,
-      "response": "Based on the provided git history, I don't see a specific commit that addresses \"verify=False not working on the first request.\" The commits related to `verify` in the history are:\n\n- **2016-03-17** (e94c812): Clarified that SSL verification is on by"
+      "context_length": 445,
+      "latency_ms": 3632.0695877075195,
+      "response": "[EMPTY]"
+    },
+    {
+      "baseline": "no_ctx",
+      "query": "When did Requests add support for bytes/str subclasses in header components?",
+      "score": 0.0,
+      "context_length": 0,
+      "latency_ms": 4990.260124206543,
+      "response": "Requests added support for bytes/str subclasses in header components in commit `8bf78ea` on **October 17, 2023** (part of version 2.31.0). The change modified the `NativeString` class to coerce input to the correct type in order to support subclasses of `str` and `bytes`."
+    },
+    {
+      "baseline": "full_dump",
+      "query": "When did Requests add support for bytes/str subclasses in header components?",
+      "score": 0.0,
+      "context_length": 6458,
+      "latency_ms": 6317.814826965332,
+      "response": "The user is asking about when Requests added support for bytes/str subclasses in header components. Let me search through the git history provided to find relevant information.\n\nLooking through the commits, I don't see any explicit mention of \"bytes/str subclasses in header components\" in the commit"
+    },
+    {
+      "baseline": "git_memory_real",
+      "query": "When did Requests add support for bytes/str subclasses in header components?",
+      "score": 0.0,
+      "context_length": 400,
+      "latency_ms": 13068.745613098145,
+      "response": "[EMPTY]"
+    },
+    {
+      "baseline": "bm25_retrieval",
+      "query": "When did Requests add support for bytes/str subclasses in header components?",
+      "score": 0.0,
+      "context_length": 409,
+      "latency_ms": 1762.2838020324707,
+      "response": "Requests added support for str/bytes subclasses in header components in commit **7f694b7 on February 17, 2023**."
+    },
+    {
+      "baseline": "dense_embedding",
+      "query": "When did Requests add support for bytes/str subclasses in header components?",
+      "score": 0.0,
+      "context_length": 639,
+      "latency_ms": 2220.3385829925537,
+      "response": "According to the git history, support for str/bytes subclasses in header components was added in commit **7f694b7** on **February 17, 2023**."
+    },
+    {
+      "baseline": "no_ctx",
+      "query": "When was the MissingSchema exception updated to suggest https instead of http?",
+      "score": 0.0,
+      "context_length": 0,
+      "latency_ms": 5669.179201126099,
+      "response": "The user is asking about when the MissingSchema exception was updated to suggest https instead of http. Let me look at the git history provided to find when this change was made.\n\nLooking through the commit messages:\n- \"Deprecate binary responses by moving them to a _body argument in the Response ob"
+    },
+    {
+      "baseline": "full_dump",
+      "query": "When was the MissingSchema exception updated to suggest https instead of http?",
+      "score": 0.0,
+      "context_length": 6458,
+      "latency_ms": 4665.7140254974365,
+      "response": "I don't see any commit related to updating the MissingSchema exception to suggest https instead of http in the provided git history context. The commits shown focus mainly on version releases, CI/CD updates, bug fixes, and documentation changes, but none specifically address the MissingSchema except"
+    },
+    {
+      "baseline": "git_memory_real",
+      "query": "When was the MissingSchema exception updated to suggest https instead of http?",
+      "score": 0.0,
+      "context_length": 400,
+      "latency_ms": 2672.9414463043213,
+      "response": "The provided git history does not contain information about when the MissingSchema exception was updated to suggest https instead of http. The commits shown are from March 2026 and relate to other changes (workflow updates, version bumps, and various bug fixes), none of which mention MissingSchema o"
+    },
+    {
+      "baseline": "bm25_retrieval",
+      "query": "When was the MissingSchema exception updated to suggest https instead of http?",
+      "score": 0.0,
+      "context_length": 520,
+      "latency_ms": 4069.8492527008057,
+      "response": "The MissingSchema exception was updated to suggest https instead of http on **June 29, 2022** (commit bda7f01), which \"Fixed warnings message to suggest using secure protocol.\""
+    },
+    {
+      "baseline": "dense_embedding",
+      "query": "When was the MissingSchema exception updated to suggest https instead of http?",
+      "score": 0.0,
+      "context_length": 553,
+      "latency_ms": 7267.975807189941,
+      "response": "The MissingSchema exception was updated to suggest https instead of http in commit **bda7f01** on **June 29, 2022**, with the commit message \"Fixed warnings message to suggest using secure protocol. (#6188)\"."
+    },
+    {
+      "baseline": "no_ctx",
+      "query": "When was the `yield from` optimization added to `iter_content` in Requests?",
+      "score": 0.0,
+      "context_length": 0,
+      "latency_ms": 1745.6293106079102,
+      "response": "Based on the git history, the `yield from` optimization was added to `iter_content` in version **2.13.0**. This optimization was introduced to improve performance by using generator delegation."
+    },
+    {
+      "baseline": "full_dump",
+      "query": "When was the `yield from` optimization added to `iter_content` in Requests?",
+      "score": 0.0,
+      "context_length": 6458,
+      "latency_ms": 4278.491020202637,
+      "response": "Based on the provided git history, I don't see any commits specifically mentioning a `yield from` optimization for `iter_content`. The commits shown cover various updates"
+    },
+    {
+      "baseline": "git_memory_real",
+      "query": "When was the `yield from` optimization added to `iter_content` in Requests?",
+      "score": 0.0,
+      "context_length": 400,
+      "latency_ms": 2823.357343673706,
+      "response": "I don't see any commits related to a `yield from` optimization for `iter_content` in the provided git history context. The available commits are from March 2026 and cover different topics (Zizmor workflow, codeql-action bump, version v2.33.1, Content-Type parsing fix, header validity parsing fix, an"
+    },
+    {
+      "baseline": "bm25_retrieval",
+      "query": "When was the `yield from` optimization added to `iter_content` in Requests?",
+      "score": 1.0,
+      "context_length": 426,
+      "latency_ms": 3475.0473499298096,
+      "response": "The `yield from` optimization was added on **June 28, 2022** in commit `16b418b`. The commit message \"Use yield from instead of looping yield (#6170)\" indicates this was applied to `iter_content`."
+    },
+    {
+      "baseline": "dense_embedding",
+      "query": "When was the `yield from` optimization added to `iter_content` in Requests?",
+      "score": 1.0,
+      "context_length": 673,
+      "latency_ms": 2198.8730430603027,
+      "response": "The `yield from` optimization was added on **June 28, 2022** (commit `16b418b`), which replaced the looping `yield` pattern in `iter_content` with `yield from` to improve performance."
     }
   ],
   "Django": [
     {
       "baseline": "no_ctx",
-      "query": "When was the modern Python email API adopted in Django?",
+      "query": "When did Django add support for Python's modern email API?",
       "score": 0.0,
       "context_length": 0,
-      "latency_ms": 4513.304710388184,
-      "response": "The modern Python email API was adopted in Django 5.0, released on April 3, 2024, when the deprecated legacy Python email API was removed. The migration began earlier with the deprecation in December 2022 (Django 4.2"
+      "latency_ms": 2541.9154167175293,
+      "response": "<minimax:tool_call>\n<invoke name=\"git_log_search\">\n<parameter name=\"query\">email API python</parameter>\n</invoke>\n</minimax:tool_call>"
     },
     {
       "baseline": "full_dump",
-      "query": "When was the modern Python email API adopted in Django?",
-      "score": 1.0,
+      "query": "When did Django add support for Python's modern email API?",
+      "score": 0.0,
       "context_length": 9389,
-      "latency_ms": 6563.456058502197,
-      "response": "The user is asking about when the modern Python email API was adopted in Django. Looking at the git history context provided, I don't see any specific commits or mentions about the modern Python email API being adopted.\n\nThe git history shows various fixes and changes from 2025-2026, but nothing dir"
+      "latency_ms": 3324.4667053222656,
+      "response": "The user is asking about when Django added support for Python's modern email API. Let me search through the git history for any relevant commits.\n\nLooking through the commits, I see:\n- \"Fixed #36894 -- Added TypeError for conflicting arguments in mail APIs.\" (2026-02-12)\n\nThis seems to be related to"
     },
     {
       "baseline": "git_memory_real",
-      "query": "When was the modern Python email API adopted in Django?",
+      "query": "When did Django add support for Python's modern email API?",
       "score": 0.0,
       "context_length": 564,
-      "latency_ms": 6771.484613418579,
+      "latency_ms": 3179.8338890075684,
       "response": "[EMPTY]"
     },
     {
       "baseline": "bm25_retrieval",
-      "query": "When was the modern Python email API adopted in Django?",
+      "query": "When did Django add support for Python's modern email API?",
       "score": 0.0,
-      "context_length": 646,
-      "latency_ms": 3450.3018856048584,
-      "response": "The modern Python email API was adopted in Django on **December 23, 2024**, with commit `9ab1991` which fixed ticket #35581 by updating `django.core.mail` to Python's modern email API."
+      "context_length": 637,
+      "latency_ms": 2366.130590438843,
+      "response": "Django added support for Python's modern email API on **December 23, 2024** (commit 9ab1991), as part of fixing issue #35581."
     },
     {
       "baseline": "dense_embedding",
-      "query": "When was the modern Python email API adopted in Django?",
+      "query": "When did Django add support for Python's modern email API?",
       "score": 0.0,
       "context_length": 571,
-      "latency_ms": 2234.870195388794,
-      "response": "The modern Python email API was adopted in Django on **December 23, 2024** (commit 9ab1991), which fixed issue #35581 by updating `django.core.mail` to use Python's modern email API."
+      "latency_ms": 2769.65594291687,
+      "response": "Django added support for Python's modern email API on December 23, 2024, when commit 9ab1991 fixed #35581 by updating `django.core.mail` to use Python's modern email API."
+    },
+    {
+      "baseline": "no_ctx",
+      "query": "When was composite primary key support added to Django?",
+      "score": 0.0,
+      "context_length": 0,
+      "latency_ms": 4556.496620178223,
+      "response": "The user is asking about when composite primary key support was added to Django. Let me look at the git history provided in the context to find when this feature was implemented.\n\nLooking through the commit messages:\n- There's a commit mentioning \"Composite primary key model fields\"\n- The commit mes"
+    },
+    {
+      "baseline": "full_dump",
+      "query": "When was composite primary key support added to Django?",
+      "score": 1.0,
+      "context_length": 9389,
+      "latency_ms": 4106.406450271606,
+      "response": "The user is asking about when composite primary key support was added to Django. Let me look through the git history provided to find any relevant commits about composite primary keys.\n\nLooking through the git history, I don't see any commits specifically mentioning \"composite primary key\" or \"compo"
+    },
+    {
+      "baseline": "git_memory_real",
+      "query": "When was composite primary key support added to Django?",
+      "score": 0.0,
+      "context_length": 564,
+      "latency_ms": 3079.326629638672,
+      "response": "The provided git history context does not include information about when composite primary key support was added to Django. The commits shown are from April 2026 and cover various other changes like bug fixes, CVE updates, and documentation updates, but no composite primary key feature is mentioned "
+    },
+    {
+      "baseline": "bm25_retrieval",
+      "query": "When was composite primary key support added to Django?",
+      "score": 0.0,
+      "context_length": 709,
+      "latency_ms": 8390.15793800354,
+      "response": "Composite primary key support was added to Django in version 3.2, which was released"
+    },
+    {
+      "baseline": "dense_embedding",
+      "query": "When was composite primary key support added to Django?",
+      "score": 1.0,
+      "context_length": 766,
+      "latency_ms": 4132.529973983765,
+      "response": "Based on the provided git history, composite primary key support was being actively developed and refined in early 2025, with commits related to #36070, #36075, #36120, and #373. The earliest date in the context is December 1, 2024, with commits continuing through April 2025."
+    },
+    {
+      "baseline": "no_ctx",
+      "query": "When was the simplified override of BoundField added in Django?",
+      "score": 0.0,
+      "context_length": 0,
+      "latency_ms": 2964.7514820098877,
+      "response": "[EMPTY]"
+    },
+    {
+      "baseline": "full_dump",
+      "query": "When was the simplified override of BoundField added in Django?",
+      "score": 0.0,
+      "context_length": 9389,
+      "latency_ms": 7765.475034713745,
+      "response": "I don't see any commits related to \"BoundField\" in the provided git history context. The commit messages don't mention a \"simplified override of BoundField\" or any BoundField-related changes.\n\nIf you have additional context about this feature (such as a ticket number or more details), I can try to h"
+    },
+    {
+      "baseline": "git_memory_real",
+      "query": "When was the simplified override of BoundField added in Django?",
+      "score": 0.0,
+      "context_length": 564,
+      "latency_ms": 12139.230251312256,
+      "response": "[EMPTY]"
+    },
+    {
+      "baseline": "bm25_retrieval",
+      "query": "When was the simplified override of BoundField added in Django?",
+      "score": 0.0,
+      "context_length": 614,
+      "latency_ms": 4834.944725036621,
+      "response": "The user is asking about when the \"simplified override of BoundField\" was added in Django. Looking at the git history provided:\n\n- [2026-01-07] fd5def6: Dropped unnecessary usage of \"seealso\" in BoundField docs.\n\nThis seems to be related to BoundField, but it's about documentation changes, not addin"
+    },
+    {
+      "baseline": "dense_embedding",
+      "query": "When was the simplified override of BoundField added in Django?",
+      "score": 1.0,
+      "context_length": 641,
+      "latency_ms": 3289.9367809295654,
+      "response": "The simplified override of BoundField was added on **January 15, 2025** (commit 6a7ee02), which fixed issue #35521 by allowing overriding BoundField class on fields, forms, and renderers."
+    },
+    {
+      "baseline": "no_ctx",
+      "query": "When did Django add middleware to require authentication by default?",
+      "score": 0.0,
+      "context_length": 0,
+      "latency_ms": 4098.243951797485,
+      "response": "According to the git history provided, Django added middleware to require authentication by default on **May 4, 2011**. The commit was made by \"jbronn\" with the message \"Added middleware to require authentication by default. Thanks"
+    },
+    {
+      "baseline": "full_dump",
+      "query": "When did Django add middleware to require authentication by default?",
+      "score": 0.0,
+      "context_length": 9389,
+      "latency_ms": 3374.877452850342,
+      "response": "[EMPTY]"
+    },
+    {
+      "baseline": "git_memory_real",
+      "query": "When did Django add middleware to require authentication by default?",
+      "score": 0.0,
+      "context_length": 564,
+      "latency_ms": 5285.417795181274,
+      "response": "The provided git history doesn't include a commit for adding middleware to require authentication by default. Django doesn't"
+    },
+    {
+      "baseline": "bm25_retrieval",
+      "query": "When did Django add middleware to require authentication by default?",
+      "score": 0.0,
+      "context_length": 565,
+      "latency_ms": 34712.84556388855,
+      "response": "[EMPTY]"
+    },
+    {
+      "baseline": "dense_embedding",
+      "query": "When did Django add middleware to require authentication by default?",
+      "score": 0.0,
+      "context_length": 593,
+      "latency_ms": 4595.772266387939,
+      "response": "Based on the provided git history context, I don't see a specific commit that documents when Django added middleware to require authentication by default. The commits shown include authentication-related work (decorators working with async, admin access with custom auth backend), but none that speci"
     }
   ]
 }
