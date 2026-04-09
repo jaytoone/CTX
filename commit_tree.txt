@@ -1,7 +1,8 @@
 20260409 1751 bm25-memory: G2-DOCS threshold fix + G1 recall 검증 완료
     - BM25 threshold 0→3.0: 한국어 토큰 거짓양성 제거 + G2-DOCS 10/10 (100%) 확인
     - G1 structural recall@7=1.000 (59/59 QA pairs): corpus 커버리지 100%, 구조적 검증 완료
-20260409 1830 G1/G2 재평론: 공정성 분석 + docstring 수정
+20260409 2050 G1/G2 잔여 과제 완료: paraphrase eval 33쌍 + G2b-hooks BM25 추가
     - G2-DOCS fairness: 1.000(keyword-identical)→0.700(paraphrase), G2b 외부파일 한계 명시
     - G1 Type2/3/4 실측: strict recall@7=0.750 (type1=1.000 대비 -0.250 갭 확인)
     - tokenizer v2: Korean 조사 분리 (BM25와→bm25, embedding의→embedding) — 한국어 쿼리 매칭 개선
+    - G2-DOCS 33쌍 paraphrase eval: 0.667 (통계적 신뢰도 향상) | G2b-hooks: ~/.claude/hooks/*.py BM25 검색 추가

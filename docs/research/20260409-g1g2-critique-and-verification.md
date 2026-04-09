@@ -85,7 +85,7 @@ Gap = 0.119  →  LLM 추출 실패율 (new hook에서 미측정)
 # 문제: 쿼리에 "BM25", "Recall" 포함 → 정답 doc도 동일 키워드 → BM25 trivially 성공
 ```
 
-### Paraphrase Eval 결과 (2026-04-09 신규 측정)
+### Paraphrase Eval 결과 1차 (2026-04-09 신규 측정, 10쌍)
 
 | 카테고리 | 난이도 | 결과 | 쿼리 예시 |
 |---------|-------|------|---------|
@@ -107,13 +107,44 @@ Gap = 0.119  →  LLM 추출 실패율 (new hook에서 미측정)
 - `numeric_indirect`: "204chars" 주입 → 쿼리에 해당 숫자 없음 → 관련 doc 미발견
 - `indirect`: corpus 크기 "163" → 쿼리가 "git-memory hook이 식별한 총수" → temporal doc 우선
 
+### Paraphrase Eval 결과 2차 (2026-04-09 확장, 33쌍)
+
+**스크립트**: `benchmarks/eval/g2_docs_paraphrase_eval.py`
+
+**전체 결과: 22/33 = 0.667** (통계적 신뢰도 향상)
+
+| 카테고리 | 정확/전체 | Recall |
+|---------|---------|-------|
+| ctx_internal | 4/4 | 1.000 |
+| g1_diversity | 4/4 | 1.000 |
+| g2_docs | 4/4 | 1.000 |
+| decision | 3/4 | 0.750 |
+| architecture | 3/4 | 0.750 |
+| open_set | 2/4 | 0.500 |
+| temporal | 1/4 | 0.250 |
+| retrieval_perf | 1/4 | 0.250 |
+| efficiency | 0/1 | 0.000 |
+
+**난이도별:**
+| 난이도 | Recall |
+|-------|-------|
+| easy | 3/4 = 0.750 |
+| medium | 10/15 = 0.667 |
+| hard | 9/14 = 0.643 |
+
+**실패 패턴 분석:**
+- `retrieval_perf` (0.250): "의사결정 회상 수치는?" → BM25가 숫자가 많은 비관련 doc 선택 (한국어 간접 어휘)
+- `temporal` (0.250): "오래된 의사결정 기억은?" → 쿼리 어휘가 영어 doc 핵심 토큰("7-30d", "n=100")과 미매칭
+- `open_set` (0.500): 외부 저장소 결과가 fulleval-sota-comparison 한 파일에 집중 → 다른 경로로 접근 실패
+
 ### 수정된 공정 수치
 
 | 평가 방식 | G2-DOCS Recall |
 |----------|---------------|
 | Keyword-identical (원래) | **1.000** (인플레이션) |
-| Paraphrase (fairness-adjusted) | **0.700** |
-| 권장 리포트 값 | **0.700** |
+| Paraphrase 10쌍 (1차) | **0.700** |
+| Paraphrase 33쌍 (2차, 확장) | **0.667** |
+| 권장 리포트 값 | **0.667~0.700** (33쌍이 더 신뢰성 높음) |
 
 ---
 
@@ -157,22 +188,31 @@ G2b scope: CLAUDE_PROJECT_DIR 내 파일만 검색 가능
 1. `bm25-memory.py` docstring: G2a 1.000→0.700 (paraphrase), G2b 외부 파일 한계 명시
 2. 이 연구 문서: 공정한 수치 기록
 
+## 완료된 개선 (2026-04-09 후속 세션)
+
+1. **G2-DOCS expand**: 33쌍 paraphrase eval 완료 → **0.667** (10쌍 0.700보다 신뢰도 높음)
+   - 스크립트: `benchmarks/eval/g2_docs_paraphrase_eval.py`
+   - 결과: `benchmarks/results/g2_docs_paraphrase_results.json`
+2. **G2b-hooks 범위 확장**: `bm25-memory.py`에 G2b-hooks BM25 검색 추가
+   - `~/.claude/hooks/*.py` 직접 BM25 인덱싱 (hook/훅 키워드 검지 시 자동 실행)
+   - 이전 실패 케이스 해결: `bm25_rank_decisions` 쿼리 → `bm25-memory.py` 정확 반환
+
 ## 미적용 개선 (향후 과제)
 
-1. **G1 쿼리 다양화**: type2 (why), type3 (what rationale) 추가 → 진짜 recall 측정
-2. **G2-DOCS expand**: 30+쌍 paraphrase eval로 통계적 신뢰성 향상
-3. **G2b 범위 확장**: `~/.claude/hooks/` 인덱싱 추가 (auto-index.py 범위 확장)
-4. **G1 LLM 재측정**: new hook으로 59 QA pairs 재실행 (413 LLM calls 필요)
+1. **G1 쿼리 다양화**: type2 (why), type3 (what rationale) QA 생성 및 eval → 진짜 recall 측정
+2. **G1 LLM 재측정**: new hook으로 59 QA pairs 재실행 (413 LLM calls 필요)
+3. **corpus body 인덱싱**: 커밋 subject만 아닌 body도 BM25 텍스트에 포함 → semantic 쿼리 개선
 
 ---
 
 ## 결론
 
-bm25-memory.py는 production에서 올바르게 작동하고 있으나, 성능 주장의 일부가 측정 방법론 편향으로 인해 과장되어 있다. 공정한 수치: **G1 ≈0.881** (end-to-end, LLM-evaluated), **G2-DOCS = 0.700** (paraphrase). G2b는 프로젝트 내부 파일에서만 유효.
+bm25-memory.py는 production에서 올바르게 작동하고 있으나, 성능 주장의 일부가 측정 방법론 편향으로 인해 과장되어 있다. 공정한 수치: **G1 ≈0.881** (end-to-end, LLM-evaluated), **G2-DOCS = 0.667~0.700** (paraphrase, 33쌍 기준 0.667이 더 신뢰성 높음). G2b는 프로젝트 내부 파일 정상 + 훅 파일은 G2b-hooks BM25(2026-04-09 추가)로 해결.
 
 ## Related
 - [[projects/CTX/research/20260402-production-context-retrieval-research|20260402-production-context-retrieval-research]]
 - [[projects/CTX/research/20260408-g1-temporal-retention-eval|20260408-g1-temporal-retention-eval]]
 - [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]
+- [[projects/CTX/research/20260408-g1-format-ablation-results|20260408-g1-format-ablation-results]]
 - [[projects/CTX/research/20260407-g1-temporal-eval-results|20260407-g1-temporal-eval-results]]
 - [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
