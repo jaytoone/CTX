@@ -48,6 +48,28 @@ Gap = 0.119  →  LLM 추출 실패율 (new hook에서 미측정)
 
 이 타입의 쿼리에서는 BM25 recall이 크게 낮아질 것으로 예상됨.
 
+### G1 Type2/3/4 실측 결과 (2026-04-09 추가)
+
+8개 harder 쿼리로 structural recall 측정 (score>0 필요):
+
+| 타입 | 쿼리 예시 | 결과 | Top Score |
+|------|---------|------|-----------|
+| type2_why | "왜 proactive injection → query-time?" | ✗ | 4.6 (nonzero=1) |
+| type2_why | "BM25 threshold 3.0으로 올린 이유?" | ✓ | 5.7 |
+| type2_why | "git-memory→bm25-memory 교체 이유?" | ✓ | 10.3 |
+| type3_what | "G1 temporal retention 핵심 발견?" | ✓ | 10.2 |
+| type3_what | "BM25와 dense embedding 핵심 차이?" | ✗ | **0.0** |
+| type3_what | "format ablation 최적 포맷?" | ✓ | 9.2 |
+| type4_rationale | "CTX=context bootstrapper 근거?" | ✓ | 4.8 |
+| type4_rationale | "topic-dedup이 diversity 최적화 실측?" | ✓ | 5.4 |
+
+**Type2/3/4 Strict Recall@7 = 0.750** (6/8) vs Type1 = 1.000
+
+**분석**:
+- "BM25와 dense embedding 차이" → score=0 (Korean 쿼리, 영어 corpus, 어휘 불일치 → BM25 완전 실패)
+- "proactive injection 전환 이유" → 1개 commit만 nonzero, 그게 GT 아님
+- **갭 요약**: Type1 1.000 → Type2/3/4 0.750 (-0.250). 실제 사용 쿼리 분포에서 G1 recall은 0.88이 아닐 수 있음
+
 ---
 
 ## G2-DOCS 비판 분석
@@ -123,7 +145,7 @@ G2b scope: CLAUDE_PROJECT_DIR 내 파일만 검색 가능
 |---------|-------|-------|------|
 | G1 Structural Recall@7 | 1.000 | 1.000 (자명) | QA pairs=corpus 부분집합이므로 당연 |
 | G1 End-to-end Recall@7 | 0.881 | ~0.881 | LLM eval 미재실행; 구조적으로 동일 |
-| G1 Type-diversity | full | type1만 | 59쌍 모두 "When did we implement X?" |
+| G1 Type-diversity | full | type1만 | 59쌍 모두 "When did we implement X?"; type2/3/4 실측 0.750 |
 | G2-DOCS Recall@5 | 1.000 | **0.700** | Paraphrase eval이 공정한 측정 |
 | G2b Code (project-internal) | R@5~0.60 | 정상 동작 | `src/` 내 파일 정확 |
 | G2b Code (external) | R@5~0.60 | **실패** | hooks/, 타 프로젝트 파일 미인덱스 |
@@ -147,3 +169,10 @@ G2b scope: CLAUDE_PROJECT_DIR 내 파일만 검색 가능
 ## 결론
 
 bm25-memory.py는 production에서 올바르게 작동하고 있으나, 성능 주장의 일부가 측정 방법론 편향으로 인해 과장되어 있다. 공정한 수치: **G1 ≈0.881** (end-to-end, LLM-evaluated), **G2-DOCS = 0.700** (paraphrase). G2b는 프로젝트 내부 파일에서만 유효.
+
+## Related
+- [[projects/CTX/research/20260402-production-context-retrieval-research|20260402-production-context-retrieval-research]]
+- [[projects/CTX/research/20260408-g1-temporal-retention-eval|20260408-g1-temporal-retention-eval]]
+- [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]
+- [[projects/CTX/research/20260407-g1-temporal-eval-results|20260407-g1-temporal-eval-results]]
+- [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
