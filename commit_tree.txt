@@ -4,3 +4,4 @@
 20260409 1830 G1/G2 재평론: 공정성 분석 + docstring 수정
     - G2-DOCS fairness: 1.000(keyword-identical)→0.700(paraphrase), G2b 외부파일 한계 명시
     - G1 Type2/3/4 실측: strict recall@7=0.750 (type1=1.000 대비 -0.250 갭 확인)
+    - tokenizer v2: Korean 조사 분리 (BM25와→bm25, embedding의→embedding) — 한국어 쿼리 매칭 개선
