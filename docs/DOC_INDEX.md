@@ -2,6 +2,7 @@
 
 | 파일 | 설명 |
 |------|------|
+| [research/20260409-g1g2-critique-and-verification.md](research/20260409-g1g2-critique-and-verification.md) | G1/G2 공정성 재평론 — G1 type1만(tautological), G2-DOCS 1.000→0.700(paraphrase fairness), G2b 외부파일 미인덱스 한계 명시 |
 | [research/20260409-g1-fulleval-sota-comparison.md](research/20260409-g1-fulleval-sota-comparison.md) | G1 장기 기억 전체 평가 + SOTA 비교 — 7 baselines(59 QA pairs, 413 LLM calls): BM25=0.881 > full_dump=0.712 > dense=0.644 > g1_raw=0.305 > git_memory_real=0.169 > no_ctx=0.000, BM25가 17.5x 작은 context로 oracle 초과, 7-30d 재현율 BM25=0.786 vs proactive=0.000 |
 | [research/20260408-g1-longterm-eval-initial-results.md](research/20260408-g1-longterm-eval-initial-results.md) | G1 장기 기억 평가 초기 실측 결과 — 59 commits, 117 QA pairs, 4 baselines(no_ctx/full_dump/g1_raw/g1_filtered), 10-sample eval: full_dump=1.000>g1_raw=0.800>g1_filtered=0.700>no_ctx=0.000, filtering paradox 분석, 전체 5-phase 프레임워크 완성 |
 | [research/20260408-g1-longterm-memory-evaluation-framework.md](research/20260408-g1-longterm-memory-evaluation-framework.md) | G1 장기 기억 평가 프레임워크 (expert-research-v2) — SOTA 방법론 조사(LongMemEval/LoCoMo/GitGoodBench), 4-tier query taxonomy, 5개 지표, hybrid scoring, git-native ground truth 설계 |
