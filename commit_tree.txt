@@ -1,0 +1,3 @@
+20260409 1751 bm25-memory: G2-DOCS threshold fix + G1 recall 검증 완료
+    - BM25 threshold 0→3.0: 한국어 토큰 거짓양성 제거 + G2-DOCS 10/10 (100%) 확인
+    - G1 structural recall@7=1.000 (59/59 QA pairs): corpus 커버리지 100%, 구조적 검증 완료
