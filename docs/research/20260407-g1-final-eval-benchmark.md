@@ -199,4 +199,4 @@ Results: `benchmarks/results/g1_final_eval.json`
 - [[projects/CTX/research/20260329-ctx-corrected-results-summary|20260329-ctx-corrected-results-summary]]
 - [[projects/CTX/research/20260327-ctx-downstream-eval|20260327-ctx-downstream-eval]]
 - [[projects/CTX/research/20260407-g1g2-established-benchmarks|20260407-g1g2-established-benchmarks]]
-- [[projects/CTX/research/20260402-project-understanding-evaluation-framework|20260402-project-understanding-evaluation-framework]]
+- [[projects/CTX/research/20260408-g1-longterm-eval-initial-results|20260408-g1-longterm-eval-initial-results]]

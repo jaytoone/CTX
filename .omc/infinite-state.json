@@ -1,16 +1,16 @@
 {
-  "status": "RUNNING",
-  "session_id": "inf-g1-longterm-eval-20260408",
-  "current_iteration": 2,
-  "root_goal": "Implement baseline evaluation (no_ctx, full_dump, g1_raw, g1_filtered) + 5 metrics (Recall@K, Rationale F1, Temporal Order, Conflict Resolution, Age-bucket)",
-  "original_goal": "Implement G1 long-term memory evaluation framework based on expert-research findings",
-  "evolution_count": 1,
-  "evolution_history": [
-    {"iter": 1, "goal": "QA pair generation", "score": 0.59}
-  ],
-  "best_score": 0.59,
-  "plateau_count": 0,
-  "score_history": [0.59],
-  "wave1_complete": false,
-  "started_at": "2026-04-08T17:20:00"
+  "status": "CONVERGED",
+  "session_id": "inf-bm25-memory-20260409",
+  "current_iteration": 1,
+  "root_goal": "bm25-memory.py G1+G2 \uc644\uc804 \uc791\ub3d9 \uac80\uc99d",
+  "best_score": 0.925,
+  "score_vector": {
+    "correctness": 0.95,
+    "coverage": 0.95,
+    "robustness": 0.9,
+    "performance": 0.9
+  },
+  "total_iterations": 1,
+  "total_sessions": 1,
+  "converged_at": "2026-04-09"
 }

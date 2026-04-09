@@ -285,6 +285,7 @@ The full evaluation (59 QA pairs, 7 baselines, 413 LLM calls) reveals:
 4. **0.000 recall for 7-30d commits in all proactive methods** — proactive injection is inherently limited to recent history
 5. **Recommended upgrade**: hybrid proactive (3 recency decisions) + BM25 reactive (4 query-relevant decisions)
 6. **[Open-Set Revision]** BM25 closed-set result (0.881) is optimistic — open-set eval (16 quality-filtered pairs, 3 repos) shows BM25=0.250 (−72%). Dense embedding is the most robust method in open-set (0.375), consistent with its age-robustness in closed-set evaluation. BM25 pre-filtered corpus is still the right choice for CTX's own repo context.
+7. **[2026-04-09 Hook Deployment]** bm25-memory.py deployed as production hook (replaces git-memory.py). G2-DOCS eval: 10/10 (100%) vs PageIndex 3/10 (30%). G1 git-decision corpus: 162 decisions indexed, multi-project verified (CTX/Entity/FromScratch). Bug fix: BM25 threshold >0→>3.0 eliminates false positives from incidental Korean token matches.
 
 ## Related
 - [[projects/CTX/research/20260408-g1-longterm-eval-initial-results|20260408-g1-longterm-eval-initial-results]]
