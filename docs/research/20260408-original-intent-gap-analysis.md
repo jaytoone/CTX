@@ -156,3 +156,13 @@ ByteRover(2604.01599)와 Meta-Harness(2603.28052)가 가장 근접하지만 form
 - `benchmarks/eval/real_codebase_downstream_eval.py` — real codebase G2 eval
 - `docs/research/20260407-g1-final-eval-benchmark.md` — G1 proxy metrics baseline
 - `docs/research/20260328-ctx-downstream-eval-complete.md` — 기존 downstream eval 결과
+
+## Related
+- [[projects/CTX/research/20260407-g1-final-eval-benchmark|20260407-g1-final-eval-benchmark]]
+- [[projects/CTX/research/20260327-ctx-downstream-eval|20260327-ctx-downstream-eval]]
+- [[projects/CTX/research/20260326-ctx-final-sota-comparison|20260326-ctx-final-sota-comparison]]
+- [[projects/CTX/research/20260328-ctx-real-codebase-g2-eval|20260328-ctx-real-codebase-g2-eval]]
+- [[projects/CTX/research/20260328-ctx-downstream-eval-complete|20260328-ctx-downstream-eval-complete]]
+- [[projects/CTX/research/20260326-ctx-methodology-comparison|20260326-ctx-methodology-comparison]]
+- [[projects/CTX/research/20260328-ctx-downstream-minimax-eval|20260328-ctx-downstream-minimax-eval]]
+- [[projects/CTX/research/20260326-ctx-vs-sota-comparison|20260326-ctx-vs-sota-comparison]]

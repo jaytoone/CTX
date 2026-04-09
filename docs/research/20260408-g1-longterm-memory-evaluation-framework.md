@@ -354,3 +354,13 @@ Framework design is well-grounded in FACT-1 through FACT-9. However, actual impl
 - [[20260408-g1-temporal-retention-eval]] — Age-based recall decay curve 구현
 - [[20260408-g1-format-ablation-results]] — Format ablation downstream δ 실험
 - [[20260328-ctx-downstream-eval-complete]] — G1+G2 synthetic eval (MiniMax M2.5)
+
+## Related
+- [[projects/CTX/research/20260407-g1-temporal-eval-results|20260407-g1-temporal-eval-results]]
+- [[projects/CTX/research/20260407-g1-temporal-evaluation-framework|20260407-g1-temporal-evaluation-framework]]
+- [[projects/CTX/research/20260327-ctx-downstream-eval|20260327-ctx-downstream-eval]]
+- [[projects/CTX/research/20260328-ctx-downstream-minimax-eval|20260328-ctx-downstream-minimax-eval]]
+- [[projects/CTX/research/20260326-ctx-benchmark-validation-roadmap|20260326-ctx-benchmark-validation-roadmap]]
+- [[projects/CTX/research/20260326-ctx-vs-sota-comparison|20260326-ctx-vs-sota-comparison]]
+- [[projects/CTX/research/20260326-ctx-methodology-comparison|20260326-ctx-methodology-comparison]]
+- [[projects/CTX/research/20260326-ctx-final-sota-comparison|20260326-ctx-final-sota-comparison]]

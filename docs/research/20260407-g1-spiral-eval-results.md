@@ -162,8 +162,16 @@ Options:
 4. **Deletion-class fix for DA@7**: Add "RETIRED_VALID" class for deletion decisions
 
 ---
-
-## Related
 - [G1 temporal evaluation framework](20260407-g1-temporal-evaluation-framework.md)
 - [G1 temporal eval results (staleness)](20260407-g1-temporal-eval-results.md)
 - [Established benchmarks (G1/G2)](20260407-g1g2-established-benchmarks.md)
+
+## Related
+- [[projects/CTX/research/20260402-project-understanding-evaluation-framework|20260402-project-understanding-evaluation-framework]]
+- [[projects/CTX/research/20260407-g1-temporal-eval-results|20260407-g1-temporal-eval-results]]
+- [[projects/CTX/research/20260407-g1-temporal-evaluation-framework|20260407-g1-temporal-evaluation-framework]]
+- [[projects/CTX/research/20260407-g1-final-eval-benchmark|20260407-g1-final-eval-benchmark]]
+- [[projects/CTX/research/20260407-g1g2-established-benchmarks|20260407-g1g2-established-benchmarks]]
+- [[projects/CTX/research/20260325-ctx-paper-tier-evaluation|20260325-ctx-paper-tier-evaluation]]
+- [[projects/CTX/research/20260326-ctx-benchmark-validation-roadmap|20260326-ctx-benchmark-validation-roadmap]]
+- [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]

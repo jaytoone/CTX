@@ -229,3 +229,13 @@ For production: git-memory at 0.800 recall with 6x efficiency is more practical 
 **Validation**: 10-sample test successful, ready for full 59-sample evaluation.
 
 **Next Priority**: Fix g1_filtered simulation, then run full evaluation + add git-memory-real baseline.
+
+## Related
+- [[projects/CTX/research/20260408-g1-longterm-memory-evaluation-framework|20260408-g1-longterm-memory-evaluation-framework]]
+- [[projects/CTX/research/20260407-g1-temporal-eval-results|20260407-g1-temporal-eval-results]]
+- [[projects/CTX/research/20260402-production-context-retrieval-research|20260402-production-context-retrieval-research]]
+- [[projects/CTX/research/20260407-g1-final-eval-benchmark|20260407-g1-final-eval-benchmark]]
+- [[projects/CTX/research/20260326-ctx-vs-sota-comparison|20260326-ctx-vs-sota-comparison]]
+- [[projects/CTX/research/20260402-g2-evaluation-methods-research-summary|20260402-g2-evaluation-methods-research-summary]]
+- [[projects/CTX/research/20260402-g2-evaluation-methods-research|20260402-g2-evaluation-methods-research]]
+- [[projects/CTX/benchmark/g1-longterm-eval-design|g1-longterm-eval-design]]

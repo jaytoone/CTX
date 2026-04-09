@@ -186,9 +186,17 @@ competing for 7 slots. Requires cap≥10 or n≥50 to fully close.
 Results: `benchmarks/results/g1_final_eval.json`
 
 ---
-
-## Related
 - [G1 spiral eval initial results](20260407-g1-spiral-eval-results.md)
 - [G1 temporal evaluation framework](20260407-g1-temporal-evaluation-framework.md)
 - [G1 temporal eval results (staleness)](20260407-g1-temporal-eval-results.md)
 - [Established benchmarks (G1/G2)](20260407-g1g2-established-benchmarks.md)
+
+## Related
+- [[projects/CTX/research/20260407-g1-temporal-eval-results|20260407-g1-temporal-eval-results]]
+- [[projects/CTX/research/20260407-g1-spiral-eval-results|20260407-g1-spiral-eval-results]]
+- [[projects/CTX/research/20260328-ctx-downstream-eval-complete|20260328-ctx-downstream-eval-complete]]
+- [[projects/CTX/research/20260407-g1-temporal-evaluation-framework|20260407-g1-temporal-evaluation-framework]]
+- [[projects/CTX/research/20260329-ctx-corrected-results-summary|20260329-ctx-corrected-results-summary]]
+- [[projects/CTX/research/20260327-ctx-downstream-eval|20260327-ctx-downstream-eval]]
+- [[projects/CTX/research/20260407-g1g2-established-benchmarks|20260407-g1g2-established-benchmarks]]
+- [[projects/CTX/research/20260402-project-understanding-evaluation-framework|20260402-project-understanding-evaluation-framework]]

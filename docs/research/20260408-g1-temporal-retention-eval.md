@@ -174,6 +174,9 @@ Age=30에서는 오히려 random_noise=1.000 > g1_filtered=0.000 — 다만 이�
 - `docs/research/20260408-g1-format-ablation-results.md` — 선행 실험
 
 ## Related
+- [[projects/CTX/research/20260407-g1-temporal-eval-results|20260407-g1-temporal-eval-results]]
 - [[projects/CTX/research/20260408-g1-format-ablation-results|20260408-g1-format-ablation-results]]
-- [[projects/CTX/research/20260408-original-intent-gap-analysis|20260408-original-intent-gap-analysis]]
 - [[projects/CTX/research/20260407-g1-final-eval-benchmark|20260407-g1-final-eval-benchmark]]
+- [[projects/CTX/research/20260407-g1-spiral-eval-results|20260407-g1-spiral-eval-results]]
+- [[projects/CTX/research/20260328-ctx-downstream-minimax-eval|20260328-ctx-downstream-minimax-eval]]
+- [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
