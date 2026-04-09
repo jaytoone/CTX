@@ -212,11 +212,39 @@ def parse_changelog_rst(text: str) -> List[ChangelogEntry]:
 
 
 def parse_changelog_md(text: str) -> List[ChangelogEntry]:
-    """Parse Markdown HISTORY (Requests HISTORY.md)."""
+    """Parse Markdown HISTORY (## X.Y.Z (YYYY-MM-DD) style)."""
     entries = []
     # Pattern: ## version (YYYY-MM-DD)
     version_pattern = re.compile(
         r'^##\s+(\d+\.\d+[\.\d]*)\s*\((\d{4}-\d{2}-\d{2}|[A-Za-z]+ \d+,? \d{4})\)',
+        re.MULTILINE
+    )
+    matches = list(version_pattern.finditer(text))
+
+    for idx, match in enumerate(matches):
+        version = match.group(1)
+        date_raw = match.group(2)
+        start = match.end()
+        end = matches[idx + 1].start() if idx + 1 < len(matches) else len(text)
+        body = text[start:end].strip()
+
+        bullets = re.findall(r'^[-*+]\s+(.+)$', body, re.MULTILINE)
+        for bullet in bullets[:5]:
+            entries.append(ChangelogEntry(
+                version=version,
+                date=normalize_date(date_raw),
+                feature=bullet.strip()[:200],
+                raw_text=f"{version} ({date_raw}): {bullet.strip()[:150]}"
+            ))
+    return entries
+
+
+def parse_changelog_requests(text: str) -> List[ChangelogEntry]:
+    """Parse Requests HISTORY.md — RST underline style: X.Y.Z (YYYY-MM-DD)\\n---"""
+    entries = []
+    # Match: "X.Y.Z (YYYY-MM-DD)\n-+"
+    version_pattern = re.compile(
+        r'^(\d+\.\d+[\.\d]*)\s+\((\d{4}-\d{2}-\d{2})\)\n[-]+',
         re.MULTILINE
     )
     matches = list(version_pattern.finditer(text))
@@ -274,7 +302,7 @@ def parse_changelog(repo_cfg: dict) -> List[ChangelogEntry]:
     if name == "Flask":
         entries = parse_changelog_rst(text)
     elif name == "Requests":
-        entries = parse_changelog_md(text)
+        entries = parse_changelog_requests(text)
     elif name == "Django":
         # Django: parse release notes index to find version dates
         entries = parse_django_releases(repo_cfg["clone_dir"])
@@ -292,21 +320,41 @@ def parse_django_releases(clone_dir: str) -> List[ChangelogEntry]:
     if not releases_dir.exists():
         return []
 
-    # Read individual release note files
-    release_files = sorted(releases_dir.glob("*.txt"), reverse=True)[:20]
+    # Only version files like "6.0.txt", "5.2.1.txt" — skip index.txt, security.txt
+    release_files = sorted(releases_dir.glob("*.txt"), reverse=True)
+    release_files = [f for f in release_files if re.match(r'^\d+\.\d+', f.stem)][:25]
+
     for rf in release_files:
         text = rf.read_text(encoding="utf-8", errors="replace")
-        version = rf.stem  # e.g., "4.2"
+        version = rf.stem  # e.g., "6.0", "5.2.1"
 
-        # Find release date
-        date_match = re.search(r'\*Django [\d\.]+ release notes.*?(\w+ \d+, \d{4})\*', text)
-        date_raw = date_match.group(1) if date_match else ""
+        # Skip dev/unreleased entries
+        if "UNDER DEVELOPMENT" in text[:300] or (
+            "Expected" in text[:200] and re.search(r'\*Expected', text[:200])
+        ):
+            continue
 
-        # Extract what's new bullets
-        bullets = re.findall(r'\* (.+?)(?=\n\*|\n\n|\Z)', text[:3000], re.DOTALL)
-        for bullet in bullets[:3]:
-            clean = bullet.strip().replace('\n', ' ')[:200]
-            if len(clean) > 20:
+        # Find release date: "*Month DD, YYYY*"
+        date_match = re.search(r'\*(\w+ \d+,?\s*\d{4})\*', text[:400])
+        if not date_match:
+            continue
+        date_raw = date_match.group(1)
+
+        # Extract feature names from "What's new" subsections (headers underlined with -)
+        whats_new_match = re.search(
+            r"What's new in Django.*?\n[=]+\n(.*?)(?:\n\w[^\n]+\n[=]+|\Z)",
+            text, re.DOTALL
+        )
+        if whats_new_match:
+            section = whats_new_match.group(1)
+        else:
+            bc_pos = text.find("Backwards incompatible")
+            section = text[:bc_pos] if bc_pos > 0 else text[:5000]
+
+        features = re.findall(r'^([A-Z][^\n]{10,80})\n[-~]+', section, re.MULTILINE)
+        for feature in features[:5]:
+            clean = feature.strip()
+            if len(clean) > 10 and not clean.lower().startswith("django"):
                 entries.append(ChangelogEntry(
                     version=version,
                     date=normalize_date(date_raw),
@@ -357,7 +405,7 @@ keywords: async, support, 2023"""
         k_match = re.search(r'keywords:\s*(.+)', response)
 
         if q_match and not "[LLM-ERROR" in response and not "[NO-CLIENT" in response:
-            question = q_match.group(1).strip()
+            question = re.sub(r'^[-*"\'`\s]+', '', q_match.group(1).strip()).strip('"\'`')
             keywords = [k.strip() for k in (k_match.group(1) if k_match else "").split(",")]
 
             qa_pairs.append(QAPair(

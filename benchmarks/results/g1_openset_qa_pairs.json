@@ -1,0 +1,94 @@
+{
+  "Flask": [
+    {
+      "query": "When was the fix for stream_with_context in async views",
+      "ground_truth_version": "3.1.2",
+      "ground_truth_date": "2025-08-19",
+      "ground_truth_feature": "``stream_with_context`` does not fail inside async views.",
+      "answer_keywords": [
+        ""
+      ]
+    },
+    {
+      "query": "When was",
+      "ground_truth_version": "3.1.1",
+      "ground_truth_date": "2025-05-13",
+      "ground_truth_feature": "``flask --help`` loads the app and plugins first to make sure all commands     are shown.",
+      "answer_keywords": [
+        ""
+      ]
+    },
+    {
+      "query": "When was the type correction for Flask's jinja_loader property added?",
+      "ground_truth_version": "3.0.2",
+      "ground_truth_date": "2024-02-03",
+      "ground_truth_feature": "Correct type for ``jinja_loader`` property.",
+      "answer_keywords": [
+        ""
+      ]
+    },
+    {
+      "query": "Should ask about when the fix was added",
+      "ground_truth_version": "3.0.2",
+      "ground_truth_date": "2024-02-03",
+      "ground_truth_feature": "Fix error with ``--extra-files`` and ``--exclude-patterns`` CLI options.",
+      "answer_keywords": [
+        ""
+      ]
+    },
+    {
+      "query": "question: When was the type hint for the path argument in Flask's send_file function corrected?",
+      "ground_truth_version": "3.0.1",
+      "ground_truth_date": "2024-01-18",
+      "ground_truth_feature": "Correct type for ``path`` argument to ``send_file``.",
+      "answer_keywords": [
+        "send_file",
+        ""
+      ]
+    },
+    {
+      "query": "",
+      "ground_truth_version": "3.0.1",
+      "ground_truth_date": "2024-01-18",
+      "ground_truth_feature": "Fix a typo in an error message for the ``flask run --key`` option.",
+      "answer_keywords": [
+        ""
+      ]
+    }
+  ],
+  "Requests": [
+    {
+      "query": "When was the CVE-2026-25645 test cleanup fix added to Requests?",
+      "ground_truth_version": "2.33.1",
+      "ground_truth_date": "2026-03-30",
+      "ground_truth_feature": "Fixed test cleanup for CVE-2026-25645 to avoid leaving unnecessary",
+      "answer_keywords": [
+        ""
+      ]
+    },
+    {
+      "query": "When was the fix for verify=False not working on the first request added to Requests?",
+      "ground_truth_version": "2.32.0",
+      "ground_truth_date": "2024-05-20",
+      "ground_truth_feature": "Fixed an issue where setting `verify=False` on the first request from a",
+      "answer_keywords": [
+        "verify=False",
+        "first request",
+        "SSL",
+        "2.32.0",
+        "2024"
+      ]
+    }
+  ],
+  "Django": [
+    {
+      "query": "When was the modern Python email API adopted in Django?",
+      "ground_truth_version": "6.0",
+      "ground_truth_date": "2025-12-03",
+      "ground_truth_feature": "Adoption of Python's modern email API",
+      "answer_keywords": [
+        ""
+      ]
+    }
+  ]
+}

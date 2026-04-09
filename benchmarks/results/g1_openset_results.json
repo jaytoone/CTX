@@ -1,0 +1,368 @@
+{
+  "Flask": [
+    {
+      "baseline": "no_ctx",
+      "query": "When was the fix for stream_with_context in async views",
+      "score": 0.0,
+      "context_length": 0,
+      "latency_ms": 18459.654331207275,
+      "response": "<minimax:tool_call>\n<invoke name=\"github_search_repositories\">\n<parameter name=\"query\">repo:pallets/flask stream_with_context async</parameter>\n</invoke>\n<invoke name=\"github_search_code\">\n<parameter name=\"q\">repo:pallets/flask stream_with_context async context</parameter>\n</invoke>\n</minimax:tool_c"
+    },
+    {
+      "baseline": "full_dump",
+      "query": "When was the fix for stream_with_context in async views",
+      "score": 1.0,
+      "context_length": 5176,
+      "latency_ms": 4557.724952697754,
+      "response": "The fix for `stream_with_context` in async views was implemented in commit `9822a03` on **August 19, 2025** (part of the 3.1.2 release)."
+    },
+    {
+      "baseline": "git_memory_real",
+      "query": "When was the fix for stream_with_context in async views",
+      "score": 0.0,
+      "context_length": 334,
+      "latency_ms": 3909.451961517334,
+      "response": "The user is asking about when a fix for `stream_with_context` in async views was implemented. Let me look at the git history context provided:\n\n- [2026-04-05] a31e6b7: remove werkzeug host tests\n- [2026-04-03] 83dbcb2: update dev dependencies\n- [2026-03-24] 91c6b3f: remove unicode host test\n- [2026-"
+    },
+    {
+      "baseline": "bm25_retrieval",
+      "query": "When was the fix for stream_with_context in async views",
+      "score": 0.0,
+      "context_length": 399,
+      "latency_ms": 10129.88543510437,
+      "response": "[EMPTY]"
+    },
+    {
+      "baseline": "dense_embedding",
+      "query": "When was the fix for stream_with_context in async views",
+      "score": 1.0,
+      "context_length": 527,
+      "latency_ms": 2068.0291652679443,
+      "response": "The fix for `stream_with_context` in async views was implemented in commit **9822a03** on **August 19, 2025**, which refactored the function specifically for async views."
+    },
+    {
+      "baseline": "no_ctx",
+      "query": "When was",
+      "score": 0.0,
+      "context_length": 0,
+      "latency_ms": 2654.6339988708496,
+      "response": "Your question appears to be incomplete. Could you please specify which Flask feature or functionality you're asking about? That way I can look up when it was implemented and provide you with the specific date or version information."
+    },
+    {
+      "baseline": "full_dump",
+      "query": "When was",
+      "score": 0.0,
+      "context_length": 5176,
+      "latency_ms": 4772.896766662598,
+      "response": "The user is asking about when a feature was implemented, but they haven't provided the actual question about what feature they're asking for. They've only provided the git history context.\n\nWait, I see - the question appears to be cut off: \"When was\"\n\nThe user likely meant to ask about a specific fe"
+    },
+    {
+      "baseline": "git_memory_real",
+      "query": "When was",
+      "score": 0.0,
+      "context_length": 334,
+      "latency_ms": 2970.5162048339844,
+      "response": "Your question appears to be cut off. Could you please clarify what feature or change you're asking about? The git history shows various commits, but I need to know which specific feature you'd like me to look up."
+    },
+    {
+      "baseline": "bm25_retrieval",
+      "query": "When was",
+      "score": 0.0,
+      "context_length": 569,
+      "latency_ms": 1912.2109413146973,
+      "response": "Could you please clarify which feature or change you're asking about? Your question appears to be incomplete."
+    },
+    {
+      "baseline": "dense_embedding",
+      "query": "When was",
+      "score": 0.0,
+      "context_length": 273,
+      "latency_ms": 3001.9359588623047,
+      "response": "Your question appears to be incomplete. Could you please clarify what feature or change you'd like to know the implementation date for? The git history shows commits from 2016-2020 covering various changes like spelling fixes, bug fixes, and version releases, but I need more context about what speci"
+    },
+    {
+      "baseline": "no_ctx",
+      "query": "When was the type correction for Flask's jinja_loader property added?",
+      "score": 0.0,
+      "context_length": 0,
+      "latency_ms": 2722.856044769287,
+      "response": "The type annotation for Flask's `jinja_loader` property was added in commit **498195e**. This commit specifically added the type annotation for `Flask.jinja_loader`."
+    },
+    {
+      "baseline": "full_dump",
+      "query": "When was the type correction for Flask's jinja_loader property added?",
+      "score": 0.0,
+      "context_length": 5176,
+      "latency_ms": 5106.907844543457,
+      "response": "The user is asking about when a type correction for Flask's `jinja_loader` property was added. Let me search through the git history for relevant commits.\n\nLooking through the commits, I see:\n- `2025-09-06` dbd4c28: Changed the static annotated type of select_jinja_autoescape method in src/flask/san"
+    },
+    {
+      "baseline": "git_memory_real",
+      "query": "When was the type correction for Flask's jinja_loader property added?",
+      "score": 0.0,
+      "context_length": 334,
+      "latency_ms": 3625.9655952453613,
+      "response": "Based on the provided git history, I don't see a"
+    },
+    {
+      "baseline": "bm25_retrieval",
+      "query": "When was the type correction for Flask's jinja_loader property added?",
+      "score": 1.0,
+      "context_length": 464,
+      "latency_ms": 7351.170778274536,
+      "response": "The type correction for Flask's `jinja_loader` property was added on **January 23, 2024** (commit `ecc057d`), which fixed the jinja_loader annotation."
+    },
+    {
+      "baseline": "dense_embedding",
+      "query": "When was the type correction for Flask's jinja_loader property added?",
+      "score": 1.0,
+      "context_length": 515,
+      "latency_ms": 3268.7604427337646,
+      "response": "The type correction for Flask's `jinja_loader` property was added on **January 23, 2024**, in commit `ecc057d`. This commit fixed the jinja_loader annotation."
+    },
+    {
+      "baseline": "no_ctx",
+      "query": "Should ask about when the fix was added",
+      "score": 0.0,
+      "context_length": 0,
+      "latency_ms": 3889.4736766815186,
+      "response": "I'm not sure which fix you're referring to. Could you please clarify which specific Flask fix or feature you'd like to know the implementation date for? Once you provide more details, I can look up the relevant information from the git history."
+    },
+    {
+      "baseline": "full_dump",
+      "query": "Should ask about when the fix was added",
+      "score": 1.0,
+      "context_length": 5176,
+      "latency_ms": 3957.9548835754395,
+      "response": "The user is asking about when a fix was added, but they haven't specified which fix. Looking at the git history context provided, I can see various commits related to fixes. Let me scan through the commits to identify potential fixes:\n\nLooking at the commits:\n- \"fix typing\" (2026-02-19)\n- \"fix provi"
+    },
+    {
+      "baseline": "git_memory_real",
+      "query": "Should ask about when the fix was added",
+      "score": 0.0,
+      "context_length": 334,
+      "latency_ms": 8993.953466415405,
+      "response": "Could you clarify which fix you're asking about? Looking at the git history, I see a few potential \"fixes\":\n\n1. **\"fix typing\"** - commit `7b00886` on **2026-02-19**\n2. **\"add back opening session on context push\"** - commit `a411a24` on **2026-02-19**\n\nIf you're referring to one of these, please le"
+    },
+    {
+      "baseline": "bm25_retrieval",
+      "query": "Should ask about when the fix was added",
+      "score": 0.0,
+      "context_length": 558,
+      "latency_ms": 6825.393438339233,
+      "response": "The user is asking about when a fix was added, but they haven't specified which fix they're referring to. Looking at the git history context provided, there are several fixes and changes mentioned:\n\n1. SSLContext was added (2018-05-16)\n2. Added fix for issue 1529 (2015-07-12)\n3. Added short note abo"
+    },
+    {
+      "baseline": "dense_embedding",
+      "query": "Should ask about when the fix was added",
+      "score": 0.0,
+      "context_length": 306,
+      "latency_ms": 3540.5027866363525,
+      "response": "I don't have enough context to answer your question. The git history shows several commits related to fixes:\n\n- \"fix issue number\" - **August 8, 2022** (commit 6ab3cb8)\n- \"fix release date\" - **May 1, 2023** (commit 0afeb1d)\n- \"fix issue link\" - **July 13, 2022** (commit 4f01c68)\n- \"Added fix for is"
+    },
+    {
+      "baseline": "no_ctx",
+      "query": "question: When was the type hint for the path argument in Flask's send_file function corrected?",
+      "score": 0.0,
+      "context_length": 0,
+      "latency_ms": 13589.80107307434,
+      "response": "[EMPTY]"
+    },
+    {
+      "baseline": "full_dump",
+      "query": "question: When was the type hint for the path argument in Flask's send_file function corrected?",
+      "score": 0.0,
+      "context_length": 5176,
+      "latency_ms": 12480.401277542114,
+      "response": "I don't see a specific commit in the provided git history that addresses the type hint for the path argument in Flask's `send_file` function. The"
+    },
+    {
+      "baseline": "git_memory_real",
+      "query": "question: When was the type hint for the path argument in Flask's send_file function corrected?",
+      "score": 0.0,
+      "context_length": 334,
+      "latency_ms": 2184.7586631774902,
+      "response": "The type hint for the path argument in Flask's `send_file` function was corrected on **February 19, 2026**, in commit `7b00886` (\"fix typing\")."
+    },
+    {
+      "baseline": "bm25_retrieval",
+      "query": "question: When was the type hint for the path argument in Flask's send_file function corrected?",
+      "score": 0.0,
+      "context_length": 541,
+      "latency_ms": 1772.3395824432373,
+      "response": "The type hint for the path argument in Flask's `send_file` function was corrected in commit **4104f29** on **November 13, 2023**."
+    },
+    {
+      "baseline": "dense_embedding",
+      "query": "question: When was the type hint for the path argument in Flask's send_file function corrected?",
+      "score": 0.0,
+      "context_length": 528,
+      "latency_ms": 11907.20796585083,
+      "response": "The type hint for the `path` argument in Flask's `send_file` function was corrected on **November 13, 2023** (commit 4104f29)."
+    },
+    {
+      "baseline": "no_ctx",
+      "query": "",
+      "score": 0.0,
+      "context_length": 0,
+      "latency_ms": 2860.4538440704346,
+      "response": "I don't see a specific question here - you just wrote \"Question:\" without including what you'd like to know. Could you please share more details about which Flask feature you're asking about? If you have a specific feature or functionality in mind, I'd be happy to help."
+    },
+    {
+      "baseline": "full_dump",
+      "query": "",
+      "score": 0.0,
+      "context_length": 5176,
+      "latency_ms": 5465.00301361084,
+      "response": "[EMPTY]"
+    },
+    {
+      "baseline": "git_memory_real",
+      "query": "",
+      "score": 0.0,
+      "context_length": 334,
+      "latency_ms": 5062.038898468018,
+      "response": "I don't see a specific question about when a feature was implemented. Your message appears to be incomplete\u2014there's no feature or implementation detail mentioned after \"Question:\". Could you please clarify what you'd like to know about?"
+    },
+    {
+      "baseline": "bm25_retrieval",
+      "query": "",
+      "score": 0.0,
+      "context_length": 350,
+      "latency_ms": 6209.326982498169,
+      "response": "No question was provided. Please let me know what you'd like to know about Flask."
+    },
+    {
+      "baseline": "dense_embedding",
+      "query": "",
+      "score": 0.0,
+      "context_length": 267,
+      "latency_ms": 2835.1027965545654,
+      "response": "I don't see a question included in your message. Could you please provide the specific question about when a Flask feature was implemented? Once you share the question, I'll be happy to help find the answer using the git history context provided."
+    }
+  ],
+  "Requests": [
+    {
+      "baseline": "no_ctx",
+      "query": "When was the CVE-2026-25645 test cleanup fix added to Requests?",
+      "score": 0.0,
+      "context_length": 0,
+      "latency_ms": 15684.29183959961,
+      "response": "The CVE-2026-25645 test cleanup fix was added in commit **4f8a5c7"
+    },
+    {
+      "baseline": "full_dump",
+      "query": "When was the CVE-2026-25645 test cleanup fix added to Requests?",
+      "score": 0.0,
+      "context_length": 6458,
+      "latency_ms": 5521.263599395752,
+      "response": "[EMPTY]"
+    },
+    {
+      "baseline": "git_memory_real",
+      "query": "When was the CVE-2026-25645 test cleanup fix added to Requests?",
+      "score": 0.0,
+      "context_length": 400,
+      "latency_ms": 14366.8851852417,
+      "response": "[EMPTY]"
+    },
+    {
+      "baseline": "bm25_retrieval",
+      "query": "When was the CVE-2026-25645 test cleanup fix added to Requests?",
+      "score": 0.0,
+      "context_length": 350,
+      "latency_ms": 3390.4805183410645,
+      "response": "[EMPTY]"
+    },
+    {
+      "baseline": "dense_embedding",
+      "query": "When was the CVE-2026-25645 test cleanup fix added to Requests?",
+      "score": 0.0,
+      "context_length": 421,
+      "latency_ms": 5784.86442565918,
+      "response": "The user is asking about when the CVE-2026-25645 test cleanup fix was added to Requests. Let me look through the git history provided:\n\n- 2016-02-03: 458cb64: cleanup tests from merge of #2991\n- 2025-06-05: 5b4b64c: Add more tests to prevent regression of CVE 2024 47081\n- 2016-02-03: 1c5c6ee: Fixed "
+    },
+    {
+      "baseline": "no_ctx",
+      "query": "When was the fix for verify=False not working on the first request added to Requests?",
+      "score": 0.0,
+      "context_length": 0,
+      "latency_ms": 3714.0655517578125,
+      "response": "The fix for `verify=False` not working on the first request was added on **May 21, 2012**. The commit titled \"Make verify=False work on first request\" states: \"This will fix a long-standing issue where verify=False doesn't work on the first request.\""
+    },
+    {
+      "baseline": "full_dump",
+      "query": "When was the fix for verify=False not working on the first request added to Requests?",
+      "score": 1.0,
+      "context_length": 6458,
+      "latency_ms": 4065.7260417938232,
+      "response": "The fix for `verify=False` not working on the first request was added in commit **e188799** on **2024-05-29** (\"Don't create default SSLContext if ssl module"
+    },
+    {
+      "baseline": "git_memory_real",
+      "query": "When was the fix for verify=False not working on the first request added to Requests?",
+      "score": 0.0,
+      "context_length": 400,
+      "latency_ms": 3274.0724086761475,
+      "response": "The provided git history context does not contain information about a fix for `verify=False` not working on the first request. None of the listed commits mention this specific issue."
+    },
+    {
+      "baseline": "bm25_retrieval",
+      "query": "When was the fix for verify=False not working on the first request added to Requests?",
+      "score": 0.0,
+      "context_length": 412,
+      "latency_ms": 3515.97261428833,
+      "response": "The user is asking about when a fix for verify=False not working on the first request was added to Requests.\n\nLooking at the git history context provided:\n- [2020-08-16] 02eb5a2: Document the dangers of using verify=False\n- [2015-10-16] b675377: added fix for #2826\n- [2015-08-31] 7c958ee: Document t"
+    },
+    {
+      "baseline": "dense_embedding",
+      "query": "When was the fix for verify=False not working on the first request added to Requests?",
+      "score": 0.0,
+      "context_length": 610,
+      "latency_ms": 5172.860860824585,
+      "response": "Based on the provided git history, I don't see a specific commit that addresses \"verify=False not working on the first request.\" The commits related to `verify` in the history are:\n\n- **2016-03-17** (e94c812): Clarified that SSL verification is on by"
+    }
+  ],
+  "Django": [
+    {
+      "baseline": "no_ctx",
+      "query": "When was the modern Python email API adopted in Django?",
+      "score": 0.0,
+      "context_length": 0,
+      "latency_ms": 4513.304710388184,
+      "response": "The modern Python email API was adopted in Django 5.0, released on April 3, 2024, when the deprecated legacy Python email API was removed. The migration began earlier with the deprecation in December 2022 (Django 4.2"
+    },
+    {
+      "baseline": "full_dump",
+      "query": "When was the modern Python email API adopted in Django?",
+      "score": 1.0,
+      "context_length": 9389,
+      "latency_ms": 6563.456058502197,
+      "response": "The user is asking about when the modern Python email API was adopted in Django. Looking at the git history context provided, I don't see any specific commits or mentions about the modern Python email API being adopted.\n\nThe git history shows various fixes and changes from 2025-2026, but nothing dir"
+    },
+    {
+      "baseline": "git_memory_real",
+      "query": "When was the modern Python email API adopted in Django?",
+      "score": 0.0,
+      "context_length": 564,
+      "latency_ms": 6771.484613418579,
+      "response": "[EMPTY]"
+    },
+    {
+      "baseline": "bm25_retrieval",
+      "query": "When was the modern Python email API adopted in Django?",
+      "score": 0.0,
+      "context_length": 646,
+      "latency_ms": 3450.3018856048584,
+      "response": "The modern Python email API was adopted in Django on **December 23, 2024**, with commit `9ab1991` which fixed ticket #35581 by updating `django.core.mail` to Python's modern email API."
+    },
+    {
+      "baseline": "dense_embedding",
+      "query": "When was the modern Python email API adopted in Django?",
+      "score": 0.0,
+      "context_length": 571,
+      "latency_ms": 2234.870195388794,
+      "response": "The modern Python email API was adopted in Django on **December 23, 2024** (commit 9ab1991), which fixed issue #35581 by updating `django.core.mail` to use Python's modern email API."
+    }
+  ]
+}

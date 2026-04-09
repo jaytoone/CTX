@@ -224,6 +224,41 @@ Expected: 0.881 recall (BM25) with recency signal preserved
 
 ---
 
+## Open-Set Generalization (External Repos)
+
+**Eval**: CHANGELOG-based ground truth on Flask/Requests/Django (2000 commits each, 9 QA pairs total).
+Script: `benchmarks/eval/g1_changelog_eval.py`
+
+### Closed-Set vs Open-Set Recall (per-pair mean)
+
+| Baseline | Closed-Set (59 CTX commits) | Open-Set (2000 external commits) | Drop |
+|----------|----------------------------|----------------------------------|------|
+| bm25_retrieval | 0.881 | **0.111** | −87% |
+| dense_embedding | 0.644 | **0.222** | −66% |
+| full_dump (n=100) | 0.712 | **0.444** | −38% |
+| git_memory_real | 0.169 | **0.000** | −100% |
+
+### Why BM25 Drops 87%
+
+In closed-set eval, the BM25 corpus = 59 pre-extracted decision commits (answer guaranteed in corpus). In open-set, the corpus = full git log (2000 commits, answer may not be in top-7).
+
+Key failure mode: **version-specific bug fix commits don't mention the feature by name**. E.g., "Bump to 3.1.2" doesn't contain "stream_with_context" or "jinja_loader". BM25 finds keyword-relevant commits but not necessarily the version commit that CHANGELOG references.
+
+### Why full_dump is Competitive in Open-Set
+
+`full_dump` (n=100 most recent commits) performs best in open-set because:
+1. For recently-released versions, the version bump commit IS in top-100
+2. LLM can extract version from release commit message and match to date
+3. Doesn't depend on keyword matching
+
+**Implication**: Open-set BM25 upgrade (`0.881 → 0.111`) must be re-evaluated for real repos. The closed-set result is optimistic due to corpus pre-filtering.
+
+### Note on Sample Size
+
+Only 9 valid QA pairs (6 Flask, 2 Requests, 1 Django) — 4 Flask pairs had LLM formatting failures. Results are directionally correct but not statistically robust. Needs larger sample for production benchmarking.
+
+---
+
 ## Conclusion
 
 The full evaluation (59 QA pairs, 7 baselines, 413 LLM calls) reveals:
@@ -233,3 +268,14 @@ The full evaluation (59 QA pairs, 7 baselines, 413 LLM calls) reveals:
 3. **Dense embedding (0.644) is a viable alternative** — more robust across age buckets than BM25 but lower peak accuracy
 4. **0.000 recall for 7-30d commits in all proactive methods** — proactive injection is inherently limited to recent history
 5. **Recommended upgrade**: hybrid proactive (3 recency decisions) + BM25 reactive (4 query-relevant decisions)
+6. **[Open-Set Caveat]** BM25 closed-set result (0.881) is optimistic — open-set eval on external repos shows 0.111 (−87%). Full_dump more competitive at 0.444 in real-world setting.
+
+## Related
+- [[projects/CTX/research/20260408-g1-longterm-eval-initial-results|20260408-g1-longterm-eval-initial-results]]
+- [[projects/CTX/research/20260408-g1-longterm-memory-evaluation-framework|20260408-g1-longterm-memory-evaluation-framework]]
+- [[projects/CTX/research/20260407-g1-temporal-eval-results|20260407-g1-temporal-eval-results]]
+- [[projects/CTX/research/20260408-g1-temporal-retention-eval|20260408-g1-temporal-retention-eval]]
+- [[projects/CTX/research/20260407-g1-final-eval-benchmark|20260407-g1-final-eval-benchmark]]
+- [[projects/CTX/research/20260326-ctx-vs-sota-comparison|20260326-ctx-vs-sota-comparison]]
+- [[projects/CTX/research/20260402-g2-evaluation-methods-research-summary|20260402-g2-evaluation-methods-research-summary]]
+- [[projects/CTX/research/20260402-g2-evaluation-methods-research|20260402-g2-evaluation-methods-research]]
