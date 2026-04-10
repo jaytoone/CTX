@@ -125,8 +125,16 @@ The 0.373 bias is the fraction of pairs where BM25 could only find the GT commit
 - `benchmarks/eval/g1_fair_eval.py` — evaluation script
 - `benchmarks/results/g1_fair_eval_results.json` — full results (59+12=71 pairs)
 
-## Related
-
 - `docs/research/20260409-g1-fulleval-sota-comparison.md` — original G1 eval (Structural Recall@7=1.000)
 - `docs/research/20260409-g1g2-critique-and-verification.md` — initial bias analysis
 - `docs/research/20260409-bm25-memory-generalization-research.md` — BM25 open-set research
+
+## Related
+- [[projects/CTX/research/20260407-g1-temporal-eval-results|20260407-g1-temporal-eval-results]]
+- [[projects/CTX/research/20260409-g1g2-critique-and-verification|20260409-g1g2-critique-and-verification]]
+- [[projects/CTX/research/20260409-bm25-memory-generalization-research|20260409-bm25-memory-generalization-research]]
+- [[projects/CTX/research/20260409-g1-fulleval-sota-comparison|20260409-g1-fulleval-sota-comparison]]
+- [[projects/CTX/research/20260402-production-context-retrieval-research|20260402-production-context-retrieval-research]]
+- [[projects/CTX/research/20260408-g1-temporal-retention-eval|20260408-g1-temporal-retention-eval]]
+- [[projects/CTX/research/20260329-ctx-corrected-results-summary|20260329-ctx-corrected-results-summary]]
+- [[projects/CTX/research/20260326-ctx-final-sota-comparison|20260326-ctx-final-sota-comparison]]
