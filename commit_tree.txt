@@ -1,3 +1,7 @@
+20260410 1026 G1 공정 평가: BM25 구조적 편향 정량화 (편향=0.373, 공정 Recall@7=0.634)
+    - g1_fair_eval.py: 59 Type1 paraphrase + 12 Type2/3/4 = 71 queries, BM25 Structural Recall@7 측정
+    - 원본 1.000 → 패러프레이즈 0.627 (-0.373): token overlap 0.476→0.085, 22/59 실패 확인
+    - Type2/3/4 Recall@7=0.667 (0.038 overlap), 통합 공정 Recall@7=0.634 (71 queries)
 20260409 1751 bm25-memory: G2-DOCS threshold fix + G1 recall 검증 완료
     - BM25 threshold 0→3.0: 한국어 토큰 거짓양성 제거 + G2-DOCS 10/10 (100%) 확인
     - G1 structural recall@7=1.000 (59/59 QA pairs): corpus 커버리지 100%, 구조적 검증 완료

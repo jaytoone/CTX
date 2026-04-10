@@ -2,6 +2,9 @@
 
 | 파일 | 설명 |
 |------|------|
+| [research/20260410-g1-fair-eval-bm25-bias.md](research/20260410-g1-fair-eval-bm25-bias.md) | G1 공정 평가 — BM25 구조적 편향 정량화: 원본 Recall@7=1.000 vs 패러프레이즈 0.627, 편향=0.373, Type2/3/4 Recall@7=0.667, 공정 통합 Recall@7=0.634 (71 queries) |
+| [research/20260410-claude-vault-research.md](research/20260410-claude-vault-research.md) | claude-vault 리서치 및 CTX 적용 방안 (expert-research-v2) — .jsonl 비동기 파이프라인으로 G1 보강, PII 리댁션 즉시 적용, Ollama hook 통합 금지 |
+| [research/20260409-bm25-memory-generalization-research.md](research/20260409-bm25-memory-generalization-research.md) | bm25-memory Hook 범용화 연구 (expert-research-v2) — 오픈셋 0.250 = BM25 천장(22.1%), hybrid BM25+Dense 필요, FACT-2 decision verb signals, CTX 고유 cross-session 포지셔닝 |
 | [research/20260409-g1g2-critique-and-verification.md](research/20260409-g1g2-critique-and-verification.md) | G1/G2 공정성 재평론 — G1 type1만(tautological), G2-DOCS 1.000→0.700(paraphrase fairness), G2b 외부파일 미인덱스 한계 명시 |
 | [research/20260409-g1-fulleval-sota-comparison.md](research/20260409-g1-fulleval-sota-comparison.md) | G1 장기 기억 전체 평가 + SOTA 비교 — 7 baselines(59 QA pairs, 413 LLM calls): BM25=0.881 > full_dump=0.712 > dense=0.644 > g1_raw=0.305 > git_memory_real=0.169 > no_ctx=0.000, BM25가 17.5x 작은 context로 oracle 초과, 7-30d 재현율 BM25=0.786 vs proactive=0.000 |
 | [research/20260408-g1-longterm-eval-initial-results.md](research/20260408-g1-longterm-eval-initial-results.md) | G1 장기 기억 평가 초기 실측 결과 — 59 commits, 117 QA pairs, 4 baselines(no_ctx/full_dump/g1_raw/g1_filtered), 10-sample eval: full_dump=1.000>g1_raw=0.800>g1_filtered=0.700>no_ctx=0.000, filtering paradox 분석, 전체 5-phase 프레임워크 완성 |
