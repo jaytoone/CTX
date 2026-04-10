@@ -174,9 +174,10 @@ G2b scope: CLAUDE_PROJECT_DIR 내 파일만 검색 가능
 
 | 컴포넌트 | 주장값 | 공정값 | 비고 |
 |---------|-------|-------|------|
-| G1 Structural Recall@7 | 1.000 | 1.000 (자명) | QA pairs=corpus 부분집합이므로 당연 |
-| G1 End-to-end Recall@7 | 0.881 | ~0.881 | LLM eval 미재실행; 구조적으로 동일 |
-| G1 Type-diversity | full | type1만 | 59쌍 모두 "When did we implement X?"; type2/3/4 실측 0.750 |
+| G1 Structural Recall@7 | 1.000 | **0.627** | 20260410 paraphrase fair eval (token overlap 0.476→0.085); 편향=0.373 |
+| G1 Structural Recall@7 (combined) | 1.000 | **0.634** | 71 queries (59 paraphrase + 12 Type2/3/4) |
+| G1 End-to-end Recall@7 | 0.881 | ~0.881 | Type1 keyword-identical 기준; fair end-to-end 미측정 |
+| G1 Type-diversity | full | type1만 | 59쌍 모두 "When did we implement X?"; Type2/3/4 Recall@7=0.667 (12쌍) |
 | G2-DOCS Recall@5 | 1.000 | **0.700** | Paraphrase eval이 공정한 측정 |
 | G2b Code (project-internal) | R@5~0.60 | 정상 동작 | `src/` 내 파일 정확 |
 | G2b Code (external) | R@5~0.60 | **실패** | hooks/, 타 프로젝트 파일 미인덱스 |
@@ -197,22 +198,38 @@ G2b scope: CLAUDE_PROJECT_DIR 내 파일만 검색 가능
    - `~/.claude/hooks/*.py` 직접 BM25 인덱싱 (hook/훅 키워드 검지 시 자동 실행)
    - 이전 실패 케이스 해결: `bm25_rank_decisions` 쿼리 → `bm25-memory.py` 정확 반환
 
+## 완료된 개선 (2026-04-10)
+
+3. **G1 Paraphrase Fair Eval 완료**: `benchmarks/eval/g1_fair_eval.py`
+   - 59 Type1 쿼리 → MiniMax M2.5로 패러프레이즈 생성 (token overlap 0.476→0.085)
+   - BM25 Structural Recall@7: 1.000→**0.627** (편향 0.373 확인)
+   - Type2/3/4 12쌍 생성 + Recall@7=0.667
+   - 통합 공정 Recall@7=**0.634** (71 queries)
+   - `bm25-memory.py` docstring 업데이트 완료
+
 ## 미적용 개선 (향후 과제)
 
-1. **G1 쿼리 다양화**: type2 (why), type3 (what rationale) QA 생성 및 eval → 진짜 recall 측정
-2. **G1 LLM 재측정**: new hook으로 59 QA pairs 재실행 (413 LLM calls 필요)
-3. **corpus body 인덱싱**: 커밋 subject만 아닌 body도 BM25 텍스트에 포함 → semantic 쿼리 개선
+1. **G1 LLM 재측정 (공정 버전)**: 71 paraphrase+type234 queries × 7 baselines (497 LLM calls)
+2. **corpus body 인덱싱**: 커밋 subject만 아닌 body도 BM25 텍스트에 포함 → 22개 paraphrase 실패 케이스 개선 가능
 
 ---
 
 ## 결론
 
-bm25-memory.py는 production에서 올바르게 작동하고 있으나, 성능 주장의 일부가 측정 방법론 편향으로 인해 과장되어 있다. 공정한 수치: **G1 ≈0.881** (end-to-end, LLM-evaluated), **G2-DOCS = 0.667~0.700** (paraphrase, 33쌍 기준 0.667이 더 신뢰성 높음). G2b는 프로젝트 내부 파일 정상 + 훅 파일은 G2b-hooks BM25(2026-04-09 추가)로 해결.
+bm25-memory.py는 production에서 올바르게 작동하고 있으나, 성능 주장의 일부가 측정 방법론 편향으로 인해 과장되어 있다.
+
+공정한 수치 (최종):
+- **G1 Structural Recall@7 = 0.627** (paraphrase, 59쌍) / **0.634** (combined 71쌍) — 편향 0.373 제거 후
+- **G1 End-to-end = ~0.881** (Type1 keyword-identical 기준, LLM-evaluated) / 공정 end-to-end 미측정
+- **G2-DOCS = 0.667** (paraphrase 33쌍) — 권장 리포트 수치
+- **G2b**: 프로젝트 내부 정상 + 훅 파일은 G2b-hooks BM25로 해결
 
 ## Related
+- [[projects/CTX/research/20260409-g1-fulleval-sota-comparison|20260409-g1-fulleval-sota-comparison]]
 - [[projects/CTX/research/20260402-production-context-retrieval-research|20260402-production-context-retrieval-research]]
 - [[projects/CTX/research/20260408-g1-temporal-retention-eval|20260408-g1-temporal-retention-eval]]
-- [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]
 - [[projects/CTX/research/20260408-g1-format-ablation-results|20260408-g1-format-ablation-results]]
+- [[projects/CTX/research/20260326-ctx-final-sota-comparison|20260326-ctx-final-sota-comparison]]
 - [[projects/CTX/research/20260407-g1-temporal-eval-results|20260407-g1-temporal-eval-results]]
-- [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
+- [[projects/CTX/research/20260326-ctx-vs-sota-comparison|20260326-ctx-vs-sota-comparison]]
+- [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]
