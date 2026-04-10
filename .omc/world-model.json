@@ -1,169 +1,36 @@
 {
   "tried_strategies": [
     {
-      "goal": "Dense embedding for external real codebase",
-      "score": 0.44,
-      "score_vector": {
-        "coir_r5": 1.0,
-        "repobench_r5": 0.975,
-        "external_r5": 0.441,
-        "impact": 0.8
-      },
-      "iteration": 2,
-      "outcome": "NEGATIVE — dense hurts external",
-      "weak_dim": "external_r5"
-    },
-    {
-      "goal": "reverse_import_graph + path_boost_concept_retrieve + BM25_blend_implicit",
-      "score": 0.854,
-      "score_vector": {
-        "coir_r5": 1.0,
-        "repobench_r5": 0.975,
-        "external_r5": 0.5406,
-        "impact": 0.9
-      },
-      "iteration": 3,
+      "goal": "Fix Korean 2-char extraction + alphanumeric tokens + FTS5 OR semantics",
+      "score": 0.92,
+      "iteration": 1,
       "outcome": "evolved",
-      "weak_dim": "external_r5",
-      "notes": "Flask IMPL +4.6%p, FastAPI SEMA +5.5%p, FastAPI overall +2.4%p. Large-repo IMPLICIT fallback tried and REVERTED (made things worse)."
-    },
-    {
-      "goal": "bigram_BM25_corpus + bigram_query_expansion_in_concept_tfidf_implicit",
-      "score": 0.864,
-      "score_vector": {
-        "coir_r5": 1.0,
-        "repobench_r5": 0.975,
-        "external_r5": 0.5623,
-        "impact": 0.9
-      },
-      "iteration": 4,
-      "outcome": "evolved",
-      "weak_dim": "external_r5",
-      "notes": "Flask EXPL +9.5%p, FastAPI EXPL +4.6%p, mean external +2.2%p. IMPL slightly degraded from IDF shifts."
-    },
-    {
-      "goal": "concept_weight(short)=0.75 + stem_boost_override + temporal_symbol_prefix",
-      "score": 0.896,
-      "score_vector": {
-        "coir_r5": 1.0,
-        "repobench_r5": 0.975,
-        "external_r5": 0.6033,
-        "impact": 0.9
-      },
-      "iteration": 5,
-      "outcome": "evolved",
-      "weak_dim": "external_r5",
-      "notes": "Flask SEMA +14.3%p, Requests SEMA +11.4%p, Flask TEMP +20%p, Requests TEMP +10%p. External mean 0.5649→0.6033 (+3.8%p). Crossed 0.600 target. FastAPI ceiling ~0.41 due to benchmark data quality issues (duplicate queries, 928-file corpus)."
-    },
-    {
-      "goal": "reverse_import_threshold_30 + 2hop_reverse + temporal_noise_reduction + bm25_large_repo_boost",
-      "score": 0.897,
-      "score_vector": {
-        "coir_r5": 1.0,
-        "repobench_r5": 0.767,
-        "external_r5": 0.6067,
-        "impact": 0.9
-      },
-      "iteration": 11,
-      "outcome": "marginal",
-      "weak_dim": "external_r5",
-      "notes": "Flask R@5 0.6003→0.6609 (+6.1%p), Requests 0.6928→0.7526 (+6.0%p), FastAPI unchanged (structural ceiling). Mean external 0.5661→0.6067. Temporal noise reduction and semantic improvements worked on medium repos (Flask 83, Requests 36 files) but not large (FastAPI 1120)."
+      "weak_dim": "efficiency"
     }
   ],
-  "dead_ends": [
-    {
-      "goal": "use_dense=True for external codebase retrieval",
-      "score": 0.441,
-      "reason": "Dense embedding degrades Code→Code retrieval (external R@5: 0.547→0.441). Structural signals (symbol/import graph) dominate for developer workflow queries."
-    },
-    {
-      "goal": "IMPLICIT_CONTEXT large-repo fallback to concept_retrieve (>200 files)",
-      "score": 0.0,
-      "reason": "FastAPI IMPL 0.051→0.025 (worse). concept_ref for IMPLICIT queries not compatible with concept_retrieve BM25 approach"
-    },
-    {
-      "goal": "FastAPI external R@5 improvement beyond 0.41",
-      "score": 0.407,
-      "reason": "Structural ceiling: (1) EXPLICIT 10/44 queries have identical text+different answers (impossible), (2) EXPLICIT 10/44 have highly ambiguous symbols (get_app, run, create_item), (3) IMPLICIT ground truth 41-55 files making R@5 max ~0.12. Combined: ~50% of FastAPI queries are structurally unsolvable by any retrieval system."
-    }
-  ],
+  "dead_ends": [],
   "known_facts": [
-    "trigger_classifier.py: snake_case SYMBOL_PATTERN, EXPLICIT F1=1.0, accuracy=100%",
-    "paper: section 4.8=External (Table 3), 4.9=COIR (Table 4) — correct sequential order",
-    "paper: Table 5 = Ablation Study (labeled)",
-    "paper: Reference [6] Memori = arXiv:2603.19935 (2026)",
-    "paper: Reference [12] jCodeMunch = GitHub software tool (jgravelle/jcodemunch-mcp)",
-    "paper: Contribution 1 = deterministic, zero-latency, model-agnostic (vs learned classifiers)",
-    "paper: Limitations includes ground-truth circularity for IMPLICIT_CONTEXT",
-    "paper: Conclusion includes deployment guidance (CTX/Hybrid/BM25 workload conditions)",
-    "paper: Future Work has quantitative targets (pytest, CCS 0.180→0.72, n≥500)",
-    "paper: COIR hybrid improvement = '2.5× over CTX alone' (NOT 150% — reserved for IMPLICIT_CONTEXT)",
-    "paper: All three '150%' uses are exclusively IMPLICIT_CONTEXT (lines 35, 447, 473)",
-    "paper: OneViral TES ratio = 3.6x over BM25 (0.232/0.065=3.57) — fixed from 2.5x",
-    "paper: Section 4.5 trigger table: GraphPrompt=73 files, AgentNode=596 files",
-    "paper: GraphRAG-lite = 'unclassified graph baseline' NOT 'text-based' in Section 5.1",
-    "paper: TEMPORAL_HISTORY GraphPrompt CTX=0.600, +20pp over BM25 0.400 (3-decimal in Sec 5.2)",
-    "paper: Section 3.5 COIR reference uses 0.380 (3-decimal, consistent with Table 4)",
-    "paper: Conclusion IMPLICIT_CONTEXT p-value = '(30 queries; p<0.001)' (NOT McNemar p=0.013 which was overall)",
-    "README: Quick Start uses ctx_retriever.retrieval.adaptive_trigger (pip namespace)",
-    "README: PostToolUse hook setup included (ctx_session_tracker.py)",
-    "README: HuggingFace URL = jaytoone/ctx-demo",
-    "README: When to Use CTX deltas = Flask +0.198, FastAPI +0.154, Requests +0.137",
-    "integration doc: TEMPORAL_HISTORY = session log from ctx_session_tracker",
-    "64 tests passing throughout all iterations",
-    "uncertain: Reference [4] CAR (Li et al. 2024a) lacks arXiv ID — pre-existing",
-    "uncertain: Reference [7] LongCodeBench lacks arXiv ID — pre-existing",
-    "uncertain: Reference [9] Santos et al. 2024 lacks arXiv ID — pre-existing",
-    {
-      "fact": "Dense embedding (MiniLM) helps NL→Code (COIR: +0.260) but hurts Code→Code (Flask: -0.106)",
-      "discovered_iter": 2
-    },
-    "BM25 blend in _implicit_retrieve (adaptive fallback when graph<k) helps Flask IMPL +4.6%p",
-    "Path boost in _concept_retrieve helps FastAPI SEMA +5.5%p",
-    "FastAPI IMPL near 0 regardless of approach — structural signal absent in 928-file corpus",
-    "Bigram BM25 corpus dramatically helps EXPL +9.5%p (Flask) by matching compound symbol patterns; minor IMPL regression from IDF shifts (~3/24 queries)",
-    {
-      "fact": "FastAPI IMPLICIT_CONTEXT: ground truth 41-55 files per query → R@5 ceiling ~0.12. Cannot improve with k=5",
-      "discovered_iter": 11
-    },
-    {
-      "fact": "Temporal noise reduction (downweight path matches when >5 files match per word) helps Flask TEMPORAL +20%p, Requests TEMPORAL +10%p",
-      "discovered_iter": 11
-    },
-    {
-      "fact": "Reverse import threshold 10→30 + 2-hop reverse had no effect on FastAPI (import graph too sparse for 1120-file repo)",
-      "discovered_iter": 11
-    },
-    "CTX repositioned as context bootstrapper for Claude Code (not search engine) — speeds up agentic grep first turn",
-    "G1 = decision memory (time axis: cross-session recall), G2 = file retrieval (space axis: current codebase)",
-    "IDF distortion: .md files in BM25 corpus caused FastAPI 1522 .md + 1120 .py → empty BM25 entries",
-    "keyword R@3 improved 0.379→0.724 via TF-only BM25 + query_type-aware routing",
-    "Claude Code spends 60%+ of first turn on agentic grep (20 serial calls) — CTX provides <1ms pre-filter"
+    "FTS5 with porter unicode61 tokenizer does not stem Korean (Hangul AC00-D7A3)",
+    "Korean syllables tokenized individually by unicode61, multi-syllable words not indexed as phrases",
+    "English keywords in Korean prompts work fine (BM25, threshold, recall etc)",
+    "chat-memory.py currently uses FTS5 MATCH with AND semantics for multi-token queries",
+    "vault.db has 143K messages across 545 sessions, CTX project has 14 sessions",
+    "extract_keywords() already strips Korean stopwords but regex [a-zA-Z가-힣]{3,} does match Korean syllable clusters"
   ],
-  "uncertain": [
-    {
-      "item": "Reference [4] CAR arXiv ID",
-      "risk": "incomplete citation without arXiv ID — pre-existing issue"
-    },
-    {
-      "item": "Reference [7] LongCodeBench arXiv ID",
-      "risk": "incomplete citation without arXiv ID — pre-existing issue"
-    },
-    {
-      "item": "Reference [9] Santos et al. 2024 arXiv ID",
-      "risk": "incomplete citation without arXiv ID — pre-existing issue"
-    }
-  ],
-  "dimensions_explored": {},
-  "best_score_vector": {
-    "coir_r5": 1.0,
-    "repobench_r5": 0.975,
-    "external_r5": 0.6067,
+  "uncertain": [],
+  "dimensions_explored": {
+    "quality": 0.9,
+    "completeness": 0.92,
+    "efficiency": 0.88,
     "impact": 0.9
   },
-  "plateau_count": 0,
-  "status": "RUNNING",
-  "her_hints": [],
   "skill_routing_history": [],
-  "current_goal": "공인 벤치마크 CTX SOTA화"
+  "her_hints": [],
+  "best_score_vector": {
+    "quality": 0.9,
+    "completeness": 0.92,
+    "efficiency": 0.88,
+    "impact": 0.9,
+    "goal_fidelity": 1.0
+  }
 }

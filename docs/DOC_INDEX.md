@@ -2,6 +2,8 @@
 
 | 파일 | 설명 |
 |------|------|
+| [research/20260410-vault-vector-migration-and-benchmark.md](research/20260410-vault-vector-migration-and-benchmark.md) | vault.db vector migration + 검색 벤치마크 — sqlite-vec + multilingual-e5-small, Hybrid P@5=0.88 vs BM25=0.76(+16%), KNN 확장성(200k까지 허용), 20260409 "hybrid 필요" 결론 구현 검증 |
+| [research/20260410-session-6c4f589e-chat-memory.md](research/20260410-session-6c4f589e-chat-memory.md) | 세션 6c4f589e 전체 대화 — claude-vault 설치 + chat-memory.py 구현: 프로젝트 스코프 격리, Korean 2-char FTS5 수정, OR 시맨틱스 적용, 89 메시지 |
 | [research/20260410-g1-fair-eval-bm25-bias.md](research/20260410-g1-fair-eval-bm25-bias.md) | G1 공정 평가 — BM25 구조적 편향 정량화: 원본 Recall@7=1.000 vs 패러프레이즈 0.627, 편향=0.373, Type2/3/4 Recall@7=0.667, 공정 통합 Recall@7=0.634 (71 queries) |
 | [research/20260410-claude-vault-research.md](research/20260410-claude-vault-research.md) | claude-vault 리서치 및 CTX 적용 방안 (expert-research-v2) — .jsonl 비동기 파이프라인으로 G1 보강, PII 리댁션 즉시 적용, Ollama hook 통합 금지 |
 | [research/20260409-bm25-memory-generalization-research.md](research/20260409-bm25-memory-generalization-research.md) | bm25-memory Hook 범용화 연구 (expert-research-v2) — 오픈셋 0.250 = BM25 천장(22.1%), hybrid BM25+Dense 필요, FACT-2 decision verb signals, CTX 고유 cross-session 포지셔닝 |
