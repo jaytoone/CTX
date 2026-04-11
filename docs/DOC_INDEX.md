@@ -2,6 +2,7 @@
 
 | 파일 | 설명 |
 |------|------|
+| [research/20260411-g1-g2-architecture-improvements.md](research/20260411-g1-g2-architecture-improvements.md) | G1/G2 hook 논문 급 개선 실증 — BM25+deep grep+semantic hybrid(git-memory), adaptive dual-threshold(chat-memory), G1 Recall@7 +47.6%(0.292→0.431), n=30 window 2× 확장, latency ~79ms |
 | [research/20260411-hook-memory-ceiling-experiment.md](research/20260411-hook-memory-ceiling-experiment.md) | 현재 hook 아키텍처 시간/공간 기억 상한선 실험 — G1: Recall@K plateau at 0.500(K≥7), 18일 시간 천장; G2: 시간창별 40-87% hit rate, 3-7일 sweet spot; g2-augment: 117h stale DB, 현재 무효 |
 | [research/20260411-chat-memory-threshold-principled.md](research/20260411-chat-memory-threshold-principled.md) | chat-memory.py FTS5 rank threshold 합리적 임계값 — 실제 vault.db 쿼리 기반(n=194), -17=Youden J 최적(0.496/과적합 아님), -24=자연갭(FP 14.6%→1%), context injection용 -24 권고 |
 | [research/20260411-hook-comparison-auto-index-vs-chat-memory.md](research/20260411-hook-comparison-auto-index-vs-chat-memory.md) | auto-index.py VS chat-memory.py 성능 비교 — 25쿼리 실증: auto-index 0.260 vs chat-memory 0.800(+0.540), FP=100%→10%(threshold -17), auto-index 제거 권고 |
@@ -126,7 +127,7 @@
 - [[projects/CTX/research/20260408-g1-longterm-eval-initial-results|20260408-g1-longterm-eval-initial-results]]
 - [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
 - [[projects/CTX/research/20260408-g1-longterm-memory-evaluation-framework|20260408-g1-longterm-memory-evaluation-framework]]
-- [[projects/CTX/research/20260410-g1-fair-eval-bm25-bias|20260410-g1-fair-eval-bm25-bias]]
 - [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]
 - [[projects/CTX/research/20260410-session-6c4f589e-chat-memory|20260410-session-6c4f589e-chat-memory]]
 - [[projects/CTX/research/20260325-ctx-paper-tier-evaluation|20260325-ctx-paper-tier-evaluation]]
+- [[projects/CTX/research/20260330-ctx-academic-critique-web-grounded|20260330-ctx-academic-critique-web-grounded]]
