@@ -1,13 +1,20 @@
 {
-  "root_goal": "현재 hook 아키텍처(git-memory G1 + chat-memory G2 + g2-augment)의 시간/공간 기억 recall 상한선 실증 측정",
-  "original_goal": "현재 훅들 기준으로 시간 및 공간 기억에 대해 어느정도까지 가능한지 실험",
-  "level": 0,
-  "evolution_count": 0,
-  "evolution_history": [],
+  "root_goal": "G1 일반화 수치 완성 — CTX 원본 12-query 벤치마크 재실행 (new _is_decision()으로 수치 업데이트) + Flask/Requests 교차 검증으로 완전한 before/after 비교표 완성",
+  "original_goal": "G1/G2 hook 개선의 과적합 검증 및 일반화 — 현재 구현이 CTX 외 외부/이종 도메인에서도 유효한지 실증. 과적합 원인 진단 후 일반화 개선 적용.",
+  "level": 1,
+  "evolution_count": 1,
+  "evolution_history": [
+    {
+      "from": "G1/G2 hook 개선의 과적합 검증 및 일반화 — BM25+deep grep+semantic 구현이 CTX 외 외부/이종 도메인에서도 유효한지 실증. 과적합 원인 진단 후 일반화 개선 적용.",
+      "to": "G1 일반화 수치 완성 — CTX 원본 12-query 벤치마크 재실행 (new _is_decision()으로 수치 업데이트) + Flask/Requests 교차 검증으로 완전한 before/after 비교표 완성",
+      "reason": "iter 1 완료 (score=0.904). min_dim=completeness — Requests/Django 미검증, 원본 CTX 벤치마크 수치 업데이트 필요. 논문급 완성도를 위해 완전한 비교표 필요.",
+      "score_before": 0.904
+    }
+  ],
   "score_dimensions": ["quality", "completeness", "efficiency", "impact", "goal_fidelity"],
   "reward_spec": {
-    "primary_metric": "G1 시간축 recall 곡선 + G2 공간축 recall/precision 측정 완료",
-    "threshold": "각 hook별 실측 상한선 수치 도출, 시간 창별 recall 데이터"
+    "primary_metric": "CTX 12-query + Flask + Requests 교차 Recall@7 before/after 비교표",
+    "threshold": "모든 3개 도메인에서 new >= old"
   },
   "history": []
 }

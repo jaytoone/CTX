@@ -1,28 +1,57 @@
 {
-  "tried_strategies": [],
+  "tried_strategies": [
+    {
+      "goal": "G1 과적합 검증 + 일반화 수정 (word-boundary verbs + deep grep _is_decision() 제거)",
+      "score": 0.904,
+      "score_vector": {"quality": 0.88, "completeness": 0.85, "efficiency": 0.90, "impact": 0.92, "goal_fidelity": 0.97},
+      "iteration": 1,
+      "outcome": "evolved",
+      "weak_dim": "completeness"
+    }
+  ],
   "dead_ends": [],
   "known_facts": [
-    "G1 benchmark (12 queries) was all CTX-domain: BM25, recall, hooks — same domain as commits",
-    "BM25 reranking +47.6% on CTX-domain benchmark may be inflated by domain overlap",
-    "n=15 recency baseline Recall@7=0.292; n=30+BM25 Recall@7=0.431",
-    "Deep grep gave 0 additional improvement because relevant commits are omc-live iter commits filtered by _OMC_ITER_RE",
-    "Semantic rerank gave 0 additional improvement because CTX is single-domain (BM25 already captures signal)",
-    "Overfitting hypothesis: BM25 boosts CTX keywords but may NOT generalize to cross-domain queries"
+    "G1 overfitting root cause: _is_decision() biased to CTX-domain keywords (benchmark/eval/iter/CONVERGED)",
+    "Flask commits fail _is_decision() because they use descriptive language (relax type hint, request context tracks...) not CTX-style keywords",
+    "_DECISION_VERBS_RE with word-boundary regex: \\badd\\b does NOT match 'address' or 'additional' — safe to use",
+    "Pass 0 deep grep: removing _is_decision() gate allows surfacing general-project commits via keyword grep",
+    "Flask Recall@7: 0.000 → 0.667 (+0.667) after generalization fix",
+    "BM25 cross-domain: scores=0.0000 for all CTX commits on CSS/React/Docker queries → stable sort → no harmful reordering",
+    "CTX in-domain: improved from 0.667 → 0.833 (+0.167) — generalization doesn't hurt in-domain",
+    "Test A shows 'high reorder' (>3 position change) for n15 vs n30+BM25 on CTX cross-domain queries — BUT this is benign (all BM25 scores=0, difference is from window size and topic dedup, not false positives)"
   ],
   "uncertain": [
     {
-      "question": "Does BM25 reranking HURT precision for cross-domain queries (false positive boost)?",
-      "status": "to_be_measured"
+      "question": "Does the Requests/Django generalization also improve (Flask was +0.667)?",
+      "status": "unmeasured — Requests/Django QA pairs have only 2-3 questions with findable ground truth"
     },
     {
-      "question": "Does n=30+BM25 generalize to external repos (Flask, Django)?",
-      "status": "to_be_measured"
+      "question": "Does the n=30+BM25 improvement on CTX closed-set hold at 0.431+ with the new _is_decision()?",
+      "status": "unmeasured — original 12-query benchmark not re-run yet"
     }
   ],
-  "dimensions_explored": {},
+  "dimensions_explored": {
+    "quality": 0.88,
+    "completeness": 0.85,
+    "efficiency": 0.90,
+    "impact": 0.92,
+    "goal_fidelity": 0.97
+  },
   "skill_routing_history": [],
-  "her_hints": [],
-  "best_score_vector": {},
+  "her_hints": [
+    {
+      "dim": "completeness",
+      "delta": 0.85,
+      "sub_goal": "Verify Requests/Django generalization AND re-run CTX original 12-query benchmark with new _is_decision()"
+    }
+  ],
+  "best_score_vector": {
+    "quality": 0.88,
+    "completeness": 0.85,
+    "efficiency": 0.90,
+    "impact": 0.92,
+    "goal_fidelity": 0.97
+  },
   "wave1_plan": "",
   "wave1_evolution_count": -1,
   "wave1_feedback": []
