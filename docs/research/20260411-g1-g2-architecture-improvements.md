@@ -313,10 +313,10 @@ UserPromptSubmit 허용 threshold ~200ms 대비 여유 있음.
 
 ## Related
 - [[projects/CTX/research/20260411-hook-memory-ceiling-experiment|20260411-hook-memory-ceiling-experiment]]
-- [[projects/CTX/research/20260411-hook-comparison-auto-index-vs-chat-memory|20260411-hook-comparison-auto-index-vs-chat-memory]]
-- [[projects/CTX/research/20260410-session-6c4f589e-chat-memory|20260410-session-6c4f589e-chat-memory]]
-- [[projects/CTX/research/20260409-bm25-memory-generalization-research|20260409-bm25-memory-generalization-research]]
 - [[projects/CTX/research/20260328-ctx-downstream-eval-nemotron-final|20260328-ctx-downstream-eval-nemotron-final]]
-- [[projects/CTX/research/20260328-ctx-downstream-nemotron-eval-v2|20260328-ctx-downstream-nemotron-eval-v2]]
 - [[projects/CTX/research/20260328-ctx-downstream-nemotron-eval|20260328-ctx-downstream-nemotron-eval]]
-- [[projects/CTX/research/20260411-chat-memory-threshold-principled|20260411-chat-memory-threshold-principled]]
+- [[projects/CTX/research/20260407-g1-final-eval-benchmark|20260407-g1-final-eval-benchmark]]
+- [[projects/CTX/research/20260407-g1-temporal-eval-results|20260407-g1-temporal-eval-results]]
+- [[projects/CTX/research/20260328-ctx-downstream-nemotron-eval-v2|20260328-ctx-downstream-nemotron-eval-v2]]
+- [[projects/CTX/research/20260327-ctx-downstream-eval|20260327-ctx-downstream-eval]]
+- [[projects/CTX/research/20260411-hook-comparison-auto-index-vs-chat-memory|20260411-hook-comparison-auto-index-vs-chat-memory]]
