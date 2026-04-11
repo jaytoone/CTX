@@ -15,40 +15,47 @@
       "iteration": 2,
       "outcome": "evolved",
       "weak_dim": "efficiency"
+    },
+    {
+      "goal": "G1 Recall@7 상한선 분석 + 0-7d 개선 — miss pattern 분류, multi-keyword 도입",
+      "score": 0.946,
+      "score_vector": {"quality": 0.93, "completeness": 0.95, "efficiency": 0.92, "impact": 0.96, "goal_fidelity": 0.97},
+      "iteration": 3,
+      "outcome": "evolved",
+      "weak_dim": "quality"
     }
   ],
   "dead_ends": [],
   "known_facts": [
     "G1 overfitting root cause: _is_decision() biased to CTX-domain keywords (benchmark/eval/iter/CONVERGED)",
-    "Flask commits fail _is_decision() because they use descriptive language (relax type hint, request context tracks...) not CTX-style keywords",
-    "_DECISION_VERBS_RE with word-boundary regex: \\badd\\b does NOT match 'address' or 'additional' — safe to use",
+    "Flask commits fail _is_decision() because they use descriptive language — fixed by Pass0 gate removal",
+    "_DECISION_VERBS_RE with word-boundary regex: \\badd\\b does NOT match 'address' — safe to use",
     "Pass 0 deep grep: removing _is_decision() gate allows surfacing general-project commits via keyword grep",
     "Flask Recall@7: 0.000 → 0.667 (+0.667) after generalization fix",
-    "BM25 cross-domain: scores=0.0000 for all CTX commits on CSS/React/Docker queries → stable sort → no harmful reordering",
-    "CTX 59-query closed-set: n30+BM25+grep = 0.525 (vs n15=0.000, original baseline 0.169)",
-    "Age bucket: 0-7d = 0.467 (n=45), 7-30d = 0.714 (n=14) — 0-7d is the largest gap",
-    "Requests benchmark = 0.000 due to ground truth construction limitation (old external commits, not hook failure)",
-    "BM25 graceful degradation: zero-score → stable sort → recency order preserved for unrelated queries"
+    "CTX total Recall@7: 0.169 → 0.525 (iter2) → 0.661 (iter3)",
+    "CTX 0-7d: 0.422 → 0.622 (+0.200) — compound/numeric extraction key fix",
+    "CTX 7-30d: 0.714 → 0.786 (+0.072)",
+    "Pass0 miss root cause: long_kws ≥4-char filter missed 'git-memory' (hyphen-split), '2040' (numeric), 'CTX' (3-char)",
+    "Fix: extract_keywords() now emits compound terms + numeric tokens; Pass0 uses up to 5 grep_kws, max-count=10",
+    "Remaining 17/45 0-7d misses: ~8 live-inf iter N/∞ (topic-dedup collapse), ~5 near-duplicate commits (same topic cluster), ~4 keyword-poor",
+    "Practical ceiling for keyword-based retrieval: ~0.65-0.70 on this benchmark (structural dedup limit)",
+    "BM25 cross-domain: zero-score → stable sort → no harmful reordering for unrelated queries"
   ],
   "uncertain": [
     {
-      "question": "What is the structural reason for 0-7d=0.467 vs 7-30d=0.714?",
-      "status": "unmeasured — need miss pattern analysis (keyword mismatch / commit ambiguity / vocab gap)"
+      "question": "Can semantic reranking push 0-7d recall above 0.70 for structural miss cases?",
+      "status": "unmeasured — would require vec-daemon to be available + live testing"
     },
     {
-      "question": "Can multi-keyword OR grep improve 0-7d recall from 0.467 to 0.55+?",
-      "status": "untried — depends on miss pattern classification"
-    },
-    {
-      "question": "Is 0.525 the practical ceiling for CTX git-memory approach?",
-      "status": "unknown — need miss analysis to determine how many misses are structural vs fixable"
+      "question": "Is the live-inf iter topic-dedup collapse avoidable with a different dedup strategy?",
+      "status": "structural limit — all iter commits touch .omc/ files, same topic key"
     }
   ],
   "dimensions_explored": {
-    "quality": 0.92,
-    "completeness": 0.93,
-    "efficiency": 0.90,
-    "impact": 0.94,
+    "quality": 0.93,
+    "completeness": 0.95,
+    "efficiency": 0.92,
+    "impact": 0.96,
     "goal_fidelity": 0.98
   },
   "skill_routing_history": [],
@@ -56,19 +63,19 @@
     {
       "dim": "completeness",
       "delta": 0.85,
-      "sub_goal": "Verify Requests/Django generalization AND re-run CTX original 12-query benchmark with new _is_decision()"
+      "sub_goal": "Verify Requests/Django generalization AND re-run CTX original 12-query benchmark"
     },
     {
       "dim": "impact",
-      "delta": 0.94,
-      "sub_goal": "Pass 0 deep grep gate removal was the key insight — apply similar gate removal analysis to other pipeline steps"
+      "delta": 0.96,
+      "sub_goal": "Pass0 enhancement: compound+numeric keyword extraction gives biggest gains"
     }
   ],
   "best_score_vector": {
-    "quality": 0.92,
-    "completeness": 0.93,
-    "efficiency": 0.90,
-    "impact": 0.94,
+    "quality": 0.93,
+    "completeness": 0.95,
+    "efficiency": 0.92,
+    "impact": 0.96,
     "goal_fidelity": 0.98
   },
   "wave1_plan": "",
