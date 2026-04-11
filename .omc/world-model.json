@@ -1,6 +1,14 @@
 {
   "tried_strategies": [
     {
+      "goal": "3 hook additions: synonym map + temporal timeline + G2a importers",
+      "score": 0.955,
+      "score_vector": {"quality": 0.94, "completeness": 0.96, "efficiency": 0.93, "impact": 0.97, "goal_fidelity": 0.96},
+      "iteration": 4,
+      "outcome": "success",
+      "weak_dim": "quality"
+    },
+    {
       "goal": "G1 과적합 검증 + 일반화 수정 (word-boundary verbs + deep grep _is_decision() 제거)",
       "score": 0.904,
       "score_vector": {"quality": 0.88, "completeness": 0.85, "efficiency": 0.90, "impact": 0.92, "goal_fidelity": 0.97},
@@ -27,6 +35,11 @@
   ],
   "dead_ends": [],
   "known_facts": [
+    "_SYNONYM_MAP expansion: COIR/BM25/SOTA/G1/G2/eval → commit-searchable synonyms; +0.085 Recall@7 (0.661→0.746)",
+    "Temporal timeline mode: _TEMPORAL_QUERY_RE detects history/progression/timeline queries → [DECISION TIMELINE] header + date-prefixed oldest-first output",
+    "G2a 1-hop import discovery: git grep reverse importers on G2-found Python files; cost <2s per file",
+    "Remaining 7/15 misses = live-inf iter commits filtered by _OMC_ITER_RE (structural noise, intended behavior)",
+    "New practical ceiling: ~0.75-0.80 (if live-inf iter filtering relaxed: ~0.88)",
     "G1 overfitting root cause: _is_decision() biased to CTX-domain keywords (benchmark/eval/iter/CONVERGED)",
     "Flask commits fail _is_decision() because they use descriptive language — fixed by Pass0 gate removal",
     "_DECISION_VERBS_RE with word-boundary regex: \\badd\\b does NOT match 'address' — safe to use",

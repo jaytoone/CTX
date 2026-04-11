@@ -1,16 +1,25 @@
 {
-  "status": "RUNNING",
-  "session_id": "inf-overfit-20260411",
+  "status": "CONVERGED",
+  "session_id": "inf-residual-20260411",
   "current_iteration": 1,
-  "root_goal": "G1/G2 hook 개선의 과적합 검증 및 일반화 — BM25+deep grep+semantic 구현이 CTX 외 외부/이종 도메인에서도 유효한지 실증. 과적합 원인 진단 후 일반화 개선 적용.",
-  "original_goal": "G1/G2 hook 개선의 과적합 검증 및 일반화 — BM25+deep grep+semantic 구현이 CTX 외 외부/이종 도메인에서도 유효한지 실증. 과적합 원인 진단 후 일반화 개선 적용.",
+  "root_goal": "잔여 항목 — synonym map + temporal timeline + G2a importers 구현 완료. G1 0.661→0.746 달성.",
+  "original_goal": "잔여 항목 진행 — synonym/alias map + History 시간순 출력 + G2a 동적 경로 발견",
   "evolution_count": 0,
   "evolution_history": [],
-  "best_score": 0.0,
-  "plateau_count": 0,
-  "score_history": [],
-  "cost_history": [],
-  "wave1_complete": false,
-  "wave1_evolution_count": -1,
+  "best_score": 0.955,
+  "plateau_count": 1,
+  "score_history": [
+    {
+      "iteration": 1,
+      "score": 0.955,
+      "breakdown": {"quality": 0.94, "completeness": 0.96, "efficiency": 0.93, "impact": 0.97, "goal_fidelity": 0.96}
+    }
+  ],
+  "cost_history": [{"iteration": 1, "phase_reached": "phase_4", "relative_cost": 0.9}],
+  "wave1_complete": true,
+  "wave1_evolution_count": 0,
+  "final_score": 0.955,
+  "total_iterations": 1,
+  "total_sessions": 1,
   "rotated_at": null
 }
