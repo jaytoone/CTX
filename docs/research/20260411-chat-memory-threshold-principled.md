@@ -197,7 +197,11 @@ chat-memory.py 사용 패턴 고려: 세션 시작마다 context로 주입되는
 - `~/.claude/hooks/chat-memory.py` — 실제 FTS5 쿼리 구조
 - 본 실험 코드: inline Python analysis (2026-04-11)
 
-## Related
-
 - [[projects/CTX/research/20260411-hook-comparison-auto-index-vs-chat-memory|20260411-hook-comparison-auto-index-vs-chat-memory]]
 - [[projects/CTX/research/20260409-bm25-memory-generalization-research|20260409-bm25-memory-generalization-research]]
+
+## Related
+- [[projects/CTX/research/20260326-ctx-methodology-comparison|20260326-ctx-methodology-comparison]]
+- [[projects/CTX/research/20260410-session-6c4f589e-chat-memory|20260410-session-6c4f589e-chat-memory]]
+- [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]
+- [[projects/CTX/research/20260411-auto-index-necessity-analysis|20260411-auto-index-necessity-analysis]]

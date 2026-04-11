@@ -7,6 +7,14 @@
       "iteration": 1,
       "outcome": "evolved",
       "weak_dim": "completeness"
+    },
+    {
+      "goal": "G1 일반화 수치 완성 — CTX 59-query + Flask + Requests 교차 검증 완전 비교표",
+      "score": 0.922,
+      "score_vector": {"quality": 0.92, "completeness": 0.93, "efficiency": 0.85, "impact": 0.94, "goal_fidelity": 0.97},
+      "iteration": 2,
+      "outcome": "evolved",
+      "weak_dim": "efficiency"
     }
   ],
   "dead_ends": [],
@@ -17,25 +25,31 @@
     "Pass 0 deep grep: removing _is_decision() gate allows surfacing general-project commits via keyword grep",
     "Flask Recall@7: 0.000 → 0.667 (+0.667) after generalization fix",
     "BM25 cross-domain: scores=0.0000 for all CTX commits on CSS/React/Docker queries → stable sort → no harmful reordering",
-    "CTX in-domain: improved from 0.667 → 0.833 (+0.167) — generalization doesn't hurt in-domain",
-    "Test A shows 'high reorder' (>3 position change) for n15 vs n30+BM25 on CTX cross-domain queries — BUT this is benign (all BM25 scores=0, difference is from window size and topic dedup, not false positives)"
+    "CTX 59-query closed-set: n30+BM25+grep = 0.525 (vs n15=0.000, original baseline 0.169)",
+    "Age bucket: 0-7d = 0.467 (n=45), 7-30d = 0.714 (n=14) — 0-7d is the largest gap",
+    "Requests benchmark = 0.000 due to ground truth construction limitation (old external commits, not hook failure)",
+    "BM25 graceful degradation: zero-score → stable sort → recency order preserved for unrelated queries"
   ],
   "uncertain": [
     {
-      "question": "Does the Requests/Django generalization also improve (Flask was +0.667)?",
-      "status": "unmeasured — Requests/Django QA pairs have only 2-3 questions with findable ground truth"
+      "question": "What is the structural reason for 0-7d=0.467 vs 7-30d=0.714?",
+      "status": "unmeasured — need miss pattern analysis (keyword mismatch / commit ambiguity / vocab gap)"
     },
     {
-      "question": "Does the n=30+BM25 improvement on CTX closed-set hold at 0.431+ with the new _is_decision()?",
-      "status": "unmeasured — original 12-query benchmark not re-run yet"
+      "question": "Can multi-keyword OR grep improve 0-7d recall from 0.467 to 0.55+?",
+      "status": "untried — depends on miss pattern classification"
+    },
+    {
+      "question": "Is 0.525 the practical ceiling for CTX git-memory approach?",
+      "status": "unknown — need miss analysis to determine how many misses are structural vs fixable"
     }
   ],
   "dimensions_explored": {
-    "quality": 0.88,
-    "completeness": 0.85,
+    "quality": 0.92,
+    "completeness": 0.93,
     "efficiency": 0.90,
-    "impact": 0.92,
-    "goal_fidelity": 0.97
+    "impact": 0.94,
+    "goal_fidelity": 0.98
   },
   "skill_routing_history": [],
   "her_hints": [
@@ -43,14 +57,19 @@
       "dim": "completeness",
       "delta": 0.85,
       "sub_goal": "Verify Requests/Django generalization AND re-run CTX original 12-query benchmark with new _is_decision()"
+    },
+    {
+      "dim": "impact",
+      "delta": 0.94,
+      "sub_goal": "Pass 0 deep grep gate removal was the key insight — apply similar gate removal analysis to other pipeline steps"
     }
   ],
   "best_score_vector": {
-    "quality": 0.88,
-    "completeness": 0.85,
+    "quality": 0.92,
+    "completeness": 0.93,
     "efficiency": 0.90,
-    "impact": 0.92,
-    "goal_fidelity": 0.97
+    "impact": 0.94,
+    "goal_fidelity": 0.98
   },
   "wave1_plan": "",
   "wave1_evolution_count": -1,

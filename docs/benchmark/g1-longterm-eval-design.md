@@ -499,3 +499,13 @@ if __name__ == "__main__":
 - [G1 Long-Term Memory Evaluation Framework (Research)](../research/20260408-g1-longterm-memory-evaluation-framework.md)
 - [G1 Final Eval Benchmark](../research/20260407-g1-final-eval-benchmark.md)
 - [G1 Temporal Retention Eval](../research/20260408-g1-temporal-retention-eval.md)
+
+## Related
+- [[projects/CTX/research/20260408-g1-longterm-memory-evaluation-framework|20260408-g1-longterm-memory-evaluation-framework]]
+- [[projects/CTX/research/20260407-g1-temporal-eval-results|20260407-g1-temporal-eval-results]]
+- [[projects/CTX/research/20260407-g1-temporal-evaluation-framework|20260407-g1-temporal-evaluation-framework]]
+- [[projects/CTX/research/20260408-g1-temporal-retention-eval|20260408-g1-temporal-retention-eval]]
+- [[projects/CTX/research/20260407-g1-final-eval-benchmark|20260407-g1-final-eval-benchmark]]
+- [[projects/CTX/research/20260326-ctx-vs-sota-comparison|20260326-ctx-vs-sota-comparison]]
+- [[projects/CTX/research/20260326-ctx-final-sota-comparison|20260326-ctx-final-sota-comparison]]
+- [[projects/CTX/research/20260326-ctx-results-review|20260326-ctx-results-review]]

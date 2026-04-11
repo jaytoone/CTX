@@ -165,9 +165,17 @@ same-day 약점: 40% — 오늘 대화는 잘 찾히지 않음
 - Git log: 211 commits (2026-03-24~04-11)
 - Benchmark: inline Python analysis (2026-04-11)
 
-## Related
-
 - [[projects/CTX/research/20260411-hook-comparison-auto-index-vs-chat-memory|20260411-hook-comparison-auto-index-vs-chat-memory]]
 - [[projects/CTX/research/20260411-chat-memory-threshold-principled|20260411-chat-memory-threshold-principled]]
 - [[projects/CTX/research/20260409-g1-fulleval-sota-comparison|20260409-g1-fulleval-sota-comparison]]
 - [[projects/CTX/research/20260408-g1-temporal-retention-eval|20260408-g1-temporal-retention-eval]]
+
+## Related
+- [[projects/CTX/research/20260407-g1-final-eval-benchmark|20260407-g1-final-eval-benchmark]]
+- [[projects/CTX/research/20260326-ctx-final-sota-comparison|20260326-ctx-final-sota-comparison]]
+- [[projects/CTX/research/20260407-g1-temporal-eval-results|20260407-g1-temporal-eval-results]]
+- [[projects/CTX/research/20260410-g1-fair-eval-bm25-bias|20260410-g1-fair-eval-bm25-bias]]
+- [[projects/CTX/research/20260326-ctx-vs-sota-comparison|20260326-ctx-vs-sota-comparison]]
+- [[projects/CTX/research/20260410-vault-vector-migration-and-benchmark|20260410-vault-vector-migration-and-benchmark]]
+- [[projects/CTX/research/20260409-bm25-memory-generalization-research|20260409-bm25-memory-generalization-research]]
+- [[projects/CTX/research/20260407-g1-spiral-eval-results|20260407-g1-spiral-eval-results]]

@@ -1,20 +1,26 @@
 {
-  "root_goal": "G1 일반화 수치 완성 — CTX 원본 12-query 벤치마크 재실행 (new _is_decision()으로 수치 업데이트) + Flask/Requests 교차 검증으로 완전한 before/after 비교표 완성",
+  "root_goal": "G1 Recall@7 상한선 분석 + 0-7d 개선 — 59-query miss pattern 분류 (keyword mismatch / commit ambiguity / vocab gap), multi-keyword grep OR 조합으로 0-7d 0.467 → 0.55+ 목표, 또는 현재 0.525가 현실적 ceiling임을 실증",
   "original_goal": "G1/G2 hook 개선의 과적합 검증 및 일반화 — 현재 구현이 CTX 외 외부/이종 도메인에서도 유효한지 실증. 과적합 원인 진단 후 일반화 개선 적용.",
-  "level": 1,
-  "evolution_count": 1,
+  "level": 2,
+  "evolution_count": 2,
   "evolution_history": [
     {
       "from": "G1/G2 hook 개선의 과적합 검증 및 일반화 — BM25+deep grep+semantic 구현이 CTX 외 외부/이종 도메인에서도 유효한지 실증. 과적합 원인 진단 후 일반화 개선 적용.",
       "to": "G1 일반화 수치 완성 — CTX 원본 12-query 벤치마크 재실행 (new _is_decision()으로 수치 업데이트) + Flask/Requests 교차 검증으로 완전한 before/after 비교표 완성",
       "reason": "iter 1 완료 (score=0.904). min_dim=completeness — Requests/Django 미검증, 원본 CTX 벤치마크 수치 업데이트 필요. 논문급 완성도를 위해 완전한 비교표 필요.",
       "score_before": 0.904
+    },
+    {
+      "from": "G1 일반화 수치 완성 — CTX 원본 12-query 벤치마크 재실행 (new _is_decision()으로 수치 업데이트) + Flask/Requests 교차 검증으로 완전한 before/after 비교표 완성",
+      "to": "G1 Recall@7 상한선 분석 + 0-7d 개선 — 59-query miss pattern 분류 (keyword mismatch / commit ambiguity / vocab gap), multi-keyword grep OR 조합으로 0-7d 0.467 → 0.55+ 목표, 또는 현재 0.525가 현실적 ceiling임을 실증",
+      "reason": "iter 2 완료 (score=0.922). Flask+0.667, CTX+0.356. 0-7d=0.467이 largest gap. 상한선 분석 없이 개선 시도는 비효율 → miss pattern 분류 먼저.",
+      "score_before": 0.922
     }
   ],
   "score_dimensions": ["quality", "completeness", "efficiency", "impact", "goal_fidelity"],
   "reward_spec": {
-    "primary_metric": "CTX 12-query + Flask + Requests 교차 Recall@7 before/after 비교표",
-    "threshold": "모든 3개 도메인에서 new >= old"
+    "primary_metric": "59-query CTX Recall@7 (현재 0.525), 0-7d bucket (현재 0.467)",
+    "threshold": "0-7d ≥ 0.55 OR ceiling 실증 (miss analysis로 구조적 한계 확인)"
   },
   "history": []
 }
