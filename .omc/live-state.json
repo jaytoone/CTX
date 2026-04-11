@@ -1,11 +1,15 @@
 {
   "current_iteration": 1,
   "last_outcome": "success",
-  "last_phase_reached": "validation",
-  "started_at": "2026-04-10T00:00:00",
-  "best_score": 0.0,
+  "last_phase_reached": "phase_4",
+  "started_at": "2026-04-11T00:00:00",
+  "best_score": 0.88,
+  "current_score": 0.88,
+  "current_goal_fidelity": 0.95,
   "plateau_count": 0,
   "evolution_count": 0,
-  "score_history": [],
+  "score_history": [
+    {"iteration": 1, "score": 0.88, "goal_fidelity": 0.95, "goal_version": 0, "score_variance": 0.02}
+  ],
   "cost_history": [{"iteration": 1, "phase_reached": "phase_4", "relative_cost": 1.0}]
 }
