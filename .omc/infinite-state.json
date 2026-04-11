@@ -1,16 +1,16 @@
 {
-  "status": "CONVERGED",
-  "session_id": "inf-bm25-memory-20260409",
+  "status": "RUNNING",
+  "session_id": "inf-overfit-20260411",
   "current_iteration": 1,
-  "root_goal": "bm25-memory.py G1+G2 \uc644\uc804 \uc791\ub3d9 \uac80\uc99d",
-  "best_score": 0.925,
-  "score_vector": {
-    "correctness": 0.95,
-    "coverage": 0.95,
-    "robustness": 0.9,
-    "performance": 0.9
-  },
-  "total_iterations": 1,
-  "total_sessions": 1,
-  "converged_at": "2026-04-09"
+  "root_goal": "G1/G2 hook 개선의 과적합 검증 및 일반화 — BM25+deep grep+semantic 구현이 CTX 외 외부/이종 도메인에서도 유효한지 실증. 과적합 원인 진단 후 일반화 개선 적용.",
+  "original_goal": "G1/G2 hook 개선의 과적합 검증 및 일반화 — BM25+deep grep+semantic 구현이 CTX 외 외부/이종 도메인에서도 유효한지 실증. 과적합 원인 진단 후 일반화 개선 적용.",
+  "evolution_count": 0,
+  "evolution_history": [],
+  "best_score": 0.0,
+  "plateau_count": 0,
+  "score_history": [],
+  "cost_history": [],
+  "wave1_complete": false,
+  "wave1_evolution_count": -1,
+  "rotated_at": null
 }

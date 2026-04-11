@@ -1,36 +1,29 @@
 {
-  "tried_strategies": [
-    {
-      "goal": "Fix Korean 2-char extraction + alphanumeric tokens + FTS5 OR semantics",
-      "score": 0.92,
-      "iteration": 1,
-      "outcome": "evolved",
-      "weak_dim": "efficiency"
-    }
-  ],
+  "tried_strategies": [],
   "dead_ends": [],
   "known_facts": [
-    "FTS5 with porter unicode61 tokenizer does not stem Korean (Hangul AC00-D7A3)",
-    "Korean syllables tokenized individually by unicode61, multi-syllable words not indexed as phrases",
-    "English keywords in Korean prompts work fine (BM25, threshold, recall etc)",
-    "chat-memory.py currently uses FTS5 MATCH with AND semantics for multi-token queries",
-    "vault.db has 143K messages across 545 sessions, CTX project has 14 sessions",
-    "extract_keywords() already strips Korean stopwords but regex [a-zA-Z가-힣]{3,} does match Korean syllable clusters"
+    "G1 benchmark (12 queries) was all CTX-domain: BM25, recall, hooks — same domain as commits",
+    "BM25 reranking +47.6% on CTX-domain benchmark may be inflated by domain overlap",
+    "n=15 recency baseline Recall@7=0.292; n=30+BM25 Recall@7=0.431",
+    "Deep grep gave 0 additional improvement because relevant commits are omc-live iter commits filtered by _OMC_ITER_RE",
+    "Semantic rerank gave 0 additional improvement because CTX is single-domain (BM25 already captures signal)",
+    "Overfitting hypothesis: BM25 boosts CTX keywords but may NOT generalize to cross-domain queries"
   ],
-  "uncertain": [],
-  "dimensions_explored": {
-    "quality": 0.9,
-    "completeness": 0.92,
-    "efficiency": 0.88,
-    "impact": 0.9
-  },
+  "uncertain": [
+    {
+      "question": "Does BM25 reranking HURT precision for cross-domain queries (false positive boost)?",
+      "status": "to_be_measured"
+    },
+    {
+      "question": "Does n=30+BM25 generalize to external repos (Flask, Django)?",
+      "status": "to_be_measured"
+    }
+  ],
+  "dimensions_explored": {},
   "skill_routing_history": [],
   "her_hints": [],
-  "best_score_vector": {
-    "quality": 0.9,
-    "completeness": 0.92,
-    "efficiency": 0.88,
-    "impact": 0.9,
-    "goal_fidelity": 1.0
-  }
+  "best_score_vector": {},
+  "wave1_plan": "",
+  "wave1_evolution_count": -1,
+  "wave1_feedback": []
 }
