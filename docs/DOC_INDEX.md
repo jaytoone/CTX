@@ -2,6 +2,8 @@
 
 | 파일 | 설명 |
 |------|------|
+| [research/20260411-hook-comparison-auto-index-vs-chat-memory.md](research/20260411-hook-comparison-auto-index-vs-chat-memory.md) | auto-index.py VS chat-memory.py 성능 비교 — 25쿼리 실증: auto-index 0.260 vs chat-memory 0.800(+0.540), FP=100%→10%(threshold -17), auto-index 제거 권고 |
+| [research/20260411-auto-index-necessity-analysis.md](research/20260411-auto-index-necessity-analysis.md) | auto-index.py 필요성 분석 — vestigial hook 판정: 힌트 비결정적(DB 116h stale 증명), G2b git grep fallback으로 커버, 제거 권고 |
 | [research/20260410-vault-vector-migration-and-benchmark.md](research/20260410-vault-vector-migration-and-benchmark.md) | vault.db vector migration + 검색 벤치마크 — sqlite-vec + multilingual-e5-small, Hybrid P@5=0.88 vs BM25=0.76(+16%), KNN 확장성(200k까지 허용), 20260409 "hybrid 필요" 결론 구현 검증 |
 | [research/20260410-session-6c4f589e-chat-memory.md](research/20260410-session-6c4f589e-chat-memory.md) | 세션 6c4f589e 전체 대화 — claude-vault 설치 + chat-memory.py 구현: 프로젝트 스코프 격리, Korean 2-char FTS5 수정, OR 시맨틱스 적용, 89 메시지 |
 | [research/20260410-g1-fair-eval-bm25-bias.md](research/20260410-g1-fair-eval-bm25-bias.md) | G1 공정 평가 — BM25 구조적 편향 정량화: 원본 Recall@7=1.000 vs 패러프레이즈 0.627, 편향=0.373, Type2/3/4 Recall@7=0.667, 공정 통합 Recall@7=0.634 (71 queries) |
@@ -123,6 +125,6 @@
 - [[projects/CTX/research/20260408-g1-longterm-memory-evaluation-framework|20260408-g1-longterm-memory-evaluation-framework]]
 - [[projects/CTX/research/20260410-g1-fair-eval-bm25-bias|20260410-g1-fair-eval-bm25-bias]]
 - [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]
+- [[projects/CTX/research/20260410-session-6c4f589e-chat-memory|20260410-session-6c4f589e-chat-memory]]
 - [[projects/CTX/research/20260325-ctx-paper-tier-evaluation|20260325-ctx-paper-tier-evaluation]]
 - [[projects/CTX/research/20260330-ctx-academic-critique-web-grounded|20260330-ctx-academic-critique-web-grounded]]
-- [[projects/CTX/research/20260402-omc-live-infinite-progress-report|20260402-omc-live-infinite-progress-report]]

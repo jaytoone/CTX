@@ -1,13 +1,13 @@
 {
-  "root_goal": "G2a retriever A/B 테스트: PageIndex-lite vs BM25-chunked vs BM25-fulldoc 비교 후 도입 결정",
-  "original_goal": "A/B 확인후 도입 결정할거야",
+  "root_goal": "auto-index.py VS chat-memory.py 성능 비교 실험: 각 hook이 주입하는 context의 품질/유용성 정량 측정 및 도입 가치 비교",
+  "original_goal": "auto-index.py VS CHAT-MEMORY 성능 비교 실험",
   "level": 0,
   "evolution_count": 0,
   "evolution_history": [],
   "score_dimensions": ["quality", "completeness", "efficiency", "impact", "goal_fidelity"],
   "reward_spec": {
-    "primary_metric": "A/B 비교 완료 + 명확한 도입 권고",
-    "threshold": "4개 전략 비교, 5% 이상 차이 판별, 도입 여부 결정 가능"
+    "primary_metric": "두 hook의 context 품질 정량 비교 완료 + 명확한 도입 가치 권고",
+    "threshold": "각 hook별 recall/precision 측정, 통계적 유의성 판단, 도입/제거 결정 가능"
   },
   "history": []
 }
