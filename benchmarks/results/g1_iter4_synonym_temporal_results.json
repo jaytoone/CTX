@@ -1,0 +1,30 @@
+{
+  "iteration": 4,
+  "changes": [
+    "Synonym/alias map (_SYNONYM_MAP): COIR/BM25/SOTA/G1/G2/eval expand to commit-searchable terms",
+    "Temporal output mode (_TEMPORAL_QUERY_RE): history/progression/timeline queries → [DECISION TIMELINE] header + date-prefixed chronological output",
+    "G2a 1-hop import discovery: G2-found Python files → git grep reverse importers surfaced"
+  ],
+  "g1_recall": {
+    "before": 0.661,
+    "after": 0.746,
+    "delta": 0.085
+  },
+  "by_age": {
+    "0-7d": {
+      "before": 0.622,
+      "after": 0.711
+    },
+    "7-30d": {
+      "before": 0.714,
+      "after": 0.857
+    }
+  },
+  "remaining_misses": {
+    "total": 15,
+    "structural_live_inf_iter": 7,
+    "topic_dedup_collapse": 2,
+    "bm25_rank_out": 6
+  },
+  "ceiling": "~0.75-0.80 (7 live-inf iter misses are intended structural noise filter)"
+}
