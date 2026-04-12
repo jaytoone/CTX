@@ -14,6 +14,7 @@ Approach:
   5. Report the bias gap
 """
 
+import hashlib
 import json
 import os
 import re
@@ -27,6 +28,39 @@ RESULTS_DIR = REPO_PATH / "benchmarks" / "results"
 QA_PAIRS_FILE = RESULTS_DIR / "g1_qa_pairs.json"
 DECISION_COMMITS_FILE = RESULTS_DIR / "g1_decision_commits.json"
 OUTPUT_FILE = RESULTS_DIR / "g1_fair_eval_results.json"
+CACHE_FILE = RESULTS_DIR / "g1_fair_eval_cache.json"
+
+
+def compute_corpus_hash(qa_pairs: List[Dict], decision_commits: List[Dict]) -> str:
+    """Stable hash of inputs to detect corpus changes and invalidate cache."""
+    parts = [qa['query'] for qa in qa_pairs]
+    parts += [c.get('hash', '')[:7] for c in decision_commits[:50]]
+    return hashlib.sha256("\n".join(parts).encode()).hexdigest()[:16]
+
+
+def load_cache(corpus_hash: str) -> Optional[Dict]:
+    """Load cached paraphrases and type234_pairs if corpus_hash matches."""
+    if not CACHE_FILE.exists():
+        return None
+    try:
+        with open(CACHE_FILE) as f:
+            cache = json.load(f)
+        if cache.get("corpus_hash") == corpus_hash:
+            return cache
+    except Exception:
+        pass
+    return None
+
+
+def save_cache(corpus_hash: str, paraphrases: List[str], type234_pairs: List[Dict]):
+    """Persist LLM outputs so repeated runs skip regeneration."""
+    cache = {
+        "corpus_hash": corpus_hash,
+        "paraphrases": paraphrases,
+        "type234_pairs": type234_pairs,
+    }
+    with open(CACHE_FILE, 'w', encoding='utf-8') as f:
+        json.dump(cache, f, indent=2, ensure_ascii=False)
 
 
 def get_llm_client():
@@ -261,6 +295,17 @@ def run_fair_eval():
     print(f"  QA pairs: {len(qa_pairs)}")
     print(f"  Decision commits (corpus): {len(decision_commits)}")
 
+    corpus_hash = compute_corpus_hash(qa_pairs, decision_commits)
+    refresh_cache = "--refresh-cache" in sys.argv
+    cache = None if refresh_cache else load_cache(corpus_hash)
+    if cache:
+        print(f"  [CACHE HIT] corpus_hash={corpus_hash} — skipping LLM calls")
+    else:
+        if refresh_cache:
+            print(f"  [CACHE] --refresh-cache flag set, regenerating")
+        else:
+            print(f"  [CACHE MISS] corpus_hash={corpus_hash} — will generate and cache")
+
     print("\n[2] Building BM25 index...")
     bm25, subjects = build_bm25_index(decision_commits)
     print(f"  Index built: {len(subjects)} documents")
@@ -301,7 +346,11 @@ def run_fair_eval():
         print("  [ERROR] No LLM client. Set MINIMAX_API_KEY + MINIMAX_BASE_URL")
         sys.exit(1)
 
-    paraphrases = generate_paraphrases_batch(client, qa_pairs, batch_size=10)
+    if cache and "paraphrases" in cache:
+        paraphrases = cache["paraphrases"]
+        print(f"  [CACHE] Loaded {len(paraphrases)} paraphrases from cache")
+    else:
+        paraphrases = generate_paraphrases_batch(client, qa_pairs, batch_size=10)
     assert len(paraphrases) == len(qa_pairs)
 
     print("\n[5] Computing BM25 Structural Recall@7 - Paraphrased queries...")
@@ -337,7 +386,13 @@ def run_fair_eval():
 
     # Phase C: Type2/3/4 queries
     print("\n[6] Generating Type2/3/4 (why/what/rationale) queries...")
-    type234_pairs = generate_type234_queries(client, decision_commits, n=20)
+    if cache and "type234_pairs" in cache:
+        type234_pairs = cache["type234_pairs"]
+        print(f"  [CACHE] Loaded {len(type234_pairs)} Type2/3/4 pairs from cache")
+    else:
+        type234_pairs = generate_type234_queries(client, decision_commits, n=20)
+        save_cache(corpus_hash, paraphrases, type234_pairs)
+        print(f"  [CACHE] Saved to {CACHE_FILE}")
 
     print("\n[7] Computing BM25 Structural Recall@7 - Type2/3/4 queries...")
     type234_results = []
