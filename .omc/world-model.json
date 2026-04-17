@@ -48,6 +48,9 @@
     }
   ],
   "known_facts": [
+    "2026-04-17 iter 1: vec-daemon died 2026-04-11, SessionStart `test -S $sock` didn't detect stale socket, CM+G1 ran in BM25-only silent fallback for 6 days. Fixed via python3 socket.connect() liveness probe in settings.json.",
+    "2026-04-17 iter 2: added visible `⚠ vec-daemon down` warnings to CM header + G1 decision header so future silent failures surface in every prompt injection. Validated A/B both paths.",
+    "CM had hybrid BM25+vector (0.5*cos + 0.5*bm25_norm) since 2026-04-10 via vault.db + vec0 + multilingual-e5-small. Not a new feature — was pre-existing but broken.",
     "_SYNONYM_MAP expansion: COIR/BM25/SOTA/G1/G2/eval → commit-searchable synonyms; +0.085 Recall@7 (0.661→0.746)",
     "Temporal timeline mode: _TEMPORAL_QUERY_RE detects history/progression/timeline queries → [DECISION TIMELINE] header + date-prefixed oldest-first output",
     "G2a 1-hop import discovery: git grep reverse importers on G2-found Python files; cost <2s per file",
