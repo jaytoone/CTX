@@ -1,0 +1,112 @@
+{
+  "description": "G2 symbol-search gold-truth benchmark for search_graph_for_prompt. Each query lists expected top-5 (name:label) items a human reader would want surfaced. Scorer: Hit@5 (any gold item in top-5) + MRR + RankedHit@5 (fraction of gold in top-5).",
+  "db_path": "~/.cache/codebase-memory-mcp/home-jayone-Project-CTX.db",
+  "created": "2026-04-17",
+  "project_scope": "CTX (this repo)",
+  "queries": [
+    {
+      "id": "q1_bm25_retriever",
+      "prompt": "BM25 retriever lookup",
+      "keywords": ["BM25", "retriever", "lookup"],
+      "intent": "find the BM25 retriever class/module",
+      "gold": [
+        {"name": "BM25Retriever", "label": "Class"},
+        {"name": "bm25_retriever.py", "label": "File"},
+        {"name": "rank_bm25", "label": "Function"},
+        {"name": "bm25_score", "label": "Function"},
+        {"name": "bm25_retrieve", "label": "Function"}
+      ]
+    },
+    {
+      "id": "q2_semantic_trigger",
+      "prompt": "semantic concept trigger classifier",
+      "keywords": ["semantic", "concept", "trigger", "classifier"],
+      "intent": "find the SEMANTIC_CONCEPT classification method",
+      "gold": [
+        {"name": "_detect_semantic_concepts", "label": "Method"},
+        {"name": "trigger_classifier.py", "label": "File"},
+        {"name": "TriggerClassifier", "label": "Class"},
+        {"name": "classify_intent", "label": "Method"},
+        {"name": "classify_trigger", "label": "Method"}
+      ]
+    },
+    {
+      "id": "q3_fair_eval",
+      "prompt": "fair eval paraphrase",
+      "keywords": ["fair", "eval", "paraphrase"],
+      "intent": "find the G1 fair evaluation script",
+      "gold": [
+        {"name": "g1_fair_eval.py", "label": "File"},
+        {"name": "run_fair_eval", "label": "Function"},
+        {"name": "evaluate_paraphrase", "label": "Function"},
+        {"name": "generate_paraphrase", "label": "Function"},
+        {"name": "run_evaluation", "label": "Function"}
+      ]
+    },
+    {
+      "id": "q4_graph_expand",
+      "prompt": "graph expand import dependency",
+      "keywords": ["graph", "expand", "import", "dependency"],
+      "intent": "find import-graph expansion logic",
+      "gold": [
+        {"name": "bfs_expand", "label": "Function"},
+        {"name": "_graph_expand", "label": "Method"},
+        {"name": "_expand_identifiers", "label": "Method"},
+        {"name": "build_import_graph", "label": "Function"},
+        {"name": "_parse_imports", "label": "Method"}
+      ]
+    },
+    {
+      "id": "q5_korean_search_engine",
+      "prompt": "검색 엔진 어댑티브",
+      "keywords": ["검색", "엔진", "어댑티브"],
+      "intent": "find adaptive retriever (Korean → English mapping)",
+      "gold": [
+        {"name": "AdaptiveTriggerRetriever", "label": "Class"},
+        {"name": "adaptive_trigger.py", "label": "File"},
+        {"name": "_tfidf_retrieve", "label": "Method"},
+        {"name": "_concept_retrieve", "label": "Method"},
+        {"name": "retrieve", "label": "Method"}
+      ]
+    },
+    {
+      "id": "q6_coir_eval",
+      "prompt": "COIR evaluation corpus",
+      "keywords": ["COIR", "evaluation", "corpus"],
+      "intent": "find COIR benchmark scripts",
+      "gold": [
+        {"name": "coir_evaluator.py", "label": "File"},
+        {"name": "load_codesearchnet_corpus", "label": "Function"},
+        {"name": "evaluate_bm25", "label": "Function"},
+        {"name": "run_coir_eval.py", "label": "File"},
+        {"name": "CoIREvaluator", "label": "Class"}
+      ]
+    },
+    {
+      "id": "q7_hook_chat_memory",
+      "prompt": "chat memory hybrid merge",
+      "keywords": ["chat", "memory", "hybrid", "merge"],
+      "intent": "find chat-memory hybrid retrieval merger",
+      "gold": [
+        {"name": "hybrid_merge", "label": "Function"},
+        {"name": "chat-memory.py", "label": "File"},
+        {"name": "query_vault_vector", "label": "Function"},
+        {"name": "query_vault", "label": "Function"},
+        {"name": "get_query_embedding", "label": "Function"}
+      ]
+    },
+    {
+      "id": "q8_trigger_korean",
+      "prompt": "한국어 trigger intent modify",
+      "keywords": ["한국어", "trigger", "intent", "modify"],
+      "intent": "find Korean intent modify detection",
+      "gold": [
+        {"name": "classify_intent", "label": "Method"},
+        {"name": "TriggerClassifier", "label": "Class"},
+        {"name": "test_trigger_classifier_ko.py", "label": "File"},
+        {"name": "trigger_classifier.py", "label": "File"},
+        {"name": "_detect_modify", "label": "Method"}
+      ]
+    }
+  ]
+}
