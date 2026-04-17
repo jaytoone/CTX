@@ -50,6 +50,12 @@
   "known_facts": [
     "2026-04-17 iter 1: vec-daemon died 2026-04-11, SessionStart `test -S $sock` didn't detect stale socket, CM+G1 ran in BM25-only silent fallback for 6 days. Fixed via python3 socket.connect() liveness probe in settings.json.",
     "2026-04-17 iter 2: added visible `⚠ vec-daemon down` warnings to CM header + G1 decision header so future silent failures surface in every prompt injection. Validated A/B both paths.",
+    "2026-04-17 iter 3: built benchmarks/eval/g2_goldset.json (8 queries, gold top-5 labels) + g2_goldset_scorer.py with Hit@5/MRR/RankedHit@5. First rigorous G2 bench for the hook path.",
+    "2026-04-17 iter 4: shipped T1-A (BM25 + v3 tokenizer) to ~/.claude/hooks/git-memory.py search_graph_for_prompt. Goldset: Hit@5=0.62, MRR=0.52 (was 0.36), RH@5=0.25 (was 0.18).",
+    "2026-04-17 iter 5: goldset q5 keywords must match post-extract_keywords form (Korean ko_en expansion). Exposed trade-off: broad-expansion keywords favor length-ASC, focused tokens favor BM25.",
+    "2026-04-17 iter 6: shipped T1-C query-type router (>=5 keywords → length-ASC, else BM25). Beats both pure variants: Hit@5=0.75, MRR=0.53, RH@5=0.28.",
+    "2026-04-17 iter 7: latency characterized — OLD=1.41ms, BM25=3.16ms (cold max 57ms from rank_bm25 import), ROUTER=1.50ms. The original '10× latency' claim was measurement noise from single cold-start run.",
+    "2026-04-17 iter 8: codebase-memory-mcp DB was 254h (10.6 days) stale. auto-index.py outputs a HINT ('consider running mcp__codebase-memory-mcp__index_repository') but doesn't execute — Claude often ignores the hint. Fresh index via manual MCP call lifted G2 MRR +15% (0.53→0.61) with no ranking change. STRUCTURAL bug: index staleness may outweigh ranking improvements.",
     "CM had hybrid BM25+vector (0.5*cos + 0.5*bm25_norm) since 2026-04-10 via vault.db + vec0 + multilingual-e5-small. Not a new feature — was pre-existing but broken.",
     "_SYNONYM_MAP expansion: COIR/BM25/SOTA/G1/G2/eval → commit-searchable synonyms; +0.085 Recall@7 (0.661→0.746)",
     "Temporal timeline mode: _TEMPORAL_QUERY_RE detects history/progression/timeline queries → [DECISION TIMELINE] header + date-prefixed oldest-first output",
