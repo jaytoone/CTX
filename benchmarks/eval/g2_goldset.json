@@ -108,6 +108,58 @@
         {"name": "trigger_classifier.py", "label": "File"},
         {"name": "_detect_modify", "label": "Method"}
       ]
+    },
+    {
+      "id": "q9_downstream_eval",
+      "prompt": "downstream LLM eval G1 G2",
+      "keywords": ["downstream", "LLM", "eval"],
+      "intent": "find downstream LLM eval script",
+      "gold": [
+        {"name": "downstream_llm_eval.py", "label": "File"},
+        {"name": "run_llm_eval.py", "label": "File"},
+        {"name": "downstream_quality.py", "label": "File"},
+        {"name": "ctx_g1_with", "label": "Function"},
+        {"name": "ctx_g2_with", "label": "Function"}
+      ]
+    },
+    {
+      "id": "q10_temporal_mode",
+      "prompt": "temporal timeline decision history",
+      "keywords": ["temporal", "timeline", "history"],
+      "intent": "find temporal-mode handling in git-memory",
+      "gold": [
+        {"name": "_TEMPORAL_QUERY_RE", "label": "Variable"},
+        {"name": "get_git_decisions", "label": "Function"},
+        {"name": "temporal_mode", "label": "Variable"},
+        {"name": "_is_decision", "label": "Function"},
+        {"name": "extract_keywords", "label": "Function"}
+      ]
+    },
+    {
+      "id": "q11_vec_daemon",
+      "prompt": "vector daemon embedding socket",
+      "keywords": ["vector", "daemon", "embedding", "socket"],
+      "intent": "find vec-daemon interaction code",
+      "gold": [
+        {"name": "_embed_via_daemon", "label": "Function"},
+        {"name": "_semantic_rerank", "label": "Function"},
+        {"name": "_cosine_sim", "label": "Function"},
+        {"name": "vec-daemon.sock", "label": "File"},
+        {"name": "git-memory.py", "label": "File"}
+      ]
+    },
+    {
+      "id": "q12_goldset_scorer",
+      "prompt": "gold set scorer Hit MRR",
+      "keywords": ["gold", "set", "scorer", "Hit", "MRR"],
+      "intent": "find the goldset scorer (self-reference)",
+      "gold": [
+        {"name": "g2_goldset_scorer.py", "label": "File"},
+        {"name": "g2_goldset.json", "label": "File"},
+        {"name": "score_query", "label": "Function"},
+        {"name": "search_ROUTER", "label": "Function"},
+        {"name": "search_BM25_v3", "label": "Function"}
+      ]
     }
   ]
 }
