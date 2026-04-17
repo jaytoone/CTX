@@ -59,7 +59,8 @@
     {
       "id": "q5_korean_search_engine",
       "prompt": "검색 엔진 어댑티브",
-      "keywords": ["검색", "엔진", "어댑티브"],
+      "keywords": ["search", "retrieve", "find", "engine", "retriever"],
+      "note": "Keywords are post extract_keywords() Korean→English mapping (기본 ko_en dict)",
       "intent": "find adaptive retriever (Korean → English mapping)",
       "gold": [
         {"name": "AdaptiveTriggerRetriever", "label": "Class"},

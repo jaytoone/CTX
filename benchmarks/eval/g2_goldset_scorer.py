@@ -102,7 +102,14 @@ def search_BM25_v3(keywords, limit=5):
     return [cands[i] for i, _ in ranked[:limit]]
 
 
-VARIANTS = {"old": search_OLD, "bm25": search_BM25_v3}
+def search_ROUTER(keywords, limit=5):
+    """T1-C router: broad queries (>=5 tokens) → length-ASC, else BM25 v3."""
+    if len(keywords) >= 5:
+        return search_OLD(keywords, limit)
+    return search_BM25_v3(keywords, limit)
+
+
+VARIANTS = {"old": search_OLD, "bm25": search_BM25_v3, "router": search_ROUTER}
 
 
 def score_query(results, gold):
