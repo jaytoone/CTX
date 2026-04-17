@@ -2,6 +2,8 @@
 
 | 파일 | 설명 |
 |------|------|
+| [research/20260417-ctx-semantic-search-upgrade-sota.md](research/20260417-ctx-semantic-search-upgrade-sota.md) | CTX semantic search SOTA upgrade 로드맵 (expert-research-v2) — 3-tier: T1 G2 LIKE→BM25 + co-occurrence synonyms + query-type RRF (1일), T2 SPLADE query-only + 데몬 persistent index (1주), T3 voyage-code-3/ColBERT NL-only (2-4주). FACT-5/FACT-6이 dense 우선순위 하향 근거 |
+| [research/20260412-semantic-gap-keyword-vs-contextual.md](research/20260412-semantic-gap-keyword-vs-contextual.md) | Semantic Gap 분석 — BM25/FTS5 키워드 한계 실측: paraphrase 쿼리 11%p 손실(0.634), vector hybrid CM TP=100%/FP=100%, synonym map이 vector 없이 comparable gain, same-day 40% 원인=희소 코퍼스 |
 | [research/20260411-g1-generalization-validation.md](research/20260411-g1-generalization-validation.md) | G1 일반화 검증 — _is_decision() CTX 편향 진단 + 3가지 수정(CONV_PREFIXES/DECISION_VERBS_RE/Pass0 게이트 제거), Flask Recall@7 0.000→0.667, CTX 59-query 0.169→0.525, BM25 cross-domain 안전성 확인 |
 | [research/20260411-g1-g2-architecture-improvements.md](research/20260411-g1-g2-architecture-improvements.md) | G1/G2 hook 논문 급 개선 실증 — BM25+deep grep+semantic hybrid(git-memory), adaptive dual-threshold(chat-memory), G1 Recall@7 +47.6%(0.292→0.431), n=30 window 2× 확장, latency ~79ms |
 | [research/20260411-hook-memory-ceiling-experiment.md](research/20260411-hook-memory-ceiling-experiment.md) | 현재 hook 아키텍처 시간/공간 기억 상한선 실험 — G1: Recall@K plateau at 0.500(K≥7), 18일 시간 천장; G2: 시간창별 40-87% hit rate, 3-7일 sweet spot; g2-augment: 117h stale DB, 현재 무효 |

@@ -1,52 +1,14 @@
 {
-  "current_iteration": 4,
-  "last_outcome": "success",
-  "last_phase_reached": "phase_4",
-  "started_at": "2026-04-11T18:00:00",
-  "best_score": 0.955,
-  "current_score": 0.955,
-  "current_goal_fidelity": 0.96,
-  "score_variance": 0.02,
+  "current_iteration": 0,
+  "last_outcome": null,
+  "last_phase_reached": null,
+  "started_at": "2026-04-17T00:00:00",
+  "best_score": 0.0,
+  "current_score": 0.0,
+  "current_goal_fidelity": 1.0,
+  "score_variance": 0.0,
   "plateau_count": 0,
-  "evolution_count": 3,
-  "score_history": [
-    {
-      "iteration": 1,
-      "score": 0.91,
-      "goal_fidelity": 0.98,
-      "goal_version": 0,
-      "score_variance": 0.02,
-      "breakdown": {"quality": 0.90, "completeness": 0.92, "efficiency": 0.88, "impact": 0.87, "goal_fidelity": 0.98}
-    },
-    {
-      "iteration": 2,
-      "score": 0.922,
-      "goal_fidelity": 0.97,
-      "goal_version": 1,
-      "score_variance": 0.02,
-      "breakdown": {"quality": 0.92, "completeness": 0.93, "efficiency": 0.85, "impact": 0.94, "goal_fidelity": 0.97}
-    },
-    {
-      "iteration": 3,
-      "score": 0.946,
-      "goal_fidelity": 0.97,
-      "goal_version": 2,
-      "score_variance": 0.02,
-      "breakdown": {"quality": 0.93, "completeness": 0.95, "efficiency": 0.92, "impact": 0.96, "goal_fidelity": 0.97}
-    },
-    {
-      "iteration": 4,
-      "score": 0.955,
-      "goal_fidelity": 0.96,
-      "goal_version": 3,
-      "score_variance": 0.02,
-      "breakdown": {"quality": 0.94, "completeness": 0.96, "efficiency": 0.93, "impact": 0.97, "goal_fidelity": 0.96}
-    }
-  ],
-  "cost_history": [
-    {"iteration": 1, "phase_reached": "phase_4", "relative_cost": 1.0},
-    {"iteration": 2, "phase_reached": "phase_4", "relative_cost": 1.2},
-    {"iteration": 3, "phase_reached": "phase_4", "relative_cost": 1.0},
-    {"iteration": 4, "phase_reached": "phase_4", "relative_cost": 0.9}
-  ]
+  "evolution_count": 0,
+  "score_history": [],
+  "cost_history": []
 }

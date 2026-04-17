@@ -1,32 +1,15 @@
 {
-  "root_goal": "G1 개선 최종 통합 보고서 — iter 1-3 전체 진행표 (0.169→0.431→0.525→0.661) + 과적합 진단/수정/상한선 분석을 논문급 단일 문서로 통합. docs/research/20260411-g1-g2-architecture-improvements.md 업데이트 또는 신규 통합 문서 작성.",
-  "original_goal": "G1/G2 hook 개선의 과적합 검증 및 일반화 — 현재 구현이 CTX 외 외부/이종 도메인에서도 유효한지 실증. 과적합 원인 진단 후 일반화 개선 적용.",
-  "level": 3,
-  "evolution_count": 3,
-  "evolution_history": [
-    {
-      "from": "G1/G2 hook 개선의 과적합 검증 및 일반화 — 과적합 원인 진단 후 일반화 개선 적용.",
-      "to": "G1 일반화 수치 완성 — CTX 원본 12-query 벤치마크 재실행 + Flask/Requests 교차 검증",
-      "reason": "iter 1 완료 (score=0.904). Flask 미검증, 원본 CTX 수치 업데이트 필요.",
-      "score_before": 0.904
-    },
-    {
-      "from": "G1 일반화 수치 완성 — Flask/Requests 교차 검증으로 완전한 before/after 비교표 완성",
-      "to": "G1 Recall@7 상한선 분석 + 0-7d 개선 — miss pattern 분류, 0-7d 0.467 → 0.55+ 목표",
-      "reason": "iter 2 완료 (score=0.922). 0-7d=0.467이 largest gap, miss 분석 필요.",
-      "score_before": 0.922
-    },
-    {
-      "from": "G1 Recall@7 상한선 분석 + 0-7d 개선 — miss pattern 분류, multi-keyword 도입",
-      "to": "G1 개선 최종 통합 보고서 — iter 1-3 전체 진행표 (0.169→0.431→0.525→0.661) + 논문급 단일 문서",
-      "reason": "iter 3 완료 (score=0.946). 0-7d 0.622 달성. 상한선 확인. 모든 발견을 논문급 문서로 통합 필요.",
-      "score_before": 0.946
-    }
+  "root_goal": "Fill semantic search gap in CTX hooks per SOTA research — Tier 1: G2 SQL LIKE→BM25, co-occurrence synonyms, query-type RRF. Validate against G1 (0.746) and G2 external R@5 (0.602) benches.",
+  "original_goal": "Fill semantic search gap in CTX hooks per SOTA research — Tier 1 implementation + validation.",
+  "level": 0,
+  "sub_goals": [
+    {"id": "T1-A", "goal": "Replace G2 SQL LIKE with in-process BM25 over graph nodes", "status": "pending"},
+    {"id": "T1-B", "goal": "Corpus-derived co-occurrence synonyms via auto-index extension", "status": "pending"},
+    {"id": "T1-C", "goal": "Query-type-aware RRF weighting (keyword=0.85 BM25, NL=0.5/0.5)", "status": "pending"},
+    {"id": "VALIDATE", "goal": "Re-run G1 59-query + G2 external benches, measure delta", "status": "pending"}
   ],
-  "score_dimensions": ["quality", "completeness", "efficiency", "impact", "goal_fidelity"],
-  "reward_spec": {
-    "primary_metric": "통합 문서 완성도 — 전체 G1 진행표 + 과적합 진단 + 수정 + 상한선 분석 + 미래 방향",
-    "threshold": "논문 섹션으로 바로 사용 가능한 수준"
-  },
+  "evolution_count": 0,
+  "evolution_history": [],
+  "reward_spec": {"primary_metric": "G1 Recall@7 + G2 external R@5", "threshold": "G1 >= 0.746 AND G2 >= 0.602 (no regression), ideally G2 FastAPI +0.10"},
   "history": []
 }

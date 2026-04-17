@@ -34,6 +34,19 @@
     }
   ],
   "dead_ends": [],
+  "uncertain_followups": [
+    {
+      "goal": "T1-A: G2 search_graph_for_prompt SQL LIKE → BM25 over (name+file_path)",
+      "source": "docs/research/20260417-ctx-semantic-search-upgrade-sota.md Tier 1-A",
+      "status": "NOT a dead-end. Implementation was reverted due to three consecutive tokenizer bugs in the A/B harness — not a theoretical failure. T1-A with v3 tokenizer (snake_case + CamelCase split, alphanumeric runs like 'bm25' kept intact) shows overlap 0.43 and canonical case 'BM25 retriever lookup' lifts from 0/5 to 3/5 with BM25Retriever class surfacing at rank 3 (OLD never showed it).",
+      "open_issues": [
+        "No gold-truth benchmark yet → can't claim 'better' on ambiguous cases like 'fair eval' (1/5 overlap)",
+        "Latency 1.6ms → 14-16ms (10×) — still within hook budget but a real cost",
+        "No decision on whether to ship"
+      ],
+      "next_step_if_revisited": "Build 15-20 query gold-truth G2 bench first; only then re-apply T1-A with v3 tokenizer and decide on latency tradeoff."
+    }
+  ],
   "known_facts": [
     "_SYNONYM_MAP expansion: COIR/BM25/SOTA/G1/G2/eval → commit-searchable synonyms; +0.085 Recall@7 (0.661→0.746)",
     "Temporal timeline mode: _TEMPORAL_QUERY_RE detects history/progression/timeline queries → [DECISION TIMELINE] header + date-prefixed oldest-first output",
