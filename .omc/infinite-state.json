@@ -1,25 +1,36 @@
 {
-  "status": "CONVERGED",
-  "session_id": "inf-residual-20260411",
-  "current_iteration": 1,
-  "root_goal": "잔여 항목 — synonym map + temporal timeline + G2a importers 구현 완료. G1 0.661→0.746 달성.",
-  "original_goal": "잔여 항목 진행 — synonym/alias map + History 시간순 출력 + G2a 동적 경로 발견",
+  "status": "USER_STOPPED",
+  "session_id": "inf-20260417-semantic-promote",
+  "current_iteration": 14,
+  "root_goal": "Promote semantic access to G2 or CM as you can — grounded in SOTA research doc, validate each change empirically before modifying",
+  "original_goal": "Promote semantic access to G2 or CM as you can",
   "evolution_count": 0,
-  "evolution_history": [],
-  "best_score": 0.955,
+  "best_score": 0.95,
+  "final_score": 0.95,
   "plateau_count": 1,
-  "score_history": [
-    {
-      "iteration": 1,
-      "score": 0.955,
-      "breakdown": {"quality": 0.94, "completeness": 0.96, "efficiency": 0.93, "impact": 0.97, "goal_fidelity": 0.96}
-    }
-  ],
-  "cost_history": [{"iteration": 1, "phase_reached": "phase_4", "relative_cost": 0.9}],
-  "wave1_complete": true,
-  "wave1_evolution_count": 0,
-  "final_score": 0.955,
-  "total_iterations": 1,
+  "total_iterations": 14,
   "total_sessions": 1,
-  "rotated_at": null
+  "stopped_at": "2026-04-17T05:00:00",
+  "deliverables": [
+    "iter 1: vec-daemon restart + real socket-connect liveness probe in settings.json (was silent 6 days)",
+    "iter 2: visible ⚠ vec-daemon down warnings in CM + G1 headers",
+    "iter 3: 8-query G2 gold-truth bench + scorer",
+    "iter 4: T1-A (BM25 + v3 tokenizer) shipped to git-memory.py",
+    "iter 5: goldset q5 fix — exposed broad-vs-focused keyword trade-off",
+    "iter 6: T1-C query-type router shipped (>=5 kw → length-ASC, else BM25) — Hit@5 0.50→0.75",
+    "iter 7: latency micro-bench — ROUTER 1.50ms cold (was: OLD 1.41ms, BM25 3.16ms)",
+    "iter 8: discovered codebase-memory DB 254h stale; manual reindex +15% MRR",
+    "iter 9: goldset 8→12 queries for stronger stats; ROUTER confirmed net-win",
+    "iter 10: tiered staleness warning (silent/⚠/⚠⚠) in auto-index.py",
+    "iter 11: T1-B co-occurrence synonym mining — NEGATIVE (template boilerplate noise)",
+    "iter 12: session capstone in MEMORY.md",
+    "iter 13: auto-index.py structural fix — hint → actual subprocess execution",
+    "iter 14: end-to-end integration validated across all 4 hooks"
+  ],
+  "open_followups": [
+    "Cross-project goldset (Flask/FastAPI external transferability)",
+    "T1-B with MI-scoring + topic-stratified sampling",
+    "CM hybrid P@5 re-measurement vs 20260410 bench baseline",
+    "G1 7/15 rank-out analysis (DECISION_CAP or pass2 dedup improvement)"
+  ]
 }
