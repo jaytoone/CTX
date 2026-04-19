@@ -1,25 +1,37 @@
-# CTX — Context Bootstrapper for Claude Code (2026-04-05)
+# CTX — Context Bootstrapper for Claude Code (updated 2026-04-19)
 
-## 새 CTX 정의
+## 새 CTX 정의 — 실제 production 구성 (settings.json 기준)
 
-CTX = **Claude Code의 자동 context 주입 시스템**. 3개 hook으로 구성:
+CTX = **Claude Code의 자동 context 주입 시스템**.
+**single source of truth = `~/.claude/settings.json`의 `hooks` 블록.** 아래 표는 2026-04-19 시점에서 그 파일로부터 검증한 실제 wired hook만 기재.
 
-| Hook | 파일 | Event | 역할 |
-|------|------|-------|------|
-| **git-memory** | `~/.claude/hooks/git-memory.py` | UserPromptSubmit | G1: git log 의사결정 기억 + G2: 프롬프트→파일 선제 발견 |
-| **g2-augment** | `~/.claude/hooks/g2-augment.py` | Pre/PostToolUse (Grep) | G2: codebase graph 검색 보강 |
-| **auto-index** | `~/.claude/hooks/auto-index.py` | SessionStart + PostToolUse(git commit) | codebase-memory-mcp 자동 인덱싱 |
+### 현재 wired hooks (production)
 
-**모드**: `--g2` (프롬프트→파일 선제발견), `--rich` (world-model dead-ends/facts 추가)
+| Hook | 파일 | Event | 역할 | 현재 상태 |
+|------|------|-------|------|-----------|
+| **chat-memory** | `~/.claude/hooks/chat-memory.py` | UserPromptSubmit | CM: vault.db FTS5 + vec0 hybrid (α=0.5 cosine + 0.5 bm25) — 과거 대화 회상 | ✅ hybrid 작동 (vec-daemon 필요); 대체 fallback = BM25-only + `⚠ vec-daemon down` 표시 |
+| **bm25-memory** | `~/.claude/hooks/bm25-memory.py` | UserPromptSubmit (`--rich`) | G1 (의사결정) + G2-DOCS (docs/research/*.md + CLAUDE/MEMORY) + G2-PREFETCH (codebase-memory-mcp) + G2-HOOKS (~/.claude/hooks/*.py BM25 검색) — 단일 hook에 통합 | ✅ 프로덕션. pure BM25 (semantic rerank 없음). **git-memory.py + g2-augment.py 대체** |
+| **memory-keyword-trigger** | `~/.claude/hooks/memory-keyword-trigger.py` | UserPromptSubmit | 결정 키워드(제외/kill/중단/데드라인 등) 감지 → MEMORY.md 즉시 기록 유도 | ✅ 프로덕션. 저장은 Claude가 수행 |
+| **g2-fallback** | `~/.claude/hooks/g2-fallback.py` | PostToolUse (Grep) | Grep 실패/빈약 결과 감지 → `mcp__code-search__search_code` 힌트 주입 | ✅ 프로덕션 |
+| vec-daemon startup guard | `~/.claude/settings.json` SessionStart | SessionStart | vec-daemon 실 연결 probe → 죽어있으면 rm stale socket + 재시작 (2026-04-17 수정) | ✅ 프로덕션 |
 
-**성과**:
-- G1 recall: 82% (git-only), 100% (--rich) — 3개 프로젝트 검증
-- G2 prefetch: 프롬프트 키워드로 관련 파일 자동 발견 (32ms)
-- 강제성: deterministic hook (advisory CLAUDE.md 아님)
-- 비용: 0 (LLM 호출 없음)
+### 은퇴한 / 아카이브 hooks (wired 아님, 실행 안 됨)
 
-**구 CTX**(adaptive_trigger, trigger_classifier, BM25 검색 엔진)는 **폐기됨**.
-구 CTX 코드는 이 repo에 아카이브로 남아 있으나 hook에서 사용하지 않음.
+| 파일 | 상태 | 은퇴 근거 |
+|------|------|-----------|
+| `git-memory.py` | **retired** — `bm25-memory.py`에 의해 대체 (bm25-memory.py docstring 자체가 "Replaces git-memory.py"로 명시) | recall 0.169 proactive → BM25 reactive로 성능 개선 |
+| `g2-augment.py` | **retired** — `bm25-memory.py` G2-PREFETCH 블록에 흡수 | 동일 |
+| `auto-index.py` | **wired 아님** — settings.json에 없음. 코드는 존재하나 Claude Code가 invoke 안 함 | codebase-memory-mcp는 `auto-index` 없이 stale-on-demand로 관리 |
+
+> **2026-04-17 세션 주의**: 이번 세션의 iter 1-15 작업 대부분은 `git-memory.py`와 `auto-index.py`에 대한 편집이었으나, 두 파일 모두 production에 wired 되어 있지 않음 → 해당 편집은 파일에 남아있지만 실제로 실행되지 않음. 진짜 production 영향이 있는 편집은 `chat-memory.py`(iter 2 ⚠ 표시, iter 15 telemetry) 뿐.
+
+### 공유 인프라
+
+- **vec-daemon** (`~/.local/share/claude-vault/vec-daemon.py`): multilingual-e5-small 384-dim, Unix socket. chat-memory.py 만 의존. bm25-memory.py는 의존 안 함.
+- **vault.db** (`~/.local/share/claude-vault/vault.db`): claude-vault FTS5 + vec0 통합 DB. chat-memory.py 전용.
+- **opt-in telemetry** (iter 15): `CTX_TELEMETRY=1` 또는 `~/.claude/ctx-telemetry.enabled` 파일. 현재 chat-memory.py만 event 기록. bm25-memory.py 미instrument (다음 작업 후보).
+
+**구 CTX**(adaptive_trigger, trigger_classifier, git-memory, g2-augment) → `bm25-memory.py`로 통합 대체. 구 코드는 repo에 아카이브로 남아 있으나 hook에서 사용하지 않음.
 
 ## G1/G2 정의 (2026-04-03 명료화)
 
