@@ -2,6 +2,8 @@
 
 | 파일 | 설명 |
 |------|------|
+| [research/20260419-ctx-status-interpretation-guide.docx](research/20260419-ctx-status-interpretation-guide.docx) | /ctx-status 리포트 해석 가이드 (한국어 docx) — "fires" 정의, auto-index 라인 제거 이유, ✓/~/✗ 점수 도출 임계값 매핑표, 3개 프로덕션 hook(chat-memory/bm25-memory G1·G2)의 "정상 동작" 판정 기준, 원시 JSONL 직접 확인 커맨드, iter 15→18.2 변경 이력 |
+| [research/20260419-ctx-report-visibility-research.md](research/20260419-ctx-report-visibility-research.md) | ctx-report.py 가시성/호출 편의 연구 (expert-research-v2) — 결론: `~/.claude/commands/ctx-status.md` 슬래시 커맨드 + bash alias `ctxr` (합 12분). MCP/status line/skill 모두 overkill 또는 ambient noise로 배제. Claude Code에서 verbatim stdout 주입을 위한 프롬프트 필수 |
 | [research/20260417-ctx-semantic-search-upgrade-sota.md](research/20260417-ctx-semantic-search-upgrade-sota.md) | CTX semantic search SOTA upgrade 로드맵 (expert-research-v2) — 3-tier: T1 G2 LIKE→BM25 + co-occurrence synonyms + query-type RRF (1일), T2 SPLADE query-only + 데몬 persistent index (1주), T3 voyage-code-3/ColBERT NL-only (2-4주). FACT-5/FACT-6이 dense 우선순위 하향 근거 |
 | [research/20260412-semantic-gap-keyword-vs-contextual.md](research/20260412-semantic-gap-keyword-vs-contextual.md) | Semantic Gap 분석 — BM25/FTS5 키워드 한계 실측: paraphrase 쿼리 11%p 손실(0.634), vector hybrid CM TP=100%/FP=100%, synonym map이 vector 없이 comparable gain, same-day 40% 원인=희소 코퍼스 |
 | [research/20260411-g1-generalization-validation.md](research/20260411-g1-generalization-validation.md) | G1 일반화 검증 — _is_decision() CTX 편향 진단 + 3가지 수정(CONV_PREFIXES/DECISION_VERBS_RE/Pass0 게이트 제거), Flask Recall@7 0.000→0.667, CTX 59-query 0.169→0.525, BM25 cross-domain 안전성 확인 |
@@ -130,7 +132,7 @@
 - [[projects/CTX/research/20260408-g1-longterm-eval-initial-results|20260408-g1-longterm-eval-initial-results]]
 - [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
 - [[projects/CTX/research/20260408-g1-longterm-memory-evaluation-framework|20260408-g1-longterm-memory-evaluation-framework]]
-- [[projects/CTX/research/20260410-g1-fair-eval-bm25-bias|20260410-g1-fair-eval-bm25-bias]]
 - [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]
+- [[projects/CTX/research/20260410-vault-vector-migration-and-benchmark|20260410-vault-vector-migration-and-benchmark]]
 - [[projects/CTX/research/20260410-session-6c4f589e-chat-memory|20260410-session-6c4f589e-chat-memory]]
-- [[projects/CTX/research/20260325-ctx-paper-tier-evaluation|20260325-ctx-paper-tier-evaluation]]
+- [[projects/CTX/research/20260417-ctx-semantic-search-upgrade-sota|20260417-ctx-semantic-search-upgrade-sota]]
