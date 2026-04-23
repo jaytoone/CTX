@@ -1,36 +1,53 @@
 {
-  "status": "USER_STOPPED",
-  "session_id": "inf-20260417-semantic-promote",
-  "current_iteration": 14,
-  "root_goal": "Promote semantic access to G2 or CM as you can — grounded in SOTA research doc, validate each change empirically before modifying",
-  "original_goal": "Promote semantic access to G2 or CM as you can",
-  "evolution_count": 0,
-  "best_score": 0.95,
-  "final_score": 0.95,
-  "plateau_count": 1,
-  "total_iterations": 14,
-  "total_sessions": 1,
-  "stopped_at": "2026-04-17T05:00:00",
-  "deliverables": [
-    "iter 1: vec-daemon restart + real socket-connect liveness probe in settings.json (was silent 6 days)",
-    "iter 2: visible ⚠ vec-daemon down warnings in CM + G1 headers",
-    "iter 3: 8-query G2 gold-truth bench + scorer",
-    "iter 4: T1-A (BM25 + v3 tokenizer) shipped to git-memory.py",
-    "iter 5: goldset q5 fix — exposed broad-vs-focused keyword trade-off",
-    "iter 6: T1-C query-type router shipped (>=5 kw → length-ASC, else BM25) — Hit@5 0.50→0.75",
-    "iter 7: latency micro-bench — ROUTER 1.50ms cold (was: OLD 1.41ms, BM25 3.16ms)",
-    "iter 8: discovered codebase-memory DB 254h stale; manual reindex +15% MRR",
-    "iter 9: goldset 8→12 queries for stronger stats; ROUTER confirmed net-win",
-    "iter 10: tiered staleness warning (silent/⚠/⚠⚠) in auto-index.py",
-    "iter 11: T1-B co-occurrence synonym mining — NEGATIVE (template boilerplate noise)",
-    "iter 12: session capstone in MEMORY.md",
-    "iter 13: auto-index.py structural fix — hint → actual subprocess execution",
-    "iter 14: end-to-end integration validated across all 4 hooks"
+  "status": "ROTATING",
+  "session_id": "inf-20260423-083322-paper2",
+  "current_iteration": 1,
+  "root_goal": "Author reproducibility artifact: MERIDIAN harness README + 30-min smoke-test guide enabling third-party replication per \u00a78.5 claim",
+  "original_goal": "go with the paper 2",
+  "evolution_count": 1,
+  "best_score": 0.8625,
+  "plateau_count": 0,
+  "started_at": "2026-04-23T08:33:22Z",
+  "wave1_complete": false,
+  "wave1_evolution_count": -1,
+  "evolution_history": [
+    {
+      "iteration": 1,
+      "goal": "Write CTX vs claude-mem paper 2 draft",
+      "score": 0.8625,
+      "rationale": "v0.1 scaffold complete"
+    }
   ],
-  "open_followups": [
-    "Cross-project goldset (Flask/FastAPI external transferability)",
-    "T1-B with MI-scoring + topic-stratified sampling",
-    "CM hybrid P@5 re-measurement vs 20260410 bench baseline",
-    "G1 7/15 rank-out analysis (DECISION_CAP or pass2 dedup improvement)"
-  ]
+  "rotated_at": "2026-04-23T08:40:17Z",
+  "last_autopilot_summary": "iter 1: produced paper2_ctx_vs_claudemem_draft.md (v0.1, ~620 lines). \u00a71-4+\u00a77-9 populated. \u00a75-6 stubs pending pilot.",
+  "next_candidate_bundle": [
+    {
+      "id": "C1",
+      "goal": "Strengthen Paper 2 \u00a72 Related Work + \u00a77 Discussion with full citation trail \u2014 fill [TBD] citations, replace bare architectural claims with sourced evidence",
+      "dim_fit": 0.9,
+      "novelty": 0.3,
+      "feasibility": 0.8,
+      "direction": "quality",
+      "look_ahead": 0.7000000000000001
+    },
+    {
+      "id": "C2",
+      "goal": "Execute pilot N=100 per \u00a75 \u2014 implement paired-eval harness, produce real pilot numbers, populate \u00a75 with data instead of stubs",
+      "dim_fit": 0.8,
+      "novelty": 0.7,
+      "feasibility": 0.2,
+      "direction": "completeness",
+      "look_ahead": 0.65
+    },
+    {
+      "id": "C3",
+      "goal": "Author reproducibility artifact: MERIDIAN harness README + 30-min smoke-test guide enabling third-party replication per \u00a78.5 claim",
+      "dim_fit": 0.6,
+      "novelty": 0.9,
+      "feasibility": 0.9,
+      "direction": "impact (novel angle)",
+      "look_ahead": 0.7500000000000001
+    }
+  ],
+  "next_candidate_selected": "C3"
 }

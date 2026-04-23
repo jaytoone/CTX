@@ -1,15 +1,13 @@
 {
-  "root_goal": "Fill semantic search gap in CTX hooks per SOTA research — Tier 1: G2 SQL LIKE→BM25, co-occurrence synonyms, query-type RRF. Validate against G1 (0.746) and G2 external R@5 (0.602) benches.",
-  "original_goal": "Fill semantic search gap in CTX hooks per SOTA research — Tier 1 implementation + validation.",
+  "root_goal": "Write the CTX vs claude-mem top-tier comparison paper using the MERIDIAN v2 evaluation rubric (paper 2)",
+  "original_goal": "go with the paper 2",
   "level": 0,
-  "sub_goals": [
-    {"id": "T1-A", "goal": "Replace G2 SQL LIKE with in-process BM25 over graph nodes", "status": "pending"},
-    {"id": "T1-B", "goal": "Corpus-derived co-occurrence synonyms via auto-index extension", "status": "pending"},
-    {"id": "T1-C", "goal": "Query-type-aware RRF weighting (keyword=0.85 BM25, NL=0.5/0.5)", "status": "pending"},
-    {"id": "VALIDATE", "goal": "Re-run G1 59-query + G2 external benches, measure delta", "status": "pending"}
-  ],
+  "sub_goals": [],
   "evolution_count": 0,
   "evolution_history": [],
-  "reward_spec": {"primary_metric": "G1 Recall@7 + G2 external R@5", "threshold": "G1 >= 0.746 AND G2 >= 0.602 (no regression), ideally G2 FastAPI +0.10"},
+  "reward_spec": {
+    "primary_metric": "paper draft completeness + grounding rate",
+    "threshold": "all sections populated with cited claims, experimental design fully specified, ≥0.85 grounding rate"
+  },
   "history": []
 }

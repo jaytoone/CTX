@@ -1,0 +1,22 @@
+{
+  "current_iteration": 1,
+  "last_outcome": "success",
+  "last_phase_reached": "paper_draft_v0.1",
+  "started_at": "2026-04-23T08:33:22Z",
+  "best_score": 0.8625,
+  "current_score": 0.8625,
+  "current_goal_fidelity": 1.0,
+  "score_variance": 0.0,
+  "plateau_count": 0,
+  "evolution_count": 0,
+  "score_history": [
+    {
+      "iteration": 1,
+      "score": 0.8625,
+      "goal_fidelity": 1.0,
+      "goal_version": 0,
+      "score_variance": 0.0
+    }
+  ],
+  "cost_history": []
+}

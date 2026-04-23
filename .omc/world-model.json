@@ -3,7 +3,13 @@
     {
       "goal": "3 hook additions: synonym map + temporal timeline + G2a importers",
       "score": 0.955,
-      "score_vector": {"quality": 0.94, "completeness": 0.96, "efficiency": 0.93, "impact": 0.97, "goal_fidelity": 0.96},
+      "score_vector": {
+        "quality": 0.94,
+        "completeness": 0.96,
+        "efficiency": 0.93,
+        "impact": 0.97,
+        "goal_fidelity": 0.96
+      },
       "iteration": 4,
       "outcome": "success",
       "weak_dim": "quality"
@@ -11,7 +17,13 @@
     {
       "goal": "G1 과적합 검증 + 일반화 수정 (word-boundary verbs + deep grep _is_decision() 제거)",
       "score": 0.904,
-      "score_vector": {"quality": 0.88, "completeness": 0.85, "efficiency": 0.90, "impact": 0.92, "goal_fidelity": 0.97},
+      "score_vector": {
+        "quality": 0.88,
+        "completeness": 0.85,
+        "efficiency": 0.9,
+        "impact": 0.92,
+        "goal_fidelity": 0.97
+      },
       "iteration": 1,
       "outcome": "evolved",
       "weak_dim": "completeness"
@@ -19,7 +31,13 @@
     {
       "goal": "G1 일반화 수치 완성 — CTX 59-query + Flask + Requests 교차 검증 완전 비교표",
       "score": 0.922,
-      "score_vector": {"quality": 0.92, "completeness": 0.93, "efficiency": 0.85, "impact": 0.94, "goal_fidelity": 0.97},
+      "score_vector": {
+        "quality": 0.92,
+        "completeness": 0.93,
+        "efficiency": 0.85,
+        "impact": 0.94,
+        "goal_fidelity": 0.97
+      },
       "iteration": 2,
       "outcome": "evolved",
       "weak_dim": "efficiency"
@@ -27,26 +45,32 @@
     {
       "goal": "G1 Recall@7 상한선 분석 + 0-7d 개선 — miss pattern 분류, multi-keyword 도입",
       "score": 0.946,
-      "score_vector": {"quality": 0.93, "completeness": 0.95, "efficiency": 0.92, "impact": 0.96, "goal_fidelity": 0.97},
+      "score_vector": {
+        "quality": 0.93,
+        "completeness": 0.95,
+        "efficiency": 0.92,
+        "impact": 0.96,
+        "goal_fidelity": 0.97
+      },
       "iteration": 3,
+      "outcome": "evolved",
+      "weak_dim": "quality"
+    },
+    {
+      "goal": "paper 2 draft v0.1 scaffold",
+      "score": 0.8625,
+      "score_vector": {
+        "quality": 0.8,
+        "completeness": 0.8,
+        "impact": 0.85,
+        "goal_fidelity": 1.0
+      },
+      "iteration": 1,
       "outcome": "evolved",
       "weak_dim": "quality"
     }
   ],
-  "dead_ends": [],
-  "uncertain_followups": [
-    {
-      "goal": "T1-A: G2 search_graph_for_prompt SQL LIKE → BM25 over (name+file_path)",
-      "source": "docs/research/20260417-ctx-semantic-search-upgrade-sota.md Tier 1-A",
-      "status": "NOT a dead-end. Implementation was reverted due to three consecutive tokenizer bugs in the A/B harness — not a theoretical failure. T1-A with v3 tokenizer (snake_case + CamelCase split, alphanumeric runs like 'bm25' kept intact) shows overlap 0.43 and canonical case 'BM25 retriever lookup' lifts from 0/5 to 3/5 with BM25Retriever class surfacing at rank 3 (OLD never showed it).",
-      "open_issues": [
-        "No gold-truth benchmark yet → can't claim 'better' on ambiguous cases like 'fair eval' (1/5 overlap)",
-        "Latency 1.6ms → 14-16ms (10×) — still within hook budget but a real cost",
-        "No decision on whether to ship"
-      ],
-      "next_step_if_revisited": "Build 15-20 query gold-truth G2 bench first; only then re-apply T1-A with v3 tokenizer and decide on latency tradeoff."
-    }
-  ],
+  "dead_ends": {},
   "known_facts": [
     "2026-04-17 iter 1: vec-daemon died 2026-04-11, SessionStart `test -S $sock` didn't detect stale socket, CM+G1 ran in BM25-only silent fallback for 6 days. Fixed via python3 socket.connect() liveness probe in settings.json.",
     "2026-04-17 iter 2: added visible `⚠ vec-daemon down` warnings to CM header + G1 decision header so future silent failures surface in every prompt injection. Validated A/B both paths.",
@@ -90,7 +114,7 @@
     }
   ],
   "dimensions_explored": {
-    "quality": 0.93,
+    "quality": 0.8,
     "completeness": 0.95,
     "efficiency": 0.92,
     "impact": 0.96,
@@ -110,13 +134,25 @@
     }
   ],
   "best_score_vector": {
-    "quality": 0.93,
-    "completeness": 0.95,
-    "efficiency": 0.92,
-    "impact": 0.96,
-    "goal_fidelity": 0.98
+    "quality": 0.8,
+    "completeness": 0.8,
+    "impact": 0.85,
+    "goal_fidelity": 1.0
   },
   "wave1_plan": "",
   "wave1_evolution_count": -1,
-  "wave1_feedback": []
+  "wave1_feedback": [],
+  "uncertain_followups": [
+    {
+      "goal": "T1-A: G2 search_graph_for_prompt SQL LIKE → BM25 over (name+file_path)",
+      "source": "docs/research/20260417-ctx-semantic-search-upgrade-sota.md Tier 1-A",
+      "status": "NOT a dead-end. Implementation was reverted due to three consecutive tokenizer bugs in the A/B harness — not a theoretical failure. T1-A with v3 tokenizer (snake_case + CamelCase split, alphanumeric runs like 'bm25' kept intact) shows overlap 0.43 and canonical case 'BM25 retriever lookup' lifts from 0/5 to 3/5 with BM25Retriever class surfacing at rank 3 (OLD never showed it).",
+      "open_issues": [
+        "No gold-truth benchmark yet → can't claim 'better' on ambiguous cases like 'fair eval' (1/5 overlap)",
+        "Latency 1.6ms → 14-16ms (10×) — still within hook budget but a real cost",
+        "No decision on whether to ship"
+      ],
+      "next_step_if_revisited": "Build 15-20 query gold-truth G2 bench first; only then re-apply T1-A with v3 tokenizer and decide on latency tradeoff."
+    }
+  ]
 }
