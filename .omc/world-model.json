@@ -89,6 +89,13 @@
       "iteration": 4,
       "outcome": "evolved",
       "weak_dim": "impact"
+    },
+    {
+      "goal": "tier1 MAB harness + homograph verdict",
+      "score": 0.88,
+      "iteration": 5,
+      "outcome": "evolved",
+      "weak_dim": "impact"
     }
   ],
   "dead_ends": {},
@@ -122,7 +129,8 @@
     "Fix: extract_keywords() now emits compound terms + numeric tokens; Pass0 uses up to 5 grep_kws, max-count=10",
     "Remaining 17/45 0-7d misses: ~8 live-inf iter N/\u221e (topic-dedup collapse), ~5 near-duplicate commits (same topic cluster), ~4 keyword-poor",
     "Practical ceiling for keyword-based retrieval: ~0.65-0.70 on this benchmark (structural dedup limit)",
-    "BM25 cross-domain: zero-score \u2192 stable sort \u2192 no harmful reordering for unrelated queries"
+    "BM25 cross-domain: zero-score \u2192 stable sort \u2192 no harmful reordering for unrelated queries",
+    "homograph audit: 0.858 surface_match_only_rate on 106 labels (85.8% >> 30% threshold) \u2014 MMR dedup + cluster sig was correct priority, but surface noise dominates BM25 output \u2192 semantic rerank (bge-daemon) is architecturally necessary"
   ],
   "uncertain": [
     {
