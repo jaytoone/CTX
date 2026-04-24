@@ -179,11 +179,27 @@ def answer(client, question: str, memories: List[str], model: str = "") -> str:
                     model=model, max_tokens=256)
 
 
-def judge_reversal_correct(candidate: str, correct_answer: str) -> int:
-    """A response passes if it mentions the REVERSED answer (case-insensitive substring)."""
-    norm = candidate.lower()
-    ans = correct_answer.lower()
-    return 1 if ans in norm else 0
+JUDGE_SYS = (
+    "You are a strict grader. Decide if the candidate answer conveys the SAME FACT as "
+    "the reference answer — tolerate paraphrase and abbreviation (e.g. 'vanilla JS' and "
+    "'vanilla JavaScript' are equivalent), but reject answers that miss or contradict "
+    "the reference fact. Output EXACTLY one word: CORRECT or INCORRECT."
+)
+
+
+def judge_reversal_correct(candidate: str, correct_answer: str,
+                           client=None, model: str = "") -> int:
+    """LLM-based equivalence judge. Falls back to substring if no client."""
+    if client is None:
+        return 1 if correct_answer.lower() in candidate.lower() else 0
+    out = call_llm(client, JUDGE_SYS,
+                   f"Reference: {correct_answer}\nCandidate: {candidate}\nIs the candidate correct?",
+                   model=model, max_tokens=1024)
+    if out.startswith("["):
+        return 0
+    import re as _re
+    words = _re.findall(r"\b(CORRECT|INCORRECT)\b", out.upper())
+    return 1 if (words and words[-1] == "CORRECT") else 0
 
 
 # ══════════════════════════════════════════════════════════════════════════
@@ -205,7 +221,7 @@ def run_eval(cases: List[Dict], retriever_name: str, model: str = "") -> Dict:
         else:
             mems = retriever(q, c.get("haystack_sessions", []), top_k=5)
         candidate = answer(client, q, mems, model=model)
-        correct = judge_reversal_correct(candidate, c["answer"])
+        correct = judge_reversal_correct(candidate, c["answer"], client=client, model=model)
         results.append({
             "question_id": c["question_id"],
             "subject": c["subject"],

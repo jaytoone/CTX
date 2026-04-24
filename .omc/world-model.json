@@ -96,6 +96,13 @@
       "iteration": 5,
       "outcome": "evolved",
       "weak_dim": "impact"
+    },
+    {
+      "goal": "tier3 pairwise endpoint + BT + Krippendorff",
+      "score": 0.86,
+      "iteration": 6,
+      "outcome": "evolved",
+      "weak_dim": "impact"
     }
   ],
   "dead_ends": {},
