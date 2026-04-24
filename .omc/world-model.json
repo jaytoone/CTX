@@ -191,7 +191,8 @@
     "ctx_v3 (hybrid BM25 + Chroma cascade) = 0.80 on MAB N=10 \u2014 8x lift over production ctx (0.1), 2.67x over ctx_v2 (0.3). Still below pure chroma 1.0 because hybrid's BM25-first priority retains some initial-session bias. For conflict-resolution specifically, bypass BM25 and go dense. For exact-keyword (G1), prefer BM25.",
     "MAB N=50 Wilson CI: none 0.00 [0.00,0.07] / ctx 0.40 [0.28,0.54] / ctx_v2 0.58 [0.44,0.71] / chroma 0.84 [0.72,0.92] / oracle 0.92 [0.81,0.97] \u2014 all CIs non-overlapping, results statistically significant",
     "LongMemEval (REAL) N=10: none=0.10 / ctx=0.10 / ctx_v2=0.30 / ctx_v3=0.30 / chroma=0.30 \u2014 all non-BM25-only methods tied at 30% on real paraphrase-heavy multi-session data; ctx=baseline-equivalent",
-    "Final paper tables ready: MAB synthetic + MAB N=50+CI + LongMemEval real + PUAC + G1 regression + Homograph audit \u2014 6 data products supporting paper2 \u00a76"
+    "Final paper tables ready: MAB synthetic + MAB N=50+CI + LongMemEval real + PUAC + G1 regression + Homograph audit \u2014 6 data products supporting paper2 \u00a76",
+    "PAPER HEADLINE: claudemem_faithful (LLM-summarize \u2192 Chroma) = 0.80 on MAB N=10 vs chroma proxy (raw turns) = 1.00. LLM summarization step LOSES 20pp on conflict-resolution. Proxy OVER-predicted claude-mem real performance. 2 cases lost (rerank layer, concurrency model) \u2014 in both, LLM summary preserved INITIAL but under-emphasized reversal. Validates paper pre-reg claim: LLM-summarized intake is structurally weaker for decision-reversal tracking."
   ],
   "uncertain": [
     {
