@@ -48,9 +48,11 @@ sys.path.insert(0, str(ROOT / "benchmarks" / "eval"))
 from downstream_llm_eval import get_llm_client, call_llm   # noqa: E402
 from tier1_longmemeval import RETRIEVERS, retrieve_ctx, retrieve_oracle, retrieve_none, retrieve_chroma   # noqa: E402
 from retrieve_ctx_v2 import retrieve_ctx_v2   # noqa: E402
+from retrieve_ctx_v3 import retrieve_ctx_v3   # noqa: E402
 
-# Register ctx_v2 (stemmed BM25 + recency) as an additional retriever
+# Register experimental retrievers alongside production ctx
 RETRIEVERS["ctx_v2"] = retrieve_ctx_v2
+RETRIEVERS["ctx_v3"] = retrieve_ctx_v3   # BM25 + Chroma hybrid cascade
 
 
 # ══════════════════════════════════════════════════════════════════════════

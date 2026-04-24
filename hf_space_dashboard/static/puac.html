@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CTX PUAC Compare</title>
+<style>
+:root {
+  --bg: #0f1219; --panel: #161a24; --border: #2a3040;
+  --text: #e6e8ec; --muted: #8a93a4;
+  --pos: #4fc38a; --neg: #f85a65; --warn: #e8a03b; --neutral: #4aa5ff;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: -apple-system, Segoe UI, Helvetica, sans-serif;
+       background: var(--bg); color: var(--text); }
+.header { padding: 16px 24px; border-bottom: 1px solid var(--border);
+          display: flex; align-items: center; gap: 16px; }
+.header h1 { margin: 0; font-size: 18px; font-weight: 600; }
+.agg { padding: 12px 24px; border-bottom: 1px solid var(--border); background: var(--panel); }
+.agg-row { display: flex; gap: 20px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+.agg-row b { color: var(--text); margin-left: 6px; }
+.prompts { padding: 16px 24px; }
+.prompt-card { background: var(--panel); border: 1px solid var(--border);
+               border-radius: 6px; margin-bottom: 12px; cursor: pointer; }
+.prompt-card:hover { border-color: var(--neutral); }
+.prompt-head { padding: 12px 16px; display: flex; gap: 12px; align-items: center; }
+.prompt-id { font-family: monospace; font-size: 12px; color: var(--muted); min-width: 140px; }
+.prompt-text { flex: 1; font-size: 14px; }
+.chip { padding: 2px 8px; border-radius: 4px; font-size: 11px; font-family: monospace; }
+.chip.cl-pos { background: rgba(79, 195, 138, 0.15); color: var(--pos); }
+.chip.cl-neg { background: rgba(248, 90, 101, 0.15); color: var(--neg); }
+.chip.cl-neutral { background: rgba(138, 147, 164, 0.15); color: var(--muted); }
+.chip.ar { background: rgba(74, 165, 255, 0.15); color: var(--neutral); }
+.chip.prr { background: rgba(232, 160, 59, 0.15); color: var(--warn); }
+.chip.puac-pos { background: rgba(79, 195, 138, 0.25); color: var(--pos); font-weight: 600; }
+.chip.puac-neg { background: rgba(248, 90, 101, 0.25); color: var(--neg); font-weight: 600; }
+.detail { display: none; padding: 0 16px 16px; border-top: 1px solid var(--border); }
+.detail.open { display: block; }
+.interpret { padding: 10px 14px; margin: 12px 0;
+             background: rgba(74, 165, 255, 0.08);
+             border-left: 3px solid var(--neutral);
+             border-radius: 3px; font-size: 13px; }
+.cond-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.cond-box { background: #0d1017; border: 1px solid var(--border);
+            border-radius: 4px; padding: 12px; }
+.cond-label { font-size: 11px; font-weight: 600; color: var(--muted);
+              text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
+.cond-score { font-family: monospace; font-size: 14px; color: var(--text);
+              margin-bottom: 10px; }
+.cond-response { font-size: 13px; line-height: 1.5; color: #c5c9d2;
+                 white-space: pre-wrap; }
+.loading { color: var(--muted); padding: 24px; text-align: center; }
+.empty { color: var(--muted); padding: 40px; text-align: center; font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>CTX PUAC Compare</h1>
+  <span style="color: var(--muted); font-size: 13px;">
+    Per-prompt utility & attribution decomposition • CL=Causal Lift / AR=Attribution Rate / PRR=Post-Rationalization
+  </span>
+</div>
+
+<div class="agg" id="agg">
+  <div class="loading">Loading aggregate...</div>
+</div>
+
+<div class="prompts" id="prompts">
+  <div class="loading">Loading prompts...</div>
+</div>
+
+<script>
+const chipClassCL = v => v >= 0.15 ? 'cl-pos' : v <= -0.15 ? 'cl-neg' : 'cl-neutral';
+const chipClassPUAC = v => v >= 0 ? 'puac-pos' : 'puac-neg';
+const fmt = (v, digits = 2, sign = false) => {
+  if (v == null || isNaN(v)) return '—';
+  const s = Number(v).toFixed(digits);
+  return sign && v > 0 ? `+${s}` : s;
+};
+
+async function loadSummary() {
+  try {
+    const r = await fetch('/api/puac-compare');
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    return await r.json();
+  } catch (e) {
+    return { error: e.message };
+  }
+}
+
+async function loadDetail(pid) {
+  try {
+    const r = await fetch(`/api/puac-compare/${encodeURIComponent(pid)}`);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    return await r.json();
+  } catch (e) {
+    return { error: e.message };
+  }
+}
+
+function renderAgg(data) {
+  const a = data.aggregate || {};
+  const html = `
+    <div class="agg-row">
+      <span>N prompts<b>${data.n ?? 0}</b></span>
+      <span>mean CL<b>${fmt(a.mean_CL, 3, true)}</b></span>
+      <span>mean AR<b>${fmt(a.mean_AR, 3)}</b></span>
+      <span>PRR rate<b>${fmt(a.PRR_rate, 3)}</b></span>
+      <span>NHR rate<b>${fmt(a.NHR_rate, 3)}</b></span>
+      <span>OAR rate<b>${fmt(a.OAR_rate, 3)}</b></span>
+      <span>mean PUAC<b>${fmt(a.mean_PUAC, 3, true)}</b></span>
+      <span>conditions<b>${(data.conditions || []).join(', ') || '—'}</b></span>
+    </div>
+  `;
+  document.getElementById('agg').innerHTML = html;
+}
+
+function renderPromptList(data) {
+  const prompts = data.prompts || [];
+  if (!prompts.length) {
+    document.getElementById('prompts').innerHTML =
+      '<div class="empty">No PUAC data yet. Run <code>python3 benchmarks/eval/puac_eval.py --smoke</code> first.</div>';
+    return;
+  }
+  const html = prompts.map(p => `
+    <div class="prompt-card" data-pid="${p.prompt_id}">
+      <div class="prompt-head">
+        <span class="prompt-id">${p.prompt_id}</span>
+        <span class="prompt-text">${escapeHTML(p.prompt_text)}</span>
+        <span class="chip ${chipClassCL(p.CL)}">CL ${fmt(p.CL, 2, true)}</span>
+        <span class="chip ar">AR ${fmt(p.AR, 2)}</span>
+        <span class="chip prr">PRR ${p.PRR}</span>
+        <span class="chip ${chipClassPUAC(p.PUAC)}">PUAC ${fmt(p.PUAC, 3, true)}</span>
+      </div>
+      <div class="detail" id="detail-${p.prompt_id}"></div>
+    </div>
+  `).join('');
+  document.getElementById('prompts').innerHTML = html;
+  document.querySelectorAll('.prompt-card').forEach(el => {
+    el.addEventListener('click', () => toggleDetail(el.dataset.pid));
+  });
+}
+
+async function toggleDetail(pid) {
+  const el = document.getElementById(`detail-${pid}`);
+  if (el.classList.contains('open')) {
+    el.classList.remove('open');
+    return;
+  }
+  el.innerHTML = '<div class="loading">Loading side-by-side comparison...</div>';
+  el.classList.add('open');
+
+  const d = await loadDetail(pid);
+  if (d.error) {
+    el.innerHTML = `<div class="loading">Error: ${d.error}</div>`;
+    return;
+  }
+  const m = d.metrics || {};
+  const conds = d.conditions || {};
+  const condKeys = Object.keys(conds).filter(k => k === 'FULL' || k === 'EMPTY');
+  el.innerHTML = `
+    <div class="interpret">${escapeHTML(d.interpretation || '')}</div>
+    <div class="cond-grid">
+      ${condKeys.map(k => {
+        const c = conds[k] || {};
+        return `
+          <div class="cond-box">
+            <div class="cond-label">${k} &nbsp;·&nbsp; judge ${fmt(c.judge_score, 2)} &nbsp;·&nbsp; ${c.n_referenced}/${c.n_injected} referenced</div>
+            <div class="cond-response">${escapeHTML(c.response || '')}</div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+function escapeHTML(s) {
+  return String(s ?? '').replace(/[&<>"']/g, ch => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  }[ch]));
+}
+
+(async () => {
+  const data = await loadSummary();
+  if (data.error) {
+    document.getElementById('agg').innerHTML = `<div class="loading">Error: ${data.error}</div>`;
+    document.getElementById('prompts').innerHTML = '';
+    return;
+  }
+  renderAgg(data);
+  renderPromptList(data);
+})();
+</script>
+</body>
+</html>
