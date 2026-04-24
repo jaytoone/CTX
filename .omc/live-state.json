@@ -1,9 +1,9 @@
 {
-  "current_iteration": 29,
+  "current_iteration": 30,
   "last_outcome": "success",
   "started_at": "2026-04-24T11:00:44.420852Z",
-  "best_score": 0.98,
-  "plateau_count": 1,
+  "best_score": 0.99,
+  "plateau_count": 0,
   "evolution_count": 0,
   "score_history": [
     {
@@ -194,6 +194,13 @@
       "goal_fidelity": 1.0,
       "goal_version": 0,
       "score_variance": 0.0
+    },
+    {
+      "iteration": 30,
+      "score": 0.99,
+      "goal_fidelity": 1.0,
+      "goal_version": 0,
+      "score_variance": 0.0
     }
   ],
   "cost_history": [
@@ -223,8 +230,8 @@
       "relative_cost": 1.0
     }
   ],
-  "last_phase_reached": "iter29_v4_docx_doc_index_final",
-  "current_score": 0.96,
+  "last_phase_reached": "iter30_mcnemar_chroma_bug_fix",
+  "current_score": 0.99,
   "current_goal_fidelity": 1.0,
   "score_variance": 0.0
 }

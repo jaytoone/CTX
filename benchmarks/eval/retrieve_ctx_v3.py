@@ -36,12 +36,21 @@ except ImportError:
 
 
 def _chroma_retrieve(query: str, haystack: List[Dict], top_k: int = 5) -> List[tuple]:
-    """Returns list of (content, session_index, score)."""
+    """Returns list of (content, session_index, score).
+
+    Note: uses UUID collection names — id(haystack) is not unique (Python
+    recycles IDs after GC) and chromadb.Client() singleton persists
+    collections in-memory. Observed 2026-04-25: id()-based names caused a
+    0.88→0.12 MAB N=50 regression when ctx_v3 ran after claudemem_faithful
+    in the same process. Delete after use so the singleton doesn't OOM.
+    """
     if not HAS_CHROMA:
         return []
+    import uuid as _uuid
     client = chromadb.Client()
+    coll_name = f"ctx-v3-{_uuid.uuid4().hex[:12]}"
     coll = client.get_or_create_collection(
-        f"ctx-v3-{id(haystack)}",
+        coll_name,
         embedding_function=embedding_functions.DefaultEmbeddingFunction(),
     )
     docs, ids, metadatas = [], [], []
@@ -62,6 +71,11 @@ def _chroma_retrieve(query: str, haystack: List[Dict], top_k: int = 5) -> List[t
         out = []
         for doc, meta in zip(res["documents"][0], res["metadatas"][0]):
             out.append((meta["subject"], meta["session_index"]))
+        # Clean up collection so the singleton client doesn't retain it
+        try:
+            client.delete_collection(coll_name)
+        except Exception:
+            pass
         return out
     except Exception:
         return []

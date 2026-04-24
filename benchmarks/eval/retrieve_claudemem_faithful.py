@@ -93,10 +93,13 @@ def retrieve_claudemem_faithful(query: str, haystack: List[Dict], top_k: int = 5
             summaries.append((s_idx, summary))
     if not summaries:
         return []
-    # Index summaries in fresh Chroma
+    # Index summaries in fresh Chroma — UUID collection name to avoid cache
+    # reuse across calls (see retrieve_ctx_v3.py comment).
+    import uuid as _uuid
     chroma_client = chromadb.Client()
+    coll_name = f"claudemem-faithful-{_uuid.uuid4().hex[:12]}"
     coll = chroma_client.get_or_create_collection(
-        f"claudemem-faithful-{id(haystack)}",
+        coll_name,
         embedding_function=embedding_functions.DefaultEmbeddingFunction(),
     )
     docs = [s for _, s in summaries]
@@ -104,6 +107,10 @@ def retrieve_claudemem_faithful(query: str, haystack: List[Dict], top_k: int = 5
     try:
         coll.upsert(documents=docs, ids=ids)
         res = coll.query(query_texts=[query], n_results=top_k)
+        try:
+            chroma_client.delete_collection(coll_name)
+        except Exception:
+            pass
         return res.get("documents", [[]])[0]
     except Exception as e:
         print(f"[claudemem-faithful] chroma error: {e}", file=sys.stderr)
