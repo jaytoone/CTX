@@ -29,3 +29,6 @@ Thumbs.db
 
 # Logs
 *.log
+benchmarks/datasets/longmemeval/longmemeval_s
+benchmarks/datasets/longmemeval/longmemeval_oracle
+benchmarks/datasets/longmemeval/.cache/

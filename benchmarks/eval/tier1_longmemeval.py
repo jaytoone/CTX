@@ -54,7 +54,9 @@ from downstream_llm_eval import get_llm_client, call_llm   # noqa: E402
 # ══════════════════════════════════════════════════════════════════════════
 
 DATASET_URL = "xiaowu0162/longmemeval"   # HF dataset identifier
-DATASET_FILES = ("longmemeval_s.json", "longmemeval_oracle.json")
+# Actual HF file names — NO .json extension on upstream (verified 2026-04-24).
+# load_dataset() appends .json locally for clarity.
+DATASET_FILES = ("longmemeval_s", "longmemeval_oracle")
 
 
 def download_dataset(target: Path = DATASET_DIR) -> Path:
@@ -79,11 +81,12 @@ def download_dataset(target: Path = DATASET_DIR) -> Path:
 
 
 def load_dataset(split: str = "longmemeval_s") -> List[Dict[str, Any]]:
-    path = DATASET_DIR / f"{split}.json"
-    if not path.exists():
-        print(f"[error] {path} not found. Run with --download first.", file=sys.stderr)
-        sys.exit(2)
-    return json.loads(path.read_text())
+    # Try with and without .json suffix (HF repo has no extension)
+    for candidate in (DATASET_DIR / split, DATASET_DIR / f"{split}.json"):
+        if candidate.exists():
+            return json.loads(candidate.read_text())
+    print(f"[error] dataset {split} not found in {DATASET_DIR}. Run with --download first.", file=sys.stderr)
+    sys.exit(2)
 
 
 # ══════════════════════════════════════════════════════════════════════════

@@ -1,5 +1,5 @@
 {
-  "current_iteration": 15,
+  "current_iteration": 16,
   "last_outcome": "success",
   "started_at": "2026-04-24T11:00:44.420852Z",
   "best_score": 0.95,
@@ -96,6 +96,13 @@
       "goal_fidelity": 1.0,
       "goal_version": 0,
       "score_variance": 0.0
+    },
+    {
+      "iteration": 16,
+      "score": 0.93,
+      "goal_fidelity": 1.0,
+      "goal_version": 0,
+      "score_variance": 0.0
     }
   ],
   "cost_history": [
@@ -125,8 +132,8 @@
       "relative_cost": 1.0
     }
   ],
-  "last_phase_reached": "iter15_p3_verdict_0p80",
-  "current_score": 0.95,
+  "last_phase_reached": "iter16_p4_longmemeval_dl",
+  "current_score": 0.93,
   "current_goal_fidelity": 1.0,
   "score_variance": 0.0
 }
