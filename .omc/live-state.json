@@ -1,9 +1,9 @@
 {
-  "current_iteration": 26,
+  "current_iteration": 27,
   "last_outcome": "success",
   "started_at": "2026-04-24T11:00:44.420852Z",
   "best_score": 0.97,
-  "plateau_count": 1,
+  "plateau_count": 2,
   "evolution_count": 0,
   "score_history": [
     {
@@ -173,6 +173,13 @@
       "goal_fidelity": 1.0,
       "goal_version": 0,
       "score_variance": 0.0
+    },
+    {
+      "iteration": 27,
+      "score": 0.95,
+      "goal_fidelity": 1.0,
+      "goal_version": 0,
+      "score_variance": 0.0
     }
   ],
   "cost_history": [
@@ -202,7 +209,7 @@
       "relative_cost": 1.0
     }
   ],
-  "last_phase_reached": "iter26_v3_docx_doc_index",
+  "last_phase_reached": "iter27_paper_limitations_conclusion",
   "current_score": 0.95,
   "current_goal_fidelity": 1.0,
   "score_variance": 0.0
