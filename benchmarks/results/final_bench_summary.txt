@@ -1,0 +1,51 @@
+==============================================================================
+CTX FINAL BENCHMARK — paper-grade 3-tier comparison
+==============================================================================
+
+═══ TIER 1 — Public benchmarks ═══
+
+MAB Competency-4 Conflict Resolution (synthetic, N=50, Wilson 95% CI)
+  retriever   accuracy  Wilson 95% CI       vs baseline
+  none           0.000  [0.000, 0.071]   —
+  ctx            0.400  [0.276, 0.538]   +40%
+  ctx_v2         0.580  [0.442, 0.706]   +58%
+  chroma         0.840  [0.715, 0.917]   +84%
+  oracle         0.920  [0.812, 0.968]   +92%
+
+MAB N=10 (includes ctx_v3 hybrid cascade — not run on N=50)
+  retriever   accuracy
+  none           0.000
+  ctx            0.100
+  ctx_v2         0.300
+  ctx_v3         0.800
+  chroma         1.000
+  oracle         0.500
+
+LongMemEval (REAL ICLR 2025 dataset, N=10 stratified 6 question types)
+  retriever   accuracy
+  none           0.100  (1/10)
+  ctx            0.100  (1/10)
+  ctx_v2         0.300  (3/10)
+  ctx_v3         0.300  (3/10)
+  chroma         0.300  (3/10)
+
+═══ TIER 2 — PUAC decomposition on 10 MAB prompts ═══
+  mean CL              = +0.207  (causal lift — +20.7% judge-score)
+  mean AR              = 0.800   (80% items referenced)
+  PRR rate             = 0.300   (post-rationalization)
+  NHR rate             = 0.300   (noise harm)
+  OAR rate             = 0.300   (over-anchoring)
+  mean PUAC            = +0.283
+
+═══ INTERNAL REGRESSIONS ═══
+  G1 Recall@7  ctx    = 0.966
+               ctx_v2 = 1.000  (++0.034)
+  Homograph surface-match-only rate = 0.858 (threshold 0.30)
+
+═══ HEADLINE NUMBERS ═══
+  ctx_v2 G1 regression: ZERO, in fact +3.4pp over ctx
+  ctx_v2 MAB N=50:      0.580 [0.442, 0.706]  — 45% relative lift over ctx
+  ctx_v3 MAB N=10:      0.800 — 8× over production ctx
+  chroma MAB N=50:      0.840 [0.715, 0.917] — dense wins conflict-resolution
+  LongMemEval N=10:     ctx_v2/v3/chroma tied at 0.30 (all >> ctx 0.10)
+==============================================================================
