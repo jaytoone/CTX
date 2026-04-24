@@ -2,6 +2,7 @@
 
 | 파일 | 설명 |
 |------|------|
+| [research/20260424-ctx-bench-comparison-v3-ko.docx](research/20260424-ctx-bench-comparison-v3-ko.docx) | CTX 벤치마크 비교 v3 — Faithful claude-mem 재현 추가 (한국어 docx, 2026-04-24, live-inf iter 26) — **paper headline**: LLM-summarize 후 Chroma 인덱싱하는 실제 claude-mem 파이프라인(claudemem_faithful)을 재현 측정 결과 MAB Competency-4 N=10 = 0.80, raw-turn Chroma proxy는 1.00 → **20pp summarization tax** 실측. 2 실패 case(rerank layer/concurrency model)에서 LLM 요약이 initial 보존 + reversal dilute. ctx_v3 (hybrid 0.80) = claudemem_faithful (0.80) → production retrieval TIE. Paper §7.6 신규 contribution: "Proxy vs Faithful 방법론 경고". 8-dim MERIDIAN 최종 예측표(CTX M/R/D/A 4축, claude-mem I₁ 1축, TIE 3축). 25 iter artifact catalog. |
 | [research/20260424-ctx-bench-comparison-v2-ko.docx](research/20260424-ctx-bench-comparison-v2-ko.docx) | CTX 벤치마크 비교 v2 — 완전판 (한국어 docx, 2026-04-24, live-inf iter 21) — iter 11 초기본 대체. MAB Competency-4 N=50 Wilson 95% CI 5-way 비교 (ctx / ctx_v2 / ctx_v3 / chroma / oracle), MAB N=10 (ctx_v3 하이브리드 0.80 포함), 실제 LongMemEval ICLR 2025 N=10 stratified (모든 semantic 계열 0.30 동률), PUAC 4-condition 분해 (mean CL +0.207, PRR 0.30), G1 회귀 테스트 (ctx_v2 +0.034 zero regression → 프로덕션 병합 완료), Homograph 감사 (85.8% surface-match ≫ 30% threshold), 3-tier failure taxonomy (tokenization gap 60% / first-fact-wins / semantic gap 40%), 17개 artifact 카탈로그. 핵심 발견: 합성 벤치 favorable (0.58 vs 0.84) vs 실제 compressed (0.30 tie) 격차가 곧 paper thesis. |
 | [research/20260424-mab-recency-tokenization-gap.md](research/20260424-mab-recency-tokenization-gap.md) | MemoryAgentBench 실패 분석 — recency + tokenization gap (2026-04-24, live-inf iter 8) — iter 7 N=5에서 ctx=0.20 결과의 구조적 원인 3단계 분해: (1) BM25 tokenization gap — query "logs" vs 세션 "logging" → BM25 zero-score, recency boost 무력, (2) first-fact-wins — top-k에 reversal 들어와도 LLM이 initial session 기반 응답, (3) semantic gap — query-reversal 어휘 zero overlap 케이스. 4단계 remediation matrix: Porter stemming (30분, +2-3/5) → dense candidate generation (2h, +3-4/5) → recency-ordered injection → LLM 시스템 프롬프트 "most recent wins". ctx_v2 구현으로 (1) 즉시 검증, (3) dense candidate gen 필요성 empirical 확인. |
 | [research/20260424-memory-experiential-eval-protocol.md](research/20260424-memory-experiential-eval-protocol.md) | 피부로 와닿는 평가 프로토콜 — PUAC 공식 + 3-tier 설계 (2026-04-24) — Tier 1 자동(LongMemEval + MemoryAgentBench + MEMTRACK + MemoryArena) + Tier 2 semi-auto attribution (PUAC = 0.5·CL + 0.3·AR - 0.2·PRR) + Tier 3 human pairwise (Bradley-Terry + Krippendorff α). CL=Causal Lift, AR=Attribution Rate, PRR=Post-Rationalization per Wallat ICTIR 2025 (57% baseline). 4-condition (FULL/EMPTY/GOLD/NOISE) + NHR(noise harm) + OAR(over-anchoring) 부속 metric. Ablation matrix: CTX-A1~A7 (BM25 → rerank 단계별), claude-mem-A1~A5 (Chroma → FTS → raw). 후속 확장 TTPS 3-tier 결합 유효. |
@@ -148,10 +149,10 @@
 
 ## Related
 - [[projects/CTX/research/20260423-ctx-vs-claudemem-evaluation-rubric-v2-paper-tier|20260423-ctx-vs-claudemem-evaluation-rubric-v2-paper-tier]]
+- [[projects/CTX/research/20260411-hook-comparison-auto-index-vs-chat-memory|20260411-hook-comparison-auto-index-vs-chat-memory]]
 - [[projects/CTX/research/20260408-g1-longterm-eval-initial-results|20260408-g1-longterm-eval-initial-results]]
 - [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
+- [[projects/CTX/research/20260424-memory-retrieval-benchmark-landscape|20260424-memory-retrieval-benchmark-landscape]]
 - [[projects/CTX/research/20260408-g1-longterm-memory-evaluation-framework|20260408-g1-longterm-memory-evaluation-framework]]
-- [[projects/CTX/research/20260410-session-6c4f589e-chat-memory|20260410-session-6c4f589e-chat-memory]]
-- [[projects/CTX/research/20260417-ctx-semantic-search-upgrade-sota|20260417-ctx-semantic-search-upgrade-sota]]
-- [[projects/CTX/infra/20260423-client-onboarding-north-star|20260423-client-onboarding-north-star]]
-- [[projects/CTX/infra/20260423-wsl2-remote-tailscale-tunneling|20260423-wsl2-remote-tailscale-tunneling]]
+- [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]
+- [[projects/CTX/research/20260410-vault-vector-migration-and-benchmark|20260410-vault-vector-migration-and-benchmark]]
