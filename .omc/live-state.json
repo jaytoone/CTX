@@ -1,9 +1,9 @@
 {
-  "current_iteration": 27,
+  "current_iteration": 28,
   "last_outcome": "success",
   "started_at": "2026-04-24T11:00:44.420852Z",
-  "best_score": 0.97,
-  "plateau_count": 2,
+  "best_score": 0.98,
+  "plateau_count": 0,
   "evolution_count": 0,
   "score_history": [
     {
@@ -180,6 +180,13 @@
       "goal_fidelity": 1.0,
       "goal_version": 0,
       "score_variance": 0.0
+    },
+    {
+      "iteration": 28,
+      "score": 0.98,
+      "goal_fidelity": 1.0,
+      "goal_version": 0,
+      "score_variance": 0.0
     }
   ],
   "cost_history": [
@@ -209,8 +216,8 @@
       "relative_cost": 1.0
     }
   ],
-  "last_phase_reached": "iter27_paper_limitations_conclusion",
-  "current_score": 0.95,
+  "last_phase_reached": "iter28_faithful_n50_ctx_v3_wins",
+  "current_score": 0.98,
   "current_goal_fidelity": 1.0,
   "score_variance": 0.0
 }
