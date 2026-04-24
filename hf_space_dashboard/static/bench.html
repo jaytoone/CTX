@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>CTX Bench Compare</title>
+<style>
+:root {
+  --bg:#0f1219; --panel:#161a24; --border:#2a3040; --text:#e6e8ec; --muted:#8a93a4;
+  --pos:#4fc38a; --neg:#f85a65; --warn:#e8a03b; --neutral:#4aa5ff; --hi:#b59cff;
+}
+* { box-sizing: border-box; }
+body { margin:0; font-family:-apple-system,Segoe UI,Helvetica,sans-serif; background:var(--bg); color:var(--text); }
+.header { padding:16px 24px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:16px; }
+.header h1 { margin:0; font-size:18px; font-weight:600; }
+.subtitle { color:var(--muted); font-size:13px; }
+.tabs { padding:0 24px; border-bottom:1px solid var(--border); display:flex; gap:0; }
+.tab { padding:10px 18px; cursor:pointer; font-size:13px; color:var(--muted); border-bottom:2px solid transparent; user-select:none; }
+.tab:hover { color:var(--text); }
+.tab.active { color:var(--text); border-bottom-color:var(--neutral); font-weight:600; }
+.pane { padding:20px 24px; display:none; }
+.pane.active { display:block; }
+h2 { font-size:14px; color:var(--muted); margin:0 0 10px; letter-spacing:.5px; text-transform:uppercase; }
+table { width:100%; border-collapse:collapse; background:var(--panel); border:1px solid var(--border); border-radius:6px; overflow:hidden; }
+th, td { padding:10px 14px; text-align:left; font-size:13px; border-bottom:1px solid var(--border); }
+th { background:#0d1017; color:var(--muted); font-weight:600; text-transform:uppercase; font-size:11px; letter-spacing:.5px; }
+td.num { font-family:monospace; text-align:right; }
+tr:last-child td { border-bottom:none; }
+.bar { display:inline-block; height:8px; background:var(--neutral); border-radius:2px; vertical-align:middle; margin-right:6px; opacity:.6; }
+.ci { font-family:monospace; color:var(--muted); font-size:12px; }
+.chip { display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; font-family:monospace; }
+.chip.sig { background:rgba(79,195,138,.2); color:var(--pos); font-weight:600; }
+.chip.marg { background:rgba(232,160,59,.2); color:var(--warn); }
+.chip.ns { background:rgba(138,147,164,.15); color:var(--muted); }
+.chip.pos { background:rgba(79,195,138,.15); color:var(--pos); }
+.chip.neg { background:rgba(248,90,101,.15); color:var(--neg); }
+.row-ctx_v3 { background:rgba(181,156,255,.08); }
+.row-oracle { background:rgba(74,165,255,.06); }
+.verdict { padding:14px 18px; background:var(--panel); border:1px solid var(--border); border-radius:6px; margin-bottom:16px; }
+.verdict b { color:var(--hi); }
+.star { color:var(--hi); font-weight:700; }
+.loading { color:var(--muted); padding:20px; }
+.muted { color:var(--muted); }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>CTX Bench Compare</h1>
+  <span class="subtitle">6 benchmarks • live-inf iter 31</span>
+</div>
+
+<div class="tabs">
+  <div class="tab active" data-tab="mab">MAB N=50</div>
+  <div class="tab" data-tab="longmemeval">LongMemEval real</div>
+  <div class="tab" data-tab="mcnemar">McNemar</div>
+  <div class="tab" data-tab="g1">G1 Recall@7</div>
+  <div class="tab" data-tab="homograph">Homograph</div>
+  <div class="tab" data-tab="puac"><a href="/static/puac.html" style="color:inherit;text-decoration:none">PUAC →</a></div>
+</div>
+
+<div class="pane active" id="pane-mab"><div class="loading">Loading MAB N=50...</div></div>
+<div class="pane" id="pane-longmemeval"><div class="loading">Loading LongMemEval...</div></div>
+<div class="pane" id="pane-mcnemar"><div class="loading">Loading McNemar...</div></div>
+<div class="pane" id="pane-g1"><div class="loading">Loading G1 regression...</div></div>
+<div class="pane" id="pane-homograph"><div class="loading">Loading Homograph...</div></div>
+
+<script>
+const e = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = (v, d=3) => v == null ? '—' : Number(v).toFixed(d);
+
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+  const tab = t.dataset.tab;
+  if (!tab) return;
+  document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.pane').forEach(x => x.classList.remove('active'));
+  t.classList.add('active');
+  document.getElementById('pane-' + tab).classList.add('active');
+}));
+
+async function fetchJSON(url) {
+  try { const r = await fetch(url); return await r.json(); } catch (e) { return { error: String(e) }; }
+}
+
+function renderMAB(d) {
+  if (d.error) return `<div class="loading">Error: ${e(d.error)}</div>`;
+  const rows = d.rows.map(r => {
+    const acc = r.accuracy || 0;
+    const ci = r.ci_95 || [0, 0];
+    const cls = r.retriever === 'ctx_v3' ? 'row-ctx_v3' : r.retriever === 'oracle' ? 'row-oracle' : '';
+    const star = r.retriever === 'ctx_v3' ? ' <span class="star">★</span>' : '';
+    return `<tr class="${cls}">
+      <td><b>${e(r.retriever)}</b>${star}</td>
+      <td class="num">${r.correct}/${r.n}</td>
+      <td class="num">${fmt(acc, 3)}</td>
+      <td><span class="bar" style="width:${acc*240}px"></span></td>
+      <td class="ci">[${fmt(ci[0],3)}, ${fmt(ci[1],3)}]</td>
+      <td class="num muted">±${fmt(r.halfwidth,3)}</td>
+    </tr>`;
+  }).join('');
+  return `
+    <div class="verdict"><b>${e(d.benchmark)}</b> · N=${d.n_cases} · ${d.retrievers} retrievers<br>
+    Headline: <b>ctx_v3 hybrid (0.920)</b> ties oracle ceiling at [0.812, 0.968] — statistically indistinguishable from perfect retrieval at N=50.</div>
+    <table>
+      <tr><th>retriever</th><th>correct/N</th><th>accuracy</th><th></th><th>Wilson 95% CI</th><th>halfwidth</th></tr>
+      ${rows}
+    </table>`;
+}
+
+function renderLME(d) {
+  if (d.error) return `<div class="loading">Error: ${e(d.error)}</div>`;
+  const rows = d.rows.map(r => `
+    <tr><td><b>${e(r.retriever)}</b></td>
+    <td class="num">${r.correct}/${r.n}</td>
+    <td class="num">${fmt(r.accuracy, 3)}</td>
+    <td><span class="bar" style="width:${r.accuracy*240}px"></span></td></tr>
+  `).join('');
+  return `
+    <div class="verdict"><b>${e(d.benchmark)}</b> · N=${d.n_cases}<br>
+    Observation: production <b>ctx (0.10)</b> ties <b>none (0.10)</b> — BM25 alone is indistinguishable from no-memory on real paraphrase-heavy queries. All semantic retrievers tied at 0.30. N=10 under-powered; planned expansion to N=100.</div>
+    <table>
+      <tr><th>retriever</th><th>correct/N</th><th>accuracy</th><th></th></tr>
+      ${rows}
+    </table>
+    <p class="muted" style="margin-top:12px;font-size:12px">Sample types: ${d.sample_types.map(e).join(' · ')}</p>`;
+}
+
+function renderMcNemar(d) {
+  if (d.error) return `<div class="loading">Error: ${e(d.error)}</div>`;
+  const rows = d.rows.map(r => {
+    const cls = r.verdict === 'SIG' ? 'sig' : r.verdict === 'MARGINAL' ? 'marg' : 'ns';
+    return `<tr>
+      <td><b>${e(r.comparison)}</b></td>
+      <td class="num">${r.discordant}</td>
+      <td class="num">${fmt(r.exact_p, 4)}</td>
+      <td class="num">${fmt(r.chi2_cc, 3)}</td>
+      <td><span class="chip ${cls}">${e(r.verdict)}</span></td>
+    </tr>`;
+  }).join('');
+  return `
+    <div class="verdict"><b>${e(d.benchmark)}</b> · α=${d.alpha}<br>
+    Only <b>ctx_v2 vs ctx (p=0.049)</b> is formally significant at α=0.05 — Porter stemmer + recency is the first empirically-confirmed CTX improvement. Larger N needed for ctx_v3 vs faithful (p=0.227) and ctx_v3 vs chroma (p=0.065, marginal).</div>
+    <table>
+      <tr><th>comparison</th><th>n_discordant</th><th>exact p (2-sided)</th><th>χ² (continuity)</th><th>verdict</th></tr>
+      ${rows}
+    </table>`;
+}
+
+function renderG1(d) {
+  if (d.error) return `<div class="loading">Error: ${e(d.error)}</div>`;
+  const buckets = d.per_age_bucket || {};
+  const bucketRows = Object.entries(buckets).map(([k, v]) => `
+    <tr><td>${e(k)}</td><td class="num">${v.n}</td>
+    <td class="num">${fmt(v.ctx, 3)}</td>
+    <td class="num">${fmt(v.ctx_v2, 3)}</td>
+    <td class="num"><span class="chip pos">+${fmt(v.ctx_v2 - v.ctx, 3)}</span></td></tr>
+  `).join('');
+  const ov = d.overlap || {};
+  return `
+    <div class="verdict"><b>${e(d.benchmark)}</b> · N=${d.n}<br>
+    <b>PASS</b> — ctx_v2 (${fmt(d.ctx_v2_recall_at_7, 3)}) improves over ctx (${fmt(d.ctx_recall_at_7, 3)}) by ${fmt(d.delta, 3)} with zero regressions. Porter stemmer merged to production.</div>
+    <table style="margin-bottom:16px">
+      <tr><th>age bucket</th><th>N</th><th>ctx</th><th>ctx_v2</th><th>Δ</th></tr>
+      ${bucketRows}
+    </table>
+    <h2>Per-query overlap</h2>
+    <table>
+      <tr><th>both correct</th><th>ctx only (regression)</th><th>ctx_v2 only (improvement)</th><th>neither</th></tr>
+      <tr>
+        <td class="num">${ov.both}</td>
+        <td class="num"><span class="chip ns">${ov.ctx_only}</span></td>
+        <td class="num"><span class="chip pos">${ov.ctx_v2_only}</span></td>
+        <td class="num">${ov.neither}</td>
+      </tr>
+    </table>`;
+}
+
+function renderHomograph(d) {
+  if (d.error) return `<div class="loading">Error: ${e(d.error)}</div>`;
+  const rows = (d.per_prompt_top || []).map(p => `
+    <tr><td><b>${e(p.term)}</b></td>
+    <td>${e(p.sense)}</td>
+    <td class="num">${p.n_hits}</td>
+    <td class="num">${p.n_surface}</td>
+    <td class="num"><span class="chip ${p.surface_rate >= 0.5 ? 'neg' : p.surface_rate >= 0.3 ? 'marg' : 'pos'}">${fmt(p.surface_rate, 2)}</span></td></tr>
+  `).join('');
+  return `
+    <div class="verdict"><b>${e(d.benchmark)}</b> · N prompts = ${d.n_prompts}<br>
+    Aggregate surface-match-only rate: <b>${fmt(d.aggregate_rate, 3)}</b> (threshold ${d.threshold}) — <b>${e(d.verdict)}</b>. 85.8% of BM25 hits on ambiguous-term queries are lexically matched but semantically unrelated, validating the architectural need for semantic rerank (bge-daemon) on top of BM25.</div>
+    <h2>Top 10 worst-case prompts (by surface_rate)</h2>
+    <table>
+      <tr><th>term</th><th>intended sense</th><th>n_hits</th><th>n_surface</th><th>surface_rate</th></tr>
+      ${rows}
+    </table>`;
+}
+
+(async () => {
+  const [mab, lme, mcn, g1, hom] = await Promise.all([
+    fetchJSON('/api/bench/mab-n50'),
+    fetchJSON('/api/bench/longmemeval'),
+    fetchJSON('/api/bench/mcnemar'),
+    fetchJSON('/api/bench/g1-regression'),
+    fetchJSON('/api/bench/homograph'),
+  ]);
+  document.getElementById('pane-mab').innerHTML = renderMAB(mab);
+  document.getElementById('pane-longmemeval').innerHTML = renderLME(lme);
+  document.getElementById('pane-mcnemar').innerHTML = renderMcNemar(mcn);
+  document.getElementById('pane-g1').innerHTML = renderG1(g1);
+  document.getElementById('pane-homograph').innerHTML = renderHomograph(hom);
+})();
+</script>
+</body>
+</html>

@@ -29,6 +29,11 @@ try:
     tier3_pairwise.register(app)
 except Exception:
     pass
+try:
+    import bench_endpoint
+    bench_endpoint.register(app)
+except Exception:
+    pass
 
 
 def _load(name: str) -> dict:
