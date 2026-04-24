@@ -13,9 +13,7 @@ Claude Code and similar coding agents increasingly depend on cross-session memor
 
 This paper introduces **MERIDIAN**, an eight-dimension orthogonal evaluation rubric (Memory recall / Effectiveness / Responsiveness / Intake completeness / Determinism / Integrity under drift / Accounting / Neutrality) with pre-registered thresholds, statistical protocol (BH-FDR, Wilson CIs, Cohen's h), Krippendorff-α-gated annotation, and triple-judge oracle fallback. We apply MERIDIAN to CTX and claude-mem on a third-party gold set of N=700 queries drawn from COIR, LongMemEval, SWE-bench-Lite, hand-labeled real sessions, and an adversarial suite.
 
-[STUB §5/6 — RESULTS PLACEHOLDER — to be filled after pilot (N=100) and full run (N=700)]
-
-Across the population of tasks and metrics, we find: **[placeholder — expected structure]** CTX dominates on M/N/R dimensions owing to deterministic retrieval and visible failure warnings; claude-mem dominates on I₂ (paraphrase robustness) and shows marginal E (downstream effectiveness) advantage that does not survive BH-FDR correction; in cost-adjusted terms (A), CTX's effectiveness-per-dollar is XX× claude-mem's because of the latter's LLM-intake cost. Neither system consistently beats a mid-size dense re-ranker fine-tuned on the development set, suggesting the differentiator is **cross-session persistence and visible-failure design** rather than retrieval quality per se.
+**Pilot findings (N=50 MAB + N=10 LongMemEval + N=10 PUAC)**: on synthetic conflict-resolution (MemoryAgentBench Competency-4), CTX's BM25-only production retriever achieves 0.40 [0.28, 0.54] (Wilson 95% CI); our improved `ctx_v2` (Porter stemmer + recency) lifts this to 0.58 [0.44, 0.71]; a hybrid `ctx_v3` cascading BM25 with Chroma reaches 0.80 on N=10; pure dense retrieval (claude-mem proxy) wins at 0.84 [0.72, 0.92]; oracle ceiling is 0.92, indicating LLM reasoning itself leaves ~8% unsolvable. On *real* LongMemEval (ICLR 2025), all non-BM25-only retrievers tie at 0.30 (CTX at 0.10, indistinguishable from no-memory baseline). The gap between synthetic-favorable (0.58 vs 0.84) and real-data-compressed (0.30 tie) is itself a finding: benchmark-optimized rankings do not transfer to practice. On the PUAC attribution-decomposition axis, mean Causal Lift = +0.207, but 30% of prompts exhibit Wallat-style post-rationalization (high attribution, zero causal benefit). CTX's homograph audit shows 85.8% surface-match-only rate on ambiguous-term queries — validating the architectural need for semantic rerank on top of BM25.
 
 We release the MERIDIAN rubric, the N=700 gold set with annotator agreement statistics, the paired-eval harness, and the full analysis code.
 
@@ -477,9 +475,9 @@ SHA-256 of the rubric document: `[TBD]`
 ## Related
 - [[projects/CTX/research/20260423-ctx-vs-claudemem-evaluation-rubric-v2-paper-tier|20260423-ctx-vs-claudemem-evaluation-rubric-v2-paper-tier]]
 - [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
+- [[projects/CTX/research/20260424-memory-retrieval-benchmark-landscape|20260424-memory-retrieval-benchmark-landscape]]
 - [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]
 - [[projects/CTX/research/20260409-bm25-memory-generalization-research|20260409-bm25-memory-generalization-research]]
 - [[projects/CTX/research/20260402-production-context-retrieval-research|20260402-production-context-retrieval-research]]
 - [[projects/CTX/research/20260326-ctx-vs-industry-comparison|20260326-ctx-vs-industry-comparison]]
-- [[projects/CTX/research/20260328-ctx-downstream-eval-complete|20260328-ctx-downstream-eval-complete]]
-- [[projects/CTX/research/20260327-ctx-downstream-eval|20260327-ctx-downstream-eval]]
+- [[projects/CTX/research/20260424-mab-recency-tokenization-gap|20260424-mab-recency-tokenization-gap]]
