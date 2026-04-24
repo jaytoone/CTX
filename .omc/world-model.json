@@ -117,6 +117,13 @@
       "iteration": 8,
       "outcome": "evolved",
       "weak_dim": "production_integration"
+    },
+    {
+      "goal": "MAB ctx_v2 verdict: 2x lift + semantic gap characterized",
+      "score": 0.91,
+      "iteration": 9,
+      "outcome": "evolved",
+      "weak_dim": "dense_candidate_gen"
     }
   ],
   "dead_ends": {},
@@ -157,7 +164,9 @@
     "Implication: recency-aware ranking needed (date-boost BM25 or explicit 'most recent wins' system prompt) to pass conflict-resolution robustly",
     "MAB failure root cause diagnosed: 'logs' vs 'logging' tokenization gap \u2014 BM25 can't match stems",
     "retrieve_ctx_v2 = Porter stemmer + beta=0.5 recency boost \u2192 reversal session ranks ABOVE initial on failing case",
-    "Production migration decision deferred: stemming may hurt exact-match G1 benchmark (git commit subjects); needs measurement before rollout"
+    "Production migration decision deferred: stemming may hurt exact-match G1 benchmark (git commit subjects); needs measurement before rollout",
+    "MAB N=5: none=0.0 / ctx=0.2 / ctx_v2=0.4 \u2014 ctx_v2 stemming+recency DOUBLES accuracy",
+    "3 remaining ctx_v2 misses all share a pattern: query vocabulary ('reranker', 'embedding model', 'package manager') has ZERO token overlap with reversal content (which uses 'BGE cross-encoder', 'multilingual-e5-small', 'uv'). Pure lexical retrieval (BM25 + stems) fundamentally cannot bridge these. Only dense candidate generation (vec-daemon or bge-daemon for reranking a DENSE top-k) could rescue these."
   ],
   "uncertain": [
     {
