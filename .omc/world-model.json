@@ -75,6 +75,13 @@
       "iteration": 2,
       "outcome": "evolved",
       "weak_dim": "impact"
+    },
+    {
+      "goal": "puac dashboard endpoint + interpretation helper",
+      "score": 0.85,
+      "iteration": 3,
+      "outcome": "evolved",
+      "weak_dim": "impact"
     }
   ],
   "dead_ends": {},
@@ -130,10 +137,10 @@
   "skill_routing_history": [],
   "her_hints": [],
   "best_score_vector": {
-    "quality": 0.8,
-    "completeness": 0.75,
+    "quality": 0.85,
+    "completeness": 0.8,
     "efficiency": 0.85,
-    "impact": 0.7,
+    "impact": 0.8,
     "goal_fidelity": 1.0
   },
   "wave1_plan": "APPROACH: benchmarks/eval/puac_eval.py (Tier 2 core, reusing downstream_llm_eval.py client+runner) + /api/puac-compare endpoint + homograph_audit.py + Tier 1 harnesses.\nMETHOD: iter1=puac_eval scaffold w/ 4-condition runner + CL/AR/PRR + N=10 smoke; iter2=N=50 real pilot; iter3=dashboard compare pane; iter4=homograph audit; iter5=Tier 1 LongMemEval+MemoryAgentBench; iter6=Tier 3 annotation.\nKEY_DECISIONS: (1) fresh counterfactual API calls not stored baseline; (2) PRR via CL-AR dissociation test (AR>0.5 AND CL<0.05); (3) LLM-judge pairwise temp=0 tracks human r=0.85+.\nREUSE: utility-rate.py substring AR, _ctx_telemetry.py ab_disabled, downstream_llm_eval.py get_llm_client, hf_space_dashboard FastAPI.\nBUILD NEW: puac_eval.py, homograph_audit.py, tier1_longmemeval.py, tier1_memoryagentbench.py, /api/puac-compare.\nANTI: single-number PUAC (must decompose), running Tier 1 on CTX's own corpus, skipping homograph audit.",

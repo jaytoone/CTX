@@ -1,12 +1,12 @@
 {
-  "status": "ACTIVE",
+  "status": "ROTATING",
   "session_id": "inf-20260424T110044-puac-meridian",
-  "current_iteration": 2,
+  "current_iteration": 3,
   "root_goal": "Implement 3-Tier Tangible MERIDIAN eval stack (PUAC harness + public benchmark integration + human pairwise protocol) for CTX vs claude-mem",
   "original_goal": "Implement 3-Tier Tangible MERIDIAN eval stack (PUAC harness + public benchmark integration + human pairwise protocol) for CTX vs claude-mem",
   "evolution_count": 0,
   "evolution_history": [],
-  "best_score": 0.82,
+  "best_score": 0.85,
   "plateau_count": 0,
   "started_at": "2026-04-24T11:00:44.420852Z",
   "wave1_complete": true,
@@ -14,5 +14,21 @@
   "wave1_specialists": [
     "research-explore",
     "ops-planner"
+  ],
+  "rotated_at": "2026-04-24T11:19:46.792835+00:00",
+  "stop_reason": "session checkpoint \u2014 context crowded, labeler running async",
+  "pending_async_tasks": [
+    {
+      "task": "homograph auto-label (120 labels)",
+      "pid_hint": "check pgrep -af auto_label.py",
+      "output_path": "benchmarks/datasets/homograph_gold.json",
+      "next_iter_action": "once file exists \u2192 run `python3 benchmarks/eval/homograph_audit.py score`"
+    }
+  ],
+  "next_iter_plan": [
+    "iter 4: Tier 1 \u2014 LongMemEval harness wrapper (benchmarks/eval/tier1_longmemeval.py)",
+    "iter 5: Tier 1 \u2014 MemoryAgentBench Competency-4 conflict-resolution test",
+    "iter 6: Dashboard FRONTEND \u2014 split-pane diff view consuming /api/puac-compare/{pid}",
+    "iter 7: Tier 3 pairwise annotation endpoint + N=10 pilot"
   ]
 }
