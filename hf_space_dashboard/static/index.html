@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CTX Dashboard</title>
+<link rel="icon" href="data:," />
+<!-- Claude-inspired serif pairing — subset to only weights used (400/500) + display:swap
+     to avoid FOIT (flash of invisible text). text= param further trims to Latin glyphs. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<!-- Critical CSS inline (above-the-fold: palette + header + panel frame).
+     Non-blocking paint before styles.css arrives. -->
+<style>
+:root{--bg:#faf9f6;--bg-deep:#f0ede7;--panel:#fff;--panel-border:#e4dfd5;--panel-soft:#f5f2ec;--text:#1f1c1a;--text-soft:#4a4540;--text-dim:#8a8278;--accent:#cc785c;--accent-deep:#a34b2c;--accent-soft:#f5e6de;--serif:"Fraunces",Georgia,serif;--sans:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;--mono:"JetBrains Mono",ui-monospace,Menlo,monospace}
+*{box-sizing:border-box}html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--text-soft);font:14px/1.55 var(--sans);min-height:100vh;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--serif);font-weight:500;letter-spacing:-0.01em}
+header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;border-bottom:1px solid var(--panel-border);background:var(--bg);position:relative;z-index:10}
+.brand{display:flex;align-items:baseline;gap:12px}
+.brand .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);align-self:center}
+.title{font-family:var(--serif);font-weight:500;font-size:20px;color:var(--text);letter-spacing:-0.01em}
+.sub{color:var(--text-dim);font-size:13px;font-family:var(--mono)}
+main{display:grid;grid-template-columns:1.4fr 1fr;gap:14px;padding:20px 24px;max-width:1400px;margin:0 auto}
+.panel{background:var(--panel);border:1px solid var(--panel-border);border-radius:6px;padding:18px 22px;box-shadow:0 1px 2px rgba(31,28,26,.03)}
+.panel.wide{grid-column:1/-1}
+.panel h2{margin:0 0 14px;font-family:var(--serif);font-size:17px;font-weight:500;color:var(--text)}
+</style>
+<link rel="stylesheet" href="/static/styles.css" />
+<!-- uPlot for time-series (tiny, ~40KB) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uplot@1.6.31/dist/uPlot.min.css" />
+<script defer src="https://cdn.jsdelivr.net/npm/uplot@1.6.31/dist/uPlot.iife.min.js"></script>
+<!-- vis-network (688KB) is lazy-loaded by app.js via IntersectionObserver when
+     the graph panel enters viewport. NOT preloaded — saves ~150KB upfront. -->
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+</head>
+<body>
+<header>
+  <div class="brand">
+    <span class="dot pulse"></span>
+    <span class="title" data-i18n="brand.title">CTX Telemetry</span>
+    <span class="sub" id="meta">—</span>
+  </div>
+  <div class="grade" id="grade">—</div>
+  <nav style="display:flex; gap:14px; font-size:13px; font-family:var(--mono); margin:0 16px;">
+    <a href="/static/bench.html" style="color:var(--accent-deep); text-decoration:none; border-bottom:1px dashed var(--accent); padding-bottom:1px;" title="MAB N=50 + LongMemEval + McNemar + G1 + Homograph (iter 32)">📊 Bench</a>
+    <a href="/static/puac.html" style="color:var(--accent-deep); text-decoration:none; border-bottom:1px dashed var(--accent); padding-bottom:1px;" title="Per-prompt PUAC: CL/AR/PRR decomposition (iter 14, iter 31)">🧪 PUAC</a>
+  </nav>
+  <div class="updated">
+    <span id="updated">—</span>
+    <span class="window" id="window">7d</span>
+    <button id="lang-toggle" class="lang-toggle" title="Switch language (localStorage persistent)">
+      <span class="lang-seg" data-lang="en">EN</span>
+      <span class="lang-sep">|</span>
+      <span class="lang-seg" data-lang="ko">KO</span>
+    </button>
+  </div>
+</header>
+
+<div id="wow-banner" class="wow-banner" style="display:none"></div>
+
+<main>
+  <section class="panel" id="health-panel">
+    <h2 data-i18n="panel.health">System Health</h2>
+    <div class="rows" id="health-rows"></div>
+  </section>
+
+  <section class="panel" id="activity-panel">
+    <h2><span data-i18n="panel.activity">Activity</span> <span class="hint" data-i18n="panel.activity.hint">events / minute (last 2h)</span></h2>
+    <div id="activity-chart"></div>
+  </section>
+
+  <section class="panel" id="latency-panel">
+    <h2><span data-i18n="panel.latency">Latency distribution</span> <span class="hint" data-i18n="panel.latency.hint">bm25-memory hook</span></h2>
+    <div class="bars" id="latency-bars"></div>
+  </section>
+
+  <section class="panel" id="utility-panel">
+    <h2>
+      <span data-i18n="panel.utility">Utility rate</span>
+      <span class="hint" data-i18n="panel.utility.hint">share of injected items Claude actually referenced</span>
+      <span class="hint info-tip right" data-i18n-title="panel.utility.tip" title="Measured on the Stop hook by substring-matching each injected item's distinctive tokens against the assistant's response.">ⓘ&nbsp;<span data-i18n="panel.utility.how">how</span></span>
+    </h2>
+    <div id="utility-body"></div>
+  </section>
+
+  <section class="panel" id="notices-panel">
+    <h2><span data-i18n="panel.notices">Quality notices</span> <span class="hint" data-i18n="panel.notices.hint">rate-based, informational</span></h2>
+    <div id="notices"></div>
+  </section>
+
+  <section class="panel" id="other-panel">
+    <h2 data-i18n="panel.other">Other signals</h2>
+    <div class="pills" id="other"></div>
+  </section>
+
+  <section class="panel wide" id="graph-panel">
+    <h2>
+      <span data-i18n="panel.graph">Knowledge graph</span>
+      <span class="hint" data-i18n="panel.graph.hint">decisions · docs · prompts — coral = selected prompt, edges = retrieval + topic + temporal</span>
+      <button id="refresh-graph" class="btn-small" data-i18n="btn.refresh">refresh</button>
+      <span id="graph-stats" class="hint right"></span>
+    </h2>
+    <div id="graph-legend"></div>
+    <div class="graph-nav" id="graph-nav" style="display:none">
+      <button id="prompt-prev" class="nav-btn" data-i18n-title="nav.prev" title="Previous prompt (older)">◀</button>
+      <span class="nav-label" id="prompt-nav-label">—</span>
+      <button id="prompt-next" class="nav-btn" data-i18n-title="nav.next" title="Next prompt (newer)">▶</button>
+      <label class="signal-toggle">
+        <input type="checkbox" id="signal-toggle" checked>
+        <span data-i18n="nav.signals">electrical signals</span>
+      </label>
+    </div>
+    <div id="graph-canvas"></div>
+    <div id="graph-detail" class="graph-detail"></div>
+  </section>
+
+  <section class="panel wide" id="samples-panel">
+    <h2>
+      <span data-i18n="panel.samples">Function proof — real samples</span>
+      <span class="hint" data-i18n="panel.samples.hint">recent prompts → actual hook outputs (eye-check relevance)</span>
+      <button id="refresh-samples" class="btn-small" data-i18n="btn.refresh">refresh</button>
+      <span id="samples-age" class="hint right"></span>
+    </h2>
+    <div class="legend-note">
+      <strong data-i18n="samples.legend.head">Per-prompt utility pill:</strong>
+      <span class="util-chip ok">≥50%</span>
+      <span class="util-chip mid">≥25%</span>
+      <span class="util-chip low">&lt;25%</span>
+      <span class="util-chip pending">—</span>
+      <span class="legend-sub" data-i18n-html="samples.legend.body">
+        = how much of what CTX <em>surfaced</em> was actually <em>used</em> in Claude's response.
+        Blocks below show what CTX surfaced into context. A <b>filled block with 0% utility</b> = CTX injected items
+        but Claude didn't reference them — honest signal, not a bug; usually means the prompt was about a different topic than what BM25 matched.
+        <b>—</b> = the reply isn't persisted yet (lands on Stop hook ~30s after the turn); score fills in on next refresh.
+        CM entries are project-scoped <em>history</em>, not this prompt's reply.
+      </span>
+    </div>
+    <div id="samples"></div>
+    <div class="load-more-wrap">
+      <button id="load-more-samples" class="btn-loadmore" data-i18n="btn.loadmore">Load 10 more</button>
+      <span id="load-more-status" class="hint"></span>
+    </div>
+  </section>
+
+  <section class="panel wide" id="events-panel">
+    <h2><span data-i18n="panel.events">Recent events</span> <span class="hint" data-i18n="panel.events.hint">newest first, last 30</span></h2>
+    <div class="events" id="events"></div>
+  </section>
+</main>
+
+<footer>
+  <span id="thresholds">—</span>
+  <span class="right"><span data-i18n="footer.connected">connected:</span> <span id="conn-status" class="conn ok" data-i18n="footer.live">live</span></span>
+</footer>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
