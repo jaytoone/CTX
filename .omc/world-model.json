@@ -187,7 +187,8 @@
     "1 negative: retrieval-backend PUAC=-0.25 (CL=-0.5, AR=0) \u2014 retrieval failure AND memory hurt the answer vs empty",
     "P0 PASS: ctx_v2 Porter stemmer IMPROVES G1 Recall@7 from 0.966\u21921.000 (+0.034). Zero regressions. Safe to merge to production.",
     "P1 HEADLINE: Chroma (claude-mem proxy, all-MiniLM-L6-v2) = 1.00 on MAB N=10 vs ctx_v2 0.3. Dense retrieval fundamentally dominates conflict-resolution because paraphrase/cross-vocab queries (reranker vs BGE cross-encoder) are impossible for BM25. Validates pre-registered paper claim.",
-    "Implication: CTX should add dense candidate generation, not replace BM25 \u2014 hybrid cascade BM25+Chroma is the winning architecture"
+    "Implication: CTX should add dense candidate generation, not replace BM25 \u2014 hybrid cascade BM25+Chroma is the winning architecture",
+    "ctx_v3 (hybrid BM25 + Chroma cascade) = 0.80 on MAB N=10 \u2014 8x lift over production ctx (0.1), 2.67x over ctx_v2 (0.3). Still below pure chroma 1.0 because hybrid's BM25-first priority retains some initial-session bias. For conflict-resolution specifically, bypass BM25 and go dense. For exact-keyword (G1), prefer BM25."
   ],
   "uncertain": [
     {

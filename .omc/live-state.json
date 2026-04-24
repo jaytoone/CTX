@@ -1,8 +1,8 @@
 {
-  "current_iteration": 14,
+  "current_iteration": 15,
   "last_outcome": "success",
   "started_at": "2026-04-24T11:00:44.420852Z",
-  "best_score": 0.94,
+  "best_score": 0.95,
   "plateau_count": 0,
   "evolution_count": 0,
   "score_history": [
@@ -89,6 +89,13 @@
       "goal_fidelity": 1.0,
       "goal_version": 0,
       "score_variance": 0.0
+    },
+    {
+      "iteration": 15,
+      "score": 0.95,
+      "goal_fidelity": 1.0,
+      "goal_version": 0,
+      "score_variance": 0.0
     }
   ],
   "cost_history": [
@@ -118,8 +125,8 @@
       "relative_cost": 1.0
     }
   ],
-  "last_phase_reached": "iter14_p3_hybrid+p5_frontend",
-  "current_score": 0.92,
+  "last_phase_reached": "iter15_p3_verdict_0p80",
+  "current_score": 0.95,
   "current_goal_fidelity": 1.0,
   "score_variance": 0.0
 }
