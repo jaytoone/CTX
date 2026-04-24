@@ -21,8 +21,14 @@ try:
 except ImportError:
     HTTPException = None
 
-# puac_eval.py writes here
-RESULTS = Path(__file__).parent.parent / "benchmarks" / "results" / "puac_eval.json"
+# Prefer the N=10 MAB-based PUAC run (iter 10 — 10 prompts, 4-condition real
+# signal) over the iter-1 smoke (3 prompts). Falls through if MAB run absent.
+_BASE = Path(__file__).parent.parent / "benchmarks" / "results"
+_CANDIDATES = [
+    _BASE / "puac_on_mab_n10.json",
+    _BASE / "puac_eval.json",
+]
+RESULTS = next((p for p in _CANDIDATES if p.exists()), _CANDIDATES[-1])
 
 
 def _load() -> Dict[str, Any]:
