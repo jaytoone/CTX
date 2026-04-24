@@ -131,6 +131,13 @@
       "iteration": 10,
       "outcome": "evolved",
       "weak_dim": "production_integration"
+    },
+    {
+      "goal": "P1 claude-mem proxy bench",
+      "score": 0.94,
+      "iteration": 13,
+      "outcome": "evolved",
+      "weak_dim": "hybrid"
     }
   ],
   "dead_ends": {},
@@ -177,7 +184,10 @@
     "MAB N=10 bench: none=0.0 / ctx=0.1 / ctx_v2=0.3 / oracle=0.5 \u2014 ctx_v2 = 3x lift over ctx; oracle ceiling 0.5 shows LLM itself fails half the time even w/ perfect memory",
     "PUAC N=10 on ctx_v2: mean_CL=+0.207, mean_AR=0.80, PRR=0.30, NHR=0.30, OAR=0.30, mean_PUAC=+0.283 \u2014 memory measurably helps (+20.7%) but noise harm and over-anchoring each hit 30% of prompts",
     "3 strong wins: frontend-framework, monitoring-stack, database \u2014 all PUAC > 0.60 (CL > 0.65, AR=1.0)",
-    "1 negative: retrieval-backend PUAC=-0.25 (CL=-0.5, AR=0) \u2014 retrieval failure AND memory hurt the answer vs empty"
+    "1 negative: retrieval-backend PUAC=-0.25 (CL=-0.5, AR=0) \u2014 retrieval failure AND memory hurt the answer vs empty",
+    "P0 PASS: ctx_v2 Porter stemmer IMPROVES G1 Recall@7 from 0.966\u21921.000 (+0.034). Zero regressions. Safe to merge to production.",
+    "P1 HEADLINE: Chroma (claude-mem proxy, all-MiniLM-L6-v2) = 1.00 on MAB N=10 vs ctx_v2 0.3. Dense retrieval fundamentally dominates conflict-resolution because paraphrase/cross-vocab queries (reranker vs BGE cross-encoder) are impossible for BM25. Validates pre-registered paper claim.",
+    "Implication: CTX should add dense candidate generation, not replace BM25 \u2014 hybrid cascade BM25+Chroma is the winning architecture"
   ],
   "uncertain": [
     {
