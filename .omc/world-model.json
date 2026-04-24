@@ -124,6 +124,13 @@
       "iteration": 9,
       "outcome": "evolved",
       "weak_dim": "dense_candidate_gen"
+    },
+    {
+      "goal": "bench comparison scores N=10",
+      "score": 0.93,
+      "iteration": 10,
+      "outcome": "evolved",
+      "weak_dim": "production_integration"
     }
   ],
   "dead_ends": {},
@@ -166,7 +173,11 @@
     "retrieve_ctx_v2 = Porter stemmer + beta=0.5 recency boost \u2192 reversal session ranks ABOVE initial on failing case",
     "Production migration decision deferred: stemming may hurt exact-match G1 benchmark (git commit subjects); needs measurement before rollout",
     "MAB N=5: none=0.0 / ctx=0.2 / ctx_v2=0.4 \u2014 ctx_v2 stemming+recency DOUBLES accuracy",
-    "3 remaining ctx_v2 misses all share a pattern: query vocabulary ('reranker', 'embedding model', 'package manager') has ZERO token overlap with reversal content (which uses 'BGE cross-encoder', 'multilingual-e5-small', 'uv'). Pure lexical retrieval (BM25 + stems) fundamentally cannot bridge these. Only dense candidate generation (vec-daemon or bge-daemon for reranking a DENSE top-k) could rescue these."
+    "3 remaining ctx_v2 misses all share a pattern: query vocabulary ('reranker', 'embedding model', 'package manager') has ZERO token overlap with reversal content (which uses 'BGE cross-encoder', 'multilingual-e5-small', 'uv'). Pure lexical retrieval (BM25 + stems) fundamentally cannot bridge these. Only dense candidate generation (vec-daemon or bge-daemon for reranking a DENSE top-k) could rescue these.",
+    "MAB N=10 bench: none=0.0 / ctx=0.1 / ctx_v2=0.3 / oracle=0.5 \u2014 ctx_v2 = 3x lift over ctx; oracle ceiling 0.5 shows LLM itself fails half the time even w/ perfect memory",
+    "PUAC N=10 on ctx_v2: mean_CL=+0.207, mean_AR=0.80, PRR=0.30, NHR=0.30, OAR=0.30, mean_PUAC=+0.283 \u2014 memory measurably helps (+20.7%) but noise harm and over-anchoring each hit 30% of prompts",
+    "3 strong wins: frontend-framework, monitoring-stack, database \u2014 all PUAC > 0.60 (CL > 0.65, AR=1.0)",
+    "1 negative: retrieval-backend PUAC=-0.25 (CL=-0.5, AR=0) \u2014 retrieval failure AND memory hurt the answer vs empty"
   ],
   "uncertain": [
     {

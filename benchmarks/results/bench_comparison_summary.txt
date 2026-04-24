@@ -1,0 +1,49 @@
+==========================================================================
+CTX BENCH COMPARISON — N=10, MemoryAgentBench Competency-4 (conflict res.)
+==========================================================================
+
+TIER 1 — MAB accuracy per retriever (higher = better at conflict resolution)
+--------------------------------------------------------------------------
+  retriever         N  accuracy   notes
+  --------------  ---  --------   ------------------------------
+  none             10     0.000   lower bound (no memory)
+  ctx              10     0.100   production BM25 + bge-daemon
+  ctx_v2           10     0.300   ctx + Porter stemmer + recency boost
+  oracle           10     0.500   upper bound (ground-truth memory)
+
+  Delta analysis:
+    ctx_v2 vs ctx    : +0.20  (+200% relative)
+    ctx_v2 vs oracle : -0.20  (gap to upper bound)
+    oracle ceiling   : 0.50  (LLM fails 50% even w/ perfect memory)
+
+TIER 2 — PUAC decomposition (on ctx_v2 retrieval, same 10 prompts)
+--------------------------------------------------------------------------
+  mean CL   (causal lift)                    : +0.207
+  mean AR   (attribution rate)               : 0.800
+  PRR rate  (post-rationalization)           : 0.300
+  NHR rate  (noise harm — noise-only worse than empty): 0.300
+  OAR rate  (over-anchoring — gold beats full): 0.300
+  mean PUAC (0.5·CL + 0.3·AR - 0.2·PRR)      : +0.283
+
+  Interpretation:
+    CL +0.207 → ctx_v2 memory DOES measurably improve answers (+20.7% on judge scale)
+    AR 0.80   → 8 of 10 prompts had injected memory actually referenced in response
+    PRR 0.30  → 3 of 10 had high AR but zero CL (post-rationalization — Wallat 2024)
+    NHR 0.30  → 3 of 10 had noise-only score BELOW empty — wrong memory hurts
+    OAR 0.30  → 3 of 10 had gold-only beat full injection — over-anchoring present
+
+Per-prompt PUAC breakdown:
+  prompt_id                             CL     AR   PRR    PUAC
+  -------------------------------- -------  -----  ----  ------
+  synth-rerank-layer                +0.150   1.00     0  +0.375   
+  synth-embedding-model             +0.000   1.00     1  +0.100   
+  synth-frontend-framework          +0.650   1.00     0  +0.625  ★
+  synth-log-sink                    -0.100   1.00     1  +0.050   
+  synth-package-manager             +0.450   0.00     0  +0.225   
+  synth-CI-provider                 +0.200   1.00     0  +0.400   
+  synth-monitoring-stack            +0.650   1.00     0  +0.625  ★
+  synth-concurrency-model           -0.180   1.00     1  +0.010   
+  synth-retrieval-backend           -0.500   0.00     0  -0.250  ⚠
+  synth-database                    +0.750   1.00     0  +0.675  ★
+
+==========================================================================
