@@ -1,5 +1,5 @@
 {
-  "current_iteration": 3,
+  "current_iteration": 4,
   "last_outcome": "success",
   "started_at": "2026-04-24T11:00:44.420852Z",
   "best_score": 0.85,
@@ -19,6 +19,13 @@
       "goal_fidelity": 1.0,
       "goal_version": 0,
       "score_variance": 0.0
+    },
+    {
+      "iteration": 4,
+      "score": 0.83,
+      "goal_fidelity": 1.0,
+      "goal_version": 0,
+      "score_variance": 0.0
     }
   ],
   "cost_history": [
@@ -31,10 +38,15 @@
       "iteration": 3,
       "phase_reached": "iter3_puac_endpoint",
       "relative_cost": 1.0
+    },
+    {
+      "iteration": 4,
+      "phase_reached": "iter4_tier1_longmemeval",
+      "relative_cost": 1.0
     }
   ],
-  "last_phase_reached": "iter3_puac_endpoint",
-  "current_score": 0.85,
+  "last_phase_reached": "iter4_tier1_longmemeval",
+  "current_score": 0.83,
   "current_goal_fidelity": 1.0,
   "score_variance": 0.0
 }

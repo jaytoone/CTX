@@ -1,7 +1,7 @@
 {
-  "status": "ROTATING",
+  "status": "ACTIVE",
   "session_id": "inf-20260424T110044-puac-meridian",
-  "current_iteration": 3,
+  "current_iteration": 4,
   "root_goal": "Implement 3-Tier Tangible MERIDIAN eval stack (PUAC harness + public benchmark integration + human pairwise protocol) for CTX vs claude-mem",
   "original_goal": "Implement 3-Tier Tangible MERIDIAN eval stack (PUAC harness + public benchmark integration + human pairwise protocol) for CTX vs claude-mem",
   "evolution_count": 0,
@@ -15,8 +15,6 @@
     "research-explore",
     "ops-planner"
   ],
-  "rotated_at": "2026-04-24T11:19:46.792835+00:00",
-  "stop_reason": "session checkpoint \u2014 context crowded, labeler running async",
   "pending_async_tasks": [
     {
       "task": "homograph auto-label (120 labels)",

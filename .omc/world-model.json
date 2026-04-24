@@ -82,6 +82,13 @@
       "iteration": 3,
       "outcome": "evolved",
       "weak_dim": "impact"
+    },
+    {
+      "goal": "tier1 longmemeval adapter",
+      "score": 0.83,
+      "iteration": 4,
+      "outcome": "evolved",
+      "weak_dim": "impact"
     }
   ],
   "dead_ends": {},
