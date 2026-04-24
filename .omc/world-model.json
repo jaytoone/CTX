@@ -15,7 +15,7 @@
       "weak_dim": "quality"
     },
     {
-      "goal": "G1 과적합 검증 + 일반화 수정 (word-boundary verbs + deep grep _is_decision() 제거)",
+      "goal": "G1 \uacfc\uc801\ud569 \uac80\uc99d + \uc77c\ubc18\ud654 \uc218\uc815 (word-boundary verbs + deep grep _is_decision() \uc81c\uac70)",
       "score": 0.904,
       "score_vector": {
         "quality": 0.88,
@@ -29,7 +29,7 @@
       "weak_dim": "completeness"
     },
     {
-      "goal": "G1 일반화 수치 완성 — CTX 59-query + Flask + Requests 교차 검증 완전 비교표",
+      "goal": "G1 \uc77c\ubc18\ud654 \uc218\uce58 \uc644\uc131 \u2014 CTX 59-query + Flask + Requests \uad50\ucc28 \uac80\uc99d \uc644\uc804 \ube44\uad50\ud45c",
       "score": 0.922,
       "score_vector": {
         "quality": 0.92,
@@ -43,7 +43,7 @@
       "weak_dim": "efficiency"
     },
     {
-      "goal": "G1 Recall@7 상한선 분석 + 0-7d 개선 — miss pattern 분류, multi-keyword 도입",
+      "goal": "G1 Recall@7 \uc0c1\ud55c\uc120 \ubd84\uc11d + 0-7d \uac1c\uc120 \u2014 miss pattern \ubd84\ub958, multi-keyword \ub3c4\uc785",
       "score": 0.946,
       "score_vector": {
         "quality": 0.93,
@@ -73,44 +73,44 @@
   "dead_ends": {},
   "known_facts": [
     "2026-04-17 iter 1: vec-daemon died 2026-04-11, SessionStart `test -S $sock` didn't detect stale socket, CM+G1 ran in BM25-only silent fallback for 6 days. Fixed via python3 socket.connect() liveness probe in settings.json.",
-    "2026-04-17 iter 2: added visible `⚠ vec-daemon down` warnings to CM header + G1 decision header so future silent failures surface in every prompt injection. Validated A/B both paths.",
+    "2026-04-17 iter 2: added visible `\u26a0 vec-daemon down` warnings to CM header + G1 decision header so future silent failures surface in every prompt injection. Validated A/B both paths.",
     "2026-04-17 iter 3: built benchmarks/eval/g2_goldset.json (8 queries, gold top-5 labels) + g2_goldset_scorer.py with Hit@5/MRR/RankedHit@5. First rigorous G2 bench for the hook path.",
     "2026-04-17 iter 4: shipped T1-A (BM25 + v3 tokenizer) to ~/.claude/hooks/git-memory.py search_graph_for_prompt. Goldset: Hit@5=0.62, MRR=0.52 (was 0.36), RH@5=0.25 (was 0.18).",
     "2026-04-17 iter 5: goldset q5 keywords must match post-extract_keywords form (Korean ko_en expansion). Exposed trade-off: broad-expansion keywords favor length-ASC, focused tokens favor BM25.",
-    "2026-04-17 iter 6: shipped T1-C query-type router (>=5 keywords → length-ASC, else BM25). Beats both pure variants: Hit@5=0.75, MRR=0.53, RH@5=0.28.",
-    "2026-04-17 iter 7: latency characterized — OLD=1.41ms, BM25=3.16ms (cold max 57ms from rank_bm25 import), ROUTER=1.50ms. The original '10× latency' claim was measurement noise from single cold-start run.",
-    "2026-04-17 iter 8: codebase-memory-mcp DB was 254h (10.6 days) stale. auto-index.py outputs a HINT ('consider running mcp__codebase-memory-mcp__index_repository') but doesn't execute — Claude often ignores the hint. Fresh index via manual MCP call lifted G2 MRR +15% (0.53→0.61) with no ranking change. STRUCTURAL bug: index staleness may outweigh ranking improvements.",
-    "2026-04-17 iter 10: tiered staleness warning in auto-index.py (silent<24h / ⚠ 3-7d / ⚠⚠ 7d+). Validated via mtime backdate. Closes observability gap.",
-    "2026-04-17 iter 11: T1-B (co-occurrence synonym mining from git log) — NEGATIVE result. Top pairs on CTX's 226-commit corpus are dominated by live-inf template boilerplate (iter↔live, goal↔success, infinite↔iter). No genuine semantic synonyms surface without heavier filtering (topic stratification, MI scoring). SOTA doc's T1-B not useful on this corpus.",
-    "2026-04-17 iter 13: auto-index.py STRUCTURAL FIX — default mode now actually executes `codebase-memory-mcp cli index_repository` via subprocess (30ms total incl CLI), no longer a hint-only hook. Three modes: default=execute, --hint-only=legacy, --force=skip staleness check. Closes the iter-8 bug where Claude ignored the hint and DB went 10+ days stale silently. Output: `[AUTO-INDEX] stale (80h old) → executed: indexed (was 3.3d stale)`.",
-    "CM had hybrid BM25+vector (0.5*cos + 0.5*bm25_norm) since 2026-04-10 via vault.db + vec0 + multilingual-e5-small. Not a new feature — was pre-existing but broken.",
-    "_SYNONYM_MAP expansion: COIR/BM25/SOTA/G1/G2/eval → commit-searchable synonyms; +0.085 Recall@7 (0.661→0.746)",
-    "Temporal timeline mode: _TEMPORAL_QUERY_RE detects history/progression/timeline queries → [DECISION TIMELINE] header + date-prefixed oldest-first output",
+    "2026-04-17 iter 6: shipped T1-C query-type router (>=5 keywords \u2192 length-ASC, else BM25). Beats both pure variants: Hit@5=0.75, MRR=0.53, RH@5=0.28.",
+    "2026-04-17 iter 7: latency characterized \u2014 OLD=1.41ms, BM25=3.16ms (cold max 57ms from rank_bm25 import), ROUTER=1.50ms. The original '10\u00d7 latency' claim was measurement noise from single cold-start run.",
+    "2026-04-17 iter 8: codebase-memory-mcp DB was 254h (10.6 days) stale. auto-index.py outputs a HINT ('consider running mcp__codebase-memory-mcp__index_repository') but doesn't execute \u2014 Claude often ignores the hint. Fresh index via manual MCP call lifted G2 MRR +15% (0.53\u21920.61) with no ranking change. STRUCTURAL bug: index staleness may outweigh ranking improvements.",
+    "2026-04-17 iter 10: tiered staleness warning in auto-index.py (silent<24h / \u26a0 3-7d / \u26a0\u26a0 7d+). Validated via mtime backdate. Closes observability gap.",
+    "2026-04-17 iter 11: T1-B (co-occurrence synonym mining from git log) \u2014 NEGATIVE result. Top pairs on CTX's 226-commit corpus are dominated by live-inf template boilerplate (iter\u2194live, goal\u2194success, infinite\u2194iter). No genuine semantic synonyms surface without heavier filtering (topic stratification, MI scoring). SOTA doc's T1-B not useful on this corpus.",
+    "2026-04-17 iter 13: auto-index.py STRUCTURAL FIX \u2014 default mode now actually executes `codebase-memory-mcp cli index_repository` via subprocess (30ms total incl CLI), no longer a hint-only hook. Three modes: default=execute, --hint-only=legacy, --force=skip staleness check. Closes the iter-8 bug where Claude ignored the hint and DB went 10+ days stale silently. Output: `[AUTO-INDEX] stale (80h old) \u2192 executed: indexed (was 3.3d stale)`.",
+    "CM had hybrid BM25+vector (0.5*cos + 0.5*bm25_norm) since 2026-04-10 via vault.db + vec0 + multilingual-e5-small. Not a new feature \u2014 was pre-existing but broken.",
+    "_SYNONYM_MAP expansion: COIR/BM25/SOTA/G1/G2/eval \u2192 commit-searchable synonyms; +0.085 Recall@7 (0.661\u21920.746)",
+    "Temporal timeline mode: _TEMPORAL_QUERY_RE detects history/progression/timeline queries \u2192 [DECISION TIMELINE] header + date-prefixed oldest-first output",
     "G2a 1-hop import discovery: git grep reverse importers on G2-found Python files; cost <2s per file",
     "Remaining 7/15 misses = live-inf iter commits filtered by _OMC_ITER_RE (structural noise, intended behavior)",
     "New practical ceiling: ~0.75-0.80 (if live-inf iter filtering relaxed: ~0.88)",
     "G1 overfitting root cause: _is_decision() biased to CTX-domain keywords (benchmark/eval/iter/CONVERGED)",
-    "Flask commits fail _is_decision() because they use descriptive language — fixed by Pass0 gate removal",
-    "_DECISION_VERBS_RE with word-boundary regex: \\badd\\b does NOT match 'address' — safe to use",
+    "Flask commits fail _is_decision() because they use descriptive language \u2014 fixed by Pass0 gate removal",
+    "_DECISION_VERBS_RE with word-boundary regex: \\badd\\b does NOT match 'address' \u2014 safe to use",
     "Pass 0 deep grep: removing _is_decision() gate allows surfacing general-project commits via keyword grep",
-    "Flask Recall@7: 0.000 → 0.667 (+0.667) after generalization fix",
-    "CTX total Recall@7: 0.169 → 0.525 (iter2) → 0.661 (iter3)",
-    "CTX 0-7d: 0.422 → 0.622 (+0.200) — compound/numeric extraction key fix",
-    "CTX 7-30d: 0.714 → 0.786 (+0.072)",
-    "Pass0 miss root cause: long_kws ≥4-char filter missed 'git-memory' (hyphen-split), '2040' (numeric), 'CTX' (3-char)",
+    "Flask Recall@7: 0.000 \u2192 0.667 (+0.667) after generalization fix",
+    "CTX total Recall@7: 0.169 \u2192 0.525 (iter2) \u2192 0.661 (iter3)",
+    "CTX 0-7d: 0.422 \u2192 0.622 (+0.200) \u2014 compound/numeric extraction key fix",
+    "CTX 7-30d: 0.714 \u2192 0.786 (+0.072)",
+    "Pass0 miss root cause: long_kws \u22654-char filter missed 'git-memory' (hyphen-split), '2040' (numeric), 'CTX' (3-char)",
     "Fix: extract_keywords() now emits compound terms + numeric tokens; Pass0 uses up to 5 grep_kws, max-count=10",
-    "Remaining 17/45 0-7d misses: ~8 live-inf iter N/∞ (topic-dedup collapse), ~5 near-duplicate commits (same topic cluster), ~4 keyword-poor",
+    "Remaining 17/45 0-7d misses: ~8 live-inf iter N/\u221e (topic-dedup collapse), ~5 near-duplicate commits (same topic cluster), ~4 keyword-poor",
     "Practical ceiling for keyword-based retrieval: ~0.65-0.70 on this benchmark (structural dedup limit)",
-    "BM25 cross-domain: zero-score → stable sort → no harmful reordering for unrelated queries"
+    "BM25 cross-domain: zero-score \u2192 stable sort \u2192 no harmful reordering for unrelated queries"
   ],
   "uncertain": [
     {
       "question": "Can semantic reranking push 0-7d recall above 0.70 for structural miss cases?",
-      "status": "unmeasured — would require vec-daemon to be available + live testing"
+      "status": "unmeasured \u2014 would require vec-daemon to be available + live testing"
     },
     {
       "question": "Is the live-inf iter topic-dedup collapse avoidable with a different dedup strategy?",
-      "status": "structural limit — all iter commits touch .omc/ files, same topic key"
+      "status": "structural limit \u2014 all iter commits touch .omc/ files, same topic key"
     }
   ],
   "dimensions_explored": {
@@ -121,35 +121,19 @@
     "goal_fidelity": 0.98
   },
   "skill_routing_history": [],
-  "her_hints": [
-    {
-      "dim": "completeness",
-      "delta": 0.85,
-      "sub_goal": "Verify Requests/Django generalization AND re-run CTX original 12-query benchmark"
-    },
-    {
-      "dim": "impact",
-      "delta": 0.96,
-      "sub_goal": "Pass0 enhancement: compound+numeric keyword extraction gives biggest gains"
-    }
-  ],
-  "best_score_vector": {
-    "quality": 0.8,
-    "completeness": 0.8,
-    "impact": 0.85,
-    "goal_fidelity": 1.0
-  },
-  "wave1_plan": "",
-  "wave1_evolution_count": -1,
+  "her_hints": [],
+  "best_score_vector": {},
+  "wave1_plan": "APPROACH: benchmarks/eval/puac_eval.py (Tier 2 core, reusing downstream_llm_eval.py client+runner) + /api/puac-compare endpoint + homograph_audit.py + Tier 1 harnesses.\nMETHOD: iter1=puac_eval scaffold w/ 4-condition runner + CL/AR/PRR + N=10 smoke; iter2=N=50 real pilot; iter3=dashboard compare pane; iter4=homograph audit; iter5=Tier 1 LongMemEval+MemoryAgentBench; iter6=Tier 3 annotation.\nKEY_DECISIONS: (1) fresh counterfactual API calls not stored baseline; (2) PRR via CL-AR dissociation test (AR>0.5 AND CL<0.05); (3) LLM-judge pairwise temp=0 tracks human r=0.85+.\nREUSE: utility-rate.py substring AR, _ctx_telemetry.py ab_disabled, downstream_llm_eval.py get_llm_client, hf_space_dashboard FastAPI.\nBUILD NEW: puac_eval.py, homograph_audit.py, tier1_longmemeval.py, tier1_memoryagentbench.py, /api/puac-compare.\nANTI: single-number PUAC (must decompose), running Tier 1 on CTX's own corpus, skipping homograph audit.",
+  "wave1_evolution_count": 0,
   "wave1_feedback": [],
   "uncertain_followups": [
     {
-      "goal": "T1-A: G2 search_graph_for_prompt SQL LIKE → BM25 over (name+file_path)",
+      "goal": "T1-A: G2 search_graph_for_prompt SQL LIKE \u2192 BM25 over (name+file_path)",
       "source": "docs/research/20260417-ctx-semantic-search-upgrade-sota.md Tier 1-A",
-      "status": "NOT a dead-end. Implementation was reverted due to three consecutive tokenizer bugs in the A/B harness — not a theoretical failure. T1-A with v3 tokenizer (snake_case + CamelCase split, alphanumeric runs like 'bm25' kept intact) shows overlap 0.43 and canonical case 'BM25 retriever lookup' lifts from 0/5 to 3/5 with BM25Retriever class surfacing at rank 3 (OLD never showed it).",
+      "status": "NOT a dead-end. Implementation was reverted due to three consecutive tokenizer bugs in the A/B harness \u2014 not a theoretical failure. T1-A with v3 tokenizer (snake_case + CamelCase split, alphanumeric runs like 'bm25' kept intact) shows overlap 0.43 and canonical case 'BM25 retriever lookup' lifts from 0/5 to 3/5 with BM25Retriever class surfacing at rank 3 (OLD never showed it).",
       "open_issues": [
-        "No gold-truth benchmark yet → can't claim 'better' on ambiguous cases like 'fair eval' (1/5 overlap)",
-        "Latency 1.6ms → 14-16ms (10×) — still within hook budget but a real cost",
+        "No gold-truth benchmark yet \u2192 can't claim 'better' on ambiguous cases like 'fair eval' (1/5 overlap)",
+        "Latency 1.6ms \u2192 14-16ms (10\u00d7) \u2014 still within hook budget but a real cost",
         "No decision on whether to ship"
       ],
       "next_step_if_revisited": "Build 15-20 query gold-truth G2 bench first; only then re-apply T1-A with v3 tokenizer and decide on latency tradeoff."

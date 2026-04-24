@@ -1,13 +1,12 @@
 {
-  "root_goal": "Write the CTX vs claude-mem top-tier comparison paper using the MERIDIAN v2 evaluation rubric (paper 2)",
-  "original_goal": "go with the paper 2",
+  "root_goal": "Implement 3-Tier Tangible MERIDIAN eval stack (PUAC harness + public benchmark integration + human pairwise protocol) for CTX vs claude-mem",
+  "original_goal": "Implement 3-Tier Tangible MERIDIAN eval stack (PUAC harness + public benchmark integration + human pairwise protocol) for CTX vs claude-mem",
   "level": 0,
-  "sub_goals": [],
   "evolution_count": 0,
   "evolution_history": [],
   "reward_spec": {
-    "primary_metric": "paper draft completeness + grounding rate",
-    "threshold": "all sections populated with cited claims, experimental design fully specified, ≥0.85 grounding rate"
+    "primary_metric": "reproducible eval stack",
+    "threshold": "ctx-eval CLI runs + dashboard shows CL/AR/PRR per prompt + LongMemEval harness callable"
   },
   "history": []
 }

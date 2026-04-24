@@ -1,53 +1,18 @@
 {
-  "status": "ROTATING",
-  "session_id": "inf-20260423-083322-paper2",
-  "current_iteration": 1,
-  "root_goal": "Author reproducibility artifact: MERIDIAN harness README + 30-min smoke-test guide enabling third-party replication per \u00a78.5 claim",
-  "original_goal": "go with the paper 2",
-  "evolution_count": 1,
-  "best_score": 0.8625,
+  "status": "ACTIVE",
+  "session_id": "inf-20260424T110044-puac-meridian",
+  "current_iteration": 0,
+  "root_goal": "Implement 3-Tier Tangible MERIDIAN eval stack (PUAC harness + public benchmark integration + human pairwise protocol) for CTX vs claude-mem",
+  "original_goal": "Implement 3-Tier Tangible MERIDIAN eval stack (PUAC harness + public benchmark integration + human pairwise protocol) for CTX vs claude-mem",
+  "evolution_count": 0,
+  "evolution_history": [],
+  "best_score": 0.0,
   "plateau_count": 0,
-  "started_at": "2026-04-23T08:33:22Z",
-  "wave1_complete": false,
-  "wave1_evolution_count": -1,
-  "evolution_history": [
-    {
-      "iteration": 1,
-      "goal": "Write CTX vs claude-mem paper 2 draft",
-      "score": 0.8625,
-      "rationale": "v0.1 scaffold complete"
-    }
-  ],
-  "rotated_at": "2026-04-23T08:40:17Z",
-  "last_autopilot_summary": "iter 1: produced paper2_ctx_vs_claudemem_draft.md (v0.1, ~620 lines). \u00a71-4+\u00a77-9 populated. \u00a75-6 stubs pending pilot.",
-  "next_candidate_bundle": [
-    {
-      "id": "C1",
-      "goal": "Strengthen Paper 2 \u00a72 Related Work + \u00a77 Discussion with full citation trail \u2014 fill [TBD] citations, replace bare architectural claims with sourced evidence",
-      "dim_fit": 0.9,
-      "novelty": 0.3,
-      "feasibility": 0.8,
-      "direction": "quality",
-      "look_ahead": 0.7000000000000001
-    },
-    {
-      "id": "C2",
-      "goal": "Execute pilot N=100 per \u00a75 \u2014 implement paired-eval harness, produce real pilot numbers, populate \u00a75 with data instead of stubs",
-      "dim_fit": 0.8,
-      "novelty": 0.7,
-      "feasibility": 0.2,
-      "direction": "completeness",
-      "look_ahead": 0.65
-    },
-    {
-      "id": "C3",
-      "goal": "Author reproducibility artifact: MERIDIAN harness README + 30-min smoke-test guide enabling third-party replication per \u00a78.5 claim",
-      "dim_fit": 0.6,
-      "novelty": 0.9,
-      "feasibility": 0.9,
-      "direction": "impact (novel angle)",
-      "look_ahead": 0.7500000000000001
-    }
-  ],
-  "next_candidate_selected": "C3"
+  "started_at": "2026-04-24T11:00:44.420852Z",
+  "wave1_complete": true,
+  "wave1_evolution_count": 0,
+  "wave1_specialists": [
+    "research-explore",
+    "ops-planner"
+  ]
 }
