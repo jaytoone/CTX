@@ -1,8 +1,8 @@
 {
-  "current_iteration": 7,
+  "current_iteration": 8,
   "last_outcome": "success",
   "started_at": "2026-04-24T11:00:44.420852Z",
-  "best_score": 0.88,
+  "best_score": 0.9,
   "plateau_count": 0,
   "evolution_count": 0,
   "score_history": [
@@ -47,6 +47,13 @@
       "goal_fidelity": 1.0,
       "goal_version": 0,
       "score_variance": 0.0
+    },
+    {
+      "iteration": 8,
+      "score": 0.9,
+      "goal_fidelity": 1.0,
+      "goal_version": 0,
+      "score_variance": 0.0
     }
   ],
   "cost_history": [
@@ -76,8 +83,8 @@
       "relative_cost": 1.0
     }
   ],
-  "last_phase_reached": "iter7_mab_real_verdict",
-  "current_score": 0.87,
+  "last_phase_reached": "iter8_ctx_v2_stemmed",
+  "current_score": 0.9,
   "current_goal_fidelity": 1.0,
   "score_variance": 0.0
 }

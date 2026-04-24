@@ -47,6 +47,10 @@ RESULTS = ROOT / "benchmarks" / "results" / "tier1_memoryagentbench.json"
 sys.path.insert(0, str(ROOT / "benchmarks" / "eval"))
 from downstream_llm_eval import get_llm_client, call_llm   # noqa: E402
 from tier1_longmemeval import RETRIEVERS, retrieve_ctx, retrieve_oracle, retrieve_none, retrieve_chroma   # noqa: E402
+from retrieve_ctx_v2 import retrieve_ctx_v2   # noqa: E402
+
+# Register ctx_v2 (stemmed BM25 + recency) as an additional retriever
+RETRIEVERS["ctx_v2"] = retrieve_ctx_v2
 
 
 # ══════════════════════════════════════════════════════════════════════════

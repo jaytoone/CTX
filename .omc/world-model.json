@@ -110,6 +110,13 @@
       "iteration": 7,
       "outcome": "evolved",
       "weak_dim": "retrieval_recency"
+    },
+    {
+      "goal": "stemmed BM25 + recency \u2014 fixes MAB tokenization gap",
+      "score": 0.9,
+      "iteration": 8,
+      "outcome": "evolved",
+      "weak_dim": "production_integration"
     }
   ],
   "dead_ends": {},
@@ -147,7 +154,10 @@
     "homograph audit: 0.858 surface_match_only_rate on 106 labels (85.8% >> 30% threshold) \u2014 MMR dedup + cluster sig was correct priority, but surface noise dominates BM25 output \u2192 semantic rerank (bge-daemon) is architecturally necessary",
     "MAB Competency-4 N=5: none=0.0 vs ctx=0.2 \u2014 small lift",
     "MAB failure modes exposed: (1) BM25 misses reversal sessions when vocab shifts, (2) even WITH retrieval, LLM can default to first-fact ('log sink' case: ctx returned initial-fact, LLM answered initial state, not reversal) \u2014 this is the architectural weakness the benchmark exists to test",
-    "Implication: recency-aware ranking needed (date-boost BM25 or explicit 'most recent wins' system prompt) to pass conflict-resolution robustly"
+    "Implication: recency-aware ranking needed (date-boost BM25 or explicit 'most recent wins' system prompt) to pass conflict-resolution robustly",
+    "MAB failure root cause diagnosed: 'logs' vs 'logging' tokenization gap \u2014 BM25 can't match stems",
+    "retrieve_ctx_v2 = Porter stemmer + beta=0.5 recency boost \u2192 reversal session ranks ABOVE initial on failing case",
+    "Production migration decision deferred: stemming may hurt exact-match G1 benchmark (git commit subjects); needs measurement before rollout"
   ],
   "uncertain": [
     {
