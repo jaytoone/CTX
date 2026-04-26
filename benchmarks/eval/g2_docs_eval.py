@@ -1,11 +1,20 @@
 """
 G2-DOCS Hybrid Retrieval Eval — BM25 vs Hybrid BM25+Dense RRF
 
-Evaluates bm25_search_docs() vs hybrid_search_docs() on the 15-query
+Evaluates bm25_search_docs() vs hybrid_search_docs() on the 20-query
 g2_docs_goldset.json corpus. Reports Hit@3, Hit@5, MRR per query type.
 
 Usage:
     python3 benchmarks/eval/g2_docs_eval.py [--project-dir .] [--top-k 5]
+                                             [--corpus-cutoff YYYYMMDD]
+                                             [--exclude-docs PATTERN [PATTERN ...]]
+
+Options:
+    --corpus-cutoff YYYYMMDD   Only include docs whose filename date <= cutoff.
+                                Prevents corpus drift when new docs are added after
+                                goldset creation. Example: --corpus-cutoff 20260426
+    --exclude-docs PATTERN     Exclude docs whose filename contains any pattern.
+                                Example: --exclude-docs synthesis goldset-eval
 
 Requirements:
     - vec-daemon running (for hybrid; BM25-only degrades gracefully)
@@ -19,6 +28,40 @@ from pathlib import Path
 
 
 HOOK_PATH = Path.home() / ".claude" / "hooks" / "bm25-memory.py"
+
+
+def _patch_corpus_filter(mod, corpus_cutoff, exclude_docs):
+    """Monkey-patch build_docs_bm25 to filter corpus by date/name (corpus drift prevention)."""
+    import re
+    orig_fn = mod.build_docs_bm25
+    DATE_RE = re.compile(r"(\d{8})")
+
+    def patched(project_dir):
+        bm25, units = orig_fn(project_dir)
+        if not units:
+            return bm25, units
+        filtered = []
+        for u in units:
+            fname = u.split("\n", 1)[0]
+            # Date cutoff: extract YYYYMMDD from filename
+            if corpus_cutoff:
+                m = DATE_RE.search(fname)
+                if m and m.group(1) > corpus_cutoff:
+                    continue  # doc post-dates the cutoff
+            # Name exclusion patterns
+            if exclude_docs:
+                if any(pat in fname for pat in exclude_docs):
+                    continue
+            filtered.append(u)
+        if not filtered:
+            return None, []
+        # Rebuild BM25 on filtered units
+        from rank_bm25 import BM25Okapi
+        tokenize_fn = mod.tokenize
+        corpus = [tokenize_fn(u) for u in filtered]
+        return BM25Okapi(corpus), filtered
+
+    mod.build_docs_bm25 = patched
 
 
 def _load_hook():
@@ -50,7 +93,8 @@ def avg(values):
     return sum(values) / len(values) if values else 0.0
 
 
-def run_eval(project_dir=".", top_k=5, goldset_path=None):
+def run_eval(project_dir=".", top_k=5, goldset_path=None,
+             corpus_cutoff=None, exclude_docs=None):
     if goldset_path is None:
         goldset_path = Path(__file__).parent / "g2_docs_goldset.json"
 
@@ -62,8 +106,14 @@ def run_eval(project_dir=".", top_k=5, goldset_path=None):
     bm25_fn = mod.bm25_search_docs
     hybrid_fn = mod.hybrid_search_docs
 
+    # Apply corpus filter patches (corpus_cutoff / exclude_docs)
+    if corpus_cutoff or exclude_docs:
+        _patch_corpus_filter(mod, corpus_cutoff, exclude_docs)
+
     queries = goldset["queries"]
-    print(f"Evaluating {len(queries)} queries | top_k={top_k} | project={project_dir!r}")
+    cutoff_str = f" cutoff={corpus_cutoff}" if corpus_cutoff else ""
+    excl_str = f" exclude={exclude_docs}" if exclude_docs else ""
+    print(f"Evaluating {len(queries)} queries | top_k={top_k} | project={project_dir!r}{cutoff_str}{excl_str}")
     print()
 
     rows = []
@@ -175,10 +225,16 @@ if __name__ == "__main__":
     parser.add_argument("--project-dir", default=".", help="CTX project root")
     parser.add_argument("--top-k", type=int, default=5)
     parser.add_argument("--goldset", default=None, help="Path to goldset JSON")
+    parser.add_argument("--corpus-cutoff", default=None, metavar="YYYYMMDD",
+                        help="Only include docs with filename date <= cutoff (corpus drift prevention)")
+    parser.add_argument("--exclude-docs", nargs="+", default=None, metavar="PATTERN",
+                        help="Exclude docs whose filename contains any of these patterns")
     args = parser.parse_args()
 
     run_eval(
         project_dir=args.project_dir,
         top_k=args.top_k,
         goldset_path=args.goldset,
+        corpus_cutoff=args.corpus_cutoff,
+        exclude_docs=args.exclude_docs,
     )

@@ -96,9 +96,9 @@
     {
       "id": "kw_03",
       "type": "keyword",
-      "query": "BM25 homograph false positive surface match G1 decision corpus",
+      "query": "G1 85.8% surface-match rate avg rank BM25-raw 3.5 hybrid 3.3 false positive",
       "gold": ["20260426-g2-code-gap-and-false-positive-analysis.md"],
-      "note": "Keyword: false positive analysis, 85.8% surface-match-only rate"
+      "note": "Keyword: specific numbers from FP analysis (85.8%, avg rank 3.5/3.3) not present in synthesis"
     },
     {
       "id": "kw_04",
@@ -110,9 +110,9 @@
     {
       "id": "kw_05",
       "type": "keyword",
-      "query": "semantic gap keyword query contextual retrieval improvement priority",
+      "query": "CTX hook semantic gap 개선 우선순위 비용 효과 기준 keyword contextual",
       "gold": ["20260412-semantic-gap-keyword-vs-contextual.md"],
-      "note": "Keyword: CTX hook semantic gap analysis, improvement prioritization"
+      "note": "Keyword: specific Korean heading '개선 우선순위 비용 효과 기준' only in source doc"
     },
     {
       "id": "ko_01",
