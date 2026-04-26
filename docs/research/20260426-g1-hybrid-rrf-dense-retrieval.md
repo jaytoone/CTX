@@ -82,3 +82,13 @@ proximity at query time with only 1 vec-daemon call (query embedding only; corpu
 - `bm25_rank_decisions()` gains `skip_rerank=False` param for clean A/B comparison
 - Embedding cache extended: `{head, corpus, emb_head}` in `.omc/decision_corpus.json`
 - Latency: ~175ms/query for hybrid in eval mode; ~113ms expected in production (BGE dominates)
+
+## Related
+- [[projects/CTX/research/20260326-ctx-final-sota-comparison|20260326-ctx-final-sota-comparison]]
+- [[projects/CTX/research/20260326-ctx-vs-sota-comparison|20260326-ctx-vs-sota-comparison]]
+- [[projects/CTX/research/20260426-retrieval-node-relevance-verification|20260426-retrieval-node-relevance-verification]]
+- [[projects/CTX/research/20260409-bm25-memory-generalization-research|20260409-bm25-memory-generalization-research]]
+- [[projects/CTX/research/20260409-g1-fulleval-sota-comparison|20260409-g1-fulleval-sota-comparison]]
+- [[projects/CTX/research/20260402-production-context-retrieval-research|20260402-production-context-retrieval-research]]
+- [[projects/CTX/research/20260412-semantic-gap-keyword-vs-contextual|20260412-semantic-gap-keyword-vs-contextual]]
+- [[projects/CTX/research/20260407-g1-spiral-eval-results|20260407-g1-spiral-eval-results]]
