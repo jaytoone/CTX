@@ -29,6 +29,19 @@ Thumbs.db
 
 # Logs
 *.log
+
+# CTX runtime state (.omc/ — runtime caches and logs, not source)
+.omc/decision_corpus.json
+.omc/docs_corpus_emb.json
+.omc/episodes.jsonl
+.omc/goal-tree.json
+.omc/infinite-state.json
+.omc/infinite-state.archive.jsonl
+.omc/live-state.json
+.omc/live-progress.log
+.omc/session-decisions.md
+.omc/world-model.json
+.omc/retrieval_log.jsonl
 benchmarks/datasets/longmemeval/longmemeval_s
 benchmarks/datasets/longmemeval/longmemeval_oracle
 benchmarks/datasets/longmemeval/.cache/

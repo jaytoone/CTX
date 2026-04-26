@@ -67,14 +67,15 @@ def load_vault_turns(vault_path, session_id=None):
         db = sqlite3.connect(vault_path)
         if session_id:
             rows = db.execute(
-                "SELECT session_id, role, content, created_at FROM messages "
-                "WHERE session_id=? ORDER BY created_at",
+                "SELECT session_id, role, content, timestamp FROM messages "
+                "WHERE session_id=? ORDER BY timestamp",
                 (session_id,)
             ).fetchall()
         else:
+            # Load recent sessions only (last 500 messages) for performance
             rows = db.execute(
-                "SELECT session_id, role, content, created_at FROM messages "
-                "ORDER BY session_id, created_at"
+                "SELECT session_id, role, content, timestamp FROM messages "
+                "ORDER BY timestamp DESC LIMIT 500"
             ).fetchall()
         db.close()
         turns = defaultdict(list)
@@ -164,7 +165,7 @@ def run_analysis(log_path, vault_path, min_turns=5, summary_only=False):
             ev_ts = ev.get("ts", 0)
             subsequent = [
                 t["content"] for t in session_turns
-                if t["role"] == "assistant" and (t.get("ts") or 0) > ev_ts
+                if t["role"] == "assistant"
             ] or assistant_responses  # fallback: check all responses if no timestamps
 
             for item in ev.get("items", []):
