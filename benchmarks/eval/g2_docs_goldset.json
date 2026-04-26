@@ -1,0 +1,117 @@
+{
+  "meta": {
+    "created": "2026-04-26",
+    "corpus": "docs/research/*.md + docs/*.md",
+    "n_docs": 87,
+    "n_queries": 15,
+    "split": {"heading_exact": 5, "heading_paraphrase": 5, "keyword": 5},
+    "evaluator": "manual — iter 42 live-inf"
+  },
+  "queries": [
+    {
+      "id": "he_01",
+      "type": "heading_exact",
+      "query": "Benchmark Coverage Summary",
+      "gold": ["20260424-memory-retrieval-benchmark-landscape.md"],
+      "note": "Exact section heading from the memory benchmark landscape survey"
+    },
+    {
+      "id": "he_02",
+      "type": "heading_exact",
+      "query": "KNN 확장성 분석",
+      "gold": ["20260410-vault-vector-migration-and-benchmark.md"],
+      "note": "Exact section heading from vault.db vector migration doc"
+    },
+    {
+      "id": "he_03",
+      "type": "heading_exact",
+      "query": "Latency Profile",
+      "gold": ["20260411-g1-g2-architecture-improvements.md"],
+      "note": "Exact section heading: G1/G2 hook latency measurements"
+    },
+    {
+      "id": "he_04",
+      "type": "heading_exact",
+      "query": "Optimal G1 Evaluation Benchmark — Final List",
+      "gold": ["20260407-g1-final-eval-benchmark.md"],
+      "note": "Exact heading from G1 long-term memory final benchmark suite"
+    },
+    {
+      "id": "he_05",
+      "type": "heading_exact",
+      "query": "Fail-safe Behavior",
+      "gold": ["20260426-g1-hybrid-rrf-dense-retrieval.md"],
+      "note": "Exact heading from G1 hybrid RRF dense retrieval doc (vec-daemon fallback)"
+    },
+    {
+      "id": "hp_01",
+      "type": "heading_paraphrase",
+      "query": "how to upgrade CTX retrieval to SOTA while keeping sub-millisecond latency",
+      "gold": ["20260417-ctx-semantic-search-upgrade-sota.md"],
+      "note": "Paraphrase of title + original question"
+    },
+    {
+      "id": "hp_02",
+      "type": "heading_paraphrase",
+      "query": "G2-DOCS hybrid BM25 dense query comparison results",
+      "gold": ["20260426-g2-docs-hybrid-dense-retrieval.md"],
+      "note": "Paraphrase of 'Live Comparison (3 queries)' section"
+    },
+    {
+      "id": "hp_03",
+      "type": "heading_paraphrase",
+      "query": "conclusions on making bm25-memory hook work across non-CTX projects",
+      "gold": ["20260409-bm25-memory-generalization-research.md"],
+      "note": "Paraphrase of 'Final Conclusion' in generalization research doc"
+    },
+    {
+      "id": "hp_04",
+      "type": "heading_paraphrase",
+      "query": "measuring what fraction of retrieved nodes Claude actually uses in responses",
+      "gold": ["20260426-citation-probe-v1.md"],
+      "note": "Paraphrase of citation probe goal: node citation rate measurement"
+    },
+    {
+      "id": "hp_05",
+      "type": "heading_paraphrase",
+      "query": "G1 temporal memory performance across different recency windows",
+      "gold": ["20260407-g1-temporal-eval-results.md"],
+      "note": "Paraphrase of G1 temporal evaluation results doc"
+    },
+    {
+      "id": "kw_01",
+      "type": "keyword",
+      "query": "RRF reciprocal rank fusion G1 dense embedding retrieval",
+      "gold": ["20260426-g1-hybrid-rrf-dense-retrieval.md"],
+      "note": "Keyword: RRF merge implementation for G1 hybrid retrieval"
+    },
+    {
+      "id": "kw_02",
+      "type": "keyword",
+      "query": "vec-daemon multilingual e5 small vault embedding benchmark P@5",
+      "gold": ["20260410-vault-vector-migration-and-benchmark.md"],
+      "note": "Keyword: vec-daemon + vault.db vector migration benchmark metrics"
+    },
+    {
+      "id": "kw_03",
+      "type": "keyword",
+      "query": "BM25 homograph false positive surface match G1 decision corpus",
+      "gold": ["20260426-g2-code-gap-and-false-positive-analysis.md"],
+      "note": "Keyword: false positive analysis, 85.8% surface-match-only rate"
+    },
+    {
+      "id": "kw_04",
+      "type": "keyword",
+      "query": "codebase-memory-mcp staleness auto reindex background spawn",
+      "gold": ["20260426-g2-code-staleness-auto-fix.md"],
+      "note": "Keyword: G2-CODE staleness detection + auto-fix implementation"
+    },
+    {
+      "id": "kw_05",
+      "type": "keyword",
+      "query": "semantic gap keyword query contextual retrieval improvement priority",
+      "gold": ["20260412-semantic-gap-keyword-vs-contextual.md"],
+      "note": "Keyword: CTX hook semantic gap analysis, improvement prioritization"
+    }
+  ]
+}
