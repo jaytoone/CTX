@@ -808,16 +808,39 @@ class AdaptiveTriggerRetriever:
         path_seeded = False  # True if seeds found via direct path matching (high confidence)
 
         # Check for module names in the query.
-        # Use letter-boundary matching (not substring) to avoid short names like "a"
-        # matching inside longer words like "understand".
-        # We use [a-zA-Z0-9] (not [a-zA-Z0-9_]) so "auth" matches in "test_auth"
-        # (underscore is a separator, not a letter boundary) but "a" does not match in "understand".
-        for mod_name, fpath in self.module_to_file.items():
-            if len(mod_name) < 2:
-                continue
-            if re.search(r'(?<![a-zA-Z0-9])' + re.escape(mod_name) + r'(?![a-zA-Z0-9])',
-                         query_text, re.IGNORECASE):
-                primary_files.add(fpath)
+        # Fast path (2026-04-26): O(query_tokens) token lookup replaces the original
+        # O(N_modules × regex) loop which took 500ms+ with 2000+ modules.
+        # Strategy: extract word tokens from query, check each against module_to_file
+        # via direct dict lookup (exact, normalized, and dot-stripped forms).
+        # Also check .py filename references (e.g. "adaptive_trigger.py" in query).
+        _q_lower = query_text.lower()
+        # Word tokens (letters + underscores, min 2 chars)
+        _q_tokens = re.findall(r'[a-zA-Z][a-zA-Z0-9_]{1,}', _q_lower)
+        # Also extract tokens from PascalCase → snake split (e.g. "AdaptiveTrigger" → "adaptive_trigger")
+        _q_expanded = re.sub(r'([a-z])([A-Z])', r'\1_\2', query_text).lower()
+        _q_tokens = list(set(_q_tokens + re.findall(r'[a-z][a-z0-9_]{1,}', _q_expanded)))
+        # Build a set of candidate module keys to check (exact + normalized)
+        _q_token_set = set(_q_tokens)
+        _q_nounderscore = {t: t.replace('_', '') for t in _q_tokens}
+        # Build reverse index if not cached: normalized_mod_name → original mod names
+        if not hasattr(self, '_mod_name_norm_index'):
+            _idx: Dict[str, List[str]] = {}
+            for mn in self.module_to_file:
+                _idx.setdefault(mn.replace('_', '').replace('.', ''), []).append(mn)
+            self._mod_name_norm_index = _idx
+        for tok in _q_tokens:
+            # Exact match (e.g. "adaptive_trigger" → module "adaptive_trigger")
+            if tok in self.module_to_file:
+                primary_files.add(self.module_to_file[tok])
+            # Normalized match (e.g. "adaptivetrigger" ↔ "adaptive_trigger")
+            tok_norm = tok.replace('_', '')
+            if len(tok_norm) >= 4:  # skip short tokens to avoid false positives
+                for mn in self._mod_name_norm_index.get(tok_norm, []):
+                    primary_files.add(self.module_to_file[mn])
+        # Also handle "filename.py" references in the query (common in IMPLICIT_CONTEXT)
+        for ext_tok in re.findall(r'([a-z][a-z0-9_]+)\.py', _q_lower):
+            if ext_tok in self.module_to_file:
+                primary_files.add(self.module_to_file[ext_tok])
 
         # Path-based seed selection (NEW): extract long snake_case identifiers from
         # the query (≥8 chars) and match them against file basenames directly.
@@ -872,11 +895,17 @@ class AdaptiveTriggerRetriever:
         # Traverse import graph to find dependencies.
         # Iter 10: depth scales with k: small k → focused 2-hop, large k → deeper 4-hop.
         # FastAPI (928 files) needs deeper traversal for better IMPLICIT recall.
+        # Latency cap (2026-04-26): node cap = k × 4 prevents BFS runaway on large benchmark
+        # corpora (e.g. 452-file dataset hits P99=502ms at depth=4 without cap).
         bfs_depth = 4 if k >= 8 else 2
+        _bfs_node_cap = k * 4  # max nodes in all_relevant before stopping BFS
         all_relevant: Dict[str, float] = {}
         for pf in primary_files:
+            if len(all_relevant) >= _bfs_node_cap:
+                break
             all_relevant[pf] = 1.0
-            self._traverse_imports(pf, all_relevant, depth=bfs_depth, decay=0.5)
+            self._traverse_imports(pf, all_relevant, depth=bfs_depth, decay=0.5,
+                                   node_cap=_bfs_node_cap)
 
         # Iter 10 NEW: Path boost for import chain — files closer in import chain
         # get higher weight (e.g., direct imports > 2-hop > 3-hop).
@@ -919,7 +948,8 @@ class AdaptiveTriggerRetriever:
                 for caller in callers:
                     if caller not in all_relevant:
                         all_relevant[caller] = 0.3
-                        self._traverse_imports(caller, all_relevant, depth=1, decay=0.15)
+                        self._traverse_imports(caller, all_relevant, depth=1, decay=0.15,
+                                               node_cap=_bfs_node_cap)
                 # 2-hop reverse: callers of callers (transitive dependents)
                 for caller in callers[:15]:  # limit to top 15 to avoid explosion
                     callers2 = self.reverse_import_graph.get(caller, [])
@@ -974,20 +1004,27 @@ class AdaptiveTriggerRetriever:
         )
 
     def _traverse_imports(self, file_path: str, result: Dict[str, float],
-                          depth: int, decay: float) -> None:
-        """Recursively traverse import graph."""
-        if depth <= 0:
+                          depth: int, decay: float, node_cap: int = 200) -> None:
+        """Recursively traverse import graph.
+
+        node_cap: hard upper bound on len(result) — stops BFS expansion once reached.
+        Prevents latency runaway on large benchmark corpora (452+ files, depth-4 BFS).
+        """
+        if depth <= 0 or len(result) >= node_cap:
             return
 
         imports = self.import_graph.get(file_path, [])
         for mod_name in imports:
+            if len(result) >= node_cap:
+                break
             if mod_name in self.module_to_file:
                 imported_file = self.module_to_file[mod_name]
                 current_score = result.get(imported_file, 0.0)
                 new_score = decay
                 if new_score > current_score:
                     result[imported_file] = new_score
-                    self._traverse_imports(imported_file, result, depth - 1, decay * 0.5)
+                    self._traverse_imports(imported_file, result, depth - 1, decay * 0.5,
+                                           node_cap=node_cap)
 
     def _tfidf_retrieve(self, query_id: str, query_text: str, k: int) -> RetrievalResult:
         """Fallback BM25 retrieval (replaces TF-IDF)."""
