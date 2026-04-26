@@ -1,11 +1,12 @@
 {
   "meta": {
     "created": "2026-04-26",
+    "updated": "2026-04-26 iter 44",
     "corpus": "docs/research/*.md + docs/*.md",
     "n_docs": 87,
-    "n_queries": 15,
-    "split": {"heading_exact": 5, "heading_paraphrase": 5, "keyword": 5},
-    "evaluator": "manual — iter 42 live-inf"
+    "n_queries": 20,
+    "split": {"heading_exact": 5, "heading_paraphrase": 5, "keyword": 5, "korean_crosslingual": 5},
+    "evaluator": "manual — iter 42/44 live-inf"
   },
   "queries": [
     {
@@ -112,6 +113,41 @@
       "query": "semantic gap keyword query contextual retrieval improvement priority",
       "gold": ["20260412-semantic-gap-keyword-vs-contextual.md"],
       "note": "Keyword: CTX hook semantic gap analysis, improvement prioritization"
+    },
+    {
+      "id": "ko_01",
+      "type": "korean_crosslingual",
+      "query": "하이브리드 BM25 밀집 검색 RRF 병합 구현",
+      "gold": ["20260426-g1-hybrid-rrf-dense-retrieval.md"],
+      "note": "Korean: 'hybrid BM25 dense search RRF merge implementation' → G1 hybrid doc"
+    },
+    {
+      "id": "ko_02",
+      "type": "korean_crosslingual",
+      "query": "코드베이스 메모리 오래된 데이터베이스 자동 재색인",
+      "gold": ["20260426-g2-code-staleness-auto-fix.md"],
+      "note": "Korean: 'codebase memory stale database auto reindex' → G2-CODE staleness fix"
+    },
+    {
+      "id": "ko_03",
+      "type": "korean_crosslingual",
+      "query": "검색 노드 인용 비율 측정 거짓 양성",
+      "gold": ["20260426-citation-probe-v1.md"],
+      "note": "Korean: 'retrieved node citation rate measurement false positive' → citation probe"
+    },
+    {
+      "id": "ko_04",
+      "type": "korean_crosslingual",
+      "query": "vault 벡터 마이그레이션 임베딩 벤치마크 성능",
+      "gold": ["20260410-vault-vector-migration-and-benchmark.md"],
+      "note": "Korean: 'vault vector migration embedding benchmark performance' → vault migration"
+    },
+    {
+      "id": "ko_05",
+      "type": "korean_crosslingual",
+      "query": "CTX 시멘틱 검색 SOTA 수준 업그레이드 지연 시간",
+      "gold": ["20260417-ctx-semantic-search-upgrade-sota.md"],
+      "note": "Korean: 'CTX semantic search SOTA upgrade latency' → semantic upgrade research"
     }
   ]
 }
