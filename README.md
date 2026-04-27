@@ -71,10 +71,6 @@ ctx-install status              # verify hook file presence + settings.json regi
 ctx-install --uninstall         # remove CTX hook registrations (hook files left in place)
 ```
 
-### Caveat (v0.1 — honest)
-
-`ctx-install` currently assumes the 4 hook python files already exist at `~/.claude/hooks/`. The pip package ships the CLI + core retrievers, but not yet the hook files themselves (tracked for v0.2). If `ctx-install` reports `missing=4`, copy the hooks from the repo's `hooks/` directory or from [`docs/claude_code_integration.md`](docs/claude_code_integration.md) and re-run.
-
 ### Manual install (legacy — only needed if `ctx-install` fails)
 
 ```bash

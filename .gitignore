@@ -30,6 +30,12 @@ Thumbs.db
 # Logs
 *.log
 
+# Plugin runtime artifacts (Setup hook uses PyPI, not these local copies)
+plugin/.ctx-venv/
+plugin/.install-version
+plugin/hooks/*.py
+plugin/scripts/
+
 # CTX runtime state (.omc/ — runtime caches and logs, not source)
 .omc/decision_corpus.json
 .omc/docs_corpus_emb.json
