@@ -46,33 +46,59 @@ for filepath in result.retrieved_files:
 
 ## Claude Code Hook (Recommended)
 
-CTX works best as a **live hook** that automatically injects relevant files into every Claude Code prompt:
+CTX runs as a set of Claude Code hooks that inject relevant past decisions, docs, and code into every prompt. Install is one command:
 
 ```bash
-# 1. Copy hooks to Claude Code hooks directory
-cp hooks/ctx_real_loader.py hooks/ctx_session_tracker.py ~/.claude/hooks/
-
-# 2. Set your CTX path (edit line 25 in ctx_real_loader.py)
-#    CTX_PROJECT = "/path/to/your/CTX"
-#    (or install via pip and adjust the import path)
-
-# 3. Register in ~/.claude/settings.json
+pip install ctx-retriever
+ctx-install                     # register CTX hooks in ~/.claude/settings.json
 ```
+
+**That's it.** Restart Claude Code and hooks fire on every prompt.
+
+### What ctx-install does (atomic, backup-first)
+
+1. Verifies the 4 CTX hook files exist at `~/.claude/hooks/` (chat-memory, bm25-memory, memory-keyword-trigger, g2-fallback)
+2. Reads `~/.claude/settings.json`, takes a timestamped backup (`settings.json.bak.<TS>`)
+3. Merges the CTX hook registrations into the existing `hooks` dict **without overwriting your other hooks** (dedupes by command string — safe to re-run)
+4. Atomically writes the new settings.json (temp-file-then-rename — never leaves partial state on disk)
+5. Smoke-tests by firing `bm25-memory.py` once with a dummy prompt and confirming `last-injection.json` gets written
+
+### Other subcommands
+
+```bash
+ctx-install --dry-run           # show what would change, touch nothing
+ctx-install status              # verify hook file presence + settings.json registration + last fire
+ctx-install --uninstall         # remove CTX hook registrations (hook files left in place)
+```
+
+### Caveat (v0.1 — honest)
+
+`ctx-install` currently assumes the 4 hook python files already exist at `~/.claude/hooks/`. The pip package ships the CLI + core retrievers, but not yet the hook files themselves (tracked for v0.2). If `ctx-install` reports `missing=4`, copy the hooks from the repo's `hooks/` directory or from [`docs/claude_code_integration.md`](docs/claude_code_integration.md) and re-run.
+
+### Manual install (legacy — only needed if `ctx-install` fails)
+
+```bash
+# 1. Copy hook files to ~/.claude/hooks/
+# 2. Register each in ~/.claude/settings.json under the appropriate event key
+```
+
+Example settings block (what ctx-install writes for you):
 
 ```json
 {
   "hooks": {
     "UserPromptSubmit": [
-      { "hooks": [{ "type": "command", "command": "python3 $HOME/.claude/hooks/ctx_real_loader.py" }] }
+      { "hooks": [{ "type": "command", "command": "python3 $HOME/.claude/hooks/chat-memory.py" }] },
+      { "hooks": [{ "type": "command", "command": "python3 $HOME/.claude/hooks/bm25-memory.py --rich" }] },
+      { "hooks": [{ "type": "command", "command": "python3 $HOME/.claude/hooks/memory-keyword-trigger.py" }] }
     ],
     "PostToolUse": [
-      { "hooks": [{ "type": "command", "command": "python3 $HOME/.claude/hooks/ctx_session_tracker.py" }] }
+      { "matcher": "Grep",
+        "hooks": [{ "type": "command", "command": "python3 $HOME/.claude/hooks/g2-fallback.py" }] }
     ]
   }
 }
 ```
-
-The `PostToolUse` hook is optional but recommended — it tracks file accesses to enable `TEMPORAL_HISTORY` queries ("what file did we look at earlier?"). After setup, CTX automatically injects relevant files as context on every prompt. See [`docs/claude_code_integration.md`](docs/claude_code_integration.md) for full setup guide.
 
 **What you get in each prompt:**
 ```
@@ -83,6 +109,34 @@ Code files (3/847 total):
 • tests/test_auth.py [score=0.741]
 (Use the prompt intent to decide how to treat this context.)
 ```
+
+## Validate on your own transcripts
+
+Before installing, you can measure what CTX *would* give you on your own Claude Code transcripts — no install, no signup, no upload:
+
+```bash
+python3 benchmarks/ctx_validate.py --days 7
+```
+
+stdlib-only; reads `~/.claude/projects/*/<session>.jsonl` locally and emits a Wilson-95-CI markdown report:
+
+```
+- Text match rate:   26.9% [23.2%, 31.1%] ±4.0pp  (n=201)
+- Tool-use match:    11.1% [8.6%, 14.2%]  ±2.8pp
+- Union (either):    32.8% [28.7%, 37.1%] ±4.2pp
+Per response-type:
+  prose:       51.2% ±10.3pp  (n=86)
+  tool_heavy:  26.2% ±8.2pp   (n=107)
+  mixed:       25.0% ±26.0pp  (n=8)
+```
+
+**What this measures** — distinctive terms from each user prompt, substring-matched against the assistant's response text AND tool_use parameters (file_path/command/pattern). On turns where CTX's hooks would surface related context, this rate approximates the *ceiling* of plausible utility. It is NOT a direct CTX measurement — install CTX and compare against live `utility_measured` telemetry for the actual delta. Use it to decide "is this signal worth pursuing?" before committing to install.
+
+Live dashboard (after install):
+
+![CTX Telemetry Dashboard](iter5-full.png)
+
+The dashboard visualizes utility in four stacked views — pooled rate with 95% CI, per-block breakdown (g1/g2_docs/g2_prefetch), by response type (prose/mixed/tool_heavy), and by item age (0-7d / 7-30d / 30d+). The knowledge graph below it lights up decisions in coral when Claude actually used them in the last 7 days; dead-weight decisions (no recent references) appear muted — pruning candidates.
 
 ## Hook Performance
 

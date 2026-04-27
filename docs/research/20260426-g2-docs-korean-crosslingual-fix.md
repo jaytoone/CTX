@@ -112,8 +112,14 @@ Korean prompts are common in CTX sessions (CLAUDE.md is in Korean; user often ty
 This fix is directly production-relevant.
 
 ---
+- `~/.claude/hooks/bm25-memory.py` — `_KO_EN_DOCS` + `_expand_ko_en_docs()`
 
 ## Related
-- [[projects/CTX/research/20260426-g2-docs-goldset-eval|iter 42 — initial goldset]]
-- [[projects/CTX/research/20260426-ctx-retrieval-benchmark-synthesis|iter 43 — benchmark synthesis]]
-- `~/.claude/hooks/bm25-memory.py` — `_KO_EN_DOCS` + `_expand_ko_en_docs()`
+- [[projects/CTX/research/20260417-ctx-semantic-search-upgrade-sota|20260417-ctx-semantic-search-upgrade-sota]]
+- [[projects/CTX/research/20260426-ctx-retrieval-benchmark-synthesis|20260426-ctx-retrieval-benchmark-synthesis]]
+- [[projects/CTX/research/20260426-g1-hybrid-rrf-dense-retrieval|20260426-g1-hybrid-rrf-dense-retrieval]]
+- [[projects/CTX/research/20260426-g2-docs-hybrid-dense-retrieval|20260426-g2-docs-hybrid-dense-retrieval]]
+- [[projects/CTX/research/20260407-g1-final-eval-benchmark|20260407-g1-final-eval-benchmark]]
+- [[projects/CTX/research/20260426-g2-docs-goldset-eval|20260426-g2-docs-goldset-eval]]
+- [[projects/CTX/research/20260426-g2-code-staleness-auto-fix|20260426-g2-code-staleness-auto-fix]]
+- [[projects/CTX/research/20260426-g2-code-gap-and-false-positive-analysis|20260426-g2-code-gap-and-false-positive-analysis]]

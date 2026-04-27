@@ -91,3 +91,13 @@ CTX real MAB results confirm positive marginal retrieval benefit. However:
 - [MemoryAgentBench HuggingFace dataset](https://huggingface.co/datasets/ai-hyz/MemoryAgentBench)
 - [MemoryArena (arXiv:2602.16313)](https://arxiv.org/html/2602.16313v1)
 - [LongMemEval (arXiv:2410.10813)](https://arxiv.org/abs/2410.10813)
+
+## Related
+- [[projects/CTX/research/20260326-ctx-vs-sota-comparison|20260326-ctx-vs-sota-comparison]]
+- [[projects/CTX/research/20260402-g2-evaluation-methods-research-summary|20260402-g2-evaluation-methods-research-summary]]
+- [[projects/CTX/research/20260402-g2-evaluation-methods-research|20260402-g2-evaluation-methods-research]]
+- [[projects/CTX/research/20260326-ctx-final-sota-comparison|20260326-ctx-final-sota-comparison]]
+- [[projects/CTX/research/20260326-ctx-methodology-comparison|20260326-ctx-methodology-comparison]]
+- [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]
+- [[projects/CTX/research/20260325-ctx-paper-tier-evaluation|20260325-ctx-paper-tier-evaluation]]
+- [[projects/CTX/research/20260330-ctx-academic-critique-web-grounded|20260330-ctx-academic-critique-web-grounded]]

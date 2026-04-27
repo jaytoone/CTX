@@ -229,8 +229,6 @@ With all 5 changes, the dashboard tells this story from top to bottom:
 Each layer adds depth for more engaged viewers. Casual visitors get the story from sections 1–3. Evaluators and paper reviewers drill to sections 4–5.
 
 ---
-
-## Related
 - `~/.claude/hooks/ctx-dashboard/server.py` — `_build_snapshot()`, endpoint additions
 - `~/.claude/hooks/ctx-dashboard/static/app.js` — utility rate display, banner render, method dots
 - `docs/research/20260427-dashboard-semantic-appeal-spec.md` — parent spec (fully implemented)
@@ -241,3 +239,13 @@ Each layer adds depth for more engaged viewers. Casual visitors get the story fr
 - [[projects/CTX/research/20260427-dashboard-semantic-closeness-cm-fix|20260427-dashboard-semantic-closeness-cm-fix]]
 - [[projects/CTX/research/20260426-retrieval-node-relevance-verification|20260426-retrieval-node-relevance-verification]]
 - [[projects/CTX/research/20260419-ctx-report-visibility-research|20260419-ctx-report-visibility-research]]
+
+## Related
+- [[projects/CTX/research/20260407-g1-final-eval-benchmark|20260407-g1-final-eval-benchmark]]
+- [[projects/CTX/research/20260402-g2-evaluation-methods-research-summary|20260402-g2-evaluation-methods-research-summary]]
+- [[projects/CTX/research/20260402-g2-evaluation-methods-research|20260402-g2-evaluation-methods-research]]
+- [[projects/CTX/research/20260424-memory-retrieval-benchmark-landscape|20260424-memory-retrieval-benchmark-landscape]]
+- [[projects/CTX/research/20260409-bm25-memory-generalization-research|20260409-bm25-memory-generalization-research]]
+- [[projects/CTX/research/20260402-production-context-retrieval-research|20260402-production-context-retrieval-research]]
+- [[projects/CTX/research/20260426-ctx-retrieval-benchmark-synthesis|20260426-ctx-retrieval-benchmark-synthesis]]
+- [[projects/CTX/research/20260426-g2-docs-hybrid-dense-retrieval|20260426-g2-docs-hybrid-dense-retrieval]]

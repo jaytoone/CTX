@@ -124,5 +124,11 @@ The G2-CODE staleness problem (identified in 2026-04-17 session as silent failur
 quantified in iter 37 as "staleness > algorithm as ROI driver") is now self-healing.
 
 ## Related
-- [[projects/CTX/research/20260426-g2-code-gap-and-false-positive-analysis|iter 37 G2-CODE gap analysis]]
-- [[projects/CTX/research/20260417-ctx-semantic-search-upgrade-sota|2026-04-17 staleness discovery]]
+- [[projects/CTX/research/20260426-retrieval-node-relevance-verification|20260426-retrieval-node-relevance-verification]]
+- [[projects/CTX/research/20260409-bm25-memory-generalization-research|20260409-bm25-memory-generalization-research]]
+- [[projects/CTX/research/20260411-auto-index-necessity-analysis|20260411-auto-index-necessity-analysis]]
+- [[projects/CTX/research/20260411-hook-comparison-auto-index-vs-chat-memory|20260411-hook-comparison-auto-index-vs-chat-memory]]
+- [[projects/CTX/research/20260424-memory-retrieval-benchmark-landscape|20260424-memory-retrieval-benchmark-landscape]]
+- [[projects/CTX/research/20260424-memory-experiential-eval-protocol|20260424-memory-experiential-eval-protocol]]
+- [[projects/CTX/research/20260410-session-6c4f589e-chat-memory|20260410-session-6c4f589e-chat-memory]]
+- [[projects/CTX/research/20260411-chat-memory-threshold-principled|20260411-chat-memory-threshold-principled]]

@@ -37,10 +37,14 @@ Homepage = "https://github.com/jaytoone/CTX"
 Repository = "https://github.com/jaytoone/CTX"
 "HuggingFace Demo" = "https://huggingface.co/spaces/jaytoone/ctx-demo"
 
+[project.scripts]
+ctx-install = "ctx_retriever.cli.install:main"
+
 [tool.setuptools]
 packages = [
     "ctx_retriever",
     "ctx_retriever.analysis",
+    "ctx_retriever.cli",
     "ctx_retriever.data",
     "ctx_retriever.evaluator",
     "ctx_retriever.retrieval",

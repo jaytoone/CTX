@@ -90,6 +90,11 @@ at #1 (vs BM25's #2).
 All three retrieval surfaces now use hybrid BM25+dense where semantically meaningful.
 
 ## Related
-- [[projects/CTX/research/20260426-g1-hybrid-rrf-dense-retrieval|iter 34 G1 hybrid RRF]]
-- [[projects/CTX/research/20260426-retrieval-node-relevance-verification|retrieval node relevance]]
-- [[projects/CTX/research/20260417-ctx-semantic-search-upgrade-sota|semantic upgrade SOTA roadmap]]
+- [[projects/CTX/research/20260426-retrieval-node-relevance-verification|20260426-retrieval-node-relevance-verification]]
+- [[projects/CTX/research/20260426-g1-hybrid-rrf-dense-retrieval|20260426-g1-hybrid-rrf-dense-retrieval]]
+- [[projects/CTX/research/20260327-ctx-downstream-eval|20260327-ctx-downstream-eval]]
+- [[projects/CTX/research/20260410-vault-vector-migration-and-benchmark|20260410-vault-vector-migration-and-benchmark]]
+- [[projects/CTX/research/20260412-semantic-gap-keyword-vs-contextual|20260412-semantic-gap-keyword-vs-contextual]]
+- [[projects/CTX/research/20260402-g2-evaluation-methods-research|20260402-g2-evaluation-methods-research]]
+- [[projects/CTX/research/20260407-g1-temporal-evaluation-framework|20260407-g1-temporal-evaluation-framework]]
+- [[projects/CTX/research/20260407-g1-final-eval-benchmark|20260407-g1-final-eval-benchmark]]

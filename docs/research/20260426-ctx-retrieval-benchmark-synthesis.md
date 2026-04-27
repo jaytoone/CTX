@@ -122,9 +122,11 @@ All other claims have sufficient N for confidence intervals.
 ---
 
 ## Related
-- [[20260426-g2-docs-goldset-eval|iter 42 — G2-DOCS goldset]]
-- [[20260426-g1-hybrid-rrf-dense-retrieval|iter 34 — G1 hybrid]]
-- [[20260426-g2-docs-hybrid-dense-retrieval|iter 36 — G2-DOCS hybrid implementation]]
-- [[20260426-g2-code-gap-and-false-positive-analysis|iter 37 — G2-CODE + FP analysis]]
-- [[20260426-citation-probe-v1|iter 40 — citation probe]]
-- [[20260410-vault-vector-migration-and-benchmark|CM hybrid baseline]]
+- [[projects/CTX/research/20260426-g2-docs-hybrid-dense-retrieval|20260426-g2-docs-hybrid-dense-retrieval]]
+- [[projects/CTX/research/20260426-g2-docs-goldset-eval|20260426-g2-docs-goldset-eval]]
+- [[projects/CTX/research/20260426-g2-code-staleness-auto-fix|20260426-g2-code-staleness-auto-fix]]
+- [[projects/CTX/research/20260426-citation-probe-v1|20260426-citation-probe-v1]]
+- [[projects/CTX/research/20260426-g2-code-gap-and-false-positive-analysis|20260426-g2-code-gap-and-false-positive-analysis]]
+- [[projects/CTX/research/20260426-g1-hybrid-rrf-dense-retrieval|20260426-g1-hybrid-rrf-dense-retrieval]]
+- [[projects/CTX/research/20260407-g1-final-eval-benchmark|20260407-g1-final-eval-benchmark]]
+- [[projects/CTX/research/20260424-memory-retrieval-benchmark-landscape|20260424-memory-retrieval-benchmark-landscape]]

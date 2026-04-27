@@ -108,10 +108,15 @@ excludes them. Pending decision: how many future meta-docs will there be?
 **Final G2-DOCS benchmark**: BM25 H@5=0.800, Hybrid H@5=**1.000** (+25pp)
 
 ---
-
-## Related
-- [[projects/CTX/research/20260426-g2-docs-goldset-eval|iter 42 — initial goldset]]
-- [[projects/CTX/research/20260426-g2-docs-korean-crosslingual-fix|iter 44 — Korean fix]]
-- [[projects/CTX/research/20260426-ctx-retrieval-benchmark-synthesis|iter 43 — synthesis]]
 - `benchmarks/eval/g2_docs_eval.py` — `--exclude-docs`, `--corpus-cutoff`
 - `benchmarks/eval/g2_docs_goldset.json` — 20-query goldset (15 EN + 5 KO)
+
+## Related
+- [[projects/CTX/research/20260426-ctx-retrieval-benchmark-synthesis|20260426-ctx-retrieval-benchmark-synthesis]]
+- [[projects/CTX/research/20260426-g1-hybrid-rrf-dense-retrieval|20260426-g1-hybrid-rrf-dense-retrieval]]
+- [[projects/CTX/research/20260426-g2-docs-hybrid-dense-retrieval|20260426-g2-docs-hybrid-dense-retrieval]]
+- [[projects/CTX/research/20260426-g2-docs-goldset-eval|20260426-g2-docs-goldset-eval]]
+- [[projects/CTX/research/20260426-g2-docs-korean-crosslingual-fix|20260426-g2-docs-korean-crosslingual-fix]]
+- [[projects/CTX/research/20260426-citation-probe-v1|20260426-citation-probe-v1]]
+- [[projects/CTX/research/20260407-g1-final-eval-benchmark|20260407-g1-final-eval-benchmark]]
+- [[projects/CTX/research/20260426-g2-code-staleness-auto-fix|20260426-g2-code-staleness-auto-fix]]

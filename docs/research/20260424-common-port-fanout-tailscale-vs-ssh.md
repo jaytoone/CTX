@@ -88,3 +88,7 @@ Security parity (both use encrypted transport), structural simplicity clearly fa
 - [SSH GatewayPorts explained (snailbook)](http://www.snailbook.com/faq/gatewayports.auto.html)
 - [SSH bind tunnel to specific IP](https://oneuptime.com/blog/post/2026-03-20-ssh-bind-tunnel-specific-ipv4/view)
 - [Vagrant race condition issue #12729](https://github.com/hashicorp/vagrant/issues/12729)
+
+## Related
+- [[projects/CTX/research/20260424-windows-client-onboarding-simplification|20260424-windows-client-onboarding-simplification]]
+- [[projects/CTX/infra/20260423-wsl2-remote-tailscale-tunneling|20260423-wsl2-remote-tailscale-tunneling]]

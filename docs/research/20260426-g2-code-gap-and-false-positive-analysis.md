@@ -151,7 +151,11 @@ The CTX retrieval upgrade "items 1-3" are now fully addressed:
 - Item 3 (False positives): ✅ Analyzed — structural problem, citation probe is path forward
 
 ## Related
-- [[projects/CTX/research/20260426-g2-docs-hybrid-dense-retrieval|iter 36 G2-DOCS hybrid]]
-- [[projects/CTX/research/20260426-g1-hybrid-rrf-dense-retrieval|iter 34 G1 hybrid RRF]]
-- [[projects/CTX/research/20260426-retrieval-node-relevance-verification|retrieval node relevance]]
-- [[projects/CTX/research/20260424-ctx-bench-comparison-v4-ko.docx|paper v4 — homograph §]]
+- [[projects/CTX/research/20260426-retrieval-node-relevance-verification|20260426-retrieval-node-relevance-verification]]
+- [[projects/CTX/research/20260426-g1-hybrid-rrf-dense-retrieval|20260426-g1-hybrid-rrf-dense-retrieval]]
+- [[projects/CTX/research/20260426-g2-docs-hybrid-dense-retrieval|20260426-g2-docs-hybrid-dense-retrieval]]
+- [[projects/CTX/research/20260426-ctx-research-critical-evaluation|20260426-ctx-research-critical-evaluation]]
+- [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
+- [[projects/CTX/research/20260424-memory-retrieval-benchmark-landscape|20260424-memory-retrieval-benchmark-landscape]]
+- [[projects/CTX/research/20260402-project-understanding-evaluation-framework|20260402-project-understanding-evaluation-framework]]
+- [[projects/CTX/research/20260417-ctx-semantic-search-upgrade-sota|20260417-ctx-semantic-search-upgrade-sota]]

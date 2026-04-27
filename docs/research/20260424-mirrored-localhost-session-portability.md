@@ -57,3 +57,10 @@ For `curl`-style testing from WSL2, grab the session cookie from Chrome DevTools
 - [node-security.com — Cookies, Ports and Subdomains](https://node-security.com/posts/cookies-ports-and-subdomains/)
 - [Playwright Authentication docs](https://playwright.dev/docs/auth)
 - [BrowserStack — Playwright storageState guide](https://www.browserstack.com/guide/playwright-storage-state)
+
+## Related
+- [[projects/CTX/research/20260424-claude-client-bootstrap-session-summary|20260424-claude-client-bootstrap-session-summary]]
+- [[projects/CTX/research/20260424-common-port-fanout-tailscale-vs-ssh|20260424-common-port-fanout-tailscale-vs-ssh]]
+- [[projects/CTX/infra/20260423-wsl2-remote-tailscale-tunneling|20260423-wsl2-remote-tailscale-tunneling]]
+- [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
+- [[projects/CTX/decisions/20260326-path-derived-module-to-file|20260326-path-derived-module-to-file]]

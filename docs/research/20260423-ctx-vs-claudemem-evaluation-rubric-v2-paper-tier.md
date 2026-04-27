@@ -316,3 +316,13 @@ v2 increases measurement burden ~3x but produces a result a top-tier reviewer ca
 - **Krippendorff 2018** — inter-annotator agreement. α ≥ 0.67 for labels to be usable.
 - **Wilson 1927** — binomial CI. Use for all proportion metrics.
 - **Pedraza et al. 2024** — latency-utility trade-off curves for retrieval papers. Use instead of raw latency scalar.
+
+## Related
+- [[projects/CTX/research/20260421-ctx-distribution-research-replay|20260421-ctx-distribution-research-replay]]
+- [[projects/CTX/research/20260329-ctx-corrected-results-summary|20260329-ctx-corrected-results-summary]]
+- [[projects/CTX/paper/CTX_paper_draft|CTX_paper_draft]]
+- [[projects/CTX/benchmark/g1_g2_publication_framework|g1_g2_publication_framework]]
+- [[projects/CTX/research/20260407-g1-final-eval-benchmark|20260407-g1-final-eval-benchmark]]
+- [[projects/CTX/research/20260326-ctx-vs-industry-comparison|20260326-ctx-vs-industry-comparison]]
+- [[projects/CTX/research/20260328-ctx-downstream-eval-complete|20260328-ctx-downstream-eval-complete]]
+- [[projects/CTX/research/20260327-ctx-downstream-eval|20260327-ctx-downstream-eval]]

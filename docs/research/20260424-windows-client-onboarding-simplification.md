@@ -52,3 +52,9 @@ That's it. No SSH, no key generation, no GitHub zip download, no password prompt
 - [Tailscale Funnel docs](https://tailscale.com/kb/1311/tailscale-funnel)
 - [PowerShell irm|iex pattern](https://knowledge.buka.sh/powershell-one-liners-for-installation-what-does-irm-bun-sh-install-ps1-iex-really-do/)
 - [Tailscale SSH Windows issue](https://github.com/tailscale/tailscale/issues/14942)
+
+## Related
+- [[projects/CTX/research/20260424-common-port-fanout-tailscale-vs-ssh|20260424-common-port-fanout-tailscale-vs-ssh]]
+- [[projects/CTX/infra/20260423-wsl2-remote-tailscale-tunneling|20260423-wsl2-remote-tailscale-tunneling]]
+- [[projects/CTX/infra/20260423-client-onboarding-north-star|20260423-client-onboarding-north-star]]
+- [[projects/CTX/decisions/20260326-path-derived-module-to-file|20260326-path-derived-module-to-file]]

@@ -179,10 +179,18 @@ The revised dashboard tells this story:
 This is the differentiator vs keyword-only tools. The dashboard should make that visible at a glance.
 
 ---
-
-## Related
 - `~/.claude/hooks/ctx-dashboard/server.py` — `_explain_node()`, `/api/node-explain`
 - `.omc/retrieval_log.jsonl` — citation probe output (iter 40-41)
 - `benchmarks/eval/citation_probe.py` — citation analysis script
 - `docs/research/20260426-citation-probe-v1.md` — citation probe design
 - `docs/research/20260426-g2-docs-eval-corpus-drift-fix.md` — semantic retrieval proof data
+
+## Related
+- [[projects/CTX/research/20260426-citation-probe-v1|20260426-citation-probe-v1]]
+- [[projects/CTX/research/20260409-bm25-memory-generalization-research|20260409-bm25-memory-generalization-research]]
+- [[projects/CTX/research/20260426-g2-docs-eval-corpus-drift-fix|20260426-g2-docs-eval-corpus-drift-fix]]
+- [[projects/CTX/research/20260426-g1-hybrid-rrf-dense-retrieval|20260426-g1-hybrid-rrf-dense-retrieval]]
+- [[projects/CTX/research/20260426-g2-docs-hybrid-dense-retrieval|20260426-g2-docs-hybrid-dense-retrieval]]
+- [[projects/CTX/research/20260410-session-6c4f589e-chat-memory|20260410-session-6c4f589e-chat-memory]]
+- [[projects/CTX/research/20260402-production-context-retrieval-research|20260402-production-context-retrieval-research]]
+- [[projects/CTX/research/20260407-g1-temporal-eval-results|20260407-g1-temporal-eval-results]]

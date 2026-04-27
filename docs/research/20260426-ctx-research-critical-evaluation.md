@@ -145,3 +145,13 @@ retrieves relevant individual facts but the LLM must chain them independently.
 - [MemoryArena (arXiv:2602.16313)](https://arxiv.org/abs/2602.16313)
 - [BM25+dense hybrid benchmarking (arXiv:2604.01733)](https://arxiv.org/html/2604.01733v1)
 - [Retrieval benchmark pitfalls (arXiv:2603.04238)](https://arxiv.org/html/2603.04238)
+
+## Related
+- [[projects/CTX/research/20260426-mab-competency-sota-methodology|20260426-mab-competency-sota-methodology]]
+- [[projects/CTX/research/20260329-ctx-corrected-results-summary|20260329-ctx-corrected-results-summary]]
+- [[projects/CTX/research/20260326-ctx-final-sota-comparison|20260326-ctx-final-sota-comparison]]
+- [[projects/CTX/research/20260326-ctx-vs-sota-comparison|20260326-ctx-vs-sota-comparison]]
+- [[projects/CTX/research/20260326-ctx-methodology-comparison|20260326-ctx-methodology-comparison]]
+- [[projects/CTX/research/20260402-g2-evaluation-methods-research|20260402-g2-evaluation-methods-research]]
+- [[projects/CTX/research/20260402-g2-evaluation-methods-research-summary|20260402-g2-evaluation-methods-research-summary]]
+- [[projects/CTX/SOYA_DEPLOYMENT_GUIDE|SOYA_DEPLOYMENT_GUIDE]]

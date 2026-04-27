@@ -427,3 +427,10 @@ ssh home-pc "wsl -d Ubuntu -- hostname -I"
 # (from Windows PowerShell) verify localhost forwarding works
 Invoke-WebRequest http://localhost:8787/ -UseBasicParsing | Select-Object StatusCode, RawContentLength
 ```
+
+## Related
+- [[projects/CTX/research/20260410-session-6c4f589e-chat-memory|20260410-session-6c4f589e-chat-memory]]
+- [[projects/CTX/research/20260411-hook-comparison-auto-index-vs-chat-memory|20260411-hook-comparison-auto-index-vs-chat-memory]]
+- [[projects/CTX/research/20260328-trigger-classifier-semantic-fix|20260328-trigger-classifier-semantic-fix]]
+- [[projects/CTX/research/20260411-chat-memory-threshold-principled|20260411-chat-memory-threshold-principled]]
+- [[projects/CTX/decisions/20260326-path-derived-module-to-file|20260326-path-derived-module-to-file]]

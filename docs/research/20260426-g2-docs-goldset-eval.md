@@ -117,9 +117,11 @@ The goldset covers 15/87 docs with balanced query types. Recommended expansions:
 ---
 
 ## Related
-- [[20260426-g2-docs-hybrid-dense-retrieval|iter 36 — hybrid implementation]]
-- [[20260426-g1-hybrid-rrf-dense-retrieval|iter 34 — G1 hybrid baseline]]
-- [[20260426-citation-probe-v1|iter 40 — citation probe]]
-- [[benchmarks/eval/g2_docs_goldset.json|goldset]]
-- [[benchmarks/eval/g2_docs_eval.py|eval script]]
-- [[benchmarks/results/g2_docs_eval.json|results]]
+- [[projects/CTX/research/20260424-memory-retrieval-benchmark-landscape|20260424-memory-retrieval-benchmark-landscape]]
+- [[projects/CTX/research/20260407-g1-temporal-eval-results|20260407-g1-temporal-eval-results]]
+- [[projects/CTX/research/20260412-semantic-gap-keyword-vs-contextual|20260412-semantic-gap-keyword-vs-contextual]]
+- [[projects/CTX/research/20260409-bm25-memory-generalization-research|20260409-bm25-memory-generalization-research]]
+- [[projects/CTX/research/20260426-g1-hybrid-rrf-dense-retrieval|20260426-g1-hybrid-rrf-dense-retrieval]]
+- [[projects/CTX/research/20260426-g2-docs-hybrid-dense-retrieval|20260426-g2-docs-hybrid-dense-retrieval]]
+- [[projects/CTX/research/20260407-g1-final-eval-benchmark|20260407-g1-final-eval-benchmark]]
+- [[projects/CTX/research/20260426-citation-probe-v1|20260426-citation-probe-v1]]

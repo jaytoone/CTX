@@ -121,6 +121,11 @@ python3 benchmarks/eval/citation_probe.py --summary-only
 Log file: `.omc/retrieval_log.jsonl` (gitignored, grows with sessions)
 
 ## Related
-- [[projects/CTX/research/20260426-g2-code-gap-and-false-positive-analysis|iter 37 FP analysis]]
-- [[projects/CTX/research/20260426-retrieval-node-relevance-verification|retrieval node relevance]]
-- [[projects/CTX/research/20260426-g1-hybrid-rrf-dense-retrieval|iter 34 G1 hybrid]]
+- [[projects/CTX/research/20260426-g2-code-gap-and-false-positive-analysis|20260426-g2-code-gap-and-false-positive-analysis]]
+- [[projects/CTX/research/20260426-retrieval-node-relevance-verification|20260426-retrieval-node-relevance-verification]]
+- [[projects/CTX/research/20260410-session-6c4f589e-chat-memory|20260410-session-6c4f589e-chat-memory]]
+- [[projects/CTX/research/20260411-g1-g2-architecture-improvements|20260411-g1-g2-architecture-improvements]]
+- [[projects/CTX/research/20260426-g1-hybrid-rrf-dense-retrieval|20260426-g1-hybrid-rrf-dense-retrieval]]
+- [[projects/CTX/research/20260409-bm25-memory-generalization-research|20260409-bm25-memory-generalization-research]]
+- [[projects/CTX/research/20260426-g2-docs-hybrid-dense-retrieval|20260426-g2-docs-hybrid-dense-retrieval]]
+- [[projects/CTX/research/20260424-memory-retrieval-benchmark-landscape|20260424-memory-retrieval-benchmark-landscape]]

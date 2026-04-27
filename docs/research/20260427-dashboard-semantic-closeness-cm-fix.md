@@ -127,8 +127,6 @@ Prompt 3 returned genuine past sessions:
 | Citation chip (CITED/INJECTED from retrieval_log.jsonl) | deferred |
 
 ---
-
-## Related
 - `~/.claude/hooks/ctx-dashboard/server.py` — `_explain_node()`, `_prompt_contributors()`
 - `~/.claude/hooks/ctx-dashboard/static/app.js` — contributor card UI
 - `~/.claude/hooks/chat-memory.py` — `query_vault()`, `query_vault_vector()`
@@ -140,3 +138,13 @@ Prompt 3 returned genuine past sessions:
 - [[projects/CTX/research/20260426-citation-probe-v1|20260426-citation-probe-v1]]
 - [[projects/CTX/research/20260410-session-6c4f589e-chat-memory|20260410-session-6c4f589e-chat-memory]]
 - [[projects/CTX/research/20260426-g2-docs-hybrid-dense-retrieval|20260426-g2-docs-hybrid-dense-retrieval]]
+
+## Related
+- [[projects/CTX/research/20260426-g1-hybrid-rrf-dense-retrieval|20260426-g1-hybrid-rrf-dense-retrieval]]
+- [[projects/CTX/research/20260426-retrieval-node-relevance-verification|20260426-retrieval-node-relevance-verification]]
+- [[projects/CTX/research/20260409-bm25-memory-generalization-research|20260409-bm25-memory-generalization-research]]
+- [[projects/CTX/research/20260411-chat-memory-threshold-principled|20260411-chat-memory-threshold-principled]]
+- [[projects/CTX/research/20260412-semantic-gap-keyword-vs-contextual|20260412-semantic-gap-keyword-vs-contextual]]
+- [[projects/CTX/research/20260424-memory-retrieval-benchmark-landscape|20260424-memory-retrieval-benchmark-landscape]]
+- [[projects/CTX/research/20260408-g1-longterm-memory-evaluation-framework|20260408-g1-longterm-memory-evaluation-framework]]
+- [[projects/CTX/research/20260402-omc-live-infinite-progress-report|20260402-omc-live-infinite-progress-report]]

@@ -84,3 +84,13 @@ Hybrid BM25+cosine (already runs in chat-memory, 50%/50%) applied to G1/G2 immed
 - [RAGAS Framework (confident-ai.com)](https://www.confident-ai.com/blog/rag-evaluation-metrics-answer-relevancy-faithfulness-and-more)
 - [Faithfulness-Aware Multi-Objective Context Ranking (ACM 2025)](https://dl.acm.org/doi/full/10.1145/3797161.3797180)
 - [RAG Evaluation Metrics (Braintrust)](https://www.braintrust.dev/articles/rag-evaluation-metrics)
+
+## Related
+- [[projects/CTX/research/20260426-ctx-research-critical-evaluation|20260426-ctx-research-critical-evaluation]]
+- [[projects/CTX/research/20260402-g2-evaluation-methods-research|20260402-g2-evaluation-methods-research]]
+- [[projects/CTX/research/20260402-g2-evaluation-methods-research-summary|20260402-g2-evaluation-methods-research-summary]]
+- [[projects/CTX/research/20260407-g1-temporal-evaluation-framework|20260407-g1-temporal-evaluation-framework]]
+- [[projects/CTX/research/20260408-g1-longterm-memory-evaluation-framework|20260408-g1-longterm-memory-evaluation-framework]]
+- [[projects/CTX/research/20260330-ctx-academic-critique-web-grounded|20260330-ctx-academic-critique-web-grounded]]
+- [[projects/CTX/research/20260409-bm25-memory-generalization-research|20260409-bm25-memory-generalization-research]]
+- [[projects/CTX/research/20260402-production-context-retrieval-research|20260402-production-context-retrieval-research]]
