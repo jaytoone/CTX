@@ -1,0 +1,18 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "jaytoone",
+  "description": "CTX — cross-session memory hooks for Claude Code",
+  "owner": {
+    "name": "jaytoone",
+    "email": "be2jay67@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "ctx",
+      "description": "Cross-session memory for Claude Code — decision timeline (G1) from git log + docs/code search (G2) via BM25. 4 production hooks with visible failure warnings and measured utility.",
+      "category": "productivity",
+      "source": "./plugin",
+      "homepage": "https://github.com/jaytoone/CTX"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "name": "ctx",
+  "version": "0.2.0",
+  "description": "Cross-session memory for Claude Code — honest utility-measured context bootstrapper. G1 (decision timeline from git log) + G2 (docs/code search) with BM25 + optional vec-daemon semantic rerank. Visible failure warnings when components degrade.",
+  "author": {
+    "name": "jaytoone",
+    "email": "be2jay67@gmail.com"
+  },
+  "repository": "https://github.com/jaytoone/CTX",
+  "homepage": "https://github.com/jaytoone/CTX",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "claude-code-plugin",
+    "hooks",
+    "memory",
+    "context",
+    "cross-session",
+    "bm25",
+    "retrieval",
+    "persistence"
+  ]
+}
