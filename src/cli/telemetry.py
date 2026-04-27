@@ -102,6 +102,31 @@ def cmd_summary(args):
     else:
         print("\nSession aggregates: none yet (flush on session_id change)")
 
+    # Flywheel health line — quick verdict from ctx-auto-tune.json
+    if AUTO_TUNE_FILE.exists():
+        try:
+            at = json.loads(AUTO_TUNE_FILE.read_text())
+            parts = []
+            r = at.get("causal_r_bm25_utility")
+            if r is not None:
+                parts.append(f"causal-r={r:+.2f}")
+            hint = at.get("hybrid_upgrade_hint")
+            if hint:
+                icon = {"likely_worthwhile": "✓ HYBRID", "validate_first": "⚠ bias?", "needs_more_data": "…"}.get(hint, hint)
+                parts.append(f"upgrade={icon}")
+            r_sess = at.get("causal_r_session_level")
+            if r_sess is not None:
+                parts.append(f"session-r={r_sess:+.2f}")
+            kw_frac = at.get("mean_keyword_fraction")
+            if kw_frac is not None:
+                parts.append(f"kw={kw_frac*100:.0f}%")
+            if parts:
+                n_at = at.get("based_on_n", "?")
+                print(f"\nFlywheel health [n={n_at}]: {' | '.join(parts)}")
+                print("  Run `ctx-telemetry tune` to refresh | `ctx-telemetry calibrate` for full analysis")
+        except Exception:
+            pass
+
     print()
     print("Note: local-only. Stage 2 upload pipeline not yet implemented.")
 
