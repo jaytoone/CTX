@@ -418,8 +418,9 @@ def cmd_upload(args):
         print("Consent file corrupted. Run: ctx-telemetry consent grant")
         return
 
-    if consent.get("schema_version") != "v1.4":
-        print(f"Consent was for schema {consent.get('schema_version')}, current is v1.4.")
+    _CURRENT_SCHEMA = "v1.5"
+    if consent.get("schema_version") != _CURRENT_SCHEMA:
+        print(f"Consent was for schema {consent.get('schema_version')}, current is {_CURRENT_SCHEMA}.")
         print("Re-run: ctx-telemetry consent grant")
         return
 
@@ -500,11 +501,11 @@ def cmd_upload(args):
         import urllib.request as _req
         import urllib.error as _err
         payload = [r for _, r in eligible]
-        data = json.dumps({"rows": payload, "client_version": "v1.4"}).encode()
+        data = json.dumps({"rows": payload, "client_version": "v1.5"}).encode()
         req = _req.Request(
             _UPLOAD_ENDPOINT,
             data=data,
-            headers={"Content-Type": "application/json", "X-CTX-Schema": "v1.4"},
+            headers={"Content-Type": "application/json", "X-CTX-Schema": "v1.5"},
             method="POST",
         )
         with _req.urlopen(req, timeout=15) as resp:
@@ -665,7 +666,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser(
         prog="ctx-telemetry",
         description=(
-            "CTX retrieval telemetry — local-only, no upload (schema v1.4). "
+            "CTX retrieval telemetry — local-only, no upload (schema v1.5). "
             "Enable with: export CTX_TELEMETRY=1  "
             "Schema docs: https://github.com/jaytoone/CTX#telemetry-opt-in-local-only"
         ),

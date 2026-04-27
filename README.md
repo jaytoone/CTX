@@ -306,7 +306,9 @@ ctx-telemetry clear             # delete all local telemetry logs
 
 **Auto-tune (flywheel):** After `ctx-telemetry tune` runs with ≥15 records, CTX automatically adjusts retrieval parameters based on your usage patterns (e.g., top_k reduction for query types with lower citation rates). The active tuning state is shown in CTX's context header: `> **CTX auto-tune** [n=42, hybrid✓]`.
 
-### What is collected (schema v1.3)
+With ≥10 v1.5 records, `tune` also computes a causal signal: Pearson r between BM25 top retrieval score and citation rate. High r (>0.30) means quality-driven citations — HYBRID upgrade is worthwhile. Low r (<0.10) suggests position bias may be dominant — validate before upgrading. This is stored as `hybrid_upgrade_hint` in `ctx-auto-tune.json`.
+
+### What is collected (schema v1.5)
 
 All data stays on your machine at `~/.claude/ctx-retrieval-events.jsonl`. Nothing is uploaded.
 
