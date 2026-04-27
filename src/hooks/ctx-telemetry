@@ -20,6 +20,7 @@ from collections import defaultdict
 from pathlib import Path
 
 LOG = Path.home() / ".claude" / "ctx-retrieval-events.jsonl"
+AGG_LOG = Path.home() / ".claude" / "ctx-session-aggregates.jsonl"
 
 
 def load_events():
@@ -74,6 +75,23 @@ def print_summary(events):
     for method, count in sorted(by_method.items(), key=lambda x: -x[1]):
         pct = count / total * 100
         print(f"  {method:<12} {count:>5}  ({pct:.1f}%)")
+
+    # Session aggregates
+    agg_events = []
+    if AGG_LOG.exists():
+        with open(AGG_LOG) as f:
+            for line in f:
+                try:
+                    agg_events.append(json.loads(line.strip()))
+                except Exception:
+                    pass
+    if agg_events:
+        n_sess = len(agg_events)
+        avg_turns = sum(e.get("total_turns", 0) for e in agg_events) / n_sess
+        avg_util = sum(e.get("mean_utility_rate", 0) for e in agg_events) / n_sess * 100
+        print(f"Session aggregates: {n_sess} sessions | avg turns={avg_turns:.1f} | avg utility={avg_util:.1f}%")
+    else:
+        print("Session aggregates: none yet (flush happens when session_id changes)")
 
     print()
     print("Note: This data is local-only. No upload has occurred.")

@@ -304,6 +304,84 @@ def _write_retrieval_events(session_id, by_block, hits_by_mode, semantic_availab
         pass
 
 
+_SESSION_STATE_PATH = HOME / ".claude" / "ctx-session-state.json"
+_SESSION_AGGREGATES_LOG = HOME / ".claude" / "ctx-session-aggregates.jsonl"
+
+
+def _accumulate_session_aggregate(session_id, by_block, utility_rate):
+    """Accumulate per-turn metrics into a running session state.
+
+    On session_id change: flush previous session to ctx-session-aggregates.jsonl
+    and start a fresh state for the new session.
+
+    Privacy: session_id hashed, dates truncated to day, no content.
+    """
+    import hashlib
+    from datetime import date as _date
+
+    try:
+        state = {}
+        if _SESSION_STATE_PATH.exists():
+            try:
+                state = json.loads(_SESSION_STATE_PATH.read_text())
+            except Exception:
+                pass
+
+        current_sid = session_id or "unknown"
+        current_sid_hash = hashlib.sha256(current_sid.encode()).hexdigest()[:16]
+
+        prev_sid_hash = state.get("session_id_hash", "")
+        if prev_sid_hash and prev_sid_hash != current_sid_hash:
+            # New session — flush aggregate for old session
+            turns = state.get("turns", 0)
+            agg = {
+                "schema_version": _RETRIEVAL_EVENT_SCHEMA,
+                "session_id_hash": prev_sid_hash,
+                "ts_date": state.get("ts_date", str(_date.today())),
+                "total_turns": turns,
+                "total_injections": state.get("total_injections", 0),
+                "mean_utility_rate": round(state.get("utility_rate_sum", 0) / turns, 4) if turns > 0 else 0.0,
+                "hook_source_hist": state.get("hook_source_hist", {}),
+                "retrieval_method_hist": state.get("retrieval_method_hist", {}),
+                "session_outcome": "SHORT" if turns <= 2 else "NORMAL",
+            }
+            with open(_SESSION_AGGREGATES_LOG, "a", encoding="utf-8") as f:
+                f.write(json.dumps(agg) + "\n")
+            state = {}
+
+        # Accumulate current turn
+        state["session_id_hash"] = current_sid_hash
+        state.setdefault("ts_date", str(_date.today()))
+        state["turns"] = state.get("turns", 0) + 1
+        state["utility_rate_sum"] = state.get("utility_rate_sum", 0.0) + utility_rate
+
+        # Total injections
+        turn_injections = sum(v.get("total", 0) for v in by_block.values())
+        state["total_injections"] = state.get("total_injections", 0) + turn_injections
+
+        # Hook source histogram
+        src_hist = state.get("hook_source_hist", {})
+        for block in by_block:
+            src = _HOOK_SOURCE_MAP.get(block, block.upper())
+            src_hist[src] = src_hist.get(src, 0) + 1
+        state["hook_source_hist"] = src_hist
+
+        # Retrieval method histogram from meta file
+        try:
+            meta = json.loads(_RETRIEVAL_META_PATH.read_text()) if _RETRIEVAL_META_PATH.exists() else {}
+            meth_hist = state.get("retrieval_method_hist", {})
+            for bdata in meta.get("blocks", {}).values():
+                method = bdata.get("retrieval_method", "UNKNOWN")
+                meth_hist[method] = meth_hist.get(method, 0) + 1
+            state["retrieval_method_hist"] = meth_hist
+        except Exception:
+            pass
+
+        _SESSION_STATE_PATH.write_text(json.dumps(state))
+    except Exception:
+        pass
+
+
 def main():
     if not LAST_INJECT.exists():
         return
@@ -513,6 +591,13 @@ def main():
                 }))
             except Exception:
                 pass
+
+    # ── session_aggregate: per-session rollup (Stage 1 flywheel, second half) ──
+    _accumulate_session_aggregate(
+        session_id=stop_input.get("session_id", ""),
+        by_block=by_block,
+        utility_rate=referenced / total if total > 0 else 0.0,
+    )
 
     # Consume the injection file so we don't double-count it on a second Stop
     try:
