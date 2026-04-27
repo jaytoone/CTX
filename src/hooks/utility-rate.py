@@ -382,6 +382,9 @@ def _accumulate_session_aggregate(session_id, by_block, utility_rate):
         pass
 
 
+_CM_INJECT_PATH = HOME / ".claude" / "last-cm-injection.json"
+
+
 def main():
     if not LAST_INJECT.exists():
         return
@@ -390,6 +393,19 @@ def main():
     except Exception:
         return
     items = inj.get("items", [])
+
+    # Merge CM items from chat-memory.py (separate injection file)
+    try:
+        if _CM_INJECT_PATH.exists():
+            cm_inj = json.loads(_CM_INJECT_PATH.read_text())
+            # Age guard: same 10-min window as main injection
+            if time.time() - cm_inj.get("ts", 0) <= 600:
+                items = items + cm_inj.get("items", [])
+                # Carry over ts from main injection for age check below
+                _CM_INJECT_PATH.unlink(missing_ok=True)
+    except Exception:
+        pass
+
     if not items:
         return
 

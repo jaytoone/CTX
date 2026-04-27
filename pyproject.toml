@@ -39,6 +39,7 @@ Repository = "https://github.com/jaytoone/CTX"
 
 [project.scripts]
 ctx-install = "ctx_retriever.cli.install:main"
+ctx-telemetry = "ctx_retriever.cli.telemetry:main"
 
 [tool.setuptools]
 packages = [
@@ -58,4 +59,4 @@ packages = [
 
 [tool.setuptools.package-data]
 "*" = ["*.json", "*.yaml"]
-"ctx_retriever.hooks" = ["*.py"]
+"ctx_retriever.hooks" = ["*.py", "ctx-telemetry"]
