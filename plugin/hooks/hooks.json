@@ -1,5 +1,5 @@
 {
-  "description": "CTX hook registrations. Hooks run from ~/.claude/hooks/ (installed by setup.sh via ctx-install). SessionStart vec-daemon is the only hook that uses CLAUDE_PLUGIN_ROOT.",
+  "description": "CTX hook registrations. Hooks run from ~/.claude/hooks/ (installed by ctx-install). SessionStart probes and auto-starts both vec-daemon and bge-daemon.",
   "hooks": {
     "Setup": [
       {
@@ -19,7 +19,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'python3 -c \"import socket,os; s=socket.socket(socket.AF_UNIX); s.settimeout(0.3); s.connect(os.path.expanduser(\\\"~/.local/share/claude-vault/vec-daemon.sock\\\"))\" 2>/dev/null || { rm -f $HOME/.local/share/claude-vault/vec-daemon.sock; nohup python3 $HOME/.local/share/claude-vault/vec-daemon.py > /tmp/vec-daemon.log 2>&1 & }'",
+            "command": "bash -c 'VD=$HOME/.local/share/claude-vault; python3 -c \"import socket,os; s=socket.socket(socket.AF_UNIX); s.settimeout(0.3); s.connect(os.path.expanduser(\\\"~/.local/share/claude-vault/vec-daemon.sock\\\"))\" 2>/dev/null || { rm -f $VD/vec-daemon.sock; nohup python3 $VD/vec-daemon.py > /tmp/vec-daemon.log 2>&1 & }; python3 -c \"import socket,os; s=socket.socket(socket.AF_UNIX); s.settimeout(0.3); s.connect(os.path.expanduser(\\\"~/.local/share/claude-vault/bge-daemon.sock\\\"))\" 2>/dev/null || { rm -f $VD/bge-daemon.sock; nohup python3 $VD/bge-daemon.py > /tmp/bge-daemon.log 2>&1 & }'",
             "async": true
           }
         ]
