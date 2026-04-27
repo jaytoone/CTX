@@ -586,6 +586,8 @@ def cmd_consent(args):
     print("  - Fields: user_id, session_id_hash, ts_date, total_turns, mean_utility_rate,")
     print("            hook_source_hist, retrieval_method_hist, session_outcome,")
     print("            vault_entry_count, index_staleness_hours")
+    print("  - Schema version: v1.5")
+    print("  - NOTE: retrieval_event rows are NOT uploaded — session_aggregate only")
     print()
     print("Privacy guarantees:")
     print("  - user_id = SHA256(machine-id + install-month)[:16] — non-reversible")
