@@ -2086,3 +2086,13 @@ claude-vault 설치/구현부터 이 대화까지 전부 인덱싱돼 있어. va
 이게 이 세션에서 네가 보낸 user 메시지 전체야 — 오늘 01:21부터 03:05까지 순서대로. vault.db에 완전히 저장돼 있음.
 
 ---
+
+## Related
+- [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
+- [[projects/CTX/research/20260408-g1-format-ablation-results|20260408-g1-format-ablation-results]]
+- [[projects/CTX/research/20260402-production-context-retrieval-research|20260402-production-context-retrieval-research]]
+- [[projects/CTX/research/20260408-original-intent-gap-analysis|20260408-original-intent-gap-analysis]]
+- [[projects/CTX/research/20260411-g1-g2-architecture-improvements|20260411-g1-g2-architecture-improvements]]
+- [[projects/CTX/research/20260328-ctx-downstream-eval-complete|20260328-ctx-downstream-eval-complete]]
+- [[projects/CTX/research/20260327-ctx-downstream-eval|20260327-ctx-downstream-eval]]
+- [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]

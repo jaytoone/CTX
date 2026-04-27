@@ -306,3 +306,13 @@ Targets for the ~3h execution if approved:
 - [How to Build Claude Code Plugins: DataCamp tutorial](https://www.datacamp.com/tutorial/how-to-build-claude-code-plugins)
 - [Claude Code plugins README (anthropic/claude-code)](https://github.com/anthropics/claude-code/blob/main/plugins/README.md)
 - [claude-code-plugin-builder Skill on Smithery](https://smithery.ai/skills/pleaseai/claude-code-plugin-builder)
+
+## Related
+- [[projects/CTX/research/20260421-ctx-monetization-session-summary|20260421-ctx-monetization-session-summary]]
+- [[projects/CTX/research/20260410-session-6c4f589e-chat-memory|20260410-session-6c4f589e-chat-memory]]
+- [[projects/CTX/research/20260424-memory-retrieval-benchmark-landscape|20260424-memory-retrieval-benchmark-landscape]]
+- [[projects/CTX/research/20260402-production-context-retrieval-research|20260402-production-context-retrieval-research]]
+- [[projects/CTX/research/20260409-bm25-memory-generalization-research|20260409-bm25-memory-generalization-research]]
+- [[projects/CTX/research/20260424-claude-client-bootstrap-session-summary|20260424-claude-client-bootstrap-session-summary]]
+- [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
+- [[projects/CTX/research/20260411-hook-comparison-auto-index-vs-chat-memory|20260411-hook-comparison-auto-index-vs-chat-memory]]

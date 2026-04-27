@@ -102,3 +102,12 @@ Vector embedding이 하는 일:
 ## Confidence: MEDIUM
 - 구조적 분석은 HIGH
 - Threshold 후 CM F1 수치 미공개로 hybrid net benefit 정량화 불완전
+
+## Related
+- [[projects/CTX/research/20260409-bm25-memory-generalization-research|20260409-bm25-memory-generalization-research]]
+- [[projects/CTX/research/20260410-g1-fair-eval-bm25-bias|20260410-g1-fair-eval-bm25-bias]]
+- [[projects/CTX/research/20260411-hook-memory-ceiling-experiment|20260411-hook-memory-ceiling-experiment]]
+- [[projects/CTX/research/20260411-chat-memory-threshold-principled|20260411-chat-memory-threshold-principled]]
+- [[projects/CTX/research/20260424-memory-experiential-eval-protocol|20260424-memory-experiential-eval-protocol]]
+- [[projects/CTX/research/20260410-session-6c4f589e-chat-memory|20260410-session-6c4f589e-chat-memory]]
+- [[projects/CTX/research/20260411-hook-comparison-auto-index-vs-chat-memory|20260411-hook-comparison-auto-index-vs-chat-memory]]

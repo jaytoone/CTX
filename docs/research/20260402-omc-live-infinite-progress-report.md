@@ -182,3 +182,10 @@ for word in topic_words:
 ---
 
 *Generated: 2026-04-02 | omc-live-infinite session record*
+
+## Related
+- [[projects/CTX/research/20260402-production-context-retrieval-research|20260402-production-context-retrieval-research]]
+- [[projects/CTX/research/20260426-g1-hybrid-rrf-dense-retrieval|20260426-g1-hybrid-rrf-dense-retrieval]]
+- [[projects/CTX/research/20260426-g2-docs-hybrid-dense-retrieval|20260426-g2-docs-hybrid-dense-retrieval]]
+- [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
+- [[projects/CTX/decisions/20260326-concept-extraction-sema-conc|20260326-concept-extraction-sema-conc]]

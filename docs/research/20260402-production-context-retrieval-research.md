@@ -465,3 +465,13 @@ Source Code → Tree-Sitter Parse (66 langs) → Extract symbols & calls
 - Codebase-Memory GitHub: [DeusData/codebase-memory-mcp](https://github.com/DeusData/codebase-memory-mcp)
 - Codebase-Memory Paper: [Codebase-Memory: Tree-Sitter-Based Knowledge Graphs for LLM Code Exploration via MCP](https://arxiv.org/abs/2603.27277)
 - Codebase-Memory Docs: [codebase-memory-mcp](https://deusdata.github.io/codebase-memory-mcp/)
+
+## Related
+- [[projects/CTX/research/20260411-hook-comparison-auto-index-vs-chat-memory|20260411-hook-comparison-auto-index-vs-chat-memory]]
+- [[projects/CTX/marketing/github_comments|github_comments]]
+- [[projects/CTX/marketing/hacker_news_show_hn|hacker_news_show_hn]]
+- [[projects/CTX/marketing/hacker_news_show_hn_v2|hacker_news_show_hn_v2]]
+- [[projects/CTX/research/20260407-g1-final-eval-benchmark|20260407-g1-final-eval-benchmark]]
+- [[projects/CTX/research/20260328-ctx-real-codebase-g2-eval|20260328-ctx-real-codebase-g2-eval]]
+- [[projects/CTX/research/20260424-memory-retrieval-benchmark-landscape|20260424-memory-retrieval-benchmark-landscape]]
+- [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]

@@ -321,3 +321,13 @@ The following claims in this document are [UNCERTAIN] and should be fact-checked
 - *Wallat et al., arXiv:2412.18004, ICTIR 2025*
 - *Liu et al., arXiv:2307.03172, 2023 (Lost in the Middle)*
 - *Singh (Mem0), mem0.ai blog, April 2025 (field notes extending arXiv:2505.xxxxx)*
+
+## Related
+- [[projects/CTX/research/20260426-retrieval-node-relevance-verification|20260426-retrieval-node-relevance-verification]]
+- [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]
+- [[projects/CTX/research/20260407-g1-final-eval-benchmark|20260407-g1-final-eval-benchmark]]
+- [[projects/CTX/research/20260421-ctx-distribution-research-replay|20260421-ctx-distribution-research-replay]]
+- [[projects/CTX/research/20260426-citation-probe-v1|20260426-citation-probe-v1]]
+- [[projects/CTX/research/20260328-ctx-downstream-eval-complete|20260328-ctx-downstream-eval-complete]]
+- [[projects/CTX/research/20260426-g2-code-gap-and-false-positive-analysis|20260426-g2-code-gap-and-false-positive-analysis]]
+- [[projects/CTX/research/20260327-ctx-downstream-eval|20260327-ctx-downstream-eval]]

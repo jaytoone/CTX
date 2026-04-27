@@ -145,9 +145,17 @@ CTX 아키텍처의 chat-memory 계층이 BM25 단독에서 hybrid로 업그레�
 
 ---
 
-## Related
-
 - [[projects/CTX/research/20260409-bm25-memory-generalization-research|bm25-memory-generalization-research]] — 이 구현의 이론적 근거
 - [[projects/CTX/research/20260410-session-6c4f589e-chat-memory|session-6c4f589e-chat-memory]] — chat-memory.py BM25 초기 구현
 - [[projects/FromScratch/research/20260410-vault-vector-migration|vault-vector-migration]] — FromScratch 상세 migration 기록
 - [[projects/FromScratch/research/20260410-retrieval-benchmark|retrieval-benchmark]] — 25쿼리 A/B 벤치마크 전체 결과
+
+## Related
+- [[projects/CTX/research/20260426-g1-hybrid-rrf-dense-retrieval|20260426-g1-hybrid-rrf-dense-retrieval]]
+- [[projects/CTX/research/20260426-g2-docs-hybrid-dense-retrieval|20260426-g2-docs-hybrid-dense-retrieval]]
+- [[projects/CTX/research/20260424-memory-retrieval-benchmark-landscape|20260424-memory-retrieval-benchmark-landscape]]
+- [[projects/CTX/research/20260426-ctx-retrieval-benchmark-synthesis|20260426-ctx-retrieval-benchmark-synthesis]]
+- [[projects/CTX/research/20260402-production-context-retrieval-research|20260402-production-context-retrieval-research]]
+- [[projects/CTX/research/20260411-hook-comparison-auto-index-vs-chat-memory|20260411-hook-comparison-auto-index-vs-chat-memory]]
+- [[projects/CTX/research/20260417-ctx-semantic-search-upgrade-sota|20260417-ctx-semantic-search-upgrade-sota]]
+- [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]

@@ -234,5 +234,11 @@ FACT-11: BM25 0.6/Dense 0.4 → +15-30% recall for technical docs
 - [BM25 Subword Extension](https://medium.com/@emitchellh/extending-bm25-with-subwords-30b334728ebd)
 
 ## Related
-- [[projects/CTX/research/20260409-g1g2-critique-and-verification|20260409-g1g2-critique-and-verification]]
-- [[projects/CTX/research/20260409-g1-fulleval-sota-comparison|20260409-g1-fulleval-sota-comparison]]
+- [[projects/CTX/research/20260411-hook-memory-ceiling-experiment|20260411-hook-memory-ceiling-experiment]]
+- [[projects/CTX/research/20260426-ctx-retrieval-benchmark-synthesis|20260426-ctx-retrieval-benchmark-synthesis]]
+- [[projects/CTX/research/20260426-g1-hybrid-rrf-dense-retrieval|20260426-g1-hybrid-rrf-dense-retrieval]]
+- [[projects/CTX/research/20260411-g1-generalization-validation|20260411-g1-generalization-validation]]
+- [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]
+- [[projects/CTX/research/20260328-ctx-real-codebase-g2-eval|20260328-ctx-real-codebase-g2-eval]]
+- [[projects/CTX/research/20260426-g2-docs-hybrid-dense-retrieval|20260426-g2-docs-hybrid-dense-retrieval]]
+- [[projects/CTX/research/20260407-g1-final-eval-benchmark|20260407-g1-final-eval-benchmark]]

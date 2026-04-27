@@ -166,3 +166,12 @@ Verify:
 - SSH authentication is pubkey-only (no password)
 - Tailscale mesh is encrypted (WireGuard), tailnet ACL restricts to authorized members
 - `ExitOnForwardFailure no` means if the client already has a local service on `:3000`, the SSH connection still works; the forward just doesn't bind (benign warning)
+
+## Related
+- [[projects/CTX/research/20260424-claude-client-bootstrap-session-summary|20260424-claude-client-bootstrap-session-summary]]
+- [[projects/CTX/research/20260424-common-port-fanout-tailscale-vs-ssh|20260424-common-port-fanout-tailscale-vs-ssh]]
+- [[projects/CTX/infra/20260423-wsl2-remote-tailscale-tunneling|20260423-wsl2-remote-tailscale-tunneling]]
+- [[projects/CTX/research/20260424-windows-client-onboarding-simplification|20260424-windows-client-onboarding-simplification]]
+- [[projects/CTX/research/20260424-mirrored-localhost-session-portability|20260424-mirrored-localhost-session-portability]]
+- [[projects/CTX/research/20260411-auto-index-necessity-analysis|20260411-auto-index-necessity-analysis]]
+- [[projects/CTX/decisions/20260326-path-derived-module-to-file|20260326-path-derived-module-to-file]]

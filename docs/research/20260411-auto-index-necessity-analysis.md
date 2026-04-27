@@ -38,3 +38,7 @@ DB가 4.8일 stale임에도 자동 갱신 불가 (구조적 한계: hooks는 MCP
 - `/home/jayone/.claude/settings.json` (hook 연결 구조)
 - `~/.cache/codebase-memory-mcp/home-jayone-Project-CTX.db` (실증 데이터)
 - `/home/jayone/.claude/hooks/bm25-memory.py` (G2b 의존성 구조)
+
+## Related
+- [[projects/CTX/research/20260409-bm25-memory-generalization-research|20260409-bm25-memory-generalization-research]]
+- [[projects/CTX/research/20260411-hook-comparison-auto-index-vs-chat-memory|20260411-hook-comparison-auto-index-vs-chat-memory]]

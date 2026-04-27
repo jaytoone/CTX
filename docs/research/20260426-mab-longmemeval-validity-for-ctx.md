@@ -66,3 +66,13 @@ The benchmarks are valid proxies for different CTX components:
 - [MemoryAgentBench (arXiv:2507.05257v3)](https://arxiv.org/abs/2507.05257)
 - [LongMemEval retrieval methods (DeepWiki)](https://deepwiki.com/xiaowu0162/LongMemEval/3.1.1-retrieval-methods)
 - [LongMemEval (arXiv:2410.10813)](https://arxiv.org/abs/2410.10813)
+
+## Related
+- [[projects/CTX/research/20260426-ctx-retrieval-benchmark-synthesis|20260426-ctx-retrieval-benchmark-synthesis]]
+- [[projects/CTX/research/20260426-g1-hybrid-rrf-dense-retrieval|20260426-g1-hybrid-rrf-dense-retrieval]]
+- [[projects/CTX/research/20260426-g2-docs-hybrid-dense-retrieval|20260426-g2-docs-hybrid-dense-retrieval]]
+- [[projects/CTX/research/20260407-g1-final-eval-benchmark|20260407-g1-final-eval-benchmark]]
+- [[projects/CTX/research/20260402-g2-evaluation-methods-research-summary|20260402-g2-evaluation-methods-research-summary]]
+- [[projects/CTX/research/20260402-g2-evaluation-methods-research|20260402-g2-evaluation-methods-research]]
+- [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
+- [[projects/CTX/research/20260424-memory-retrieval-benchmark-landscape|20260424-memory-retrieval-benchmark-landscape]]

@@ -441,3 +441,13 @@ Note: iter 4 itself partially shipped A1 (Wilson CI IS on the new age bar). A1 f
 Saved to `~/.claude/projects/-home-jayone-.claude/memory/MEMORY.md` (global):
 
 > ctx-dashboard P1 executed via /live: vis-network lazy-load + font subset + inline critical CSS to cut first-paint from ~1.5s → ~400ms. Defer P2 time-saved A/B telemetry (needs multi-day opt-in) and P4 team-shared memory (product decision). — 2026-04-21 / per /entity -crd loading + monetization eval
+
+## Related
+- [[projects/CTX/research/20260410-g1-fair-eval-bm25-bias|20260410-g1-fair-eval-bm25-bias]]
+- [[projects/CTX/marketing/psm_survey_draft|psm_survey_draft]]
+- [[projects/CTX/paper/CTX_paper_draft|CTX_paper_draft]]
+- [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]
+- [[projects/CTX/research/20260402-production-context-retrieval-research|20260402-production-context-retrieval-research]]
+- [[projects/CTX/research/20260328-trigger-classifier-semantic-fix|20260328-trigger-classifier-semantic-fix]]
+- [[projects/CTX/research/20260411-hook-comparison-auto-index-vs-chat-memory|20260411-hook-comparison-auto-index-vs-chat-memory]]
+- [[projects/CTX/research/20260410-session-6c4f589e-chat-memory|20260410-session-6c4f589e-chat-memory]]

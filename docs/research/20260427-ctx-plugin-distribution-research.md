@@ -113,3 +113,8 @@ Two open issues directly affect CTX:
 - [Issue #52218 - Plugin autoUpdate stale paths](https://github.com/anthropics/claude-code/issues/52218)
 - [claude-mem - PyPI](https://pypi.org/project/claude-mem/)
 - [claude-code-memory - PyPI](https://pypi.org/project/claude-code-memory/)
+
+## Related
+- [[projects/CTX/research/20260409-bm25-memory-generalization-research|20260409-bm25-memory-generalization-research]]
+- [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]
+- [[projects/CTX/research/20260411-hook-comparison-auto-index-vs-chat-memory|20260411-hook-comparison-auto-index-vs-chat-memory]]

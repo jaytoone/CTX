@@ -77,3 +77,9 @@ G1이 이미 82-100% recall(git-only)을 달성하는 상황에서 .jsonl 추가
 - .jsonl 비동기 파이프라인이 G1 History category(0.55) 실질 개선 여부 — ablation 실험 필요
 - /spark 스킬 구체적 구현 코드 공개 여부 불명확
 - claude-vault 마지막 커밋 날짜 및 유지보수 상태 미확인
+
+## Related
+- [[projects/CTX/research/20260409-bm25-memory-generalization-research|20260409-bm25-memory-generalization-research]]
+- [[projects/CTX/research/20260412-semantic-gap-keyword-vs-contextual|20260412-semantic-gap-keyword-vs-contextual]]
+- [[projects/CTX/research/20260417-ctx-semantic-search-upgrade-sota|20260417-ctx-semantic-search-upgrade-sota]]
+- [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
