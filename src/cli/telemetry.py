@@ -219,6 +219,134 @@ def cmd_calibrate(args):
         print("      Continue using CTX to accumulate more signal.")
 
 
+CONSENT_FILE = Path.home() / ".claude" / "ctx-telemetry-consent.json"
+_CONSENT_SCHEMA_VERSION = "v1.4"
+
+
+def cmd_consent(args):
+    """Stage 2 consent management — opt-in to k-anonymized session_aggregate upload.
+
+    Writes ~/.claude/ctx-telemetry-consent.json when granted.
+    Consent is per schema version — must be re-granted after schema upgrades.
+
+    Usage:
+      ctx-telemetry consent          # show current status
+      ctx-telemetry consent grant    # grant consent (after reviewing schema)
+      ctx-telemetry consent revoke   # revoke consent + delete consent file
+    """
+    subcmd = getattr(args, "consent_cmd", None)
+
+    if subcmd == "revoke":
+        if CONSENT_FILE.exists():
+            CONSENT_FILE.unlink()
+            print("Consent revoked. ctx-telemetry-consent.json deleted.")
+            print("Stage 2 upload (when available) will not proceed.")
+        else:
+            print("No consent file found — already revoked.")
+        return
+
+    if CONSENT_FILE.exists():
+        try:
+            c = json.loads(CONSENT_FILE.read_text())
+            print(f"Consent status: GRANTED")
+            print(f"  Schema version: {c.get('schema_version', '?')}")
+            print(f"  Granted at:     {c.get('granted_at', '?')}")
+            print(f"  User ID:        {c.get('user_id', '?')}")
+            if c.get("schema_version") != _CONSENT_SCHEMA_VERSION:
+                print(f"\n  WARNING: Consent was for schema {c.get('schema_version')} "
+                      f"but current schema is {_CONSENT_SCHEMA_VERSION}.")
+                print("  Re-run `ctx-telemetry consent grant` to update consent.")
+        except Exception:
+            print("Consent file exists but could not be parsed. Run `ctx-telemetry consent grant`.")
+        if subcmd != "grant":
+            return
+
+    if subcmd != "grant":
+        if not CONSENT_FILE.exists():
+            print("Consent status: NOT GRANTED")
+            print()
+            print("Stage 2 telemetry upload is not yet available.")
+            print("When available, it will upload only k-anonymized session_aggregate rows.")
+            print()
+            print("To grant consent: ctx-telemetry consent grant")
+            print("Schema: https://github.com/jaytoone/CTX#telemetry-opt-in-local-only")
+        return
+
+    # Grant consent — show preview first
+    agg_events = _load(AGG_LOG)
+    print(f"\n=== CTX Telemetry Stage 2 Consent ===")
+    print(f"\nYou are about to grant consent for k-anonymized upload of session_aggregate rows.")
+    print(f"Schema version: {_CONSENT_SCHEMA_VERSION}")
+    print()
+    print("What would be uploaded (when Stage 2 launches):")
+    print("  - session_aggregate rows only (one row per completed session)")
+    print("  - Fields: user_id, session_id_hash, ts_date, total_turns, mean_utility_rate,")
+    print("            hook_source_hist, retrieval_method_hist, session_outcome,")
+    print("            vault_entry_count, index_staleness_hours")
+    print()
+    print("Privacy guarantees:")
+    print("  - user_id = SHA256(machine-id + install-month)[:16] — non-reversible")
+    print("  - Rows with < 5 users in same (ts_date × schema_version) window are suppressed")
+    print("  - No query text, code, file names, or content — numeric/categorical only")
+    print("  - Full schema: https://github.com/jaytoone/CTX#telemetry-opt-in-local-only")
+    print()
+    if agg_events:
+        print(f"  {len(agg_events)} session_aggregate rows currently in local log.")
+    else:
+        print("  No session_aggregate rows in local log yet (runs are flushed on session end).")
+    print()
+    print("Stage 2 upload endpoint is NOT yet active — consent is recorded locally")
+    print("and will be used when the upload pipeline launches.")
+    print()
+
+    try:
+        response = input("Grant consent? [y/N] ").strip().lower()
+    except (EOFError, KeyboardInterrupt):
+        print("\nAborted.")
+        return
+
+    if response != "y":
+        print("Consent not granted.")
+        return
+
+    import datetime
+    import hashlib
+
+    # Derive user_id same way as utility-rate.py
+    uid = "unknown"
+    try:
+        machine_id = ""
+        for mid_path in ["/etc/machine-id", "/var/lib/dbus/machine-id"]:
+            try:
+                machine_id = open(mid_path).read().strip()
+                break
+            except Exception:
+                pass
+        if not machine_id:
+            import socket
+            machine_id = socket.gethostname()
+        claude_dir = Path.home() / ".claude"
+        install_ts = int(claude_dir.stat().st_mtime) if claude_dir.exists() else 0
+        d = datetime.datetime.fromtimestamp(install_ts, tz=datetime.timezone.utc).replace(
+            day=1, hour=0, minute=0, second=0
+        )
+        uid = hashlib.sha256(f"{machine_id}:{int(d.timestamp())}".encode()).hexdigest()[:16]
+    except Exception:
+        pass
+
+    consent = {
+        "schema_version": _CONSENT_SCHEMA_VERSION,
+        "granted_at": datetime.datetime.now(tz=datetime.timezone.utc).isoformat(),
+        "user_id": uid,
+        "stage": "2",
+        "note": "k-anonymized session_aggregate upload — upload endpoint not yet active",
+    }
+    CONSENT_FILE.write_text(json.dumps(consent, indent=2))
+    print(f"\nConsent granted. Stored at: {CONSENT_FILE}")
+    print(f"User ID: {uid}")
+    print("When Stage 2 launches, run `ctx-telemetry consent` to verify status.")
+
+
 def cmd_clear(args):
     deleted = []
     for path in [LOG, AGG_LOG]:
@@ -235,7 +363,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser(
         prog="ctx-telemetry",
         description=(
-            "CTX retrieval telemetry — local-only, no upload (schema v1.3). "
+            "CTX retrieval telemetry — local-only, no upload (schema v1.4). "
             "Enable with: export CTX_TELEMETRY=1  "
             "Schema docs: https://github.com/jaytoone/CTX#telemetry-opt-in-local-only"
         ),
@@ -246,6 +374,10 @@ def main(argv=None):
     last_p.add_argument("-n", type=int, default=10, help="Number of events")
     sub.add_parser("clear", help="Delete local telemetry logs")
     sub.add_parser("calibrate", help="Citation bias detection — validate utility_rate signal")
+    consent_p = sub.add_parser("consent", help="Stage 2 consent management (opt-in upload)")
+    consent_sub = consent_p.add_subparsers(dest="consent_cmd")
+    consent_sub.add_parser("grant", help="Grant Stage 2 upload consent")
+    consent_sub.add_parser("revoke", help="Revoke consent and delete consent file")
 
     args = parser.parse_args(argv)
     if args.cmd == "last":
@@ -254,6 +386,8 @@ def main(argv=None):
         cmd_clear(args)
     elif args.cmd == "calibrate":
         cmd_calibrate(args)
+    elif args.cmd == "consent":
+        cmd_consent(args)
     else:
         cmd_summary(args)
 

@@ -247,7 +247,7 @@ def _read_stop_stdin() -> dict:
 # ── retrieval_event schema (data flywheel — privacy-safe, local-first) ──────
 _RETRIEVAL_EVENTS_LOG = HOME / ".claude" / "ctx-retrieval-events.jsonl"
 _RETRIEVAL_META_PATH = HOME / ".claude" / "last-retrieval-meta.json"
-_RETRIEVAL_EVENT_SCHEMA = "v1.3"
+_RETRIEVAL_EVENT_SCHEMA = "v1.4"
 _USER_ID_CACHE = HOME / ".claude" / "ctx-user-id.hash"
 
 
@@ -298,6 +298,34 @@ _HOOK_SOURCE_MAP = {
     "g2_prefetch": "G2_CODE",
     "chat_memory": "CM",
 }
+
+
+def _get_vault_stats() -> tuple:
+    """Return (vault_entry_count, index_staleness_hours) for session_aggregate schema v1.4."""
+    vault_count = None
+    index_staleness = None
+    try:
+        if VAULT_DB.exists():
+            import sqlite3 as _sqlite3
+            conn = _sqlite3.connect(str(VAULT_DB))
+            vault_count = conn.execute("SELECT COUNT(*) FROM messages").fetchone()[0]
+            conn.close()
+    except Exception:
+        pass
+    try:
+        # codebase-memory-mcp db (G2 freshness signal)
+        for candidate in [
+            HOME / ".local" / "share" / "codebase-memory" / "code-graph.db",
+            HOME / ".local" / "share" / "codebase-memory-mcp" / "code-graph.db",
+        ]:
+            if candidate.exists():
+                import time as _t
+                age_s = _t.time() - candidate.stat().st_mtime
+                index_staleness = int(age_s / 3600)
+                break
+    except Exception:
+        pass
+    return vault_count, index_staleness
 
 
 def _write_retrieval_events(session_id, by_block, hits_by_mode, semantic_available, inj):
@@ -404,6 +432,11 @@ def _accumulate_session_aggregate(session_id, by_block, utility_rate):
                 "retrieval_method_hist": state.get("retrieval_method_hist", {}),
                 "session_outcome": "SHORT" if turns <= 2 else "NORMAL",
             }
+            vault_count, index_staleness = _get_vault_stats()
+            if vault_count is not None:
+                agg["vault_entry_count"] = vault_count
+            if index_staleness is not None:
+                agg["index_staleness_hours"] = index_staleness
             with open(_SESSION_AGGREGATES_LOG, "a", encoding="utf-8") as f:
                 f.write(json.dumps(agg) + "\n")
             state = {}
