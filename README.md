@@ -299,8 +299,12 @@ export CTX_TELEMETRY=1          # enable for this shell
 ctx-telemetry                   # summary: avg utility% per block, query type breakdown
 ctx-telemetry last              # last 10 session turns
 ctx-telemetry calibrate         # citation bias detection — validates signal quality
+ctx-telemetry tune              # compute optimal retrieval params and write ctx-auto-tune.json
+ctx-telemetry consent           # Stage 2 upload consent status
 ctx-telemetry clear             # delete all local telemetry logs
 ```
+
+**Auto-tune (flywheel):** After `ctx-telemetry tune` runs with ≥15 records, CTX automatically adjusts retrieval parameters based on your usage patterns (e.g., top_k reduction for query types with lower citation rates). The active tuning state is shown in CTX's context header: `> **CTX auto-tune** [n=42, hybrid✓]`.
 
 ### What is collected (schema v1.3)
 

@@ -84,11 +84,13 @@ _VEC_DISABLED = os.environ.get("CTX_DISABLE_SEMANTIC_RERANK") == "1"
 # ── Auto-tune: read flywheel parameter recommendations (ctx-telemetry tune output) ──
 _AUTO_TUNE_PATH = Path.home() / ".claude" / "ctx-auto-tune.json"
 _AUTO_TUNE: dict = {}
+_AUTO_TUNE_ACTIVE: bool = False
 try:
     if _AUTO_TUNE_PATH.exists():
         _auto_tune_raw = json.loads(_AUTO_TUNE_PATH.read_text())
         if isinstance(_auto_tune_raw, dict):
             _AUTO_TUNE = _auto_tune_raw
+            _AUTO_TUNE_ACTIVE = True
 except Exception:
     pass
 
@@ -1487,7 +1489,14 @@ def main():
     g2_keywords = []
     if prompt:
         _t_g2d = _time.perf_counter()
-        doc_chunks = hybrid_search_docs(project_dir, prompt, top_k=5)
+        # Auto-tune: adjust G2-DOCS top_k based on flywheel recommendations
+        _g2d_top_k = 5
+        if _AUTO_TUNE:
+            _qtype_now2 = _classify_query_type(prompt)
+            _g2_temporal_gap = _AUTO_TUNE.get("temporal_utility_gap", 0)
+            if _qtype_now2 == "TEMPORAL" and _g2_temporal_gap > 0.10:
+                _g2d_top_k = 3  # more selective for low-utility temporal doc queries
+        doc_chunks = hybrid_search_docs(project_dir, prompt, top_k=_g2d_top_k)
         if doc_chunks:
             lines.append("[G2-DOCS] (BM25+dense RRF relevant research docs)")
             for chunk in doc_chunks:
@@ -1611,6 +1620,17 @@ def main():
             _daemon_warns.append("bge-daemon down — cross-encoder rerank disabled")
         if _daemon_warns:
             header_lines.append("> **⚠ Semantic layer**: " + " | ".join(_daemon_warns))
+        # Auto-tune active badge — shows flywheel is running
+        if _AUTO_TUNE_ACTIVE:
+            n_rec = _AUTO_TUNE.get("based_on_n", "?")
+            prefer_hybrid = _AUTO_TUNE.get("prefer_hybrid_G1", False)
+            temporal_gap = _AUTO_TUNE.get("temporal_utility_gap")
+            parts = [f"n={n_rec}"]
+            if prefer_hybrid:
+                parts.append("hybrid✓")
+            if temporal_gap and temporal_gap > 0.05:
+                parts.append(f"temporal-gap={temporal_gap*100:.0f}pp")
+            header_lines.append(f"> **CTX auto-tune** [{', '.join(parts)}] — run `ctx-telemetry tune` to refresh")
         if header_lines:
             lines = header_lines + [""] + lines
 
