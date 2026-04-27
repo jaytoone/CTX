@@ -70,6 +70,235 @@ _STOPWORDS = frozenset([
 ])
 
 
+# ── Semantic rerank helpers (2026-04-24) ────────────────────────────────
+# Three layers:
+#   1. bi-encoder rerank via vec-daemon (e5-small, CPU-friendly, ~20ms/candidate)
+#   2. Korean-English synonym expansion (zero-cost lexical bridge)
+#   3. BGE cross-encoder rerank (GPU, ~50ms for top-20, +15-25%p quality)
+# Layer 3 is opt-in via CTX_CROSS_ENCODER=1 env var; loads lazily on first use.
+
+_VEC_SOCK = Path.home() / ".local/share/claude-vault/vec-daemon.sock"
+_VEC_TIMEOUT = 0.8   # seconds — fail fast if daemon is down
+_VEC_DISABLED = os.environ.get("CTX_DISABLE_SEMANTIC_RERANK") == "1"
+
+# bge-daemon: BGE cross-encoder served over Unix socket (same pattern as vec-daemon).
+# Hook stays fast because the 7s model load happens ONCE in the daemon, not per
+# UserPromptSubmit. Default ON; disable via CTX_CROSS_ENCODER=0 if daemon is down
+# and we don't want even the 0.8s connect-timeout cost per prompt.
+_BGE_SOCK = Path.home() / ".local/share/claude-vault/bge-daemon.sock"
+_BGE_TIMEOUT = 2.0   # seconds — rerank 20 cands typically <80ms, give slack
+_USE_CROSS_ENCODER = os.environ.get("CTX_CROSS_ENCODER", "1") != "0"
+
+# Small Korean-English synonym map for query expansion (Layer 2).
+# Keys are case-folded. Additions expand the query token set — BM25 will match
+# commits mentioning either side of each pair. Focused on CTX domain vocabulary
+# that commonly appears in Korean prompts but English commits (and vice versa).
+_SYNONYM_EXPANSION = {
+    "cross-session":   ["long-term", "persistent", "inter-session", "장기기억"],
+    "long-term":       ["cross-session", "persistent", "장기", "장기기억"],
+    "memory":          ["recall", "retrieval", "기억"],
+    "retrieval":       ["search", "recall", "fetch", "검색", "조회"],
+    "search":          ["retrieval", "lookup", "검색"],
+    "hook":            ["plugin", "extension", "훅"],
+    "embed":           ["embedding", "vector", "임베딩"],
+    "embedding":       ["embed", "vector", "임베딩"],
+    "rerank":          ["rank", "reorder", "재정렬", "순위"],
+    "semantic":        ["vector", "dense", "의미"],
+    "context":         ["memory", "state", "컨텍스트"],
+    "prompt":          ["query", "question", "프롬프트"],
+    "improve":         ["enhance", "boost", "optimize", "개선", "향상"],
+    "quality":         ["accuracy", "score", "품질"],
+    "noise":           ["garbage", "irrelevant", "노이즈"],
+    "cluster":         ["group", "dedup", "중복"],
+    "dashboard":       ["ui", "visualization", "대시보드"],
+    "bootstrap":       ["install", "setup", "부트스트랩"],
+    "gpu":             ["cuda", "device", "가속"],
+    "claude":          ["anthropic", "llm"],
+    "korean":          ["한국어", "ko", "hangul"],
+    "기억":             ["memory", "recall"],
+    "검색":             ["search", "retrieval"],
+    "장기기억":          ["long-term memory", "cross-session", "persistent"],
+    "의사결정":          ["decision", "choice"],
+    "훅":               ["hook", "plugin"],
+    "임베딩":            ["embedding", "vector"],
+}
+
+
+def expand_query_tokens(query_tokens):
+    """Layer 2: bridge Korean<->English lexical gaps via synonym map.
+    Returns the original tokens + synonym expansions (capped at 2x length)."""
+    out = list(query_tokens)
+    for t in query_tokens:
+        syns = _SYNONYM_EXPANSION.get(t.lower())
+        if syns:
+            out.extend(syns)
+    # Dedupe while preserving order
+    seen = set(); uniq = []
+    for t in out:
+        k = t.lower()
+        if k not in seen:
+            seen.add(k); uniq.append(t)
+    return uniq[:len(query_tokens) * 2 + 5]   # cap growth
+
+
+def _bge_rerank(query: str, docs: list):
+    """Query the running bge-daemon for cross-encoder scores.
+
+    Returns list[float] (raw logits, same length as docs) or None on failure.
+    Caller applies sigmoid + filtering. Fail-fast: 2s timeout keeps the hook
+    responsive if the daemon is wedged.
+    """
+    if not _USE_CROSS_ENCODER or not _BGE_SOCK.exists():
+        return None
+    try:
+        import socket as _sk
+        s = _sk.socket(_sk.AF_UNIX, _sk.SOCK_STREAM)
+        s.settimeout(_BGE_TIMEOUT)
+        s.connect(str(_BGE_SOCK))
+        payload = (json.dumps({"query": query[:400],
+                               "docs": [str(d)[:400] for d in docs]}) + "\n").encode("utf-8")
+        s.sendall(payload)
+        buf = b""
+        while b"\n" not in buf:
+            chunk = s.recv(65536)
+            if not chunk:
+                break
+            buf += chunk
+        s.close()
+        resp = json.loads(buf.split(b"\n")[0].decode("utf-8"))
+        if resp.get("ok"):
+            return resp.get("scores")
+    except Exception:
+        return None
+    return None
+
+
+def _vec_embed(text: str):
+    """Query the running vec-daemon for an embedding. Returns list[float] or None.
+    Uses the same Unix socket protocol as chat-memory.py; 0 if daemon is down."""
+    if _VEC_DISABLED or not _VEC_SOCK.exists():
+        return None
+    try:
+        import socket
+        s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        s.settimeout(_VEC_TIMEOUT)
+        s.connect(str(_VEC_SOCK))
+        payload = (json.dumps({"q": text[:1000]}) + "\n").encode("utf-8")
+        s.sendall(payload)
+        buf = b""
+        while b"\n" not in buf:
+            chunk = s.recv(8192)
+            if not chunk:
+                break
+            buf += chunk
+        s.close()
+        line = buf.split(b"\n")[0]
+        resp = json.loads(line.decode("utf-8"))
+        if resp.get("ok"):
+            return resp.get("emb")
+    except Exception:
+        return None
+    return None
+
+
+def _cosine(a, b):
+    if not a or not b or len(a) != len(b):
+        return 0.0
+    import math
+    dot = sum(x * y for x, y in zip(a, b))
+    # embeddings from vec-daemon are already normalized → dot = cosine
+    return max(0.0, min(1.0, dot))
+
+
+def semantic_rerank_filter(candidates, query, top_k, alpha_bm25=0.6,
+                           cosine_min=0.55, bm25_scores=None):
+    """Rerank a list of candidate items by blended BM25 + cosine semantic.
+
+    candidates: list of dicts, each with a 'text' or 'subject' field
+    query: user query string
+    top_k: final count
+    alpha_bm25: weight of BM25 score in blend (1-alpha = semantic weight)
+    cosine_min: hard floor — items below this cosine get dropped even if BM25 is high
+    bm25_scores: optional pre-computed BM25 scores (normalized 0-1); if None,
+                 assume candidates are already ordered by BM25 → use rank position
+
+    Fail-safe: if vec-daemon is down, returns candidates[:top_k] (no-op).
+
+    Layer 3 (2026-04-24): prefer BGE cross-encoder when available — it scores
+    (query, candidate) jointly instead of computing independent embeddings +
+    cosine. Much stronger semantic judgement on short commit subjects.
+    Falls back to bi-encoder cosine path if cross-encoder fails to load.
+    """
+    # ── Layer 3: bge-daemon cross-encoder path (strongest semantic signal) ───
+    # Calls the resident bge-daemon over Unix socket. Daemon holds BGE weights
+    # in GPU memory so hook pays ~50ms per rerank, not the 7s cold-load.
+    kept = []
+    doc_texts = []
+    for i, c in enumerate(candidates):
+        text = c.get("subject") or c.get("text") or ""
+        if not text:
+            continue
+        kept.append((i, c))
+        doc_texts.append(text[:400])
+    if doc_texts:
+        ce_scores = _bge_rerank(query, doc_texts)
+        if ce_scores is not None and len(ce_scores) == len(kept):
+            import math
+            def _sig(x): return 1.0 / (1.0 + math.exp(-float(x)))
+            rescored = []
+            ce_min = 0.35
+            for (i, c), s in zip(kept, ce_scores):
+                ce_norm = _sig(s)
+                if ce_norm < ce_min:
+                    continue
+                bm25_norm = (bm25_scores[i] if bm25_scores else (len(candidates) - i) / max(1, len(candidates)))
+                blend = alpha_bm25 * bm25_norm + (1.0 - alpha_bm25) * ce_norm
+                rescored.append((blend, ce_norm, c))
+            rescored.sort(key=lambda x: -x[0])
+            if rescored:
+                return [c for _, _, c in rescored[:top_k]]
+            # CE filtered everything → fall back to bi-encoder
+
+    # ── Bi-encoder fallback (original path) ───
+    q_emb = _vec_embed(query)
+    if not q_emb:
+        return candidates[:top_k]   # daemon down → no-op
+
+    rescored = []
+    for i, c in enumerate(candidates):
+        text = c.get("subject") or c.get("text") or ""
+        if not text:
+            continue
+        c_emb = _vec_embed(text[:400])   # short for speed
+        if not c_emb:
+            continue
+        cos = _cosine(q_emb, c_emb)
+        if cos < cosine_min:
+            continue   # hard drop — semantic dissimilarity overrides BM25 rank
+        # Normalize BM25 to [0,1] by rank position (top = 1.0, bottom = ~0)
+        bm25_norm = (bm25_scores[i] if bm25_scores else (len(candidates) - i) / max(1, len(candidates)))
+        blend = alpha_bm25 * bm25_norm + (1.0 - alpha_bm25) * cos
+        rescored.append((blend, cos, c))
+    rescored.sort(key=lambda x: -x[0])
+    return [c for _, _, c in rescored[:top_k]]
+
+
+# Porter stemmer (opt-in via CTX_STEM=1, default ON 2026-04-24 after G1 regression
+# showed +0.034 improvement on Recall@7 with zero losses. See
+# benchmarks/results/g1_regression_ctx_v2.json).
+# Rationale: collapses "logs"/"logging"/"logged" → "log" so queries match stem-
+# variants in commit subjects. Especially important for conflict-resolution
+# (MAB Competency-4) where reversal vocab shifts (e.g. "rerank" → "reranking").
+_USE_STEMMER = os.environ.get("CTX_STEM", "1") != "0"
+_STEMMER = None
+if _USE_STEMMER:
+    try:
+        from nltk.stem.porter import PorterStemmer as _PS
+        _STEMMER = _PS()
+    except ImportError:
+        _STEMMER = None   # stemming silently disabled if nltk not installed
+
+
 def tokenize(text: str, drop_stopwords: bool = False):
     """Preserve decimal numbers (0.724) and numeric ranges (7-30) as single tokens.
     Also strips Korean particles from mixed Korean-ASCII tokens (e.g. 'BM25와' → 'bm25' + 'bm25와')
@@ -78,6 +307,10 @@ def tokenize(text: str, drop_stopwords: bool = False):
     When `drop_stopwords=True` (query-side only), conversational fillers are
     removed to prevent BM25 from matching on common words like "i", "to", "how",
     "would", etc. Corpus tokenization never drops stopwords — IDF handles those.
+
+    Porter stemmer (2026-04-24): adds stemmed variant for each token so "logs"
+    matches "logging". Preserves the original token too so exact-match precision
+    is never lost (dedup handles duplicates). Opt-out via CTX_STEM=0.
     """
     raw = re.findall(r'\d+[-\u2013]\d+|\d+\.\d+|\w+', text.lower())
     result = []
@@ -89,6 +322,12 @@ def tokenize(text: str, drop_stopwords: bool = False):
             if not (drop_stopwords and cleaned in _STOPWORDS):
                 result.append(cleaned)
         result.append(tok)
+        # Porter stem — adds a THIRD variant. Dedup at return preserves order
+        # so original tokens remain ranked; stem is a recall-rescue fallback.
+        if _STEMMER is not None and tok.isalpha() and len(tok) > 3:
+            stemmed = _STEMMER.stem(tok)
+            if stemmed != tok:
+                result.append(stemmed)
     return list(dict.fromkeys(result))
 
 
@@ -201,7 +440,14 @@ def build_decision_corpus(project_dir, n=500):
 
 
 def get_decision_corpus(project_dir):
-    """Return cached corpus or rebuild if git HEAD changed."""
+    """Return cached corpus or rebuild if git HEAD changed.
+
+    Extended (2026-04-26): also pre-embeds corpus items via vec-daemon and caches
+    embeddings in the same file under an 'emb_head' sentinel. Embeddings allow
+    dense first-stage retrieval (dense_rank_decisions) without per-query N socket
+    calls. Falls back gracefully: if vec-daemon is down, items lack 'emb' field
+    and dense_rank_decisions returns [].
+    """
     cache_path = Path(project_dir) / ".omc" / "decision_corpus.json"
     head = get_git_head(project_dir)
 
@@ -209,7 +455,15 @@ def get_decision_corpus(project_dir):
         try:
             cached = json.loads(cache_path.read_text())
             if cached.get("head") == head:
-                return cached["corpus"]
+                corpus = cached["corpus"]
+                # Check if embeddings are fresh for this HEAD
+                if cached.get("emb_head") != head:
+                    n = embed_corpus_items(corpus)
+                    if n > 0:
+                        cache_path.write_text(json.dumps({
+                            "head": head, "corpus": corpus, "emb_head": head
+                        }))
+                return corpus
         except Exception:
             pass
 
@@ -217,13 +471,92 @@ def get_decision_corpus(project_dir):
     if head and corpus:
         try:
             cache_path.parent.mkdir(exist_ok=True)
-            cache_path.write_text(json.dumps({"head": head, "corpus": corpus}))
+            embed_corpus_items(corpus)
+            cache_path.write_text(json.dumps({
+                "head": head, "corpus": corpus, "emb_head": head
+            }))
         except Exception:
             pass
     return corpus
 
 
-def bm25_rank_decisions(corpus, query, top_k=7, min_score=0.5):
+def embed_corpus_items(corpus):
+    """Add 'emb' field to corpus items using vec-daemon. Modifies in-place.
+
+    Only embeds items missing 'emb'. Returns count of newly embedded items.
+    Fail-safe: if vec-daemon is down, items are left without 'emb' and
+    dense_rank_decisions will return [] (BM25-only fallback).
+    """
+    embedded = 0
+    for item in corpus:
+        if item.get("emb"):
+            continue
+        text = (item.get("subject") or item.get("text") or "")[:400]
+        if not text:
+            continue
+        emb = _vec_embed(text)
+        if emb:
+            item["emb"] = emb
+            embedded += 1
+    return embedded
+
+
+def dense_rank_decisions(corpus, query, top_k=20):
+    """Dense first-stage retrieval: cosine similarity between query embedding
+    and pre-computed corpus embeddings (from embed_corpus_items).
+
+    Returns top-k items by cosine, or [] if vec-daemon unavailable or corpus
+    has no embeddings (BM25-only fallback).
+    """
+    q_emb = _vec_embed(query)
+    if not q_emb:
+        return []
+    scored = []
+    for item in corpus:
+        emb = item.get("emb")
+        if not emb:
+            continue
+        cos = _cosine(q_emb, emb)
+        if cos > 0.0:
+            scored.append((cos, item))
+    if not scored:
+        return []
+    scored.sort(key=lambda x: -x[0])
+    return [item for _, item in scored[:top_k]]
+
+
+def rrf_merge(list_a, list_b, k_rrf=60):
+    """Reciprocal Rank Fusion of two ranked lists.
+
+    k_rrf=60: optimal constant per BEIR paper (arXiv:2104.08663) — controls
+    score distribution across rank positions.
+
+    Uses commit 'hash' as dedup key; falls back to first-20-chars of 'text'.
+    Returns merged list ordered by RRF score (descending).
+    """
+    scores = {}
+    hash_to_item = {}
+
+    def _key(item):
+        return item.get("hash") or (item.get("text") or "")[:20]
+
+    for rank, item in enumerate(list_a, 1):
+        k = _key(item)
+        scores[k] = scores.get(k, 0.0) + 1.0 / (k_rrf + rank)
+        hash_to_item[k] = item
+
+    for rank, item in enumerate(list_b, 1):
+        k = _key(item)
+        scores[k] = scores.get(k, 0.0) + 1.0 / (k_rrf + rank)
+        hash_to_item[k] = item
+
+    merged_keys = sorted(scores.keys(), key=lambda h: -scores[h])
+    return [hash_to_item[h] for h in merged_keys]
+
+
+def bm25_rank_decisions(corpus, query, top_k=7, min_score=0.5,
+                        adaptive_floor_ratio=0.35, mmr_jaccard_threshold=0.70,
+                        skip_rerank=False):
     """BM25-rank decision corpus against query, return top-k.
 
     Stopwords are dropped from the query (not the corpus) so conversational
@@ -232,6 +565,17 @@ def bm25_rank_decisions(corpus, query, top_k=7, min_score=0.5):
     `min_score`: if the best-matching decision scores below this, return [].
     Prevents the "no-topic-match → fallback to most-recent-7" anti-pattern
     where zero-score or near-zero queries got ranked purely by git-log order.
+
+    `adaptive_floor_ratio` (NEW 2026-04-24): candidates below
+        top_score * adaptive_floor_ratio are dropped. Eliminates the
+        "surface-token match" noise where a hit scores just above min_score
+        but is 3-5× worse than the actual best hit (e.g., 'iter 47/∞: token%'
+        scoring 1.2 when the real match scores 4.0).
+
+    `mmr_jaccard_threshold` (NEW 2026-04-24): if a candidate's token set has
+        Jaccard similarity >= threshold with any already-selected item, skip it.
+        Collapses clustered noise like multiple 'live-infinite iter N/∞' entries
+        that are near-duplicates — keeps only the best of each cluster.
     """
     if not corpus:
         return []
@@ -242,13 +586,113 @@ def bm25_rank_decisions(corpus, query, top_k=7, min_score=0.5):
     if not query_tokens:
         return []
 
+    # Layer 2 (2026-04-24): synonym expansion to bridge KO↔EN + concept gaps
+    # (e.g. "cross-session memory" now matches "persistent long-term 장기기억" too).
+    query_tokens = expand_query_tokens(query_tokens)
+
     tokenized = [tokenize(c["text"]) for c in corpus]
     bm25 = BM25Okapi(tokenized)
     scores = bm25.get_scores(query_tokens)
     if len(scores) == 0 or float(max(scores)) < min_score:
         return []
-    ranked = sorted(range(len(corpus)), key=lambda i: scores[i], reverse=True)
-    return [corpus[i] for i in ranked[:top_k] if scores[i] >= min_score]
+
+    top_score = float(max(scores))
+    adaptive_floor = max(min_score, top_score * adaptive_floor_ratio)
+
+    ranked_idx = sorted(range(len(corpus)), key=lambda i: scores[i], reverse=True)
+
+    # Cluster signature: normalizes "live-infinite iter N/∞: goal_vM" boilerplate
+    # so different iter-numbers don't escape MMR dedup (MEMORY.md: "live-inf iter
+    # N/∞ topic-dedup collapse" known issue).
+    import re as _re
+    def _cluster_sig(subject: str) -> str:
+        s = subject.lower()
+        s = _re.sub(r'\b\d{4,}\b|\b\d+/\d+\b|\b\d+/∞\b|goal_v\d+', '', s)
+        s = _re.sub(r'iter\s*\d+', 'iter', s)
+        s = _re.sub(r'[^a-z가-힣\s]', ' ', s)
+        s = _re.sub(r'\s+', ' ', s).strip()
+        # First 4 distinctive words form the cluster signature
+        return ' '.join(s.split()[:4])
+
+    selected = []
+    selected_token_sets = []
+    selected_cluster_sigs = set()
+    for idx in ranked_idx:
+        if scores[idx] < adaptive_floor:
+            break
+        cand_tokens = set(tokenized[idx])
+        if not cand_tokens:
+            continue
+        cand_sig = _cluster_sig(corpus[idx].get("subject", corpus[idx].get("text", "")))
+        # Cluster dedup: skip if any selected item has the same normalized sig
+        if cand_sig and cand_sig in selected_cluster_sigs:
+            continue
+        # MMR-lite: skip if too similar to already-selected items
+        is_near_dup = False
+        for prev_tokens in selected_token_sets:
+            union = cand_tokens | prev_tokens
+            if not union:
+                continue
+            jaccard = len(cand_tokens & prev_tokens) / len(union)
+            if jaccard >= mmr_jaccard_threshold:
+                is_near_dup = True
+                break
+        if is_near_dup:
+            continue
+        selected.append(corpus[idx])
+        selected_token_sets.append(cand_tokens)
+        if cand_sig:
+            selected_cluster_sigs.add(cand_sig)
+        # Keep 2x the target so semantic rerank has room to re-order/filter
+        if len(selected) >= top_k * 2:
+            break
+    # Layer 1 (2026-04-24): lowered gate — rerank fires for 60%+ of queries now,
+    # was ~30% with `> top_k` (many queries returned exactly top_k candidates).
+    if not skip_rerank and len(selected) >= top_k + 2:
+        selected = semantic_rerank_filter(selected, query, top_k=top_k)
+    return selected[:top_k]
+
+
+def hybrid_rank_decisions(corpus, query, top_k=7):
+    """Hybrid BM25+dense retrieval with RRF merge — SOTA method per MAB/LongMemEval.
+
+    Pipeline (2026-04-26):
+      1. BM25 top-(top_k*2) with MMR/cluster dedup, NO semantic rerank yet
+      2. Dense top-(top_k*2) using pre-embedded corpus via vec-daemon cosine
+      3. RRF merge (k=60) — union of both candidate pools
+      4. Semantic rerank (BGE cross-encoder → vec-daemon bi-encoder fallback)
+
+    Advantage over BM25-only: recovers nodes that BM25 misses entirely (zero score)
+    but are semantically close to the query (e.g. synonyms, paraphrases, concept drift).
+
+    Fail-safe: if dense_rank_decisions() returns [] (vec-daemon down or no embeddings),
+    falls back to BM25-only + semantic rerank (existing behavior).
+    """
+    # Step 1: BM25 candidates (skip rerank here — we'll do it after RRF)
+    bm25_cands = bm25_rank_decisions(
+        corpus, query, top_k=top_k * 2,
+        skip_rerank=True
+    )
+    if not bm25_cands:
+        return []
+
+    # Step 2: Dense candidates
+    dense_cands = dense_rank_decisions(corpus, query, top_k=top_k * 2)
+
+    if not dense_cands:
+        # Dense unavailable — fall back to BM25 with rerank
+        if len(bm25_cands) >= top_k + 2:
+            bm25_cands = semantic_rerank_filter(bm25_cands, query, top_k=top_k)
+        return bm25_cands[:top_k]
+
+    # Step 3: RRF merge
+    merged = rrf_merge(bm25_cands, dense_cands, k_rrf=60)
+
+    # Step 4: Semantic rerank on merged pool
+    if len(merged) >= top_k + 2:
+        merged = semantic_rerank_filter(merged, query, top_k=top_k)
+
+    return merged[:top_k]
 
 
 # ── G2: Docs BM25 ────────────────────────────────────────────────
@@ -316,9 +760,43 @@ def build_docs_bm25(project_dir):
     return BM25Okapi(tokenized), all_units
 
 
+
+# Korean→English expansion for G2-DOCS BM25 path (iter 44).
+# Docs corpus is English; Korean queries must be expanded to match.
+# These are CTX/ML domain terms that appear frequently in research docs.
+_KO_EN_DOCS = {
+    "하이브리드": "hybrid", "밀집": "dense", "검색": "search,retrieve",
+    "재색인": "reindex", "인용": "citation", "거짓": "false",
+    "양성": "positive", "시멘틱": "semantic", "지연": "latency",
+    "시간": "time,latency", "수준": "tier,level",
+    "벡터": "vector,embedding", "마이그레이션": "migration",
+    "임베딩": "embedding", "벤치마크": "benchmark,eval",
+    "메모리": "memory", "코드베이스": "codebase",
+    "데이터베이스": "database", "오래된": "stale,staleness",
+    "측정": "measure,probe", "비율": "rate,ratio",
+    "성능": "performance,latency", "업그레이드": "upgrade",
+    "노드": "node", "병합": "merge", "구현": "implementation",
+    "분석": "analysis,evaluation", "아키텍처": "architecture",
+    "평가": "eval,evaluate,benchmark", "프레임워크": "framework",
+    "알고리즘": "algorithm", "최적화": "optimize,optimization",
+    "자동": "auto,automatic", "색인": "index", "인덱스": "index",
+}
+
+
+def _expand_ko_en_docs(tokens):
+    """Expand Korean tokens via _KO_EN_DOCS for G2-DOCS BM25 queries."""
+    expanded = list(tokens)
+    for t in tokens:
+        mapping = _KO_EN_DOCS.get(t)
+        if mapping:
+            expanded.extend(mapping.split(","))
+    return list(dict.fromkeys(expanded))
+
+
 def bm25_search_docs(project_dir, query, top_k=5):
     """Return top-k docs most relevant to query (full-doc BM25, no chunking).
     Query-side stopword filter prevents conversational fillers from dominating.
+    Korean queries are expanded via _KO_EN_DOCS before scoring (iter 44).
     """
     if not query.strip():
         return []
@@ -326,12 +804,160 @@ def bm25_search_docs(project_dir, query, top_k=5):
     if not bm25:
         return []
     query_tokens = tokenize(query, drop_stopwords=True)
+    query_tokens = _expand_ko_en_docs(query_tokens)  # Korean→English expansion
     if not query_tokens:
         return []
     scores = bm25.get_scores(query_tokens)
     ranked = sorted(range(len(units)), key=lambda i: scores[i], reverse=True)
     # threshold=1.0: full-doc scores for relevant queries are 3.0-6.0; 0.0 = no overlap
-    return [units[i] for i in ranked[:top_k] if scores[i] > 1.0]
+    # adaptive floor (2026-04-24): also drop anything below 35% of top score
+    top_score = float(max(scores)) if len(scores) else 0.0
+    floor = max(1.0, top_score * 0.35)
+    bm_filtered = [units[i] for i in ranked[:top_k * 2] if scores[i] >= floor]
+    # Semantic rerank (2026-04-24 iter 2): dedupes BM25-surface hits from different meanings
+    if len(bm_filtered) > top_k:
+        # Each unit is "filename\ncontent"; wrap as dict for the reranker
+        cand_dicts = [{"subject": u.split("\n", 1)[0], "text": u[:400]} for u in bm_filtered]
+        reranked_dicts = semantic_rerank_filter(cand_dicts, query, top_k=top_k)
+        # Map back to original units by subject (filename)
+        subject_to_unit = {u.split("\n", 1)[0]: u for u in bm_filtered}
+        return [subject_to_unit[d["subject"]] for d in reranked_dicts if d["subject"] in subject_to_unit]
+    return bm_filtered[:top_k]
+
+
+# ── G2-DOCS: Hybrid BM25+Dense Search ───────────────────────────
+
+_docs_emb_cache_state = {}  # in-memory: {"key": str, "units_emb": [...]}
+
+
+def _docs_cache_key(units):
+    """Stable cache key based on doc filenames (sorted join → simple hash)."""
+    filenames = sorted(u.split("\n", 1)[0] for u in units)
+    key_str = "|".join(filenames)
+    # stdlib-only fingerprint: sum of char ords mod 10^10
+    return str(sum(ord(c) * (i + 1) for i, c in enumerate(key_str)) % (10 ** 10))
+
+
+def embed_docs_units(units, cache_path):
+    """Pre-embed docs corpus. Returns list of dicts:
+    {"hash": filename, "text": unit_string, "emb": list_or_[]}.
+
+    Caches to cache_path; invalidates when doc set changes.
+    Fail-safe: items without embedding skip dense but still contribute via BM25.
+    """
+    key = _docs_cache_key(units)
+
+    if _docs_emb_cache_state.get("key") == key:
+        return _docs_emb_cache_state["units_emb"]
+
+    if cache_path.exists():
+        try:
+            cached = json.loads(cache_path.read_text())
+            if cached.get("key") == key:
+                _docs_emb_cache_state.update(cached)
+                return cached["units_emb"]
+        except Exception:
+            pass
+
+    # Embed each unit (filename + first 400 chars as subject)
+    units_emb = []
+    for u in units:
+        filename = u.split("\n", 1)[0]
+        preview = u[:400]
+        emb = _vec_embed(preview)
+        units_emb.append({"hash": filename, "text": u, "emb": emb or []})
+
+    try:
+        cache_path.parent.mkdir(parents=True, exist_ok=True)
+        cache_path.write_text(json.dumps({"key": key, "units_emb": units_emb}))
+    except Exception:
+        pass
+
+    _docs_emb_cache_state.update({"key": key, "units_emb": units_emb})
+    return units_emb
+
+
+def dense_rank_docs(units_emb, query, top_k=10):
+    """Dense first-stage retrieval for docs corpus.
+
+    units_emb: list of {"hash": filename, "text": unit_str, "emb": list}
+    Returns top_k dicts ranked by cosine similarity, or [] if vec-daemon down.
+    """
+    q_emb = _vec_embed(query)
+    if not q_emb:
+        return []
+    scored = []
+    for item in units_emb:
+        emb = item.get("emb")
+        if not emb:
+            continue
+        cos = _cosine(q_emb, emb)
+        if cos > 0.0:
+            scored.append((cos, item))
+    if not scored:
+        return []
+    scored.sort(key=lambda x: -x[0])
+    return [item for _, item in scored[:top_k]]
+
+
+def hybrid_search_docs(project_dir, query, top_k=5):
+    """Hybrid BM25+dense RRF search over docs/research/*.md corpus.
+
+    Same pipeline as hybrid_rank_decisions() for G1:
+      1. BM25 top-(top_k*2) candidates (threshold filtered)
+      2. Dense top-(top_k*2) via pre-embedded corpus (vec-daemon cosine)
+      3. RRF merge (k=60)
+      4. Semantic rerank (BGE/vec-daemon) on merged pool
+
+    Fail-safe: dense unavailable → BM25+semantic rerank (existing behavior).
+    Returns list of unit strings — same format as bm25_search_docs().
+    """
+    bm25, units = build_docs_bm25(project_dir)
+    if not bm25 or not units or not query.strip():
+        return []
+
+    query_tokens = tokenize(query, drop_stopwords=True)
+    query_tokens = _expand_ko_en_docs(query_tokens)  # Korean→English expansion (iter 44)
+    if not query_tokens:
+        return []
+
+    # Step 1: BM25 candidates
+    scores = bm25.get_scores(query_tokens)
+    top_score = float(max(scores)) if len(scores) else 0.0
+    if top_score < 1.0:
+        return []
+    floor = max(1.0, top_score * 0.35)
+    ranked = sorted(range(len(units)), key=lambda i: scores[i], reverse=True)
+    bm25_filtered = [units[i] for i in ranked[:top_k * 2] if scores[i] >= floor]
+    if not bm25_filtered:
+        return []
+
+    bm25_dicts = [{"hash": u.split("\n", 1)[0], "text": u} for u in bm25_filtered]
+
+    # Step 2: Dense candidates (pre-embedded corpus, 1 vec-daemon call for query)
+    cache_path = Path(project_dir) / ".omc" / "docs_corpus_emb.json"
+    units_emb = embed_docs_units(units, cache_path)
+    dense_dicts = dense_rank_docs(units_emb, query, top_k=top_k * 2)
+
+    if not dense_dicts:
+        # Fallback: BM25 + semantic rerank
+        if len(bm25_filtered) > top_k:
+            cand_dicts = [{"subject": u.split("\n", 1)[0], "text": u[:400]}
+                          for u in bm25_filtered]
+            reranked = semantic_rerank_filter(cand_dicts, query, top_k=top_k)
+            subj_map = {u.split("\n", 1)[0]: u for u in bm25_filtered}
+            return [subj_map[d["subject"]] for d in reranked if d["subject"] in subj_map]
+        return bm25_filtered[:top_k]
+
+    # Step 3: RRF merge
+    merged = rrf_merge(bm25_dicts, dense_dicts, k_rrf=60)
+
+    # Step 4: Semantic rerank on merged pool
+    if len(merged) >= top_k + 2:
+        reranked = semantic_rerank_filter(merged, query, top_k=top_k)
+        return [item.get("text", "") for item in reranked if item.get("text")]
+
+    return [item.get("text", "") for item in merged[:top_k] if item.get("text")]
 
 
 # ── G2: Code File Discovery ──────────────────────────────────────
@@ -402,6 +1028,95 @@ def find_db(project_dir):
         if f.endswith(".db") and os.path.basename(project_dir).lower() in f.lower():
             return os.path.join(cache_dir, f)
     return None
+
+
+_REINDEX_LOCK = os.path.expanduser("~/.cache/codebase-memory-mcp/.reindex_in_progress")
+_STALE_THRESHOLD_HOURS = 24
+
+# ── Citation Probe (iter 40) ──────────────────────────────────────────────────
+# Logs retrieved nodes per turn to .omc/retrieval_log.jsonl.
+# A separate analysis script (benchmarks/eval/citation_probe.py) cross-references
+# these logs with vault.db chat history to compute actual citation rate per node type.
+# Goal: measure what fraction of retrieved G1/G2 nodes Claude actually cites in responses.
+
+def log_retrieved_nodes(project_dir, session_id, prompt, block, items):
+    """
+    Append a retrieval event to .omc/retrieval_log.jsonl.
+
+    Args:
+        project_dir: project root path
+        session_id: Claude session ID (from input_data)
+        prompt: user prompt (first 120 chars stored)
+        block: "g1_decisions" | "g2_docs" | "g2_prefetch" | "g2_hooks"
+        items: list of dicts, each with at minimum {"id": str, "text": str}
+               g1: {"id": hash, "text": subject, "date": date}
+               g2_docs: {"id": filename, "text": unit_preview}
+               g2_prefetch: {"id": fpath, "text": f"{label}:{name}"}
+    """
+    if not items:
+        return
+    try:
+        import time as _t
+        log_path = os.path.join(project_dir, ".omc", "retrieval_log.jsonl")
+        entry = {
+            "ts": _t.time(),
+            "session_id": session_id,
+            "prompt_prefix": prompt[:120],
+            "block": block,
+            "items": items[:10],  # cap at 10 per block
+        }
+        with open(log_path, "a", encoding="utf-8") as f:
+            f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+    except Exception:
+        pass  # citation probe is non-critical — never break the main hook
+
+
+def check_and_trigger_reindex(project_dir, db_path):
+    """
+    Check if codebase-memory-mcp DB is stale (>24h). If so, spawn an incremental
+    reindex in the background (non-blocking). Returns a warning string if stale,
+    or None if fresh.
+
+    Uses a lock file to prevent multiple concurrent reindex launches.
+    Tool: codebase-memory-mcp cli index_repository '{"repo_path":"...", "mode":"fast"}'
+    """
+    try:
+        import time as _t_mod
+        age_hours = (_t_mod.time() - os.path.getmtime(db_path)) / 3600
+    except OSError:
+        return None
+
+    if age_hours < _STALE_THRESHOLD_HOURS:
+        return None  # fresh — no action needed
+
+    age_str = f"{age_hours:.0f}h" if age_hours < 48 else f"{age_hours/24:.1f}d"
+
+    # Check if reindex already running (lock file < 10 min old)
+    if os.path.exists(_REINDEX_LOCK):
+        try:
+            import time as _t_mod
+            lock_age = (_t_mod.time() - os.path.getmtime(_REINDEX_LOCK)) / 60
+            if lock_age < 10:
+                return f"⚠ G2-CODE DB stale ({age_str}) — reindex already running"
+        except OSError:
+            pass
+
+    # Spawn background reindex
+    try:
+        import json as _json
+        args = _json.dumps({"repo_path": project_dir, "mode": "fast"})
+        cmd = ["codebase-memory-mcp", "cli", "index_repository", args]
+        subprocess.Popen(
+            cmd,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            start_new_session=True,  # detach from hook process group
+        )
+        # Touch lock file
+        open(_REINDEX_LOCK, "w").close()
+        return f"⚠ G2-CODE DB stale ({age_str}) — auto-reindex triggered (fast mode, background)"
+    except Exception:
+        return f"⚠ G2-CODE DB stale ({age_str}) — run: codebase-memory-mcp cli index_repository to reindex"
 
 
 def search_graph_for_prompt(db_path, keywords, limit=5):
@@ -558,9 +1273,12 @@ def get_world_model(project_dir):
         wm = json.loads(wm_path.read_text())
     except Exception:
         return [], []
+    raw_de = wm.get("dead_ends", [])
+    if isinstance(raw_de, dict):
+        raw_de = []
     dead_ends = [
         f"  x {de.get('goal','')[:60]} -- {de.get('reason','')[:80]}"
-        for de in wm.get("dead_ends", [])[-5:]
+        for de in raw_de[-5:]
     ]
     facts = []
     for fact in wm.get("known_facts", []):
@@ -650,6 +1368,7 @@ def main():
 
     project_dir = os.environ.get("CLAUDE_PROJECT_DIR", os.getcwd())
     prompt = input_data.get("prompt", "")
+    _session_id = input_data.get("session_id", "")
 
     # A/B scaffold: control arm skips injection entirely (CTX_AB_DISABLE=1).
     # Dashboard uses the logged ab_skipped events to count control-arm sessions.
@@ -663,6 +1382,7 @@ def main():
         pass
     lines = []
     _blocks_fired = []  # for final hook_invoked telemetry summary
+    _retrieval_meta = {"ts": _time.time(), "blocks": {}}  # retrieval_event telemetry
 
     # 0a. Pending decisions from previous session (Stop hook → queue file)
     pending = consume_pending_decisions(project_dir)
@@ -675,12 +1395,15 @@ def main():
         lines.append("[SESSION NOTES (미커밋 판단)]")
         lines.extend(session_notes)
 
-    # 1. G1: BM25 over decision corpus
+    # 1. G1: Hybrid BM25+dense RRF over decision corpus (2026-04-26)
+    # Uses hybrid_rank_decisions() when vec-daemon is up (BM25+dense→RRF→rerank).
+    # Falls back to bm25_rank_decisions() if dense unavailable — explicit coverage.
+    # Eval: BM25=0.966, Hybrid=0.983 (+1.7pp) on 59-query G1 bench (172 commits).
     _t_g1 = _time.perf_counter()
     corpus = get_decision_corpus(project_dir)
     g1_header = ""
     if corpus:
-        relevant = bm25_rank_decisions(corpus, prompt, top_k=7)
+        relevant = hybrid_rank_decisions(corpus, prompt, top_k=7)
         if relevant:
             # Build forced display header (mechanically injected, not advisory)
             first_subj = relevant[0]["subject"][:70]
@@ -701,15 +1424,26 @@ def main():
                 "duration_ms": int((_time.perf_counter() - _t_g1) * 1000),
             })
             _blocks_fired.append("g1")
+            _retrieval_meta["blocks"]["g1_decisions"] = {
+                "candidates": len(corpus),
+                "returned": len(relevant),
+                "retrieval_method": "HYBRID" if (_VEC_SOCK.exists() and not _VEC_DISABLED) else "BM25",
+                "duration_ms": int((_time.perf_counter() - _t_g1) * 1000),
+            }
+            # Citation probe: log G1 retrieved nodes
+            log_retrieved_nodes(project_dir, _session_id, prompt, "g1_decisions", [
+                {"id": c.get("hash", c["subject"][:20]), "text": c["subject"], "date": c.get("date", "")}
+                for c in relevant
+            ])
 
     # 2. G2: BM25 over project docs
     g2_files = []
     g2_keywords = []
     if prompt:
         _t_g2d = _time.perf_counter()
-        doc_chunks = bm25_search_docs(project_dir, prompt, top_k=5)
+        doc_chunks = hybrid_search_docs(project_dir, prompt, top_k=5)
         if doc_chunks:
-            lines.append("[G2-DOCS] (BM25 relevant research docs)")
+            lines.append("[G2-DOCS] (BM25+dense RRF relevant research docs)")
             for chunk in doc_chunks:
                 chunk_lines = chunk.strip().split("\n")
                 header = chunk_lines[0]  # "filename § section"
@@ -733,6 +1467,17 @@ def main():
                 "duration_ms": int((_time.perf_counter() - _t_g2d) * 1000),
             })
             _blocks_fired.append("g2_docs")
+            _retrieval_meta["blocks"]["g2_docs"] = {
+                "candidates": None,
+                "returned": len(doc_chunks),
+                "retrieval_method": "HYBRID" if (_VEC_SOCK.exists() and not _VEC_DISABLED) else "BM25",
+                "duration_ms": int((_time.perf_counter() - _t_g2d) * 1000),
+            }
+            # Citation probe: log G2-DOCS retrieved nodes
+            log_retrieved_nodes(project_dir, _session_id, prompt, "g2_docs", [
+                {"id": chunk.strip().split("\n")[0].split(" §")[0].strip(), "text": chunk.strip().split("\n")[0][:80]}
+                for chunk in doc_chunks
+            ])
 
     # 3. G2: Code file discovery (graph → grep fallback)
     if prompt:
@@ -742,6 +1487,10 @@ def main():
             _t_g2p = _time.perf_counter()
             db_path = find_db(project_dir)
             if db_path:
+                # Staleness check: auto-reindex if DB > 24h old
+                stale_warn = check_and_trigger_reindex(project_dir, db_path)
+                if stale_warn:
+                    lines.append(stale_warn)
                 graph_results = search_graph_for_prompt(db_path, keywords)
                 if graph_results:
                     lines.append(f"[G2-PREFETCH] Related code for '{' '.join(keywords[:3])}':")
@@ -807,6 +1556,14 @@ def main():
             kw_str = " ".join(g2_keywords[:3]) if g2_keywords else ""
             via_str = f' — found via "{kw_str}"' if kw_str else ""
             header_lines.append(f"> **G2** (space search): {files_str}{via_str}")
+        # Daemon degradation warnings — shown only when socket is absent
+        _daemon_warns = []
+        if not _VEC_DISABLED and not _VEC_SOCK.exists():
+            _daemon_warns.append("vec-daemon down — BM25-only mode (semantic rerank disabled)")
+        if _USE_CROSS_ENCODER and not _BGE_SOCK.exists():
+            _daemon_warns.append("bge-daemon down — cross-encoder rerank disabled")
+        if _daemon_warns:
+            header_lines.append("> **⚠ Semantic layer**: " + " | ".join(_daemon_warns))
         if header_lines:
             lines = header_lines + [""] + lines
 
@@ -838,10 +1595,21 @@ def main():
             # as vault.db which already stores full prompts; this just makes the
             # dashboard see new prompts *before* vault.db incremental fires on Stop).
             preview = (prompt or "")[:120].replace("\n", " ").replace("\r", " ")
+            # Full prompt stored too so the dashboard's node-details pane can
+            # show the whole message before vault.db catches up.
+            prompt_full_str = (prompt or "").replace("\r", "")
+            # Derive the project basename from CLAUDE_PROJECT_DIR (fallback to cwd)
+            try:
+                _proj = os.environ.get("CLAUDE_PROJECT_DIR") or os.getcwd()
+                _project_name = os.path.basename(_proj.rstrip("/")) if _proj else None
+            except Exception:
+                _project_name = None
             injection = {
                 "ts": _time.time(),
                 "prompt_len": len(prompt) if prompt else 0,
                 "prompt_preview": preview,
+                "prompt_full": prompt_full_str,
+                "project": _project_name,
                 "items": [],
             }
             # Collect distinctive substrings from emitted blocks.
@@ -937,6 +1705,16 @@ def main():
                         pass
             Path(os.path.expanduser("~/.claude/last-injection.json")).write_text(
                 json.dumps(injection)
+            )
+            # Write retrieval metadata for utility-rate.py → retrieval_event schema
+            _retrieval_meta["vec_daemon_up"] = _VEC_SOCK.exists() and not _VEC_DISABLED
+            _retrieval_meta["bge_daemon_up"] = _BGE_SOCK.exists() and bool(
+                os.environ.get("CTX_CROSS_ENCODER", "1") != "0"
+            )
+            _retrieval_meta["query_char_count"] = len(prompt) if prompt else 0
+            _retrieval_meta["session_id"] = _session_id or ""
+            Path(os.path.expanduser("~/.claude/last-retrieval-meta.json")).write_text(
+                json.dumps(_retrieval_meta)
             )
         except Exception:
             pass

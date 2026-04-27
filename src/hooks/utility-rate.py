@@ -244,6 +244,66 @@ def _read_stop_stdin() -> dict:
         return {}
 
 
+# ── retrieval_event schema (data flywheel — privacy-safe, local-first) ──────
+_RETRIEVAL_EVENTS_LOG = HOME / ".claude" / "ctx-retrieval-events.jsonl"
+_RETRIEVAL_META_PATH = HOME / ".claude" / "last-retrieval-meta.json"
+_RETRIEVAL_EVENT_SCHEMA = "v1"
+
+_HOOK_SOURCE_MAP = {
+    "g1_decisions": "G1",
+    "g2_docs": "G2_DOCS",
+    "g2_prefetch": "G2_CODE",
+    "chat_memory": "CM",
+}
+
+
+def _write_retrieval_events(session_id, by_block, hits_by_mode, semantic_available, inj):
+    """Write one retrieval_event record per active block to ctx-retrieval-events.jsonl.
+
+    Privacy contract: no text, no query content, no file names — only numeric +
+    categorical fields. Follows flywheel research schema (20260427-ctx-user-data-flywheel).
+    """
+    import hashlib
+    try:
+        meta = {}
+        if _RETRIEVAL_META_PATH.exists():
+            try:
+                meta = json.loads(_RETRIEVAL_META_PATH.read_text())
+            except Exception:
+                pass
+
+        ts_now = time.time()
+        ts_unix_hour = int(ts_now / 3600)
+        # Anonymize session_id — keep local correlation but non-reversible
+        sid_hash = hashlib.sha256(session_id.encode()).hexdigest()[:16] if session_id else "unknown"
+
+        for block, counts in by_block.items():
+            hook_source = _HOOK_SOURCE_MAP.get(block, block.upper())
+            block_meta = meta.get("blocks", {}).get(block, {})
+            total = counts.get("total", 0)
+            cited = counts.get("referenced", 0)
+
+            record = {
+                "schema_version": _RETRIEVAL_EVENT_SCHEMA,
+                "ts_unix_hour": ts_unix_hour,
+                "session_id_hash": sid_hash,
+                "hook_source": hook_source,
+                "query_char_count": meta.get("query_char_count", inj.get("prompt_len", 0)),
+                "candidates_returned": block_meta.get("candidates"),
+                "retrieval_method": block_meta.get("retrieval_method", "UNKNOWN"),
+                "duration_ms": block_meta.get("duration_ms"),
+                "total_injected": total,
+                "total_cited": cited,
+                "utility_rate": round(cited / total, 4) if total > 0 else 0.0,
+                "vec_daemon_up": meta.get("vec_daemon_up", semantic_available),
+                "bge_daemon_up": meta.get("bge_daemon_up", False),
+            }
+            with open(_RETRIEVAL_EVENTS_LOG, "a", encoding="utf-8") as f:
+                f.write(json.dumps(record) + "\n")
+    except Exception:
+        pass
+
+
 def main():
     if not LAST_INJECT.exists():
         return
@@ -399,6 +459,15 @@ def main():
         "tool_params_len": len(tool_params),
         "semantic_available": semantic_available,
     })
+
+    # ── retrieval_event: structured telemetry schema (flywheel data asset) ──
+    _write_retrieval_events(
+        session_id=stop_input.get("session_id", ""),
+        by_block=by_block,
+        hits_by_mode=hits_by_mode,
+        semantic_available=semantic_available,
+        inj=inj,
+    )
 
     # ── Wow-trigger: specific-old-recall + high-utility, fired once ever ──
     if total > 0:

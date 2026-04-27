@@ -1,0 +1,121 @@
+#!/usr/bin/env python3
+"""
+ctx-telemetry — preview CTX retrieval_event telemetry before any upload.
+
+Shows what data CTX has collected locally. No network activity.
+Run with --upload to see what would be sent (not yet implemented — Stage 2).
+
+Usage:
+    ctx-telemetry          # summary of collected events
+    ctx-telemetry --last   # last 10 events in detail
+    ctx-telemetry --clear  # delete local log (irreversible)
+
+Privacy: retrieval_event records contain only numeric + categorical fields.
+No query text, no file names, no code content ever leaves this log.
+"""
+import argparse
+import json
+import sys
+from collections import defaultdict
+from pathlib import Path
+
+LOG = Path.home() / ".claude" / "ctx-retrieval-events.jsonl"
+
+
+def load_events():
+    if not LOG.exists():
+        return []
+    events = []
+    with open(LOG, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                events.append(json.loads(line))
+            except Exception:
+                pass
+    return events
+
+
+def print_summary(events):
+    if not events:
+        print("No retrieval_event records yet.")
+        print(f"Records are written by utility-rate.py (Stop hook) when CTX injects context.")
+        print(f"Log path: {LOG}")
+        return
+
+    total = len(events)
+    by_source = defaultdict(lambda: {"count": 0, "utility_sum": 0, "cited": 0, "injected": 0})
+    by_method = defaultdict(int)
+    vec_up_count = sum(1 for e in events if e.get("vec_daemon_up"))
+    bge_up_count = sum(1 for e in events if e.get("bge_daemon_up"))
+
+    for e in events:
+        src = e.get("hook_source", "?")
+        by_source[src]["count"] += 1
+        by_source[src]["utility_sum"] += e.get("utility_rate", 0)
+        by_source[src]["cited"] += e.get("total_cited", 0)
+        by_source[src]["injected"] += e.get("total_injected", 0)
+        by_method[e.get("retrieval_method", "UNKNOWN")] += 1
+
+    print(f"\nCTX Retrieval Telemetry — {total} session-turn records")
+    print(f"Log: {LOG}")
+    print(f"Semantic layer: vec-daemon up {vec_up_count}/{total} turns | bge-daemon up {bge_up_count}/{total} turns")
+    print()
+    print(f"{'Block':<14} {'Turns':>6} {'Avg Util%':>10} {'Total Cited':>12} {'Total Injected':>15}")
+    print("-" * 62)
+    for src, d in sorted(by_source.items()):
+        avg = d["utility_sum"] / d["count"] * 100 if d["count"] > 0 else 0
+        print(f"{src:<14} {d['count']:>6} {avg:>9.1f}% {d['cited']:>12} {d['injected']:>15}")
+
+    print()
+    print("Retrieval method distribution:")
+    for method, count in sorted(by_method.items(), key=lambda x: -x[1]):
+        pct = count / total * 100
+        print(f"  {method:<12} {count:>5}  ({pct:.1f}%)")
+
+    print()
+    print("Note: This data is local-only. No upload has occurred.")
+    print("      Stage 2 (opt-in upload pipeline) not yet implemented.")
+
+
+def print_last(events, n=10):
+    if not events:
+        print("No records.")
+        return
+    print(f"\nLast {min(n, len(events))} retrieval_event records:\n")
+    for e in events[-n:]:
+        hr = e.get("ts_unix_hour", 0)
+        ts_approx = f"~{hr}h"
+        print(f"  [{ts_approx}] {e.get('hook_source','?'):10} "
+              f"method={e.get('retrieval_method','?'):8} "
+              f"injected={e.get('total_injected',0):2} cited={e.get('total_cited',0):2} "
+              f"util={e.get('utility_rate',0)*100:4.0f}%  "
+              f"vec={'✓' if e.get('vec_daemon_up') else '✗'}  bge={'✓' if e.get('bge_daemon_up') else '✗'}")
+
+
+def main():
+    parser = argparse.ArgumentParser(description="CTX retrieval telemetry preview")
+    parser.add_argument("--last", action="store_true", help="Show last 10 events in detail")
+    parser.add_argument("--clear", action="store_true", help="Delete local telemetry log")
+    args = parser.parse_args()
+
+    if args.clear:
+        if LOG.exists():
+            LOG.unlink()
+            print(f"Deleted {LOG}")
+        else:
+            print("No log to delete.")
+        return
+
+    events = load_events()
+
+    if args.last:
+        print_last(events)
+    else:
+        print_summary(events)
+
+
+if __name__ == "__main__":
+    main()
