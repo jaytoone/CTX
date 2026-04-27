@@ -439,6 +439,13 @@ def _accumulate_session_aggregate(session_id, by_block, utility_rate):
                 agg["vault_entry_count"] = vault_count
             if index_staleness is not None:
                 agg["index_staleness_hours"] = index_staleness
+            bm25_sum = state.get("top_score_bm25_sum", 0.0)
+            bm25_count = state.get("top_score_bm25_count", 0)
+            if bm25_count > 0:
+                agg["mean_top_score_bm25"] = round(bm25_sum / bm25_count, 4)
+            qt_hist = state.get("query_type_hist", {})
+            if qt_hist:
+                agg["query_type_hist"] = qt_hist
             with open(_SESSION_AGGREGATES_LOG, "a", encoding="utf-8") as f:
                 f.write(json.dumps(agg) + "\n")
             state = {}
@@ -460,14 +467,23 @@ def _accumulate_session_aggregate(session_id, by_block, utility_rate):
             src_hist[src] = src_hist.get(src, 0) + 1
         state["hook_source_hist"] = src_hist
 
-        # Retrieval method histogram from meta file
+        # Retrieval method histogram + query_type histogram + mean_top_score_bm25
         try:
             meta = json.loads(_RETRIEVAL_META_PATH.read_text()) if _RETRIEVAL_META_PATH.exists() else {}
             meth_hist = state.get("retrieval_method_hist", {})
+            qt_hist = state.get("query_type_hist", {})
             for bdata in meta.get("blocks", {}).values():
                 method = bdata.get("retrieval_method", "UNKNOWN")
                 meth_hist[method] = meth_hist.get(method, 0) + 1
+                qt = bdata.get("query_type")
+                if qt and qt != "UNKNOWN":
+                    qt_hist[qt] = qt_hist.get(qt, 0) + 1
+                top_bm25 = bdata.get("top_score_bm25")
+                if top_bm25 is not None:
+                    state["top_score_bm25_sum"] = state.get("top_score_bm25_sum", 0.0) + top_bm25
+                    state["top_score_bm25_count"] = state.get("top_score_bm25_count", 0) + 1
             state["retrieval_method_hist"] = meth_hist
+            state["query_type_hist"] = qt_hist
         except Exception:
             pass
 

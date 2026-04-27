@@ -62,10 +62,12 @@ Maps every schema v1.5 field to its flywheel role and current collection status.
 | `session_outcome` | Population | NORMAL/SHORT session classification | ✅ v1 |
 | `vault_entry_count` | Context | chat memory corpus size | ✅ v1.4+ |
 | `index_staleness_hours` | Context | code-graph freshness | ✅ v1.4+ |
+| `mean_top_score_bm25` | **Causal** | session-avg BM25 quality score | ✅ v1.5 iter 68 |
+| `query_type_hist` | Context | KEYWORD/SEMANTIC/TEMPORAL turn counts | ✅ v1.5 iter 68 |
 
-**Missing from session_aggregate (future):**
-- `mean_top_score_bm25` — session average of BM25 quality scores (would enable session-level causal analysis)
-- `query_type_hist` — KEYWORD/SEMANTIC/TEMPORAL breakdown per session
+**Additions in iter 68:**
+- `mean_top_score_bm25` — session average of BM25 quality scores → session-level causal analysis ✅ added
+- `query_type_hist` — KEYWORD/SEMANTIC/TEMPORAL turn counts per session ✅ added
 
 ---
 
@@ -129,9 +131,18 @@ Stage 2 cross-user loop is **structurally ready** (upload pipeline + k-anonymity
 | v0.2.5 | top_score_bm25/dense G1 causal signal; calibrate r-analysis |
 | v0.2.6 | G2-DOCS top_score capture; cmd_tune hybrid_upgrade_hint |
 | v0.2.7 | Schema version alignment; README hybrid_upgrade_hint docs |
+| v0.2.8 | session_aggregate: mean_top_score_bm25 + query_type_hist (session-level causal) |
 
 ---
-
-## Related
 - [20260427-ctx-user-data-flywheel-strategy.md](20260427-ctx-user-data-flywheel-strategy.md) — full strategy
 - [20260427-ctx-telemetry-implementation.md](20260427-ctx-telemetry-implementation.md) — implementation log
+
+## Related
+- [[projects/CTX/research/20260427-ctx-user-data-flywheel-strategy|20260427-ctx-user-data-flywheel-strategy]]
+- [[projects/CTX/research/20260426-g2-docs-hybrid-dense-retrieval|20260426-g2-docs-hybrid-dense-retrieval]]
+- [[projects/CTX/research/20260426-g1-hybrid-rrf-dense-retrieval|20260426-g1-hybrid-rrf-dense-retrieval]]
+- [[projects/CTX/research/20260410-session-6c4f589e-chat-memory|20260410-session-6c4f589e-chat-memory]]
+- [[projects/CTX/research/20260409-bm25-memory-generalization-research|20260409-bm25-memory-generalization-research]]
+- [[projects/CTX/research/20260402-production-context-retrieval-research|20260402-production-context-retrieval-research]]
+- [[projects/CTX/research/20260411-chat-memory-threshold-principled|20260411-chat-memory-threshold-principled]]
+- [[projects/CTX/research/20260411-hook-comparison-auto-index-vs-chat-memory|20260411-hook-comparison-auto-index-vs-chat-memory]]
