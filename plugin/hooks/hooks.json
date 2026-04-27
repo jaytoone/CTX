@@ -1,0 +1,70 @@
+{
+  "description": "CTX hook registrations. Hooks run from ~/.claude/hooks/ (installed by setup.sh via ctx-install). SessionStart vec-daemon is the only hook that uses CLAUDE_PLUGIN_ROOT.",
+  "hooks": {
+    "Setup": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'python3 -m venv \"${CLAUDE_PLUGIN_ROOT}/.ctx-venv\" 2>/dev/null; PY=\"${CLAUDE_PLUGIN_ROOT}/.ctx-venv/bin/python3\"; $PY -m pip install --quiet ctx-retriever rank_bm25 numpy sqlite-vec 2>/dev/null; $PY -m ctx_retriever.cli.install 2>/dev/null || echo \"[CTX] ctx-install complete\"'",
+            "timeout": 120
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'python3 -c \"import socket,os; s=socket.socket(socket.AF_UNIX); s.settimeout(0.3); s.connect(os.path.expanduser(\\\"~/.local/share/claude-vault/vec-daemon.sock\\\"))\" 2>/dev/null || { rm -f $HOME/.local/share/claude-vault/vec-daemon.sock; nohup python3 $HOME/.local/share/claude-vault/vec-daemon.py > /tmp/vec-daemon.log 2>&1 & }'",
+            "async": true
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "CHAT_MEMORY_SCOPE=global python3 \"$HOME/.claude/hooks/chat-memory.py\""
+          },
+          {
+            "type": "command",
+            "command": "python3 \"$HOME/.claude/hooks/bm25-memory.py\" --rich"
+          },
+          {
+            "type": "command",
+            "command": "python3 \"$HOME/.claude/hooks/memory-keyword-trigger.py\""
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Grep",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$HOME/.claude/hooks/g2-fallback.py\""
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$HOME/.claude/hooks/utility-rate.py\"",
+            "async": true
+          }
+        ]
+      }
+    ]
+  }
+}
