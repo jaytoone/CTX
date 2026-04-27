@@ -379,6 +379,32 @@ def _is_decision(subject):
     return any(kw.lower() in sl for kw in _DECISION_KEYWORDS)
 
 
+# ── query_type classification (for retrieval_event schema v1.1) ──────────────
+_TEMPORAL_KW = frozenset([
+    "when", "history", "timeline", "progression", "what happened", "progress",
+    "previously", "before", "after", "last time", "since", "ago", "recent",
+    "changed", "evolution", "how long", "session", "yesterday", "last week",
+    "진행", "역사", "이전", "지난", "타임라인", "최근", "변경", "이번",
+])
+
+def _classify_query_type(prompt: str) -> str:
+    """Classify prompt into TEMPORAL / KEYWORD / SEMANTIC.
+
+    TEMPORAL  — query is about history/timeline/progression
+    KEYWORD   — short technical lookup (≤60 chars) or pure symbol/identifier
+    SEMANTIC  — natural language conceptual query (default)
+    """
+    if not prompt:
+        return "KEYWORD"
+    pl = prompt.lower()
+    if any(kw in pl for kw in _TEMPORAL_KW):
+        return "TEMPORAL"
+    words = pl.split()
+    if len(words) <= 6:
+        return "KEYWORD"
+    return "SEMANTIC"
+
+
 def get_git_head(project_dir):
     try:
         r = subprocess.run(
@@ -1429,6 +1455,7 @@ def main():
                 "returned": len(relevant),
                 "retrieval_method": "HYBRID" if (_VEC_SOCK.exists() and not _VEC_DISABLED) else "BM25",
                 "duration_ms": int((_time.perf_counter() - _t_g1) * 1000),
+                "query_type": _classify_query_type(prompt),
             }
             # Citation probe: log G1 retrieved nodes
             log_retrieved_nodes(project_dir, _session_id, prompt, "g1_decisions", [
@@ -1472,6 +1499,7 @@ def main():
                 "returned": len(doc_chunks),
                 "retrieval_method": "HYBRID" if (_VEC_SOCK.exists() and not _VEC_DISABLED) else "BM25",
                 "duration_ms": int((_time.perf_counter() - _t_g2d) * 1000),
+                "query_type": _classify_query_type(prompt),
             }
             # Citation probe: log G2-DOCS retrieved nodes
             log_retrieved_nodes(project_dir, _session_id, prompt, "g2_docs", [

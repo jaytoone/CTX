@@ -247,7 +247,7 @@ def _read_stop_stdin() -> dict:
 # ── retrieval_event schema (data flywheel — privacy-safe, local-first) ──────
 _RETRIEVAL_EVENTS_LOG = HOME / ".claude" / "ctx-retrieval-events.jsonl"
 _RETRIEVAL_META_PATH = HOME / ".claude" / "last-retrieval-meta.json"
-_RETRIEVAL_EVENT_SCHEMA = "v1"
+_RETRIEVAL_EVENT_SCHEMA = "v1.1"
 
 _HOOK_SOURCE_MAP = {
     "g1_decisions": "G1",
@@ -288,6 +288,7 @@ def _write_retrieval_events(session_id, by_block, hits_by_mode, semantic_availab
                 "ts_unix_hour": ts_unix_hour,
                 "session_id_hash": sid_hash,
                 "hook_source": hook_source,
+                "query_type": block_meta.get("query_type", "UNKNOWN"),
                 "query_char_count": meta.get("query_char_count", inj.get("prompt_len", 0)),
                 "candidates_returned": block_meta.get("candidates"),
                 "retrieval_method": block_meta.get("retrieval_method", "UNKNOWN"),

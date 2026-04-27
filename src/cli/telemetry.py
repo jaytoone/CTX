@@ -37,18 +37,28 @@ def cmd_summary(args):
     total = len(events)
     by_source = defaultdict(lambda: {"count": 0, "utility_sum": 0, "cited": 0, "injected": 0})
     by_method = defaultdict(int)
+    # query_type × hook_source cross-tab (core moat metric per flywheel research)
+    by_qtype = defaultdict(lambda: {"count": 0, "utility_sum": 0})
+    by_src_qtype = defaultdict(lambda: defaultdict(lambda: {"count": 0, "utility_sum": 0}))
     vec_up = sum(1 for e in events if e.get("vec_daemon_up"))
     bge_up = sum(1 for e in events if e.get("bge_daemon_up"))
+    has_qtype = any(e.get("query_type") not in (None, "UNKNOWN") for e in events)
 
     for e in events:
         src = e.get("hook_source", "?")
+        qt = e.get("query_type", "UNKNOWN")
+        ur = e.get("utility_rate", 0)
         by_source[src]["count"] += 1
-        by_source[src]["utility_sum"] += e.get("utility_rate", 0)
+        by_source[src]["utility_sum"] += ur
         by_source[src]["cited"] += e.get("total_cited", 0)
         by_source[src]["injected"] += e.get("total_injected", 0)
         by_method[e.get("retrieval_method", "UNKNOWN")] += 1
+        by_qtype[qt]["count"] += 1
+        by_qtype[qt]["utility_sum"] += ur
+        by_src_qtype[src][qt]["count"] += 1
+        by_src_qtype[src][qt]["utility_sum"] += ur
 
-    print(f"\nCTX Retrieval Telemetry — {total} session-turn records")
+    print(f"\nCTX Retrieval Telemetry — {total} session-turn records (schema v1.1)")
     print(f"Log: {LOG}")
     print(f"Semantic layer: vec-daemon up {vec_up}/{total} | bge-daemon up {bge_up}/{total}")
     print()
@@ -62,6 +72,25 @@ def cmd_summary(args):
     print("Retrieval method distribution:")
     for method, count in sorted(by_method.items(), key=lambda x: -x[1]):
         print(f"  {method:<12} {count:>5}  ({count / total * 100:.1f}%)")
+
+    if has_qtype:
+        print()
+        print("Query type × utility_rate (moat metric):")
+        print(f"  {'QueryType':<12} {'Turns':>6} {'Avg Util%':>10}")
+        print("  " + "-" * 32)
+        for qt, d in sorted(by_qtype.items(), key=lambda x: -x[1]["count"]):
+            avg = d["utility_sum"] / d["count"] * 100 if d["count"] > 0 else 0
+            print(f"  {qt:<12} {d['count']:>6} {avg:>9.1f}%")
+        print()
+        print("  Block × query_type utility breakdown:")
+        for src in sorted(by_src_qtype):
+            qtd = by_src_qtype[src]
+            parts = []
+            for qt in sorted(qtd):
+                d = qtd[qt]
+                avg = d["utility_sum"] / d["count"] * 100 if d["count"] > 0 else 0
+                parts.append(f"{qt}={avg:.0f}%({d['count']})")
+            print(f"  {src:<10} {' | '.join(parts)}")
 
     agg_events = _load(AGG_LOG)
     if agg_events:
