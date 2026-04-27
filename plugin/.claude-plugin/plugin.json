@@ -1,6 +1,6 @@
 {
   "name": "ctx",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Cross-session memory for Claude Code — honest utility-measured context bootstrapper. G1 (decision timeline from git log) + G2 (docs/code search) with BM25 + optional vec-daemon semantic rerank. Visible failure warnings when components degrade.",
   "author": {
     "name": "jaytoone",
