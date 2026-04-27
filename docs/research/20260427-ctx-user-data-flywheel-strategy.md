@@ -155,6 +155,37 @@ BM25 term frequency distributions → project type cluster IDs (Next.js/Supabase
 
 ---
 
+---
+
+## Implementation Status (v0.3.1, live-inf iters 50–73)
+
+### Recommendations Progress
+
+| # | Recommendation | Status | Notes |
+|---|---------------|--------|-------|
+| 1 | Run utility_rate calibration study | ✅ | `ctx-telemetry calibrate`: Pearson r(top_score_bm25, utility_rate) — resolves "citation bias unresolved" caveat |
+| 2 | Instrument all hooks with retrieval_event schema | ✅ | bm25-memory.py (G1+G2-DOCS) + chat-memory.py (CM) + utility-rate.py all instrument. schema v1.5 |
+| 3 | `ctx telemetry preview` + published schema | ✅ | `ctx-telemetry consent grant` shows full field list; README schema table published; Stage 2 dry-run |
+| 4 | Minimal upload pipeline (k-anonymized session_aggregate) | ✅ | `cmd_upload` with k-anonymity gate + consent check; endpoint placeholder pending activation |
+| 5 | Positioning: local-first memory moat | ✅ | README framing confirmed; auto-tune flywheel badge reinforces it |
+
+### Schema Gaps (strategy vs. v0.3.1)
+
+| Field | Strategy status | Implementation status | Priority |
+|-------|----------------|----------------------|----------|
+| `project_type_id` | Planned (cluster ID) | **Not implemented** | Stage 2 prerequisite (need cross-user aggregation to train cluster model) |
+| `node_type_dist` | Planned (`{"commit":3,"doc":1}`) | **Not implemented** | Adds injection type richness; can be derived from hook_source_hist if CM tagged |
+| `cited_node_types` | Planned | **Not implemented** | Requires per-node citation tracking (beyond current binary cited/not) |
+| `session_outcome` | NORMAL / ABANDONED / SHORT | NORMAL / SHORT only | ABANDONED state (user never responded) not yet detected |
+
+### Caveats Update
+
+- **Citation bias**: **RESOLVED** in v1.5 — `top_score_bm25 × utility_rate` Pearson r in `ctx-telemetry calibrate` directly measures causal vs. bias. r > 0.30 = healthy flywheel.
+- **Cold start problem**: Still true — < 1,000 opt-in sessions. Current priority remains instrumentation completeness.
+- **Consent infrastructure gap**: **RESOLVED** — `ctx-telemetry consent grant` with interactive preview, schema published in README.
+- **Backend engineering**: Still unresolved — upload endpoint not activated. Data collection is complete; aggregation infrastructure remains.
+- **Legal**: Still requires review before any upload activation.
+
 ## Sources
 - [Cursor vs GitHub Copilot 2026 — data flywheel dynamics](https://digidai.github.io/2026/02/08/cursor-vs-github-copilot-ai-coding-tools-deep-comparison/)
 - [Sourcegraph telemetry spec — numeric-only, anonymized](https://sourcegraph.com/docs/admin/telemetry)
@@ -166,3 +197,13 @@ BM25 term frequency distributions → project type cluster IDs (Next.js/Supabase
 - GDPR guidance on hashed machine identifiers
 - Claude citation position/recency bias documentation
 - Whether retrieval_method schema stability can be guaranteed across bm25-memory.py versions
+
+## Related
+- [[projects/CTX/research/20260421-ctx-monetization-session-summary|20260421-ctx-monetization-session-summary]]
+- [[projects/CTX/research/20260427-ctx-plugin-distribution-research|20260427-ctx-plugin-distribution-research]]
+- [[projects/CTX/research/20260426-retrieval-node-relevance-verification|20260426-retrieval-node-relevance-verification]]
+- [[projects/CTX/research/20260410-session-6c4f589e-chat-memory|20260410-session-6c4f589e-chat-memory]]
+- [[projects/CTX/research/20260411-hook-comparison-auto-index-vs-chat-memory|20260411-hook-comparison-auto-index-vs-chat-memory]]
+- [[projects/CTX/research/20260409-bm25-memory-generalization-research|20260409-bm25-memory-generalization-research]]
+- [[projects/CTX/research/20260402-production-context-retrieval-research|20260402-production-context-retrieval-research]]
+- [[projects/CTX/research/20260411-chat-memory-threshold-principled|20260411-chat-memory-threshold-principled]]
