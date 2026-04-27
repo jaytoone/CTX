@@ -2,6 +2,7 @@
 
 | 파일 | 설명 |
 |------|------|
+| [research/20260427-ctx-data-asset-status-v035.md](research/20260427-ctx-data-asset-status-v035.md) | CTX pre-monetization data asset status (v0.3.5, 2026-04-27) — investor-facing capstone: BEFORE/AFTER comparison, 4-axis flywheel schema, competitive moat vs Cursor/Copilot, Stage 1/2/3 roadmap, open risks, next priorities. Stage 1 closed. |
 | [research/20260427-ctx-flywheel-data-coverage.md](research/20260427-ctx-flywheel-data-coverage.md) | CTX data flywheel field coverage map (v1.5, 2026-04-27) — every schema field mapped to flywheel axis (Quality/Causal/Context/Population), collection status, gaps (CM block missing BM25 top_score), auto-tune output fields documented, loop completeness diagram. |
 | [research/20260427-ctx-telemetry-implementation.md](research/20260427-ctx-telemetry-implementation.md) | CTX telemetry Stage 1 implementation (2026-04-27, live-inf iters 50–64, released v0.2.7) — schema v1.5: top_score_bm25 + top_score_dense causal calibration. CLI calibrate r-analysis, cmd_tune causal weighting. Full alignment across upload/consent/README. |
 | [research/20260427-ctx-user-data-flywheel-strategy.md](research/20260427-ctx-user-data-flywheel-strategy.md) | CTX user data flywheel strategy pre-monetization — retrieval_event + session_aggregate schema, 3-stage flywheel (0→1k→10k sessions), numeric-only privacy aggregation, utility_rate calibration requirement. |
