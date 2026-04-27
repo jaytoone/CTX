@@ -94,6 +94,10 @@ try:
 except Exception:
     pass
 
+# Retrieval score capture: populated by bm25_rank_decisions / dense_rank_decisions
+# so callers can read top_score_bm25 / top_score_dense without signature changes.
+_last_retrieval_scores: dict = {}
+
 # bge-daemon: BGE cross-encoder served over Unix socket (same pattern as vec-daemon).
 # Hook stays fast because the 7s model load happens ONCE in the daemon, not per
 # UserPromptSubmit. Default ON; disable via CTX_CROSS_ENCODER=0 if daemon is down
@@ -561,6 +565,7 @@ def dense_rank_decisions(corpus, query, top_k=20):
     if not scored:
         return []
     scored.sort(key=lambda x: -x[0])
+    _last_retrieval_scores["dense_top"] = float(scored[0][0])
     return [item for _, item in scored[:top_k]]
 
 
@@ -636,6 +641,7 @@ def bm25_rank_decisions(corpus, query, top_k=7, min_score=0.5,
         return []
 
     top_score = float(max(scores))
+    _last_retrieval_scores["bm25_top"] = top_score
     adaptive_floor = max(min_score, top_score * adaptive_floor_ratio)
 
     ranked_idx = sorted(range(len(corpus)), key=lambda i: scores[i], reverse=True)
@@ -1450,6 +1456,7 @@ def main():
             # If TEMPORAL utility is 10pp below KEYWORD, reduce top_k to inject only best matches
             if _qtype_now == "TEMPORAL" and _temporal_gap > 0.10:
                 _g1_top_k = 5  # more selective for low-utility temporal queries
+        _last_retrieval_scores.clear()
         relevant = hybrid_rank_decisions(corpus, prompt, top_k=_g1_top_k)
         if relevant:
             # Build forced display header (mechanically injected, not advisory)
@@ -1471,13 +1478,18 @@ def main():
                 "duration_ms": int((_time.perf_counter() - _t_g1) * 1000),
             })
             _blocks_fired.append("g1")
-            _retrieval_meta["blocks"]["g1_decisions"] = {
+            _g1_meta: dict = {
                 "candidates": len(corpus),
                 "returned": len(relevant),
                 "retrieval_method": "HYBRID" if (_VEC_SOCK.exists() and not _VEC_DISABLED) else "BM25",
                 "duration_ms": int((_time.perf_counter() - _t_g1) * 1000),
                 "query_type": _classify_query_type(prompt),
             }
+            if "bm25_top" in _last_retrieval_scores:
+                _g1_meta["top_score_bm25"] = round(_last_retrieval_scores["bm25_top"], 4)
+            if "dense_top" in _last_retrieval_scores:
+                _g1_meta["top_score_dense"] = round(_last_retrieval_scores["dense_top"], 4)
+            _retrieval_meta["blocks"]["g1_decisions"] = _g1_meta
             # Citation probe: log G1 retrieved nodes
             log_retrieved_nodes(project_dir, _session_id, prompt, "g1_decisions", [
                 {"id": c.get("hash", c["subject"][:20]), "text": c["subject"], "date": c.get("date", "")}

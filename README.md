@@ -326,6 +326,8 @@ All data stays on your machine at `~/.claude/ctx-retrieval-events.jsonl`. Nothin
 | `vec_daemon_up` | bool | Whether semantic layer was active |
 | `bge_daemon_up` | bool | Whether cross-encoder reranker was active |
 | `duration_ms` | int | Per-block retrieval latency |
+| `top_score_bm25` | float\|null | Max BM25 score — causal calibration signal (v1.5) |
+| `top_score_dense` | float\|null | Max cosine similarity score (v1.5) |
 
 ### What is NOT collected
 

@@ -247,7 +247,7 @@ def _read_stop_stdin() -> dict:
 # ── retrieval_event schema (data flywheel — privacy-safe, local-first) ──────
 _RETRIEVAL_EVENTS_LOG = HOME / ".claude" / "ctx-retrieval-events.jsonl"
 _RETRIEVAL_META_PATH = HOME / ".claude" / "last-retrieval-meta.json"
-_RETRIEVAL_EVENT_SCHEMA = "v1.4"
+_RETRIEVAL_EVENT_SCHEMA = "v1.5"
 _USER_ID_CACHE = HOME / ".claude" / "ctx-user-id.hash"
 
 
@@ -383,6 +383,8 @@ def _write_retrieval_events(session_id, by_block, hits_by_mode, semantic_availab
                 "session_turn_index": session_turn_index,
                 "vec_daemon_up": meta.get("vec_daemon_up", semantic_available),
                 "bge_daemon_up": meta.get("bge_daemon_up", False),
+                "top_score_bm25": block_meta.get("top_score_bm25"),
+                "top_score_dense": block_meta.get("top_score_dense"),
             }
             with open(_RETRIEVAL_EVENTS_LOG, "a", encoding="utf-8") as f:
                 f.write(json.dumps(record) + "\n")

@@ -59,7 +59,7 @@ def cmd_summary(args):
         by_src_qtype[src][qt]["count"] += 1
         by_src_qtype[src][qt]["utility_sum"] += ur
 
-    print(f"\nCTX Retrieval Telemetry — {total} session-turn records (schema v1.1)")
+    print(f"\nCTX Retrieval Telemetry — {total} session-turn records (schema v1.5)")
     print(f"Log: {LOG}")
     print(f"Semantic layer: vec-daemon up {vec_up}/{total} | bge-daemon up {bge_up}/{total}")
     print()
@@ -198,6 +198,39 @@ def cmd_calibrate(args):
         else:
             flags.append(("OK", f"volume variance={vol_range*100:.1f}pp", "utility varies with injection volume — healthy signal"))
 
+    # top_score correlation analysis (v1.5+)
+    score_pairs_bm25 = [(e["top_score_bm25"], e.get("utility_rate", 0.0))
+                        for e in events
+                        if e.get("top_score_bm25") is not None]
+    score_pairs_dense = [(e["top_score_dense"], e.get("utility_rate", 0.0))
+                         for e in events
+                         if e.get("top_score_dense") is not None]
+    if len(score_pairs_bm25) >= 10:
+        xs = [p[0] for p in score_pairs_bm25]
+        ys = [p[1] for p in score_pairs_bm25]
+        xm, ym = sum(xs) / len(xs), sum(ys) / len(ys)
+        cov = sum((x - xm) * (y - ym) for x, y in zip(xs, ys)) / len(xs)
+        sx = (sum((x - xm) ** 2 for x in xs) / len(xs)) ** 0.5
+        sy = (sum((y - ym) ** 2 for y in ys) / len(ys)) ** 0.5
+        r_bm25 = cov / (sx * sy) if sx > 0 and sy > 0 else 0.0
+        print(f"\nRetrieval quality → utility correlation (v1.5 causal signal):")
+        print(f"  BM25 top_score × utility_rate: r={r_bm25:+.3f}  (n={len(score_pairs_bm25)})")
+        if len(score_pairs_dense) >= 10:
+            xs2 = [p[0] for p in score_pairs_dense]
+            ys2 = [p[1] for p in score_pairs_dense]
+            xm2, ym2 = sum(xs2) / len(xs2), sum(ys2) / len(ys2)
+            cov2 = sum((x - xm2) * (y - ym2) for x, y in zip(xs2, ys2)) / len(xs2)
+            sx2 = (sum((x - xm2) ** 2 for x in xs2) / len(xs2)) ** 0.5
+            sy2 = (sum((y - ym2) ** 2 for y in ys2) / len(ys2)) ** 0.5
+            r_dense = cov2 / (sx2 * sy2) if sx2 > 0 and sy2 > 0 else 0.0
+            print(f"  Dense top_score × utility_rate: r={r_dense:+.3f}  (n={len(score_pairs_dense)})")
+        if r_bm25 > 0.30:
+            flags.append(("OK", f"BM25 score→utility r={r_bm25:.2f}", "retrieval quality predicts utility — flywheel signal is causal"))
+        elif r_bm25 < 0.10:
+            flags.append(("WARN", f"BM25 score→utility r={r_bm25:.2f}", "weak correlation — utility may reflect position bias, not quality"))
+    elif any(e.get("schema_version", "") >= "v1.5" for e in events):
+        print("\nRetrieval quality correlation: need ≥10 v1.5 records with BM25 scores to analyze.")
+
     print(f"\nCalibration flags ({len([f for f in flags if f[0]=='WARN'])} warnings, {len([f for f in flags if f[0]=='OK'])} OK):")
     for status, label, detail in flags:
         icon = "⚠" if status == "WARN" else "✓"
@@ -222,7 +255,7 @@ def cmd_calibrate(args):
 
 AUTO_TUNE_FILE = Path.home() / ".claude" / "ctx-auto-tune.json"
 CONSENT_FILE = Path.home() / ".claude" / "ctx-telemetry-consent.json"
-_CONSENT_SCHEMA_VERSION = "v1.4"
+_CONSENT_SCHEMA_VERSION = "v1.5"
 
 
 def cmd_tune(args):
