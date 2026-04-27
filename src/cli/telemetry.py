@@ -59,7 +59,7 @@ def cmd_summary(args):
         by_src_qtype[src][qt]["count"] += 1
         by_src_qtype[src][qt]["utility_sum"] += ur
 
-    print(f"\nCTX Retrieval Telemetry — {total} session-turn records (schema v1.5)")
+    print(f"\nCTX Retrieval Telemetry — {total} session-turn records (schema v1.6)")
     print(f"Log: {LOG}")
     print(f"Semantic layer: vec-daemon up {vec_up}/{total} | bge-daemon up {bge_up}/{total}")
     print()
@@ -92,6 +92,18 @@ def cmd_summary(args):
                 avg = d["utility_sum"] / d["count"] * 100 if d["count"] > 0 else 0
                 parts.append(f"{qt}={avg:.0f}%({d['count']})")
             print(f"  {src:<10} {' | '.join(parts)}")
+
+    # Node type distribution (v1.6+) — commit/doc/chat/code mix
+    by_ntype: dict = {}
+    for e in events:
+        for nt, cnt in (e.get("node_type_dist") or {}).items():
+            by_ntype[nt] = by_ntype.get(nt, 0) + cnt
+    if by_ntype:
+        total_nodes = sum(by_ntype.values())
+        print()
+        print("Injected node types (v1.6):")
+        for nt, cnt in sorted(by_ntype.items(), key=lambda x: -x[1]):
+            print(f"  {nt:<10} {cnt:>5} nodes  ({cnt / total_nodes * 100:.0f}%)")
 
     agg_events = _load(AGG_LOG)
     if agg_events:
@@ -304,7 +316,7 @@ def cmd_calibrate(args):
 
 AUTO_TUNE_FILE = Path.home() / ".claude" / "ctx-auto-tune.json"
 CONSENT_FILE = Path.home() / ".claude" / "ctx-telemetry-consent.json"
-_CONSENT_SCHEMA_VERSION = "v1.5"
+_CONSENT_SCHEMA_VERSION = "v1.6"
 
 
 def cmd_tune(args):
@@ -494,7 +506,7 @@ def cmd_upload(args):
         print("Consent file corrupted. Run: ctx-telemetry consent grant")
         return
 
-    _CURRENT_SCHEMA = "v1.5"
+    _CURRENT_SCHEMA = "v1.6"
     if consent.get("schema_version") != _CURRENT_SCHEMA:
         print(f"Consent was for schema {consent.get('schema_version')}, current is {_CURRENT_SCHEMA}.")
         print("Re-run: ctx-telemetry consent grant")
@@ -577,11 +589,11 @@ def cmd_upload(args):
         import urllib.request as _req
         import urllib.error as _err
         payload = [r for _, r in eligible]
-        data = json.dumps({"rows": payload, "client_version": "v1.5"}).encode()
+        data = json.dumps({"rows": payload, "client_version": "v1.6""}).encode()
         req = _req.Request(
             _UPLOAD_ENDPOINT,
             data=data,
-            headers={"Content-Type": "application/json", "X-CTX-Schema": "v1.5"},
+            headers={"Content-Type": "application/json", "X-CTX-Schema": "v1.6"},
             method="POST",
         )
         with _req.urlopen(req, timeout=15) as resp:
@@ -909,7 +921,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser(
         prog="ctx-telemetry",
         description=(
-            "CTX retrieval telemetry — local-only, no upload (schema v1.5). "
+            "CTX retrieval telemetry — local-only, no upload (schema v1.6). "
             "Enable with: export CTX_TELEMETRY=1  |  "
             "cluster: detect project tech stack → project_type_hint  |  "
             "Schema docs: https://github.com/jaytoone/CTX#telemetry-opt-in-local-only"

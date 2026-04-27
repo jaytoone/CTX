@@ -1,23 +1,23 @@
 # CTX Telemetry Stage 1 Implementation
-**Date**: 2026-04-27  **live-inf iters 50–72**  **Released: v0.3.1**
+**Date**: 2026-04-27  **live-inf iters 50–76**  **Released: v0.3.4**
 
 ## What Was Built
 
 Stage 1 of the data flywheel (per [20260427-ctx-user-data-flywheel-strategy.md](20260427-ctx-user-data-flywheel-strategy.md)):
 local structured logging of `retrieval_event` and `session_aggregate` records — numeric + categorical only, no content.
 
-Schema evolution: v1 (iters 50-53) → v1.1 (iter 54: query_type) → v1.2 (iter 55: session_turn_index + calibrate) → v1.3 (iter 56: user_id) → v1.4 (iters 57-58: vault_entry_count, index_staleness_hours, consent command) → v1.5 (iters 64-68: top_score_bm25/dense, G2-DOCS capture, session_aggregate mean_top_score_bm25 + query_type_hist)
+Schema evolution: v1 (iters 50-53) → v1.1 (iter 54: query_type) → v1.2 (iter 55: session_turn_index + calibrate) → v1.3 (iter 56: user_id) → v1.4 (iters 57-58: vault_entry_count, index_staleness_hours, consent command) → v1.5 (iters 64-68: top_score_bm25/dense, G2-DOCS capture, session_aggregate mean_top_score_bm25 + query_type_hist) → v1.6 (iter 76: node_type_dist, session_aggregate node_type_hist)
 
 ---
 
-## retrieval_event Schema (schema_version: "v1.5")
+## retrieval_event Schema (schema_version: "v1.6")
 
 Written by `utility-rate.py` (Stop hook) to `~/.claude/ctx-retrieval-events.jsonl`.
 One record per active hook block per session turn.
 
 | Field | Type | Source | Added |
 |-------|------|--------|-------|
-| `schema_version` | `"v1.5"` | constant | v1 |
+| `schema_version` | `"v1.6"` | constant | v1 |
 | `user_id` | str(16) | SHA256(machine_id + install_month)[:16] | v1.3 |
 | `ts_unix_hour` | int | `int(time.time() / 3600)` | v1 |
 | `session_id_hash` | str(16) | SHA256(session_id)[:16] | v1 |
@@ -35,10 +35,13 @@ One record per active hook block per session turn.
 | `bge_daemon_up` | bool | socket existence check | v1 |
 | `top_score_bm25` | float\|null | max BM25 score from `bm25_rank_decisions()` | v1.5 |
 | `top_score_dense` | float\|null | max cosine score from `dense_rank_decisions()` | v1.5 |
+| `node_type_dist` | json | injected node types per block (`{"commit":5}` for G1) | v1.6 |
 
 **v1.5 causal signal**: `top_score_bm25` × `utility_rate` Pearson r identifies whether retrieval quality causally predicts citations (r>0.30 = healthy flywheel) vs. position/recency bias (r<0.10 = citation regardless of quality). Run `ctx-telemetry calibrate` once ≥10 v1.5 records accumulate.
 
-## session_aggregate Schema (schema_version: "v1.5")
+**v1.6 node type tracking**: `node_type_dist` records the node type per block (commit/doc/code/chat), inferred from block semantics — no content tracking. Combined with `utility_rate`, enables "utility by node type" analysis.
+
+## session_aggregate Schema (schema_version: "v1.6")
 
 Written to `~/.claude/ctx-session-aggregates.jsonl` when session_id changes.
 One record per completed session.
@@ -59,8 +62,11 @@ One record per completed session.
 | `index_staleness_hours` | int\|null | code-graph.db age in hours | v1.4 |
 | `mean_top_score_bm25` | float\|null | session avg of BM25 quality scores | v1.5 iter 68 |
 | `query_type_hist` | json\|null | `{"KEYWORD":5,"SEMANTIC":3}` turn counts | v1.5 iter 68 |
+| `node_type_hist` | json\|null | `{"commit":12,"doc":8,"chat":6}` total nodes | v1.6 iter 76 |
 
 **v1.5 session causal signal**: `mean_top_score_bm25` × `mean_utility_rate` Pearson r (cross-session view, n≥5 sessions) cross-validates per-turn causal r. Available via `ctx-telemetry tune` and `ctx-telemetry calibrate`.
+
+**v1.6 node mix tracking**: `node_type_hist` records total injected nodes per type across the session. Shows what mix of commit/doc/chat nodes the user's sessions consume — Population Signal for Stage 2 aggregation.
 
 ## Retrieval Metadata Pipeline
 

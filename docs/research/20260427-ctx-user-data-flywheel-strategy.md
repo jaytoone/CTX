@@ -169,12 +169,12 @@ BM25 term frequency distributions → project type cluster IDs (Next.js/Supabase
 | 4 | Minimal upload pipeline (k-anonymized session_aggregate) | ✅ | `cmd_upload` with k-anonymity gate + consent check; endpoint placeholder pending activation |
 | 5 | Positioning: local-first memory moat | ✅ | README framing confirmed; auto-tune flywheel badge reinforces it |
 
-### Schema Gaps (strategy vs. v0.3.2)
+### Schema Gaps (strategy vs. v0.3.4)
 
 | Field | Strategy status | Implementation status | Priority |
 |-------|----------------|----------------------|----------|
 | `project_type_id` | Planned (cluster ID) | **Partial** — `ctx-telemetry cluster` writes `project_type_hint` (local-first proxy, no cross-user data needed). Full cluster ID requires Stage 2 aggregation. | Stage 3: cross-user cluster model; local proxy now unblocked |
-| `node_type_dist` | Planned (`{"commit":3,"doc":1}`) | **Not implemented** | Adds injection type richness; can be derived from hook_source_hist if CM tagged |
+| `node_type_dist` | Planned (`{"commit":3,"doc":1}`) | ✅ **Implemented** in v1.6 — per-block inferred from block semantics (commit/doc/code/chat). `node_type_hist` also added to session_aggregate. | Complete |
 | `cited_node_types` | Planned | **Not implemented** | Requires per-node citation tracking (beyond current binary cited/not) |
 | `session_outcome` | NORMAL / ABANDONED / SHORT | NORMAL / SHORT only | ABANDONED state (user never responded) not yet detected |
 

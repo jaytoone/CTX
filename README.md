@@ -308,7 +308,7 @@ ctx-telemetry clear             # delete all local telemetry logs
 
 Sample `ctx-telemetry` output:
 ```
-CTX Retrieval Telemetry — 42 session-turn records (schema v1.5)
+CTX Retrieval Telemetry — 42 session-turn records (schema v1.6)
 ...
 Flywheel health [n=42]: causal-r=+0.35 | upgrade=✓ HYBRID | kw=43%
 ```
@@ -324,7 +324,7 @@ python_backend       ███████                           19.0%  (13 
 Project type: python_ml  (confidence: HIGH)
 ```
 
-### What is collected (schema v1.5)
+### What is collected (schema v1.6)
 
 All data stays on your machine at `~/.claude/ctx-retrieval-events.jsonl`. Nothing is uploaded.
 

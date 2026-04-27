@@ -247,7 +247,7 @@ def _read_stop_stdin() -> dict:
 # ── retrieval_event schema (data flywheel — privacy-safe, local-first) ──────
 _RETRIEVAL_EVENTS_LOG = HOME / ".claude" / "ctx-retrieval-events.jsonl"
 _RETRIEVAL_META_PATH = HOME / ".claude" / "last-retrieval-meta.json"
-_RETRIEVAL_EVENT_SCHEMA = "v1.5"
+_RETRIEVAL_EVENT_SCHEMA = "v1.6"
 _USER_ID_CACHE = HOME / ".claude" / "ctx-user-id.hash"
 
 
@@ -297,6 +297,14 @@ _HOOK_SOURCE_MAP = {
     "g2_docs": "G2_DOCS",
     "g2_prefetch": "G2_CODE",
     "chat_memory": "CM",
+}
+
+# Block → injected node type (inferred from block semantics — no content tracking)
+_NODE_TYPE_MAP = {
+    "g1_decisions": "commit",   # G1 injects git commit subjects (decision corpus)
+    "g2_docs": "doc",           # G2-DOCS injects markdown doc/research chunks
+    "g2_prefetch": "code",      # G2-CODE injects codebase-memory-mcp code nodes
+    "chat_memory": "chat",      # CM injects past conversation vault entries
 }
 
 
@@ -365,6 +373,7 @@ def _write_retrieval_events(session_id, by_block, hits_by_mode, semantic_availab
             block_meta = meta.get("blocks", {}).get(block, {})
             total = counts.get("total", 0)
             cited = counts.get("referenced", 0)
+            node_type = _NODE_TYPE_MAP.get(block, "unknown")
 
             record = {
                 "schema_version": _RETRIEVAL_EVENT_SCHEMA,
@@ -380,6 +389,7 @@ def _write_retrieval_events(session_id, by_block, hits_by_mode, semantic_availab
                 "total_injected": total,
                 "total_cited": cited,
                 "utility_rate": round(cited / total, 4) if total > 0 else 0.0,
+                "node_type_dist": {node_type: total} if total > 0 else {},
                 "session_turn_index": session_turn_index,
                 "vec_daemon_up": meta.get("vec_daemon_up", semantic_available),
                 "bge_daemon_up": meta.get("bge_daemon_up", False),
@@ -446,6 +456,9 @@ def _accumulate_session_aggregate(session_id, by_block, utility_rate):
             qt_hist = state.get("query_type_hist", {})
             if qt_hist:
                 agg["query_type_hist"] = qt_hist
+            node_type_hist = state.get("node_type_hist", {})
+            if node_type_hist:
+                agg["node_type_hist"] = node_type_hist
             with open(_SESSION_AGGREGATES_LOG, "a", encoding="utf-8") as f:
                 f.write(json.dumps(agg) + "\n")
             state = {}
@@ -460,12 +473,18 @@ def _accumulate_session_aggregate(session_id, by_block, utility_rate):
         turn_injections = sum(v.get("total", 0) for v in by_block.values())
         state["total_injections"] = state.get("total_injections", 0) + turn_injections
 
-        # Hook source histogram
+        # Hook source histogram + node type histogram
         src_hist = state.get("hook_source_hist", {})
-        for block in by_block:
+        nt_hist = state.get("node_type_hist", {})
+        for block, counts in by_block.items():
             src = _HOOK_SOURCE_MAP.get(block, block.upper())
             src_hist[src] = src_hist.get(src, 0) + 1
+            ntype = _NODE_TYPE_MAP.get(block, "unknown")
+            injected = counts.get("total", 0)
+            if injected > 0:
+                nt_hist[ntype] = nt_hist.get(ntype, 0) + injected
         state["hook_source_hist"] = src_hist
+        state["node_type_hist"] = nt_hist
 
         # Retrieval method histogram + query_type histogram + mean_top_score_bm25
         try:

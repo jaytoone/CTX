@@ -38,6 +38,7 @@ Maps every schema v1.5 field to its flywheel role and current collection status.
 | `bge_daemon_up` | Context | reranker availability | ✅ v1 |
 | `top_score_bm25` | **Causal** | max BM25 score → causal r analysis | ✅ v1.5 (G1+G2_DOCS) |
 | `top_score_dense` | **Causal** | max cosine score → causal r analysis | ✅ v1.5 (when vec-daemon up) |
+| `node_type_dist` | Population | injected node type per block (`{"commit":5}`) | ✅ v1.6 |
 
 **Coverage gaps:**
 - `top_score_bm25` is null for CM (chat-memory) block — chat-memory.py uses SQLite FTS5, not BM25Okapi
@@ -64,6 +65,7 @@ Maps every schema v1.5 field to its flywheel role and current collection status.
 | `index_staleness_hours` | Context | code-graph freshness | ✅ v1.4+ |
 | `mean_top_score_bm25` | **Causal** | session-avg BM25 quality score | ✅ v1.5 iter 68 |
 | `query_type_hist` | Context | KEYWORD/SEMANTIC/TEMPORAL turn counts | ✅ v1.5 iter 68 |
+| `node_type_hist` | Population | commit/doc/chat/code total nodes across session | ✅ v1.6 iter 76 |
 
 **Additions in iter 68:**
 - `mean_top_score_bm25` — session average of BM25 quality scores → session-level causal analysis ✅ added
@@ -168,6 +170,6 @@ Stage 3 cluster cold-start is **locally closed**: `ctx-telemetry cluster` writes
 - [[projects/CTX/research/20260426-g1-hybrid-rrf-dense-retrieval|20260426-g1-hybrid-rrf-dense-retrieval]]
 - [[projects/CTX/research/20260410-session-6c4f589e-chat-memory|20260410-session-6c4f589e-chat-memory]]
 - [[projects/CTX/research/20260409-bm25-memory-generalization-research|20260409-bm25-memory-generalization-research]]
-- [[projects/CTX/research/20260411-hook-comparison-auto-index-vs-chat-memory|20260411-hook-comparison-auto-index-vs-chat-memory]]
+- [[projects/CTX/research/20260407-g1-temporal-evaluation-framework|20260407-g1-temporal-evaluation-framework]]
 - [[projects/CTX/research/20260402-production-context-retrieval-research|20260402-production-context-retrieval-research]]
 - [[projects/CTX/research/20260411-chat-memory-threshold-principled|20260411-chat-memory-threshold-principled]]
