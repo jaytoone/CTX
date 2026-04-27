@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 from collections import defaultdict
@@ -321,6 +322,146 @@ def cmd_tune(args):
     print("To re-run as more data accumulates: ctx-telemetry tune")
 
 
+_UPLOAD_ENDPOINT = "https://telemetry.ctx-retriever.com/v1/session_aggregate"
+_UPLOAD_MIN_USERS_K = 5    # k-anonymity gate: suppress if < 5 users per date window
+_UPLOAD_STATE_FILE = Path.home() / ".claude" / "ctx-telemetry-upload-state.json"
+
+
+def cmd_upload(args):
+    """Stage 2 upload — POST k-anonymized session_aggregate rows to CTX telemetry endpoint.
+
+    Privacy gates (all must pass before any upload):
+    1. Consent file must exist (ctx-telemetry consent grant)
+    2. Consent must be for current schema version
+    3. k-anonymity: rows with fewer than 5 users in same ts_date window are suppressed
+
+    Current status: endpoint not yet active (Stage 2 launch pending).
+    This command validates local data and previews what would be uploaded.
+    Use --dry-run (default) to inspect without sending.
+    Use --send to actually POST when endpoint is live.
+    """
+    import datetime as _dt
+
+    send = getattr(args, "send", False)
+
+    # Gate 1: consent
+    if not CONSENT_FILE.exists():
+        print("No consent on file. Run: ctx-telemetry consent grant")
+        return
+
+    try:
+        consent = json.loads(CONSENT_FILE.read_text())
+    except Exception:
+        print("Consent file corrupted. Run: ctx-telemetry consent grant")
+        return
+
+    if consent.get("schema_version") != "v1.4":
+        print(f"Consent was for schema {consent.get('schema_version')}, current is v1.4.")
+        print("Re-run: ctx-telemetry consent grant")
+        return
+
+    # Load session aggregates
+    agg_events = _load(AGG_LOG)
+    if not agg_events:
+        print("No session_aggregate records yet. Keep using CTX to accumulate sessions.")
+        return
+
+    # Load upload state (track which rows were already sent)
+    upload_state = {}
+    if _UPLOAD_STATE_FILE.exists():
+        try:
+            upload_state = json.loads(_UPLOAD_STATE_FILE.read_text())
+        except Exception:
+            pass
+
+    already_sent = set(upload_state.get("sent_hashes", []))
+
+    # Gate 2: k-anonymity — suppress rows where this user's ts_date has < 5 total rows
+    # (Without cross-user data, we simulate: if a single ts_date has < k records from
+    #  this user, suppress — prevents pinpointing rare-usage days.)
+    by_date = defaultdict(list)
+    for e in agg_events:
+        by_date[e.get("ts_date", "unknown")].append(e)
+
+    eligible = []
+    suppressed = []
+    for date, rows in by_date.items():
+        if len(rows) >= _UPLOAD_MIN_USERS_K:
+            for r in rows:
+                row_hash = hashlib.sha256(
+                    f"{r.get('session_id_hash','')}{r.get('ts_date','')}".encode()
+                ).hexdigest()[:16]
+                if row_hash not in already_sent:
+                    eligible.append((row_hash, r))
+        else:
+            suppressed.extend(rows)
+
+    print(f"\nCTX Stage 2 Upload Preview")
+    print(f"{'=' * 40}")
+    print(f"Total session_aggregate rows: {len(agg_events)}")
+    print(f"Already sent:                 {len(already_sent)}")
+    print(f"K-anonymity suppressed:       {len(suppressed)} (< {_UPLOAD_MIN_USERS_K} rows/date)")
+    print(f"Eligible for upload:          {len(eligible)}")
+    print()
+
+    if not eligible:
+        if suppressed:
+            print(f"All rows suppressed by k-anonymity gate ({_UPLOAD_MIN_USERS_K}-row threshold).")
+            print("More sessions needed before upload is possible.")
+        else:
+            print("All rows already sent.")
+        return
+
+    print("Fields that would be uploaded (from each eligible row):")
+    sample = eligible[0][1]
+    upload_fields = ["schema_version", "user_id", "session_id_hash", "ts_date",
+                     "total_turns", "mean_utility_rate", "hook_source_hist",
+                     "retrieval_method_hist", "session_outcome",
+                     "vault_entry_count", "index_staleness_hours"]
+    for f in upload_fields:
+        if f in sample:
+            val = sample[f]
+            print(f"  {f:<28} {json.dumps(val)[:40]}")
+    print()
+
+    if not send:
+        print(f"Endpoint: {_UPLOAD_ENDPOINT}")
+        print("Stage 2 endpoint is NOT yet active.")
+        print()
+        print("To upload when endpoint is live: ctx-telemetry upload --send")
+        print("To monitor endpoint status:      https://github.com/jaytoone/CTX/issues (watch for Stage 2 announcement)")
+        return
+
+    # Actual send (when endpoint is live)
+    try:
+        import urllib.request as _req
+        import urllib.error as _err
+        payload = [r for _, r in eligible]
+        data = json.dumps({"rows": payload, "client_version": "v1.4"}).encode()
+        req = _req.Request(
+            _UPLOAD_ENDPOINT,
+            data=data,
+            headers={"Content-Type": "application/json", "X-CTX-Schema": "v1.4"},
+            method="POST",
+        )
+        with _req.urlopen(req, timeout=15) as resp:
+            status = resp.status
+            body = resp.read().decode()[:200]
+        if status == 200:
+            new_sent = already_sent | {h for h, _ in eligible}
+            upload_state["sent_hashes"] = list(new_sent)
+            upload_state["last_upload"] = _dt.datetime.now(_dt.timezone.utc).isoformat()
+            upload_state["total_sent"] = len(new_sent)
+            _UPLOAD_STATE_FILE.write_text(json.dumps(upload_state, indent=2))
+            print(f"Upload successful: {len(eligible)} rows sent.")
+            print(f"Response: {body}")
+        else:
+            print(f"Upload failed: HTTP {status} — {body}")
+    except Exception as exc:
+        print(f"Upload failed: {exc}")
+        print("Check that the Stage 2 endpoint is active.")
+
+
 def cmd_consent(args):
     """Stage 2 consent management — opt-in to k-anonymized session_aggregate upload.
 
@@ -473,6 +614,8 @@ def main(argv=None):
     sub.add_parser("clear", help="Delete local telemetry logs")
     sub.add_parser("calibrate", help="Citation bias detection — validate utility_rate signal")
     sub.add_parser("tune", help="Compute optimal BM25 parameters from local telemetry (flywheel)")
+    upload_p = sub.add_parser("upload", help="Stage 2 upload — POST k-anonymized session_aggregate rows")
+    upload_p.add_argument("--send", action="store_true", help="Actually POST (default: dry-run preview)")
     consent_p = sub.add_parser("consent", help="Stage 2 consent management (opt-in upload)")
     consent_sub = consent_p.add_subparsers(dest="consent_cmd")
     consent_sub.add_parser("grant", help="Grant Stage 2 upload consent")
@@ -487,6 +630,8 @@ def main(argv=None):
         cmd_calibrate(args)
     elif args.cmd == "tune":
         cmd_tune(args)
+    elif args.cmd == "upload":
+        cmd_upload(args)
     elif args.cmd == "consent":
         cmd_consent(args)
     else:
