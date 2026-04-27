@@ -118,7 +118,13 @@ ctx-telemetry cluster [-p DIR]
   ↓ project_type_hint [python_ml / python_backend / nextjs_react / rust_systems / go_backend]
   ↓ project_type_confidence [HIGH / MEDIUM / LOW]
   → writes project_type_hint + top_scores to ctx-auto-tune.json
-  → local-first proxy for Stage 3 project_type_id (no cross-user data needed)
+
+bm25-memory.py startup (also reads project_type_hint)
+  ↓ python_ml → g1_top_k = 8 (longer ML decision history)
+  ↓ nextjs_react → g1_top_k = 6, g2d_top_k = 6 (keyword-specific, more framework docs)
+  ↓ rust_systems → g2d_top_k = 4 (precise doc matching)
+  ↓ shows badge: > **CTX auto-tune** [n=42, hybrid✓, python_ml]
+  → Stage 3 local loop CLOSED: cluster → apply → retrieve → collect → re-tune
 
 Stage 2 (planned)
   ↓ k-anonymized session_aggregate → telemetry endpoint
@@ -133,7 +139,7 @@ Stage 3 (future)
 
 **Loop completeness**: Stage 1 local loop is **fully closed** (collect → tune → apply → collect).
 Stage 2 cross-user loop is **structurally ready** (upload pipeline + k-anonymity + consent) but endpoint is not yet active.
-Stage 3 cluster cold-start is **locally unblocked**: `project_type_hint` now available without cross-user data; full cluster model requires Stage 2 aggregate.
+Stage 3 cluster cold-start is **locally closed**: `ctx-telemetry cluster` writes profile hint → `bm25-memory.py` reads it and adjusts `top_k` per project type + shows hint in auto-tune badge. Full cross-user cluster model requires Stage 2 aggregate, but local adaptation works now.
 
 ---
 
@@ -142,12 +148,15 @@ Stage 3 cluster cold-start is **locally unblocked**: `project_type_hint` now ava
 | Version | New Flywheel Capability |
 |---------|------------------------|
 | v0.2.2 | First `ctx-telemetry` CLI: summary + last + clear |
-| v0.2.3 | query_type × utility cross-tab; calibrate; tune (loop closes) |
+| v0.2.3 | query_type × utility cross-tab; calibrate; tune (Stage 1 loop closes) |
 | v0.2.4 | user_id; vault_entry_count + index_staleness; consent + upload |
 | v0.2.5 | top_score_bm25/dense G1 causal signal; calibrate r-analysis |
 | v0.2.6 | G2-DOCS top_score capture; cmd_tune hybrid_upgrade_hint |
 | v0.2.7 | Schema version alignment; README hybrid_upgrade_hint docs |
 | v0.2.8 | session_aggregate: mean_top_score_bm25 + query_type_hist (session-level causal) |
+| v0.3.1 | Full Stage 1 implementation: all 5 flywheel recommendations completed |
+| v0.3.2 | ctx-telemetry cluster: local project type fingerprint (Stage 3 prerequisite) |
+| v0.3.3 | bm25-memory profile-aware top_k + badge: Stage 3 local loop closes |
 
 ---
 - [20260427-ctx-user-data-flywheel-strategy.md](20260427-ctx-user-data-flywheel-strategy.md) — full strategy
@@ -159,6 +168,6 @@ Stage 3 cluster cold-start is **locally unblocked**: `project_type_hint` now ava
 - [[projects/CTX/research/20260426-g1-hybrid-rrf-dense-retrieval|20260426-g1-hybrid-rrf-dense-retrieval]]
 - [[projects/CTX/research/20260410-session-6c4f589e-chat-memory|20260410-session-6c4f589e-chat-memory]]
 - [[projects/CTX/research/20260409-bm25-memory-generalization-research|20260409-bm25-memory-generalization-research]]
+- [[projects/CTX/research/20260411-hook-comparison-auto-index-vs-chat-memory|20260411-hook-comparison-auto-index-vs-chat-memory]]
 - [[projects/CTX/research/20260402-production-context-retrieval-research|20260402-production-context-retrieval-research]]
 - [[projects/CTX/research/20260411-chat-memory-threshold-principled|20260411-chat-memory-threshold-principled]]
-- [[projects/CTX/research/20260411-hook-comparison-auto-index-vs-chat-memory|20260411-hook-comparison-auto-index-vs-chat-memory]]

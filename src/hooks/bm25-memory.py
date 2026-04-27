@@ -1458,6 +1458,16 @@ def main():
             # If TEMPORAL utility is 10pp below KEYWORD, reduce top_k to inject only best matches
             if _qtype_now == "TEMPORAL" and _temporal_gap > 0.10:
                 _g1_top_k = 5  # more selective for low-utility temporal queries
+            # Project-type profile adjustments (Stage 3 local loop)
+            _proj_type = _AUTO_TUNE.get("project_type_hint", "")
+            _proj_conf = _AUTO_TUNE.get("project_type_confidence", "LOW")
+            if _proj_conf in ("HIGH", "MEDIUM"):
+                if _proj_type == "python_ml":
+                    # ML projects: training/model decisions span longer history
+                    _g1_top_k = min(_g1_top_k + 1, 10)
+                elif _proj_type == "nextjs_react":
+                    # React: component decisions are keyword-specific, fewer suffice
+                    _g1_top_k = max(_g1_top_k - 1, 4)
         _last_retrieval_scores.clear()
         relevant = hybrid_rank_decisions(corpus, prompt, top_k=_g1_top_k)
         if relevant:
@@ -1510,6 +1520,16 @@ def main():
             _g2_temporal_gap = _AUTO_TUNE.get("temporal_utility_gap", 0)
             if _qtype_now2 == "TEMPORAL" and _g2_temporal_gap > 0.10:
                 _g2d_top_k = 3  # more selective for low-utility temporal doc queries
+            # Project-type profile adjustments (Stage 3 local loop)
+            _proj_type2 = _AUTO_TUNE.get("project_type_hint", "")
+            _proj_conf2 = _AUTO_TUNE.get("project_type_confidence", "LOW")
+            if _proj_conf2 in ("HIGH", "MEDIUM"):
+                if _proj_type2 == "nextjs_react":
+                    # Next.js: more framework docs per query (more component/API docs)
+                    _g2d_top_k = min(_g2d_top_k + 1, 8)
+                elif _proj_type2 == "rust_systems":
+                    # Rust: docs are precise, fewer higher-quality docs preferred
+                    _g2d_top_k = max(_g2d_top_k - 1, 3)
         _last_retrieval_scores.pop("bm25_top", None)
         _last_retrieval_scores.pop("dense_top", None)
         doc_chunks = hybrid_search_docs(project_dir, prompt, top_k=_g2d_top_k)
@@ -1646,11 +1666,15 @@ def main():
             n_rec = _AUTO_TUNE.get("based_on_n", "?")
             prefer_hybrid = _AUTO_TUNE.get("prefer_hybrid_G1", False)
             temporal_gap = _AUTO_TUNE.get("temporal_utility_gap")
+            proj_hint = _AUTO_TUNE.get("project_type_hint")
+            proj_conf = _AUTO_TUNE.get("project_type_confidence", "LOW")
             parts = [f"n={n_rec}"]
             if prefer_hybrid:
                 parts.append("hybrid✓")
             if temporal_gap and temporal_gap > 0.05:
                 parts.append(f"temporal-gap={temporal_gap*100:.0f}pp")
+            if proj_hint and proj_hint != "multi_lang" and proj_conf in ("HIGH", "MEDIUM"):
+                parts.append(proj_hint)
             header_lines.append(f"> **CTX auto-tune** [{', '.join(parts)}] — run `ctx-telemetry tune` to refresh")
         if header_lines:
             lines = header_lines + [""] + lines
