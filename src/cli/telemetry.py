@@ -728,6 +728,171 @@ def cmd_consent(args):
     print("When Stage 2 launches, run `ctx-telemetry consent` to verify status.")
 
 
+def cmd_cluster(args):
+    """Infer project tech stack from local vocabulary distribution (Stage 3 prerequisite).
+
+    Scans source files in current directory, computes term frequency matches against
+    tech-stack signature profiles, and writes project_type_hint to ctx-auto-tune.json.
+
+    This is a local-first approximation of the Stage 3 project_type_id cluster model
+    (which requires cross-user data). Enables cold-start pre-warming without waiting
+    for 10k+ opt-in users — Stage 3 will treat this hint as the user's project_type_id
+    proxy for cluster matching.
+
+    Detected profiles:
+      python_ml      — PyTorch, transformers, sklearn, CUDA, embeddings
+      python_backend — FastAPI, Flask, Django, SQLAlchemy, Pydantic
+      nextjs_react   — Next.js, React, Tailwind, Supabase, Prisma, TypeScript
+      rust_systems   — Tokio, Serde, Cargo, ownership/lifetime patterns
+      go_backend     — Gin, Echo, gRPC, goroutine patterns
+      multi_lang     — no clear single profile (mixed codebase)
+    """
+    import re
+    import os
+    import datetime as _dt
+
+    project_dir = Path(getattr(args, "project", None) or ".").resolve()
+    if not project_dir.exists():
+        print(f"Project directory not found: {project_dir}")
+        return
+
+    print(f"\nCTX Project Cluster Detection — {project_dir.name}/")
+    print("=" * 50)
+
+    SIGNATURES: dict[str, list[str]] = {
+        "python_ml": [
+            "torch", "pytorch", "tensorflow", "keras", "sklearn", "scikit",
+            "transformers", "datasets", "huggingface", "embedding", "tokenizer",
+            "bert", "llm", "openai", "anthropic", "langchain", "numpy", "pandas",
+            "cuda", "gpu", "inference", "checkpoint", "wandb", "mlflow",
+            "train", "epoch", "loss", "gradient", "model",
+        ],
+        "python_backend": [
+            "fastapi", "flask", "django", "sqlalchemy", "pydantic",
+            "router", "endpoint", "middleware", "orm", "migration",
+            "alembic", "celery", "redis", "postgresql", "asyncpg",
+            "httpx", "requests", "uvicorn", "gunicorn", "pytest",
+        ],
+        "nextjs_react": [
+            "react", "nextjs", "tailwind", "supabase", "prisma",
+            "typescript", "component", "usestate", "useeffect",
+            "vercel", "shadcn", "radix", "framer", "clerk",
+            "trpc", "zod", "drizzle", "neon", "stripe",
+        ],
+        "rust_systems": [
+            "tokio", "serde", "cargo", "crates", "anyhow", "thiserror",
+            "clap", "axum", "actix", "reqwest", "sqlx", "arc", "mutex",
+            "rwlock", "trait", "lifetime", "borrow", "unwrap",
+        ],
+        "go_backend": [
+            "golang", "goroutine", "gofmt", "gomod", "gosum",
+            "gin", "echo", "fiber", "grpc", "protobuf",
+            "gorm", "ent", "cobra", "viper", "zerolog",
+            "errorf", "logf", "fatalf", "panicf",
+        ],
+    }
+
+    SKIP_DIRS = {
+        ".git", "node_modules", "__pycache__", ".next", "dist", "build",
+        "venv", ".venv", "env", ".tox", "target", "vendor",
+    }
+    SOURCE_EXTS = {".py", ".ts", ".tsx", ".js", ".jsx", ".rs", ".go", ".toml"}
+    MAX_FILES = 300
+
+    def _tokenize(text: str) -> list[str]:
+        return [t.lower() for t in re.findall(r'[a-zA-Z][a-zA-Z0-9]{2,28}', text)]
+
+    token_counts: dict[str, int] = {}
+    file_count = 0
+    ext_seen: dict[str, int] = {}
+
+    for root, dirs, files in os.walk(project_dir):
+        dirs[:] = [d for d in dirs if d not in SKIP_DIRS and not d.endswith(".egg-info")]
+        if file_count >= MAX_FILES:
+            break
+        for fname in files:
+            if file_count >= MAX_FILES:
+                break
+            ext = Path(fname).suffix.lower()
+            if ext not in SOURCE_EXTS:
+                continue
+            ext_seen[ext] = ext_seen.get(ext, 0) + 1
+            try:
+                text = (Path(root) / fname).read_text(encoding="utf-8", errors="ignore")
+                for t in _tokenize(text):
+                    token_counts[t] = token_counts.get(t, 0) + 1
+                file_count += 1
+            except Exception:
+                pass
+
+    if file_count == 0:
+        print("No source files found in project directory.")
+        return
+
+    total_tokens = sum(token_counts.values())
+    print(f"Scanned {file_count} files, {total_tokens:,} tokens")
+    print(f"Extensions: {', '.join(f'{e}={c}' for e, c in sorted(ext_seen.items()))}")
+    print()
+
+    profile_scores: dict[str, float] = {}
+    profile_hits: dict[str, int] = {}
+    for profile, keywords in SIGNATURES.items():
+        freq_sum = sum(token_counts.get(kw, 0) for kw in keywords)
+        hit_count = sum(1 for kw in keywords if token_counts.get(kw, 0) > 0)
+        profile_scores[profile] = freq_sum / total_tokens if total_tokens > 0 else 0.0
+        profile_hits[profile] = hit_count
+
+    total_score = sum(profile_scores.values()) or 1.0
+    ranked = sorted(profile_scores.items(), key=lambda x: -x[1])
+    max_score = ranked[0][1] or 1.0
+
+    print("Tech stack scores:")
+    for profile, score in ranked:
+        bar = "█" * int(score / max_score * 30)
+        pct = score / total_score * 100
+        hits = profile_hits[profile]
+        print(f"  {profile:<20} {bar:<32} {pct:5.1f}%  ({hits} keywords matched)")
+
+    best_profile, best_score = ranked[0]
+    second_score = ranked[1][1] if len(ranked) > 1 else 0.0
+    winner_frac = best_score / total_score
+    runner_frac = second_score / total_score
+
+    if winner_frac >= 0.40 and (winner_frac - runner_frac) >= 0.15:
+        project_type_hint = best_profile
+        confidence = "HIGH"
+    elif winner_frac >= 0.28:
+        project_type_hint = best_profile
+        confidence = "MEDIUM"
+    else:
+        project_type_hint = "multi_lang"
+        confidence = "LOW"
+
+    print()
+    print(f"Project type: {project_type_hint}  (confidence: {confidence})")
+
+    tune_data: dict = {}
+    if AUTO_TUNE_FILE.exists():
+        try:
+            tune_data = json.loads(AUTO_TUNE_FILE.read_text())
+        except Exception:
+            pass
+
+    tune_data["project_type_hint"] = project_type_hint
+    tune_data["project_type_confidence"] = confidence
+    tune_data["project_type_top_scores"] = {p: round(s / total_score, 4) for p, s in ranked[:3]}
+    tune_data["project_type_scanned_files"] = file_count
+    tune_data["project_type_computed_at"] = _dt.datetime.now(_dt.timezone.utc).isoformat()
+
+    AUTO_TUNE_FILE.write_text(json.dumps(tune_data, indent=2))
+    print(f"\nWritten to: {AUTO_TUNE_FILE}")
+    print("Fields added: project_type_hint, project_type_confidence, project_type_top_scores")
+    print()
+    print("Stage 3 usage: users matching the same cluster will share tuned BM25 params.")
+    print("  This local hint becomes the project_type_id proxy until cross-user clustering")
+    print("  is available (Stage 3, requires 10k+ opt-in sessions).")
+
+
 def cmd_clear(args):
     deleted = []
     for path in [LOG, AGG_LOG]:
@@ -745,7 +910,8 @@ def main(argv=None):
         prog="ctx-telemetry",
         description=(
             "CTX retrieval telemetry — local-only, no upload (schema v1.5). "
-            "Enable with: export CTX_TELEMETRY=1  "
+            "Enable with: export CTX_TELEMETRY=1  |  "
+            "cluster: detect project tech stack → project_type_hint  |  "
             "Schema docs: https://github.com/jaytoone/CTX#telemetry-opt-in-local-only"
         ),
     )
@@ -762,6 +928,8 @@ def main(argv=None):
     consent_sub = consent_p.add_subparsers(dest="consent_cmd")
     consent_sub.add_parser("grant", help="Grant Stage 2 upload consent")
     consent_sub.add_parser("revoke", help="Revoke consent and delete consent file")
+    cluster_p = sub.add_parser("cluster", help="Detect project tech stack → write project_type_hint (Stage 3 prerequisite)")
+    cluster_p.add_argument("-p", "--project", default=None, help="Project directory (default: cwd)")
 
     args = parser.parse_args(argv)
     if args.cmd == "last":
@@ -776,6 +944,8 @@ def main(argv=None):
         cmd_upload(args)
     elif args.cmd == "consent":
         cmd_consent(args)
+    elif args.cmd == "cluster":
+        cmd_cluster(args)
     else:
         cmd_summary(args)
 

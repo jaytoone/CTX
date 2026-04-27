@@ -83,6 +83,7 @@ ctx-telemetry                   # summary: avg utility% per block + flywheel hea
 ctx-telemetry last [-n N]       # last N events (default 10)
 ctx-telemetry calibrate         # citation bias + causal r analysis (v1.5)
 ctx-telemetry tune              # compute auto-tune params → ctx-auto-tune.json
+ctx-telemetry cluster [-p DIR]  # detect tech stack → project_type_hint (Stage 3 prerequisite)
 ctx-telemetry consent           # Stage 2 consent status
 ctx-telemetry consent grant     # opt-in to k-anonymized upload (interactive preview)
 ctx-telemetry consent revoke    # revoke consent
@@ -136,9 +137,9 @@ Requires: `ctx telemetry consent` command + DPA/GDPR review.
 ## Related
 - [[projects/CTX/research/20260427-ctx-user-data-flywheel-strategy|20260427-ctx-user-data-flywheel-strategy]]
 - [[projects/CTX/research/20260426-citation-probe-v1|20260426-citation-probe-v1]]
+- [[projects/CTX/research/20260426-g2-docs-hybrid-dense-retrieval|20260426-g2-docs-hybrid-dense-retrieval]]
+- [[projects/CTX/research/20260426-g1-hybrid-rrf-dense-retrieval|20260426-g1-hybrid-rrf-dense-retrieval]]
 - [[projects/CTX/research/20260410-session-6c4f589e-chat-memory|20260410-session-6c4f589e-chat-memory]]
 - [[projects/CTX/research/20260424-memory-retrieval-benchmark-landscape|20260424-memory-retrieval-benchmark-landscape]]
 - [[projects/CTX/research/20260409-bm25-memory-generalization-research|20260409-bm25-memory-generalization-research]]
-- [[projects/CTX/research/20260417-ctx-semantic-search-upgrade-sota|20260417-ctx-semantic-search-upgrade-sota]]
-- [[projects/CTX/research/20260412-semantic-gap-keyword-vs-contextual|20260412-semantic-gap-keyword-vs-contextual]]
-- [[projects/CTX/research/20260426-g2-docs-hybrid-dense-retrieval|20260426-g2-docs-hybrid-dense-retrieval]]
+- [[projects/CTX/research/20260411-hook-comparison-auto-index-vs-chat-memory|20260411-hook-comparison-auto-index-vs-chat-memory]]

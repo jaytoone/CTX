@@ -1,13 +1,21 @@
 {
   "status": "ACTIVE",
   "session_id": "inf-20260424T110044-puac-meridian",
-  "current_iteration": 33,
-  "root_goal": "Implement 3-Tier Tangible MERIDIAN eval stack (PUAC harness + public benchmark integration + human pairwise protocol) for CTX vs claude-mem",
+  "current_iteration": 53,
+  "root_goal": "Bump ctx-retriever to 0.2.2 + PyPI publish with Stage 1 telemetry changes; update plugin hooks manifest to reflect CM instrumentation",
   "original_goal": "Implement 3-Tier Tangible MERIDIAN eval stack (PUAC harness + public benchmark integration + human pairwise protocol) for CTX vs claude-mem",
-  "evolution_count": 0,
-  "evolution_history": [],
-  "best_score": 0.99,
-  "plateau_count": 1,
+  "evolution_count": 1,
+  "evolution_history": [
+    {
+      "from": "Implement 3-Tier Tangible MERIDIAN eval stack (PUAC harness + public benchmark integration + human pairwise protocol) for CTX vs claude-mem",
+      "to": "Complete CTX data flywheel Stage 1: session_aggregate per-session rollup + DOC_INDEX",
+      "iteration": 50,
+      "score": 0.97,
+      "reason": "MERIDIAN at 0.99; flywheel infra gap (impact 0.90\u21920.97); Stage 1 partial"
+    }
+  ],
+  "best_score": 0.97,
+  "plateau_count": 0,
   "started_at": "2026-04-24T11:00:44.420852Z",
   "wave1_complete": true,
   "wave1_evolution_count": 0,
@@ -28,5 +36,6 @@
     "iter 5: Tier 1 \u2014 MemoryAgentBench Competency-4 conflict-resolution test",
     "iter 6: Dashboard FRONTEND \u2014 split-pane diff view consuming /api/puac-compare/{pid}",
     "iter 7: Tier 3 pairwise annotation endpoint + N=10 pilot"
-  ]
+  ],
+  "last_session_resume": "2026-04-27T09:31:51.884982Z"
 }

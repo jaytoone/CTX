@@ -300,6 +300,7 @@ ctx-telemetry                   # summary + flywheel health verdict (causal r, u
 ctx-telemetry last              # last 10 session turns
 ctx-telemetry calibrate         # citation bias + causal r-analysis (v1.5)
 ctx-telemetry tune              # compute auto-tune params → ctx-auto-tune.json
+ctx-telemetry cluster [-p DIR]  # detect tech stack → project_type_hint in ctx-auto-tune.json
 ctx-telemetry consent           # Stage 2 upload consent status
 ctx-telemetry upload            # Stage 2 dry-run preview
 ctx-telemetry clear             # delete all local telemetry logs
@@ -315,6 +316,13 @@ Flywheel health [n=42]: causal-r=+0.35 | upgrade=✓ HYBRID | kw=43%
 **Auto-tune (flywheel):** After `ctx-telemetry tune` runs with ≥15 records, CTX automatically adjusts retrieval parameters based on your usage patterns (e.g., top_k reduction for query types with lower citation rates). The active tuning state is shown in CTX's context header: `> **CTX auto-tune** [n=42, hybrid✓]`.
 
 With ≥10 v1.5 records, `tune` also computes a causal signal: Pearson r between BM25 top retrieval score and citation rate. High r (>0.30) means quality-driven citations — HYBRID upgrade is worthwhile. Low r (<0.10) suggests position bias may be dominant — validate before upgrading. This is stored as `hybrid_upgrade_hint` in `ctx-auto-tune.json`.
+
+**Project cluster detection (Stage 3 prerequisite):** `ctx-telemetry cluster` scans your project's source files, matches term frequencies against tech-stack signature profiles (python_ml, python_backend, nextjs_react, rust_systems, go_backend), and writes `project_type_hint` to `ctx-auto-tune.json`. This is a local-first proxy for the Stage 3 `project_type_id` cluster — enabling cold-start pre-warming without requiring cross-user data. Example output:
+```
+python_ml            ██████████████████████████████    80.0%  (18 keywords matched)
+python_backend       ███████                           19.0%  (13 keywords matched)
+Project type: python_ml  (confidence: HIGH)
+```
 
 ### What is collected (schema v1.5)
 

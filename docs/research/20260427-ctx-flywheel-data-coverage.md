@@ -1,5 +1,5 @@
 # CTX Data Flywheel — Field Coverage Map (v1.5)
-**Date**: 2026-04-27  **live-inf iter 67**
+**Date**: 2026-04-27  **live-inf iter 67–74**
 
 Maps every schema v1.5 field to its flywheel role and current collection status.
 
@@ -81,6 +81,9 @@ Maps every schema v1.5 field to its flywheel role and current collection status.
 | `temporal_boost_hint` | Context | increase/maintain/decrease temporal weighting | temporal_utility_gap magnitude |
 | `causal_r_bm25_utility` | **Causal** | Pearson r: BM25 score → citation rate | v1.5 top_score_bm25 × utility_rate |
 | `hybrid_upgrade_hint` | **Causal** | likely_worthwhile / validate_first / needs_more_data | causal_r threshold |
+| `project_type_hint` | Population | tech stack cluster proxy (python_ml / nextjs_react / …) | `ctx-telemetry cluster` vocab scan |
+| `project_type_confidence` | Population | HIGH / MEDIUM / LOW signal clarity | winner vs runner-up frequency gap |
+| `project_type_top_scores` | Population | top-3 profile fractional scores | profile keyword frequency distribution |
 | `based_on_n` | — | record count at tune time | count(retrieval_events) |
 | `computed_at` | — | ISO8601 timestamp | time.time() |
 
@@ -110,14 +113,27 @@ ctx-telemetry calibrate
   → PASS/MARGINAL/WARN verdict on signal quality
   → position bias detection
 
+ctx-telemetry cluster [-p DIR]
+  ↓ scans source files → BM25 term frequency against tech-stack signatures
+  ↓ project_type_hint [python_ml / python_backend / nextjs_react / rust_systems / go_backend]
+  ↓ project_type_confidence [HIGH / MEDIUM / LOW]
+  → writes project_type_hint + top_scores to ctx-auto-tune.json
+  → local-first proxy for Stage 3 project_type_id (no cross-user data needed)
+
 Stage 2 (planned)
   ↓ k-anonymized session_aggregate → telemetry endpoint
   ↓ cross-user aggregation → global retrieval quality signal
   → shared auto-tune weights for new installs (cold-start fix)
+
+Stage 3 (future)
+  ↓ project_type_id cluster model (trained on 10k+ sessions)
+  ↓ new user's project_type_hint → cluster → pre-warmed BM25 params
+  → cold-start improvement: skip the first 50 sessions of sub-optimal retrieval
 ```
 
 **Loop completeness**: Stage 1 local loop is **fully closed** (collect → tune → apply → collect).
 Stage 2 cross-user loop is **structurally ready** (upload pipeline + k-anonymity + consent) but endpoint is not yet active.
+Stage 3 cluster cold-start is **locally unblocked**: `project_type_hint` now available without cross-user data; full cluster model requires Stage 2 aggregate.
 
 ---
 
