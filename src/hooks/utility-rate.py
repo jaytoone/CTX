@@ -125,6 +125,54 @@ def _from_transcript(transcript_path: str) -> str:
     return text
 
 
+_TEMPORAL_KW = frozenset([
+    "when", "history", "timeline", "progression", "what happened", "progress",
+    "previously", "before", "after", "last time", "since", "ago", "recent",
+    "changed", "evolution", "how long", "session", "yesterday", "last week",
+    "진행", "역사", "이전", "지난", "타임라인", "최근", "변경", "이번",
+])
+
+def _classify_query(prompt: str) -> str:
+    if not prompt:
+        return "KEYWORD"
+    pl = prompt.lower()
+    if any(kw in pl for kw in _TEMPORAL_KW):
+        return "TEMPORAL"
+    if len(pl.split()) <= 6:
+        return "KEYWORD"
+    return "SEMANTIC"
+
+
+def _last_user_prompt_from_transcript(transcript_path: str) -> str:
+    """Extract the last user message text from transcript for query classification."""
+    if not transcript_path or not os.path.exists(transcript_path):
+        return ""
+    last_user = ""
+    try:
+        with open(transcript_path, encoding="utf-8") as f:
+            for line in f:
+                try:
+                    d = json.loads(line.strip())
+                except Exception:
+                    continue
+                if d.get("type") != "user":
+                    continue
+                msg = d.get("message", {})
+                content = msg.get("content", "")
+                if isinstance(content, str):
+                    last_user = content
+                elif isinstance(content, list):
+                    parts = []
+                    for c in content:
+                        if isinstance(c, dict) and c.get("type") == "text":
+                            parts.append(c.get("text", ""))
+                    if parts:
+                        last_user = " ".join(parts)
+    except Exception:
+        pass
+    return last_user[:500]
+
+
 # Tool-use parameter keys whose string values carry meaningful content the
 # assistant "referenced" via action. We flatten these into a single searchable
 # text blob per turn and substring-match CTX-item tokens against it — this
@@ -381,7 +429,7 @@ def _write_retrieval_events(session_id, by_block, hits_by_mode, semantic_availab
                 "user_id": user_id,
                 "session_id_hash": sid_hash,
                 "hook_source": hook_source,
-                "query_type": block_meta.get("query_type", "UNKNOWN"),
+                "query_type": block_meta.get("query_type") or _classify_query(_last_user_prompt),
                 "query_char_count": meta.get("query_char_count", inj.get("prompt_len", 0)),
                 "candidates_returned": block_meta.get("candidates"),
                 "retrieval_method": block_meta.get("retrieval_method", "UNKNOWN"),
@@ -549,6 +597,7 @@ def main():
     # vault.db BEFORE incremental finished writing the current turn.
     stop_input = _read_stop_stdin()
     transcript_path = stop_input.get("transcript_path", "")
+    _last_user_prompt = _last_user_prompt_from_transcript(transcript_path)
     response, tool_params = _from_transcript_with_tools(transcript_path)
     if not response:
         # Fall back to vault (no tool-param recovery in this path — vault.db
