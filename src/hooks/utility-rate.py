@@ -419,9 +419,19 @@ def _write_retrieval_events(session_id, by_block, hits_by_mode, semantic_availab
         for block, counts in by_block.items():
             hook_source = _HOOK_SOURCE_MAP.get(block, block.upper())
             block_meta = meta.get("blocks", {}).get(block, {})
+            # CM has no entry in last-retrieval-meta.json (separate hook); merge from saved cm_block_meta
+            if block == "chat_memory" and not block_meta:
+                block_meta = cm_block_meta
+            # g2_prefetch/g2_grep use codebase-memory-mcp (BM25-only, no meta block written)
+            if block in ("g2_prefetch", "g2_grep") and not block_meta.get("retrieval_method"):
+                block_meta = {**block_meta, "retrieval_method": "BM25"}
             total = counts.get("total", 0)
             cited = counts.get("referenced", 0)
             node_type = _NODE_TYPE_MAP.get(block, "unknown")
+
+            # "UNKNOWN" is truthy — explicitly exclude it so fallback always fires for unknown values
+            _qt_raw = block_meta.get("query_type")
+            _rm_raw = block_meta.get("retrieval_method")
 
             record = {
                 "schema_version": _RETRIEVAL_EVENT_SCHEMA,
@@ -429,10 +439,10 @@ def _write_retrieval_events(session_id, by_block, hits_by_mode, semantic_availab
                 "user_id": user_id,
                 "session_id_hash": sid_hash,
                 "hook_source": hook_source,
-                "query_type": block_meta.get("query_type") or _classify_query(_last_user_prompt),
+                "query_type": (_qt_raw if _qt_raw and _qt_raw != "UNKNOWN" else _classify_query(_last_user_prompt)),
                 "query_char_count": meta.get("query_char_count", inj.get("prompt_len", 0)),
                 "candidates_returned": block_meta.get("candidates"),
-                "retrieval_method": block_meta.get("retrieval_method", "UNKNOWN"),
+                "retrieval_method": (_rm_raw if _rm_raw and _rm_raw != "UNKNOWN" else "UNKNOWN"),
                 "duration_ms": block_meta.get("duration_ms"),
                 "total_injected": total,
                 "total_cited": cited,
@@ -572,13 +582,17 @@ def main():
     items = inj.get("items", [])
 
     # Merge CM items from chat-memory.py (separate injection file)
+    # Also capture CM block metadata (retrieval_method) before unlinking.
+    cm_block_meta: dict = {}
     try:
         if _CM_INJECT_PATH.exists():
             cm_inj = json.loads(_CM_INJECT_PATH.read_text())
             # Age guard: same 10-min window as main injection
             if time.time() - cm_inj.get("ts", 0) <= 600:
                 items = items + cm_inj.get("items", [])
-                # Carry over ts from main injection for age check below
+                cm_block_meta = {
+                    "retrieval_method": cm_inj.get("retrieval_method", "UNKNOWN"),
+                }
                 _CM_INJECT_PATH.unlink(missing_ok=True)
     except Exception:
         pass

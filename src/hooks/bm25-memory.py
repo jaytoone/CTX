@@ -1777,7 +1777,7 @@ def main():
                     tokens = _extract_content_tokens(subj, n=5)
                     if tokens:
                         item = {
-                            "block": "g1",
+                            "block": "g1_decisions",
                             "tokens": tokens,
                             "subject": subj[:200],  # preserved for semantic scoring
                         }
