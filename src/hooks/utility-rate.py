@@ -247,7 +247,50 @@ def _read_stop_stdin() -> dict:
 # ── retrieval_event schema (data flywheel — privacy-safe, local-first) ──────
 _RETRIEVAL_EVENTS_LOG = HOME / ".claude" / "ctx-retrieval-events.jsonl"
 _RETRIEVAL_META_PATH = HOME / ".claude" / "last-retrieval-meta.json"
-_RETRIEVAL_EVENT_SCHEMA = "v1.2"
+_RETRIEVAL_EVENT_SCHEMA = "v1.3"
+_USER_ID_CACHE = HOME / ".claude" / "ctx-user-id.hash"
+
+
+def _get_user_id_hash() -> str:
+    """Stable, non-reversible machine-level user_id for flywheel aggregation.
+
+    Computed once, cached to ctx-user-id.hash.
+    Source: SHA256(machine_id + install_month_epoch).
+    - machine_id from /etc/machine-id (Linux) or /var/lib/dbus/machine-id or hostname fallback
+    - install_month: mtime of ~/.claude truncated to 1st of month (prevents daily re-tracking)
+    Privacy: not linkable to email/name; hash changes on reinstall.
+    """
+    try:
+        if _USER_ID_CACHE.exists():
+            cached = _USER_ID_CACHE.read_text().strip()
+            if len(cached) == 16:
+                return cached
+    except Exception:
+        pass
+    try:
+        import hashlib
+        machine_id = ""
+        for mid_path in ["/etc/machine-id", "/var/lib/dbus/machine-id"]:
+            try:
+                machine_id = open(mid_path).read().strip()
+                break
+            except Exception:
+                pass
+        if not machine_id:
+            import socket
+            machine_id = socket.gethostname()
+        # install_month: mtime of ~/.claude truncated to month boundary
+        claude_dir = HOME / ".claude"
+        install_ts = int(claude_dir.stat().st_mtime) if claude_dir.exists() else 0
+        # Truncate to month: set day=1, hour=0
+        from datetime import datetime, timezone
+        d = datetime.fromtimestamp(install_ts, tz=timezone.utc).replace(day=1, hour=0, minute=0, second=0)
+        install_month_epoch = str(int(d.timestamp()))
+        uid = hashlib.sha256(f"{machine_id}:{install_month_epoch}".encode()).hexdigest()[:16]
+        _USER_ID_CACHE.write_text(uid)
+        return uid
+    except Exception:
+        return "unknown"
 
 _HOOK_SOURCE_MAP = {
     "g1_decisions": "G1",
@@ -276,6 +319,7 @@ def _write_retrieval_events(session_id, by_block, hits_by_mode, semantic_availab
         ts_unix_hour = int(ts_now / 3600)
         # Anonymize session_id — keep local correlation but non-reversible
         sid_hash = hashlib.sha256(session_id.encode()).hexdigest()[:16] if session_id else "unknown"
+        user_id = _get_user_id_hash()
 
         # session_turn_index: read current turn count before this turn is accumulated
         session_turn_index = 0
@@ -297,6 +341,7 @@ def _write_retrieval_events(session_id, by_block, hits_by_mode, semantic_availab
             record = {
                 "schema_version": _RETRIEVAL_EVENT_SCHEMA,
                 "ts_unix_hour": ts_unix_hour,
+                "user_id": user_id,
                 "session_id_hash": sid_hash,
                 "hook_source": hook_source,
                 "query_type": block_meta.get("query_type", "UNKNOWN"),
@@ -349,6 +394,7 @@ def _accumulate_session_aggregate(session_id, by_block, utility_rate):
             turns = state.get("turns", 0)
             agg = {
                 "schema_version": _RETRIEVAL_EVENT_SCHEMA,
+                "user_id": _get_user_id_hash(),
                 "session_id_hash": prev_sid_hash,
                 "ts_date": state.get("ts_date", str(_date.today())),
                 "total_turns": turns,
