@@ -81,6 +81,17 @@ _VEC_SOCK = Path.home() / ".local/share/claude-vault/vec-daemon.sock"
 _VEC_TIMEOUT = 0.8   # seconds — fail fast if daemon is down
 _VEC_DISABLED = os.environ.get("CTX_DISABLE_SEMANTIC_RERANK") == "1"
 
+# ── Auto-tune: read flywheel parameter recommendations (ctx-telemetry tune output) ──
+_AUTO_TUNE_PATH = Path.home() / ".claude" / "ctx-auto-tune.json"
+_AUTO_TUNE: dict = {}
+try:
+    if _AUTO_TUNE_PATH.exists():
+        _auto_tune_raw = json.loads(_AUTO_TUNE_PATH.read_text())
+        if isinstance(_auto_tune_raw, dict):
+            _AUTO_TUNE = _auto_tune_raw
+except Exception:
+    pass
+
 # bge-daemon: BGE cross-encoder served over Unix socket (same pattern as vec-daemon).
 # Hook stays fast because the 7s model load happens ONCE in the daemon, not per
 # UserPromptSubmit. Default ON; disable via CTX_CROSS_ENCODER=0 if daemon is down
@@ -1429,7 +1440,15 @@ def main():
     corpus = get_decision_corpus(project_dir)
     g1_header = ""
     if corpus:
-        relevant = hybrid_rank_decisions(corpus, prompt, top_k=7)
+        # Auto-tune: adjust top_k based on flywheel recommendations
+        _g1_top_k = 7
+        if _AUTO_TUNE:
+            _qtype_now = _classify_query_type(prompt)
+            _temporal_gap = _AUTO_TUNE.get("temporal_utility_gap", 0)
+            # If TEMPORAL utility is 10pp below KEYWORD, reduce top_k to inject only best matches
+            if _qtype_now == "TEMPORAL" and _temporal_gap > 0.10:
+                _g1_top_k = 5  # more selective for low-utility temporal queries
+        relevant = hybrid_rank_decisions(corpus, prompt, top_k=_g1_top_k)
         if relevant:
             # Build forced display header (mechanically injected, not advisory)
             first_subj = relevant[0]["subject"][:70]

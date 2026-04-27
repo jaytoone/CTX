@@ -219,8 +219,106 @@ def cmd_calibrate(args):
         print("      Continue using CTX to accumulate more signal.")
 
 
+AUTO_TUNE_FILE = Path.home() / ".claude" / "ctx-auto-tune.json"
 CONSENT_FILE = Path.home() / ".claude" / "ctx-telemetry-consent.json"
 _CONSENT_SCHEMA_VERSION = "v1.4"
+
+
+def cmd_tune(args):
+    """Compute optimal retrieval parameters from local telemetry and write ctx-auto-tune.json.
+
+    This is the flywheel turning: collected usage data → parameter recommendations
+    → better retrieval on future queries.
+
+    Recommendations computed:
+    - prefer_hybrid_{G1,G2_DOCS}: True if HYBRID utility rate beats BM25 by >5pp
+    - temporal_utility_gap: utility delta between TEMPORAL and KEYWORD (informs keyword tuning)
+    - bm25_min_score_recommendation: suggested min_score threshold based on KEYWORD utility
+
+    bm25-memory.py reads ctx-auto-tune.json at startup to apply these recommendations.
+    """
+    import datetime as _dt
+
+    events = _load(LOG)
+    if not events:
+        print("No retrieval_event records. Enable with: export CTX_TELEMETRY=1")
+        return
+
+    n = len(events)
+    MIN_RECORDS = 15
+    if n < MIN_RECORDS:
+        print(f"Only {n} records (need ≥{MIN_RECORDS} for reliable tuning).")
+        print("Keep using CTX with CTX_TELEMETRY=1 to accumulate signal.")
+        return
+
+    # Compute HYBRID vs BM25 utility delta per hook_source
+    by_src_method = defaultdict(lambda: defaultdict(list))
+    by_qtype_rates = defaultdict(list)
+
+    for e in events:
+        src = e.get("hook_source", "?")
+        method = e.get("retrieval_method", "UNKNOWN")
+        qt = e.get("query_type", "UNKNOWN")
+        ur = e.get("utility_rate", 0.0)
+        by_src_method[src][method].append(ur)
+        if qt not in ("UNKNOWN", None):
+            by_qtype_rates[qt].append(ur)
+
+    recommendations = {
+        "schema_version": "v1",
+        "computed_at": _dt.datetime.now(_dt.timezone.utc).isoformat(),
+        "based_on_n": n,
+    }
+
+    print(f"\nCTX Auto-Tune — {n} records\n")
+    print(f"{'Source':<12} {'HYBRID':>10} {'BM25':>10} {'Delta':>8} {'Recommendation'}")
+    print("-" * 62)
+
+    for src in sorted(by_src_method):
+        sm = by_src_method[src]
+        hybrid_rates = sm.get("HYBRID", [])
+        bm25_rates = sm.get("BM25", [])
+        if len(hybrid_rates) >= 3 and len(bm25_rates) >= 3:
+            hybrid_mean = sum(hybrid_rates) / len(hybrid_rates)
+            bm25_mean = sum(bm25_rates) / len(bm25_rates)
+            delta = hybrid_mean - bm25_mean
+            prefer = delta > 0.05
+            key = f"prefer_hybrid_{src.replace('-', '_')}"
+            recommendations[key] = prefer
+            rec = "prefer HYBRID" if prefer else "BM25 sufficient"
+            print(f"{src:<12} {hybrid_mean*100:>9.1f}% {bm25_mean*100:>9.1f}% {delta*100:>+7.1f}pp  {rec}")
+        elif hybrid_rates:
+            hybrid_mean = sum(hybrid_rates) / len(hybrid_rates)
+            recommendations[f"prefer_hybrid_{src.replace('-', '_')}"] = True
+            print(f"{src:<12} {hybrid_mean*100:>9.1f}%  {'n/a':>9}  {'n/a':>8}  HYBRID only (no BM25 comparison)")
+        elif bm25_rates:
+            bm25_mean = sum(bm25_rates) / len(bm25_rates)
+            recommendations[f"prefer_hybrid_{src.replace('-', '_')}"] = False
+            print(f"{src:<12} {'n/a':>10} {bm25_mean*100:>9.1f}%  {'n/a':>8}  BM25 only")
+
+    # Query type utility analysis
+    if len(by_qtype_rates) >= 2:
+        print()
+        print("Query type utility rates:")
+        qt_means = {qt: sum(v)/len(v) for qt, v in by_qtype_rates.items()}
+        for qt, mean_rate in sorted(qt_means.items(), key=lambda x: -x[1]):
+            print(f"  {qt:<12} {mean_rate*100:.1f}%  (n={len(by_qtype_rates[qt])})")
+        if "KEYWORD" in qt_means and "TEMPORAL" in qt_means:
+            gap = qt_means["KEYWORD"] - qt_means["TEMPORAL"]
+            recommendations["temporal_utility_gap"] = round(gap, 4)
+            if gap > 0.10:
+                print(f"\n  TEMPORAL queries are {gap*100:.0f}pp below KEYWORD — temporal keyword expansion may need tuning.")
+                recommendations["temporal_boost_hint"] = "increase"
+            elif gap < -0.05:
+                print(f"\n  TEMPORAL queries outperform KEYWORD by {-gap*100:.0f}pp — temporal routing is working well.")
+                recommendations["temporal_boost_hint"] = "maintain"
+
+    # Write auto-tune file
+    AUTO_TUNE_FILE.write_text(json.dumps(recommendations, indent=2))
+    print(f"\nAuto-tune parameters written to: {AUTO_TUNE_FILE}")
+    print("bm25-memory.py will read these recommendations at next session start.")
+    print()
+    print("To re-run as more data accumulates: ctx-telemetry tune")
 
 
 def cmd_consent(args):
@@ -374,6 +472,7 @@ def main(argv=None):
     last_p.add_argument("-n", type=int, default=10, help="Number of events")
     sub.add_parser("clear", help="Delete local telemetry logs")
     sub.add_parser("calibrate", help="Citation bias detection — validate utility_rate signal")
+    sub.add_parser("tune", help="Compute optimal BM25 parameters from local telemetry (flywheel)")
     consent_p = sub.add_parser("consent", help="Stage 2 consent management (opt-in upload)")
     consent_sub = consent_p.add_subparsers(dest="consent_cmd")
     consent_sub.add_parser("grant", help="Grant Stage 2 upload consent")
@@ -386,6 +485,8 @@ def main(argv=None):
         cmd_clear(args)
     elif args.cmd == "calibrate":
         cmd_calibrate(args)
+    elif args.cmd == "tune":
+        cmd_tune(args)
     elif args.cmd == "consent":
         cmd_consent(args)
     else:
