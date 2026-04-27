@@ -1,49 +1,58 @@
 # CTX Telemetry Stage 1 Implementation
-**Date**: 2026-04-27  **live-inf iters 50–51**
+**Date**: 2026-04-27  **live-inf iters 50–59**  **Released: v0.2.3**
 
 ## What Was Built
 
 Stage 1 of the data flywheel (per [20260427-ctx-user-data-flywheel-strategy.md](20260427-ctx-user-data-flywheel-strategy.md)):
 local structured logging of `retrieval_event` and `session_aggregate` records — numeric + categorical only, no content.
 
+Schema evolution: v1 (iters 50-53) → v1.1 (iter 54: query_type) → v1.2 (iter 55: session_turn_index + calibrate) → v1.3 (iter 56: user_id) → v1.4 (iters 57-58: vault_entry_count, index_staleness_hours, consent command)
+
 ---
 
-## retrieval_event Schema (schema_version: "v1")
+## retrieval_event Schema (schema_version: "v1.4")
 
 Written by `utility-rate.py` (Stop hook) to `~/.claude/ctx-retrieval-events.jsonl`.
 One record per active hook block per session turn.
 
-| Field | Type | Source |
-|-------|------|--------|
-| `schema_version` | `"v1"` | constant |
-| `ts_unix_hour` | int | `int(time.time() / 3600)` |
-| `session_id_hash` | str(16) | SHA256(session_id)[:16] |
-| `hook_source` | enum[G1, G2_DOCS, G2_CODE, CM] | block name |
-| `query_char_count` | int | `prompt_len` from injection |
-| `candidates_returned` | int\|null | from `last-retrieval-meta.json` |
-| `retrieval_method` | enum[HYBRID, BM25, UNKNOWN] | from `last-retrieval-meta.json` |
-| `duration_ms` | int\|null | per-block retrieval time |
-| `total_injected` | int | items in this block |
-| `total_cited` | int | items referenced by AI |
-| `utility_rate` | float | cited / injected |
-| `vec_daemon_up` | bool | socket existence check |
-| `bge_daemon_up` | bool | socket existence check |
+| Field | Type | Source | Added |
+|-------|------|--------|-------|
+| `schema_version` | `"v1.4"` | constant | v1 |
+| `user_id` | str(16) | SHA256(machine_id + install_month)[:16] | v1.3 |
+| `ts_unix_hour` | int | `int(time.time() / 3600)` | v1 |
+| `session_id_hash` | str(16) | SHA256(session_id)[:16] | v1 |
+| `hook_source` | enum[G1, G2_DOCS, G2_CODE, CM] | block name | v1 |
+| `query_type` | enum[KEYWORD, SEMANTIC, TEMPORAL, UNKNOWN] | `_classify_query_type(prompt)` | v1.1 |
+| `query_char_count` | int | `prompt_len` from injection | v1 |
+| `candidates_returned` | int\|null | from `last-retrieval-meta.json` | v1 |
+| `retrieval_method` | enum[HYBRID, BM25, UNKNOWN] | from `last-retrieval-meta.json` | v1 |
+| `duration_ms` | int\|null | per-block retrieval time | v1 |
+| `total_injected` | int | items in this block | v1 |
+| `total_cited` | int | items referenced by AI | v1 |
+| `utility_rate` | float | cited / injected | v1 |
+| `session_turn_index` | int | turn count from ctx-session-state.json | v1.2 |
+| `vec_daemon_up` | bool | socket existence check | v1 |
+| `bge_daemon_up` | bool | socket existence check | v1 |
 
-## session_aggregate Schema (schema_version: "v1")
+## session_aggregate Schema (schema_version: "v1.4")
 
 Written to `~/.claude/ctx-session-aggregates.jsonl` when session_id changes.
 One record per completed session.
 
-| Field | Type | Notes |
-|-------|------|-------|
-| `session_id_hash` | str(16) | SHA256 of previous session_id |
-| `ts_date` | str | "YYYY-MM-DD" |
-| `total_turns` | int | — |
-| `total_injections` | int | across all blocks |
-| `mean_utility_rate` | float | avg across turns |
-| `hook_source_hist` | json | `{"G1": 4, "G2_DOCS": 3}` |
-| `retrieval_method_hist` | json | `{"HYBRID": 7}` |
-| `session_outcome` | enum | NORMAL (>2 turns) / SHORT |
+| Field | Type | Notes | Added |
+|-------|------|-------|-------|
+| `schema_version` | str | "v1.4" | v1 |
+| `user_id` | str(16) | SHA256(machine_id + install_month)[:16] | v1.3 |
+| `session_id_hash` | str(16) | SHA256 of previous session_id | v1 |
+| `ts_date` | str | "YYYY-MM-DD" | v1 |
+| `total_turns` | int | — | v1 |
+| `total_injections` | int | across all blocks | v1 |
+| `mean_utility_rate` | float | avg across turns | v1 |
+| `hook_source_hist` | json | `{"G1": 4, "G2_DOCS": 3}` | v1 |
+| `retrieval_method_hist` | json | `{"HYBRID": 7}` | v1 |
+| `session_outcome` | enum | NORMAL (>2 turns) / SHORT | v1 |
+| `vault_entry_count` | int\|null | chat vault.db row count at flush | v1.4 |
+| `index_staleness_hours` | int\|null | code-graph.db age in hours | v1.4 |
 
 ## Retrieval Metadata Pipeline
 
@@ -59,12 +68,16 @@ utility-rate.py (Stop)
   → accumulates session state → ctx-session-aggregates.jsonl (on session flush)
 ```
 
-## ctx-telemetry Preview CLI
+## ctx-telemetry CLI (v1.4)
 
 ```bash
-ctx-telemetry          # summary: avg utility% per block, method distribution
-ctx-telemetry --last   # last 10 events
-ctx-telemetry --clear  # delete log
+ctx-telemetry                   # summary: avg utility% per block + query_type × utility breakdown
+ctx-telemetry last [-n N]       # last N events (default 10)
+ctx-telemetry calibrate         # citation bias detection — validates signal quality
+ctx-telemetry consent           # Stage 2 consent status
+ctx-telemetry consent grant     # opt-in to k-anonymized upload (interactive preview)
+ctx-telemetry consent revoke    # revoke consent
+ctx-telemetry clear             # delete all local telemetry logs
 ```
 
 Sample output:
@@ -92,7 +105,14 @@ Opt-in upload pipeline: HTTPS POST of k-anonymized `session_aggregate` rows.
 k-anonymity gate: suppress rows where `ts_date` has <5 users in aggregation window.
 Requires: `ctx telemetry consent` command + DPA/GDPR review.
 
-## Related
-
 - [20260427-ctx-user-data-flywheel-strategy.md](20260427-ctx-user-data-flywheel-strategy.md) — full flywheel design
 - [20260426-citation-probe-v1.md](20260426-citation-probe-v1.md) — citation probe (feeds `utility_rate` signal)
+
+## Related
+- [[projects/CTX/research/20260427-ctx-user-data-flywheel-strategy|20260427-ctx-user-data-flywheel-strategy]]
+- [[projects/CTX/research/20260426-citation-probe-v1|20260426-citation-probe-v1]]
+- [[projects/CTX/research/20260409-bm25-memory-generalization-research|20260409-bm25-memory-generalization-research]]
+- [[projects/CTX/research/20260424-memory-retrieval-benchmark-landscape|20260424-memory-retrieval-benchmark-landscape]]
+- [[projects/CTX/research/20260410-session-6c4f589e-chat-memory|20260410-session-6c4f589e-chat-memory]]
+- [[projects/CTX/research/20260426-g2-docs-hybrid-dense-retrieval|20260426-g2-docs-hybrid-dense-retrieval]]
+- [[projects/CTX/research/20260426-g1-hybrid-rrf-dense-retrieval|20260426-g1-hybrid-rrf-dense-retrieval]]
