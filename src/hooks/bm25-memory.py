@@ -1558,8 +1558,9 @@ def main():
                 "duration_ms": int((_time.perf_counter() - _t_g2d) * 1000),
             })
             _blocks_fired.append("g2_docs")
+            _g2d_corpus_size = len(build_docs_bm25(project_dir)[1]) if doc_chunks else None
             _g2d_meta: dict = {
-                "candidates": None,
+                "candidates": _g2d_corpus_size,
                 "returned": len(doc_chunks),
                 "retrieval_method": "HYBRID" if (_VEC_SOCK.exists() and not _VEC_DISABLED) else "BM25",
                 "duration_ms": int((_time.perf_counter() - _t_g2d) * 1000),
