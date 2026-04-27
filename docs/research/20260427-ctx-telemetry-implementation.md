@@ -1,12 +1,12 @@
 # CTX Telemetry Stage 1 Implementation
-**Date**: 2026-04-27  **live-inf iters 50–64**  **Released: v0.2.5**
+**Date**: 2026-04-27  **live-inf iters 50–72**  **Released: v0.3.1**
 
 ## What Was Built
 
 Stage 1 of the data flywheel (per [20260427-ctx-user-data-flywheel-strategy.md](20260427-ctx-user-data-flywheel-strategy.md)):
 local structured logging of `retrieval_event` and `session_aggregate` records — numeric + categorical only, no content.
 
-Schema evolution: v1 (iters 50-53) → v1.1 (iter 54: query_type) → v1.2 (iter 55: session_turn_index + calibrate) → v1.3 (iter 56: user_id) → v1.4 (iters 57-58: vault_entry_count, index_staleness_hours, consent command) → v1.5 (iter 64: top_score_bm25, top_score_dense — causal calibration)
+Schema evolution: v1 (iters 50-53) → v1.1 (iter 54: query_type) → v1.2 (iter 55: session_turn_index + calibrate) → v1.3 (iter 56: user_id) → v1.4 (iters 57-58: vault_entry_count, index_staleness_hours, consent command) → v1.5 (iters 64-68: top_score_bm25/dense, G2-DOCS capture, session_aggregate mean_top_score_bm25 + query_type_hist)
 
 ---
 
@@ -57,6 +57,10 @@ One record per completed session.
 | `session_outcome` | enum | NORMAL (>2 turns) / SHORT | v1 |
 | `vault_entry_count` | int\|null | chat vault.db row count at flush | v1.4 |
 | `index_staleness_hours` | int\|null | code-graph.db age in hours | v1.4 |
+| `mean_top_score_bm25` | float\|null | session avg of BM25 quality scores | v1.5 iter 68 |
+| `query_type_hist` | json\|null | `{"KEYWORD":5,"SEMANTIC":3}` turn counts | v1.5 iter 68 |
+
+**v1.5 session causal signal**: `mean_top_score_bm25` × `mean_utility_rate` Pearson r (cross-session view, n≥5 sessions) cross-validates per-turn causal r. Available via `ctx-telemetry tune` and `ctx-telemetry calibrate`.
 
 ## Retrieval Metadata Pipeline
 
@@ -135,6 +139,6 @@ Requires: `ctx telemetry consent` command + DPA/GDPR review.
 - [[projects/CTX/research/20260410-session-6c4f589e-chat-memory|20260410-session-6c4f589e-chat-memory]]
 - [[projects/CTX/research/20260424-memory-retrieval-benchmark-landscape|20260424-memory-retrieval-benchmark-landscape]]
 - [[projects/CTX/research/20260409-bm25-memory-generalization-research|20260409-bm25-memory-generalization-research]]
+- [[projects/CTX/research/20260417-ctx-semantic-search-upgrade-sota|20260417-ctx-semantic-search-upgrade-sota]]
 - [[projects/CTX/research/20260412-semantic-gap-keyword-vs-contextual|20260412-semantic-gap-keyword-vs-contextual]]
 - [[projects/CTX/research/20260426-g2-docs-hybrid-dense-retrieval|20260426-g2-docs-hybrid-dense-retrieval]]
-- [[projects/CTX/research/20260426-g1-hybrid-rrf-dense-retrieval|20260426-g1-hybrid-rrf-dense-retrieval]]
