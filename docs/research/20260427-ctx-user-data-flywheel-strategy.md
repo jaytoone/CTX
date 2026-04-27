@@ -169,13 +169,13 @@ BM25 term frequency distributions → project type cluster IDs (Next.js/Supabase
 | 4 | Minimal upload pipeline (k-anonymized session_aggregate) | ✅ | `cmd_upload` with k-anonymity gate + consent check; endpoint placeholder pending activation |
 | 5 | Positioning: local-first memory moat | ✅ | README framing confirmed; auto-tune flywheel badge reinforces it |
 
-### Schema Gaps (strategy vs. v0.3.4)
+### Schema Gaps (strategy vs. v0.3.5)
 
 | Field | Strategy status | Implementation status | Priority |
 |-------|----------------|----------------------|----------|
 | `project_type_id` | Planned (cluster ID) | **Partial** — `ctx-telemetry cluster` writes `project_type_hint` (local-first proxy, no cross-user data needed). Full cluster ID requires Stage 2 aggregation. | Stage 3: cross-user cluster model; local proxy now unblocked |
 | `node_type_dist` | Planned (`{"commit":3,"doc":1}`) | ✅ **Implemented** in v1.6 — per-block inferred from block semantics (commit/doc/code/chat). `node_type_hist` also added to session_aggregate. | Complete |
-| `cited_node_types` | Planned | **Not implemented** | Requires per-node citation tracking (beyond current binary cited/not) |
+| `cited_node_types` | Planned | ✅ **Resolved via architecture equivalence** — each block maps to exactly one node type (G1→commit, G2-DOCS→doc, CM→chat). Per-block `utility_rate` IS the per-node-type citation rate. `ctx-telemetry` summary now shows node_type × utility cross-tab. | Complete (architectural equivalence) |
 | `session_outcome` | NORMAL / ABANDONED / SHORT | NORMAL / SHORT only | ABANDONED state (user never responded) not yet detected |
 
 ### Caveats Update
