@@ -192,5 +192,5 @@ This is the differentiator vs keyword-only tools. The dashboard should make that
 - [[projects/CTX/research/20260426-g1-hybrid-rrf-dense-retrieval|20260426-g1-hybrid-rrf-dense-retrieval]]
 - [[projects/CTX/research/20260426-g2-docs-hybrid-dense-retrieval|20260426-g2-docs-hybrid-dense-retrieval]]
 - [[projects/CTX/research/20260410-session-6c4f589e-chat-memory|20260410-session-6c4f589e-chat-memory]]
+- [[projects/CTX/research/20260427-dashboard-ui-multilens-eval|20260427-dashboard-ui-multilens-eval]]
 - [[projects/CTX/research/20260402-production-context-retrieval-research|20260402-production-context-retrieval-research]]
-- [[projects/CTX/research/20260407-g1-temporal-eval-results|20260407-g1-temporal-eval-results]]

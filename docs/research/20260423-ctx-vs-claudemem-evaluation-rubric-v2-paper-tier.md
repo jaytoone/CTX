@@ -320,9 +320,9 @@ v2 increases measurement burden ~3x but produces a result a top-tier reviewer ca
 ## Related
 - [[projects/CTX/research/20260421-ctx-distribution-research-replay|20260421-ctx-distribution-research-replay]]
 - [[projects/CTX/research/20260329-ctx-corrected-results-summary|20260329-ctx-corrected-results-summary]]
+- [[projects/CTX/research/20260426-mab-longmemeval-validity-for-ctx|20260426-mab-longmemeval-validity-for-ctx]]
 - [[projects/CTX/paper/CTX_paper_draft|CTX_paper_draft]]
+- [[projects/CTX/research/20260426-g2-docs-eval-corpus-drift-fix|20260426-g2-docs-eval-corpus-drift-fix]]
 - [[projects/CTX/benchmark/g1_g2_publication_framework|g1_g2_publication_framework]]
 - [[projects/CTX/research/20260407-g1-final-eval-benchmark|20260407-g1-final-eval-benchmark]]
 - [[projects/CTX/research/20260326-ctx-vs-industry-comparison|20260326-ctx-vs-industry-comparison]]
-- [[projects/CTX/research/20260328-ctx-downstream-eval-complete|20260328-ctx-downstream-eval-complete]]
-- [[projects/CTX/research/20260327-ctx-downstream-eval|20260327-ctx-downstream-eval]]

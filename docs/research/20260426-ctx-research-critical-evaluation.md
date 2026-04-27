@@ -147,11 +147,11 @@ retrieves relevant individual facts but the LLM must chain them independently.
 - [Retrieval benchmark pitfalls (arXiv:2603.04238)](https://arxiv.org/html/2603.04238)
 
 ## Related
+- [[projects/CTX/research/20260426-ctx-retrieval-benchmark-synthesis|20260426-ctx-retrieval-benchmark-synthesis]]
 - [[projects/CTX/research/20260426-mab-competency-sota-methodology|20260426-mab-competency-sota-methodology]]
+- [[projects/CTX/research/20260426-g2-docs-hybrid-dense-retrieval|20260426-g2-docs-hybrid-dense-retrieval]]
 - [[projects/CTX/research/20260329-ctx-corrected-results-summary|20260329-ctx-corrected-results-summary]]
 - [[projects/CTX/research/20260326-ctx-final-sota-comparison|20260326-ctx-final-sota-comparison]]
 - [[projects/CTX/research/20260326-ctx-vs-sota-comparison|20260326-ctx-vs-sota-comparison]]
 - [[projects/CTX/research/20260326-ctx-methodology-comparison|20260326-ctx-methodology-comparison]]
-- [[projects/CTX/research/20260402-g2-evaluation-methods-research|20260402-g2-evaluation-methods-research]]
-- [[projects/CTX/research/20260402-g2-evaluation-methods-research-summary|20260402-g2-evaluation-methods-research-summary]]
-- [[projects/CTX/SOYA_DEPLOYMENT_GUIDE|SOYA_DEPLOYMENT_GUIDE]]
+- [[projects/CTX/research/20260426-mab-longmemeval-validity-for-ctx|20260426-mab-longmemeval-validity-for-ctx]]

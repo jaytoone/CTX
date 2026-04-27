@@ -429,8 +429,11 @@ Invoke-WebRequest http://localhost:8787/ -UseBasicParsing | Select-Object Status
 ```
 
 ## Related
+- [[projects/CTX/research/20260424-common-port-fanout-tailscale-vs-ssh|20260424-common-port-fanout-tailscale-vs-ssh]]
+- [[projects/CTX/research/20260424-claude-client-bootstrap-session-summary|20260424-claude-client-bootstrap-session-summary]]
 - [[projects/CTX/research/20260410-session-6c4f589e-chat-memory|20260410-session-6c4f589e-chat-memory]]
+- [[projects/CTX/research/20260427-dashboard-semantic-appeal-spec|20260427-dashboard-semantic-appeal-spec]]
+- [[projects/CTX/research/20260427-dashboard-semantic-closeness-cm-fix|20260427-dashboard-semantic-closeness-cm-fix]]
+- [[projects/CTX/research/20260424-windows-client-onboarding-simplification|20260424-windows-client-onboarding-simplification]]
 - [[projects/CTX/research/20260411-hook-comparison-auto-index-vs-chat-memory|20260411-hook-comparison-auto-index-vs-chat-memory]]
-- [[projects/CTX/research/20260328-trigger-classifier-semantic-fix|20260328-trigger-classifier-semantic-fix]]
-- [[projects/CTX/research/20260411-chat-memory-threshold-principled|20260411-chat-memory-threshold-principled]]
-- [[projects/CTX/decisions/20260326-path-derived-module-to-file|20260326-path-derived-module-to-file]]
+- [[projects/CTX/research/20260424-mirrored-localhost-session-portability|20260424-mirrored-localhost-session-portability]]

@@ -194,11 +194,11 @@ The accurate statement is:
   generalising from the ranking output.
 
 ## Related
+- [[projects/CTX/research/20260426-ctx-retrieval-benchmark-synthesis|20260426-ctx-retrieval-benchmark-synthesis]]
+- [[projects/CTX/research/20260426-g1-hybrid-rrf-dense-retrieval|20260426-g1-hybrid-rrf-dense-retrieval]]
+- [[projects/CTX/research/20260426-g2-docs-eval-corpus-drift-fix|20260426-g2-docs-eval-corpus-drift-fix]]
+- [[projects/CTX/research/20260426-g2-docs-hybrid-dense-retrieval|20260426-g2-docs-hybrid-dense-retrieval]]
 - [[projects/CTX/research/20260407-g1-final-eval-benchmark|20260407-g1-final-eval-benchmark]]
 - [[projects/CTX/research/20260411-hook-comparison-auto-index-vs-chat-memory|20260411-hook-comparison-auto-index-vs-chat-memory]]
 - [[projects/CTX/research/20260408-g1-longterm-eval-initial-results|20260408-g1-longterm-eval-initial-results]]
-- [[projects/CTX/research/20260410-g1-fair-eval-bm25-bias|20260410-g1-fair-eval-bm25-bias]]
-- [[projects/CTX/research/20260410-session-6c4f589e-chat-memory|20260410-session-6c4f589e-chat-memory]]
-- [[projects/CTX/research/20260325-long-session-context-management|20260325-long-session-context-management]]
-- [[projects/CTX/research/20260330-ctx-academic-critique-web-grounded|20260330-ctx-academic-critique-web-grounded]]
-- [[projects/CTX/research/20260412-semantic-gap-keyword-vs-contextual|20260412-semantic-gap-keyword-vs-contextual]]
+- [[projects/CTX/research/20260424-memory-retrieval-benchmark-landscape|20260424-memory-retrieval-benchmark-landscape]]

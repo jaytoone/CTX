@@ -94,10 +94,10 @@ CTX real MAB results confirm positive marginal retrieval benefit. However:
 
 ## Related
 - [[projects/CTX/research/20260326-ctx-vs-sota-comparison|20260326-ctx-vs-sota-comparison]]
+- [[projects/CTX/research/20260426-mab-longmemeval-validity-for-ctx|20260426-mab-longmemeval-validity-for-ctx]]
 - [[projects/CTX/research/20260402-g2-evaluation-methods-research-summary|20260402-g2-evaluation-methods-research-summary]]
 - [[projects/CTX/research/20260402-g2-evaluation-methods-research|20260402-g2-evaluation-methods-research]]
+- [[projects/CTX/research/20260426-ctx-retrieval-benchmark-synthesis|20260426-ctx-retrieval-benchmark-synthesis]]
+- [[projects/CTX/research/20260426-g1-hybrid-rrf-dense-retrieval|20260426-g1-hybrid-rrf-dense-retrieval]]
+- [[projects/CTX/research/20260426-g2-docs-hybrid-dense-retrieval|20260426-g2-docs-hybrid-dense-retrieval]]
 - [[projects/CTX/research/20260326-ctx-final-sota-comparison|20260326-ctx-final-sota-comparison]]
-- [[projects/CTX/research/20260326-ctx-methodology-comparison|20260326-ctx-methodology-comparison]]
-- [[projects/CTX/research/20260327-ctx-real-project-self-eval|20260327-ctx-real-project-self-eval]]
-- [[projects/CTX/research/20260325-ctx-paper-tier-evaluation|20260325-ctx-paper-tier-evaluation]]
-- [[projects/CTX/research/20260330-ctx-academic-critique-web-grounded|20260330-ctx-academic-critique-web-grounded]]

@@ -182,8 +182,8 @@ done
 
 ## Related
 - [[projects/CTX/research/20260424-common-port-fanout-tailscale-vs-ssh|20260424-common-port-fanout-tailscale-vs-ssh]]
-- [[projects/CTX/research/20260424-mirrored-localhost-session-portability|20260424-mirrored-localhost-session-portability]]
 - [[projects/CTX/research/20260424-windows-client-onboarding-simplification|20260424-windows-client-onboarding-simplification]]
+- [[projects/CTX/research/20260424-mirrored-localhost-session-portability|20260424-mirrored-localhost-session-portability]]
 - [[projects/CTX/infra/20260423-wsl2-remote-tailscale-tunneling|20260423-wsl2-remote-tailscale-tunneling]]
 - [[projects/CTX/infra/20260423-client-onboarding-north-star|20260423-client-onboarding-north-star]]
 - [[projects/CTX/research/20260410-session-6c4f589e-chat-memory|20260410-session-6c4f589e-chat-memory]]
