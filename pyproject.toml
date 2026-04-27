@@ -10,7 +10,7 @@ readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.9"
 authors = [{ name = "jaytoone" }]
-keywords = ["retrieval", "llm", "code-search", "context", "rag", "claude-code"]
+keywords = ["retrieval", "llm", "code-search", "context", "rag", "claude-code", "claude-code-plugin"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -47,6 +47,7 @@ packages = [
     "ctx_retriever.cli",
     "ctx_retriever.data",
     "ctx_retriever.evaluator",
+    "ctx_retriever.hooks",
     "ctx_retriever.retrieval",
     "ctx_retriever.trigger",
     "ctx_retriever.visualizer",
@@ -57,3 +58,4 @@ packages = [
 
 [tool.setuptools.package-data]
 "*" = ["*.json", "*.yaml"]
+"ctx_retriever.hooks" = ["*.py"]
