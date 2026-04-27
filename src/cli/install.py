@@ -40,6 +40,10 @@ except ImportError:
 # ─────────────────────── config ───────────────────────
 CLAUDE_HOOKS_DIR = Path.home() / ".claude" / "hooks"
 CLAUDE_SETTINGS = Path.home() / ".claude" / "settings.json"
+CLAUDE_VAULT_DIR = Path.home() / ".local" / "share" / "claude-vault"
+
+# Daemon scripts shipped in wheel → deployed to ~/.local/share/claude-vault/
+CTX_DAEMONS = ["vec-daemon.py", "bge-daemon.py"]
 
 # The 4 production hooks CTX ships. Each entry: (filename, event, async).
 # Matched against current ~/.claude/settings.json structure.
@@ -129,6 +133,39 @@ def step_copy_hooks(dry_run: bool = False) -> tuple[int, int, list[str]]:
     return copied, skipped, errors
 
 
+def step_copy_daemons(dry_run: bool = False) -> tuple[int, int, list[str]]:
+    """Copy vec-daemon.py and bge-daemon.py from the installed package to
+    ~/.local/share/claude-vault/. These power the semantic layer (hybrid
+    CM/G1/G2-DOCS). BM25-only mode works without them.
+    Returns (copied, skipped, errors)."""
+    src = _pkg_hooks_dir()
+    if src is None:
+        return 0, 0, []  # non-fatal: daemons are optional
+
+    CLAUDE_VAULT_DIR.mkdir(parents=True, exist_ok=True)
+    copied, skipped, errors = 0, 0, []
+
+    for fname in CTX_DAEMONS:
+        src_file = src / fname
+        dst_file = CLAUDE_VAULT_DIR / fname
+        if not src_file.is_file():
+            continue
+        if dst_file.is_file():
+            skipped += 1
+            continue
+        if not dry_run:
+            try:
+                shutil.copy2(src_file, dst_file)
+                dst_file.chmod(0o755)
+                copied += 1
+            except OSError as e:
+                errors.append(f"copy {fname}: {e}")
+        else:
+            copied += 1
+
+    return copied, skipped, errors
+
+
 def step_verify_hooks_present() -> tuple[bool, list[str], list[str]]:
     """Confirm expected hook files exist at ~/.claude/hooks/.
     Returns (all_present, found, missing)."""
@@ -179,7 +216,7 @@ def cmd_install(args: argparse.Namespace) -> int:
 
     # 1. Copy hook files from package (if not already present)
     copied, skipped, errors = step_copy_hooks(dry_run=args.dry_run)
-    print(f"1/3 hook files:  copied={copied}  already-present={skipped}")
+    print(f"1/4 hook files:  copied={copied}  already-present={skipped}")
     if errors:
         for e in errors:
             print(f"   ✗ {e}")
@@ -194,10 +231,20 @@ def cmd_install(args: argparse.Namespace) -> int:
         print(f"   Place hook files manually at {CLAUDE_HOOKS_DIR}/ and retry.")
         return 2
 
-    # 2. Patch settings.json
+    # 2. Copy daemon files (vec-daemon + bge-daemon) — optional semantic layer
+    d_copied, d_skipped, d_errors = step_copy_daemons(dry_run=args.dry_run)
+    if d_copied or d_skipped:
+        print(f"2/4 daemons:     copied={d_copied}  already-present={d_skipped}"
+              f"  (→ {CLAUDE_VAULT_DIR})")
+    else:
+        print(f"2/4 daemons:     not found in package (BM25-only mode active)")
+    for e in d_errors:
+        print(f"   ✗ {e}")
+
+    # 3. Patch settings.json
     new_hooks = _new_hooks_block()
     result = patch_settings(CLAUDE_SETTINGS, new_hooks, dry_run=args.dry_run)
-    print(f"\n2/3 settings.json patch:")
+    print(f"\n3/4 settings.json patch:")
     print(result.summary())
     if not result.ok:
         return 3
@@ -207,9 +254,9 @@ def cmd_install(args: argparse.Namespace) -> int:
         print("  Re-run without --dry-run to execute.")
         return 0
 
-    # 3. Smoke test
+    # 4. Smoke test
     ok, msg = step_smoke_test()
-    print(f"\n3/3 smoke test:  {'PASS' if ok else 'FAIL'}")
+    print(f"\n4/4 smoke test:  {'PASS' if ok else 'FAIL'}")
     print(f"   {msg}")
     if not ok:
         print("\n  Hook chain installed but smoke test failed.")
@@ -219,6 +266,11 @@ def cmd_install(args: argparse.Namespace) -> int:
     print("\n" + "=" * 50)
     print("CTX installed. Restart Claude Code to activate.")
     print("Verify: claude -p 'list recent decisions'")
+    if d_copied:
+        print("\nSemantic layer (vec-daemon + bge-daemon) deployed.")
+        print("To activate: nohup python3 ~/.local/share/claude-vault/vec-daemon.py &")
+        print("  Optional BGE rerank: nohup python3 ~/.local/share/claude-vault/bge-daemon.py &")
+        print("  (vec-daemon starts automatically on next Claude Code session)")
     print("=" * 50)
     return 0
 
@@ -275,6 +327,30 @@ def cmd_status(args: argparse.Namespace) -> int:
         print(f"\nlast-injection.json: age {age/60:.1f} min")
     else:
         print(f"\nlast-injection.json: absent (no hook fire yet)")
+
+    # Daemon files
+    print(f"\nDaemons ({CLAUDE_VAULT_DIR}):")
+    import socket as _socket
+    for daemon in CTX_DAEMONS:
+        dst = CLAUDE_VAULT_DIR / daemon
+        if not dst.is_file():
+            print(f"   ✗ {daemon}  (missing — semantic layer disabled)")
+            continue
+        # Probe socket liveness
+        sock_name = daemon.replace(".py", ".sock")
+        sock_path = CLAUDE_VAULT_DIR / sock_name
+        alive = False
+        if sock_path.exists():
+            try:
+                s = _socket.socket(_socket.AF_UNIX, _socket.SOCK_STREAM)
+                s.settimeout(0.5)
+                s.connect(str(sock_path))
+                s.close()
+                alive = True
+            except Exception:
+                pass
+        status = "running" if alive else "stopped"
+        print(f"   {'✓' if alive else '○'} {daemon}  ({status})")
 
     # Stale path check (CLAUDE_PLUGIN_ROOT update bug — anthropics/claude-code#18517)
     stale = []
