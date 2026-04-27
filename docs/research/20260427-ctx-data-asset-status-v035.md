@@ -146,6 +146,52 @@ Cursor's flywheel requires completion UX data (accept/reject). CTX's flywheel ru
 
 ---
 
+## Pricing Model Implications
+
+The data assets collected directly inform which pricing models are viable and when.
+
+### Billing Metric: Effective Context Deliveries
+
+**Do not price on sessions or turns.** Sessions are a cost unit, not a customer value unit. Turns inflate for complex projects and penalize power users.
+
+The correct meter: **`utility_rate × total_turns`** per billing period = "effective context deliveries" — nodes the AI actually used, not just injected. This is how much work CTX did, not how much the user typed.
+
+```
+effective_deliveries = sum(utility_rate_i × total_turns_i)  over billing period
+```
+
+### WTP Tiers from Current Signals
+
+| Tier | Gate Signal | Implied WTP | Unlock |
+|------|------------|-------------|--------|
+| **Free** | `vault_entry_count` < 50, <20 turns/month | $0 | Validate CTX works for their workflow |
+| **Pro** | `utility_rate` > 0.30 consistently, DECISION queries in `query_type_hist` | $12–18/month | CTX as real workflow tool |
+| **Team** | `project_type_hint` = enterprise stacks, HYBRID > 60% in `retrieval_method_hist` | $40–60/seat/month | Semantic layer + longer vault retention |
+
+`vault_entry_count` is a tenure proxy — use it for tier segmentation, not as a billing meter.
+
+### Outcome-Based Pricing: Not Yet
+
+There is no direct outcome signal (build success, PR merge rate, bug fix rate) — outcome-based pricing requires that measurement layer. **Do not promise outcome-based pricing until it is measurable.**
+
+The precursor signal: `retrieval_method_hist` HYBRID percentage. Sessions where HYBRID > 50% represent CTX doing semantic work that BM25 alone cannot. This is the closest available outcome proxy. Instrument and accumulate 90 days of data before any outcome-based offer.
+
+### What Each Data Asset Enables
+
+| Asset | Pricing Role |
+|-------|-------------|
+| `utility_rate × total_turns` | Primary billing meter |
+| `retrieval_method_hist` HYBRID% | Outcome proxy → future outcome-based gate |
+| `project_type_hint` | Tier gate (enterprise stacks → Team tier) |
+| `vault_entry_count` | Tenure/engagement → free tier abuse prevention |
+| `query_type_hist` DECISION% | Pro tier qualifier (genuine workflow use vs. exploration) |
+
+### Critical Prerequisite
+
+Before any monetization: measure LLM API cost per session. If effective deliveries cost $0.05 and you price at $0.10 — 50% gross margin, viable. If cost is $0.15, the model breaks regardless of WTP. Run the unit economics against real telemetry data first.
+
+---
+
 ## Summary
 
 CTX has completed Stage 1 of its data flywheel in v0.3.5:
@@ -159,7 +205,11 @@ The moat is not the data volume (too early) — it is the **architecture** that 
 ---
 
 ## Related
-- [[20260427-ctx-user-data-flywheel-strategy|Flywheel Strategy (original)]]
-- [[20260427-ctx-telemetry-implementation|Telemetry Implementation Log]]
-- [[20260427-ctx-flywheel-data-coverage|Field Coverage Map]]
-- [[20260427-ctx-plugin-distribution-research|Distribution Research]]
+- [[projects/CTX/research/20260421-ctx-monetization-session-summary|20260421-ctx-monetization-session-summary]]
+- [[projects/CTX/research/20260326-ctx-benchmark-validation-roadmap|20260326-ctx-benchmark-validation-roadmap]]
+- [[projects/CTX/research/20260424-memory-retrieval-benchmark-landscape|20260424-memory-retrieval-benchmark-landscape]]
+- [[projects/CTX/research/20260410-session-6c4f589e-chat-memory|20260410-session-6c4f589e-chat-memory]]
+- [[projects/CTX/research/20260427-ctx-user-data-flywheel-strategy|20260427-ctx-user-data-flywheel-strategy]]
+- [[projects/CTX/research/20260409-bm25-memory-generalization-research|20260409-bm25-memory-generalization-research]]
+- [[projects/CTX/research/20260402-production-context-retrieval-research|20260402-production-context-retrieval-research]]
+- [[projects/CTX/research/20260426-ctx-retrieval-benchmark-synthesis|20260426-ctx-retrieval-benchmark-synthesis]]
