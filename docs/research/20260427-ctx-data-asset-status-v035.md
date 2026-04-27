@@ -228,6 +228,25 @@ Before any monetization: measure LLM API cost per session. If effective deliveri
 
 ## Summary
 
+## Monetization Readiness Triggers
+
+The data itself should define when each monetization milestone is reached — not an arbitrary date.
+
+| Milestone | Data Threshold | Signal to Check | Action |
+|-----------|---------------|-----------------|--------|
+| **Calibration credible** | n ≥ 100 retrieval_event records | `ctx-telemetry calibrate` — causal r trustworthy | Publish moat claim: "CTX utility_rate is a validated signal" |
+| **Stage 2 meaningful** | n ≥ 1,000 opt-in sessions | `mean_utility_rate` cross-user variance < 15pp | Activate upload endpoint, begin cross-user tuning |
+| **Pro tier viable** | ≥ 50 users with `utility_rate` > 0.30 consistently | 30-day cohort retention > 60% | Launch Pro at $12–18/month |
+| **Semantic moat proven** | ≥ 200 sessions with `retrieval_method_hist` HYBRID > 50% | HYBRID vs BM25 utility_rate delta > 10pp | Publish benchmark: "CTX semantic layer adds measurable value" |
+| **Team tier viable** | ≥ 3 distinct enterprise `project_type_hint` profiles in user base | `vault_entry_count` > 200 for enterprise-stack users | Launch Team at $40–60/seat |
+| **Outcome-based pricing** | ≥ 90 days HYBRID% data + external outcome proxy | PR merge rate or test pass rate instrumented | Outcome-based add-on tier |
+
+**Current status (2026-04-27, n=52)**: At calibration threshold (n=52 < 100). 6–8 more active sessions reach the first trigger. Pro tier viable within 30–60 days of install base growth at current engagement rate.
+
+---
+
+## Summary
+
 CTX has completed Stage 1 of its data flywheel in v0.3.5:
 - **19 fields** of per-turn telemetry, all local, all privacy-safe
 - **Causal signal** distinguishing retrieval quality from citation bias
@@ -239,11 +258,11 @@ The moat is not the data volume (too early) — it is the **architecture** that 
 ---
 
 ## Related
+- [[projects/CTX/research/20260402-production-context-retrieval-research|20260402-production-context-retrieval-research]]
 - [[projects/CTX/research/20260421-ctx-monetization-session-summary|20260421-ctx-monetization-session-summary]]
 - [[projects/CTX/research/20260326-ctx-benchmark-validation-roadmap|20260326-ctx-benchmark-validation-roadmap]]
 - [[projects/CTX/research/20260424-memory-retrieval-benchmark-landscape|20260424-memory-retrieval-benchmark-landscape]]
 - [[projects/CTX/research/20260410-session-6c4f589e-chat-memory|20260410-session-6c4f589e-chat-memory]]
 - [[projects/CTX/research/20260427-ctx-user-data-flywheel-strategy|20260427-ctx-user-data-flywheel-strategy]]
 - [[projects/CTX/research/20260409-bm25-memory-generalization-research|20260409-bm25-memory-generalization-research]]
-- [[projects/CTX/research/20260402-production-context-retrieval-research|20260402-production-context-retrieval-research]]
-- [[projects/CTX/research/20260426-ctx-retrieval-benchmark-synthesis|20260426-ctx-retrieval-benchmark-synthesis]]
+- [[projects/CTX/research/20260411-chat-memory-threshold-principled|20260411-chat-memory-threshold-principled]]
