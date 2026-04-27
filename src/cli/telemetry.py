@@ -347,6 +347,36 @@ def cmd_tune(args):
                 print(f"\n  TEMPORAL queries outperform KEYWORD by {-gap*100:.0f}pp — temporal routing is working well.")
                 recommendations["temporal_boost_hint"] = "maintain"
 
+    # Causal signal: BM25 score → utility_rate Pearson r (v1.5 data)
+    # High r (>0.30): retrieval quality drives citations → HYBRID worth the cost
+    # Low r (<0.10): position bias likely → BM25 and HYBRID will behave similarly
+    v15_pairs = [(e["top_score_bm25"], e.get("utility_rate", 0.0))
+                 for e in events
+                 if e.get("top_score_bm25") is not None]
+    if len(v15_pairs) >= 10:
+        xs = [p[0] for p in v15_pairs]
+        ys = [p[1] for p in v15_pairs]
+        xm, ym = sum(xs) / len(xs), sum(ys) / len(ys)
+        cov = sum((x - xm) * (y - ym) for x, y in zip(xs, ys)) / len(xs)
+        sx = (sum((x - xm) ** 2 for x in xs) / len(xs)) ** 0.5
+        sy = (sum((y - ym) ** 2 for y in ys) / len(ys)) ** 0.5
+        r_causal = round(cov / (sx * sy), 4) if sx > 0 and sy > 0 else 0.0
+        recommendations["causal_r_bm25_utility"] = r_causal
+        print(f"\nCausal signal (v1.5, n={len(v15_pairs)}):")
+        print(f"  BM25 top_score × utility_rate Pearson r = {r_causal:+.3f}")
+        if r_causal > 0.30:
+            print("  → Quality-driven citations (r>0.30): HYBRID upgrade is likely worthwhile.")
+            recommendations["hybrid_upgrade_hint"] = "likely_worthwhile"
+        elif r_causal < 0.10:
+            print("  → Weak causal signal (r<0.10): position bias may be dominant.")
+            print("     Consider probe sessions with known-irrelevant context to validate.")
+            recommendations["hybrid_upgrade_hint"] = "validate_first"
+        else:
+            print(f"  → Mixed signal (r={r_causal:.2f}): accumulate more data before deciding.")
+            recommendations["hybrid_upgrade_hint"] = "needs_more_data"
+    else:
+        print(f"\nCausal signal: need ≥10 v1.5 records with BM25 scores (current: {len(v15_pairs)}).")
+
     # Write auto-tune file
     AUTO_TUNE_FILE.write_text(json.dumps(recommendations, indent=2))
     print(f"\nAuto-tune parameters written to: {AUTO_TUNE_FILE}")

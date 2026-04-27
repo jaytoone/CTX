@@ -942,6 +942,7 @@ def dense_rank_docs(units_emb, query, top_k=10):
     if not scored:
         return []
     scored.sort(key=lambda x: -x[0])
+    _last_retrieval_scores["dense_top"] = float(scored[0][0])
     return [item for _, item in scored[:top_k]]
 
 
@@ -969,6 +970,7 @@ def hybrid_search_docs(project_dir, query, top_k=5):
     # Step 1: BM25 candidates
     scores = bm25.get_scores(query_tokens)
     top_score = float(max(scores)) if len(scores) else 0.0
+    _last_retrieval_scores["bm25_top"] = top_score
     if top_score < 1.0:
         return []
     floor = max(1.0, top_score * 0.35)
@@ -1508,6 +1510,8 @@ def main():
             _g2_temporal_gap = _AUTO_TUNE.get("temporal_utility_gap", 0)
             if _qtype_now2 == "TEMPORAL" and _g2_temporal_gap > 0.10:
                 _g2d_top_k = 3  # more selective for low-utility temporal doc queries
+        _last_retrieval_scores.pop("bm25_top", None)
+        _last_retrieval_scores.pop("dense_top", None)
         doc_chunks = hybrid_search_docs(project_dir, prompt, top_k=_g2d_top_k)
         if doc_chunks:
             lines.append("[G2-DOCS] (BM25+dense RRF relevant research docs)")
@@ -1534,13 +1538,18 @@ def main():
                 "duration_ms": int((_time.perf_counter() - _t_g2d) * 1000),
             })
             _blocks_fired.append("g2_docs")
-            _retrieval_meta["blocks"]["g2_docs"] = {
+            _g2d_meta: dict = {
                 "candidates": None,
                 "returned": len(doc_chunks),
                 "retrieval_method": "HYBRID" if (_VEC_SOCK.exists() and not _VEC_DISABLED) else "BM25",
                 "duration_ms": int((_time.perf_counter() - _t_g2d) * 1000),
                 "query_type": _classify_query_type(prompt),
             }
+            if "bm25_top" in _last_retrieval_scores:
+                _g2d_meta["top_score_bm25"] = round(_last_retrieval_scores["bm25_top"], 4)
+            if "dense_top" in _last_retrieval_scores:
+                _g2d_meta["top_score_dense"] = round(_last_retrieval_scores["dense_top"], 4)
+            _retrieval_meta["blocks"]["g2_docs"] = _g2d_meta
             # Citation probe: log G2-DOCS retrieved nodes
             log_retrieved_nodes(project_dir, _session_id, prompt, "g2_docs", [
                 {"id": chunk.strip().split("\n")[0].split(" §")[0].strip(), "text": chunk.strip().split("\n")[0][:80]}
