@@ -247,7 +247,7 @@ def _read_stop_stdin() -> dict:
 # ── retrieval_event schema (data flywheel — privacy-safe, local-first) ──────
 _RETRIEVAL_EVENTS_LOG = HOME / ".claude" / "ctx-retrieval-events.jsonl"
 _RETRIEVAL_META_PATH = HOME / ".claude" / "last-retrieval-meta.json"
-_RETRIEVAL_EVENT_SCHEMA = "v1.1"
+_RETRIEVAL_EVENT_SCHEMA = "v1.2"
 
 _HOOK_SOURCE_MAP = {
     "g1_decisions": "G1",
@@ -277,6 +277,17 @@ def _write_retrieval_events(session_id, by_block, hits_by_mode, semantic_availab
         # Anonymize session_id — keep local correlation but non-reversible
         sid_hash = hashlib.sha256(session_id.encode()).hexdigest()[:16] if session_id else "unknown"
 
+        # session_turn_index: read current turn count before this turn is accumulated
+        session_turn_index = 0
+        try:
+            if _SESSION_STATE_PATH.exists():
+                st = json.loads(_SESSION_STATE_PATH.read_text())
+                current_sid_hash = hashlib.sha256(session_id.encode()).hexdigest()[:16] if session_id else ""
+                if st.get("session_id_hash") == current_sid_hash:
+                    session_turn_index = st.get("turns", 0)
+        except Exception:
+            pass
+
         for block, counts in by_block.items():
             hook_source = _HOOK_SOURCE_MAP.get(block, block.upper())
             block_meta = meta.get("blocks", {}).get(block, {})
@@ -296,6 +307,7 @@ def _write_retrieval_events(session_id, by_block, hits_by_mode, semantic_availab
                 "total_injected": total,
                 "total_cited": cited,
                 "utility_rate": round(cited / total, 4) if total > 0 else 0.0,
+                "session_turn_index": session_turn_index,
                 "vec_daemon_up": meta.get("vec_daemon_up", semantic_available),
                 "bge_daemon_up": meta.get("bge_daemon_up", False),
             }

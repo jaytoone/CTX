@@ -120,6 +120,105 @@ def cmd_last(args):
               f"vec={'v' if e.get('vec_daemon_up') else '-'}  bge={'b' if e.get('bge_daemon_up') else '-'}")
 
 
+def cmd_calibrate(args):
+    """Citation bias detection analysis.
+
+    Validates the utility_rate signal quality. Key concern from flywheel research:
+    Claude may cite whatever is in context due to position/recency bias — not genuine
+    relevance. This command analyzes the retrieval_event log for calibration signals.
+
+    Flags potential bias if:
+    - Mean utility_rate > 0.80 across all records (ceiling effect → position bias)
+    - Utility rate does NOT vary by query_type (all types within 5pp of each other)
+    - Utility rate does NOT vary by total_injected volume (more injected = same rate)
+    - High fraction of records at exactly 1.0 utility_rate
+    """
+    events = _load(LOG)
+    if not events:
+        print("No retrieval_event records. Run CTX for some sessions first.")
+        return
+
+    n = len(events)
+    if n < 10:
+        print(f"Only {n} records — calibration needs ≥10 records for signal. Keep using CTX.")
+        return
+
+    rates = [e.get("utility_rate", 0.0) for e in events]
+    mean_rate = sum(rates) / len(rates)
+    perfect_rate = sum(1 for r in rates if r >= 0.999) / len(rates)
+
+    # Variance by query_type (v1.1+ only)
+    by_qt = defaultdict(list)
+    for e in events:
+        qt = e.get("query_type")
+        if qt and qt != "UNKNOWN":
+            by_qt[qt].append(e.get("utility_rate", 0.0))
+
+    # Variance by injected volume
+    by_vol = defaultdict(list)
+    for e in events:
+        vol = e.get("total_injected", 0)
+        bucket = "low(1-3)" if vol <= 3 else "mid(4-7)" if vol <= 7 else "high(8+)"
+        by_vol[bucket].append(e.get("utility_rate", 0.0))
+
+    print(f"\nCTX Utility Rate Calibration — {n} retrieval_event records")
+    print("=" * 56)
+    print(f"\nOverall mean utility_rate: {mean_rate * 100:.1f}%")
+    print(f"Perfect (1.0) rate:        {perfect_rate * 100:.1f}% of records")
+
+    flags = []
+
+    if mean_rate > 0.80:
+        flags.append(("WARN", "mean_utility > 80%", "possible position/recency bias — Claude cites all injected context"))
+    if perfect_rate > 0.50:
+        flags.append(("WARN", f"{perfect_rate*100:.0f}% perfect-rate records", "ceiling effect — all injected items cited regardless of relevance"))
+
+    if by_qt and len(by_qt) >= 2:
+        qt_means = {qt: sum(v)/len(v) for qt, v in by_qt.items()}
+        qt_range = max(qt_means.values()) - min(qt_means.values())
+        print(f"\nUtility variance by query_type (range={qt_range*100:.1f}pp):")
+        for qt, v in sorted(qt_means.items()):
+            print(f"  {qt:<12} mean={v*100:.1f}%  (n={len(by_qt[qt])})")
+        if qt_range < 0.05:
+            flags.append(("WARN", f"query_type variance={qt_range*100:.1f}pp", "utility rate flat across query types — may not reflect actual relevance"))
+        else:
+            flags.append(("OK", f"query_type variance={qt_range*100:.1f}pp", "utility varies by query type — healthy signal"))
+    else:
+        print("\nQuery type breakdown: insufficient v1.1+ records for analysis")
+
+    if len(by_vol) >= 2:
+        vol_means = {k: sum(v)/len(v) for k, v in by_vol.items()}
+        vol_range = max(vol_means.values()) - min(vol_means.values())
+        print(f"\nUtility variance by injection volume (range={vol_range*100:.1f}pp):")
+        for k, v in sorted(vol_means.items()):
+            print(f"  {k:<12} mean={v*100:.1f}%  (n={len(by_vol[k])})")
+        if vol_range < 0.05:
+            flags.append(("WARN", f"volume variance={vol_range*100:.1f}pp", "utility rate flat regardless of how many items injected — potential bulk citation"))
+        else:
+            flags.append(("OK", f"volume variance={vol_range*100:.1f}pp", "utility varies with injection volume — healthy signal"))
+
+    print(f"\nCalibration flags ({len([f for f in flags if f[0]=='WARN'])} warnings, {len([f for f in flags if f[0]=='OK'])} OK):")
+    for status, label, detail in flags:
+        icon = "⚠" if status == "WARN" else "✓"
+        print(f"  {icon} [{label}] {detail}")
+
+    warn_count = len([f for f in flags if f[0] == "WARN"])
+    print()
+    if warn_count == 0:
+        print("CALIBRATION: PASS — utility_rate signal appears trustworthy as flywheel input.")
+    elif warn_count == 1:
+        print("CALIBRATION: MARGINAL — one warning; monitor as more records accumulate.")
+    else:
+        print("CALIBRATION: WARN — multiple bias signals detected.")
+        print("  Recommendation: inject known-irrelevant context for 10 sessions, re-run.")
+        print("  If false citation rate > 15%, weight utility_rate by semantic distance.")
+
+    print()
+    print(f"Note: Reliable calibration requires ≥100 records (current: {n}).")
+    if n < 100:
+        print("      Continue using CTX to accumulate more signal.")
+
+
 def cmd_clear(args):
     deleted = []
     for path in [LOG, AGG_LOG]:
@@ -142,12 +241,15 @@ def main(argv=None):
     last_p = sub.add_parser("last", help="Show last N events")
     last_p.add_argument("-n", type=int, default=10, help="Number of events")
     sub.add_parser("clear", help="Delete local telemetry logs")
+    sub.add_parser("calibrate", help="Citation bias detection — validate utility_rate signal")
 
     args = parser.parse_args(argv)
     if args.cmd == "last":
         cmd_last(args)
     elif args.cmd == "clear":
         cmd_clear(args)
+    elif args.cmd == "calibrate":
+        cmd_calibrate(args)
     else:
         cmd_summary(args)
 
