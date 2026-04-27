@@ -284,6 +284,61 @@ CTX/
     paper/                # Paper draft (markdown + LaTeX)
 ```
 
+## Telemetry (opt-in, local-only)
+
+CTX can log retrieval quality metrics locally to help you understand how well the context injection is working.
+
+**Opt in:**
+```bash
+export CTX_TELEMETRY=1          # enable for this shell
+# or: touch ~/.claude/ctx-telemetry.enabled   # persist across shells
+```
+
+**View your data:**
+```bash
+ctx-telemetry                   # summary: avg utility% per block, query type breakdown
+ctx-telemetry last              # last 10 session turns
+ctx-telemetry calibrate         # citation bias detection — validates signal quality
+ctx-telemetry clear             # delete all local telemetry logs
+```
+
+### What is collected (schema v1.3)
+
+All data stays on your machine at `~/.claude/ctx-retrieval-events.jsonl`. Nothing is uploaded.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `user_id` | string(16) | SHA256(machine-id + install-month)[:16] — anonymous, changes on reinstall |
+| `session_id_hash` | string(16) | SHA256(session_id)[:16] — non-reversible |
+| `ts_unix_hour` | int | Unix timestamp truncated to hour |
+| `hook_source` | enum | G1 / G2_DOCS / G2_CODE / CM |
+| `query_type` | enum | KEYWORD / SEMANTIC / TEMPORAL |
+| `retrieval_method` | enum | HYBRID / BM25 / UNKNOWN |
+| `candidates_returned` | int | Number of candidates before ranking |
+| `total_injected` | int | Items injected into context |
+| `total_cited` | int | Items referenced by the AI response |
+| `utility_rate` | float | cited / injected — retrieval precision proxy |
+| `session_turn_index` | int | Turn index within the current session |
+| `vec_daemon_up` | bool | Whether semantic layer was active |
+| `bge_daemon_up` | bool | Whether cross-encoder reranker was active |
+| `duration_ms` | int | Per-block retrieval latency |
+
+### What is NOT collected
+
+- ❌ No query text, response text, or code content
+- ❌ No file names, commit messages, or project paths
+- ❌ No email, device name, or personally identifiable information
+- ❌ No network requests — Stage 1 is local-only
+
+### Privacy design
+
+- `user_id` = SHA256(machine-id + month-boundary) — not linkable to email or name; changes on reinstall
+- Timestamps truncated to **hour** (not minute)
+- All content stripped — only counts, rates, method names, and latency
+- Follows [Sourcegraph's numeric-only telemetry](https://sourcegraph.com/docs/admin/telemetry) pattern
+
+**Stage 2 (not yet implemented):** opt-in upload of k-anonymized `session_aggregate` rows via `ctx-telemetry consent`. Rows with fewer than 5 users per (date × project_type) window are suppressed before any upload.
+
 ## Paper
 
 - Paper draft: [`docs/paper/CTX_paper_draft.md`](docs/paper/CTX_paper_draft.md)

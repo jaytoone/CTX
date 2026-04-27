@@ -234,7 +234,11 @@ def cmd_clear(args):
 def main(argv=None):
     parser = argparse.ArgumentParser(
         prog="ctx-telemetry",
-        description="CTX retrieval telemetry preview — local-only, no upload",
+        description=(
+            "CTX retrieval telemetry — local-only, no upload (schema v1.3). "
+            "Enable with: export CTX_TELEMETRY=1  "
+            "Schema docs: https://github.com/jaytoone/CTX#telemetry-opt-in-local-only"
+        ),
     )
     sub = parser.add_subparsers(dest="cmd")
     sub.add_parser("summary", help="Show aggregate stats (default)")
