@@ -252,6 +252,30 @@ def cmd_calibrate(args):
     if n < 100:
         print("      Continue using CTX to accumulate more signal.")
 
+    # Cross-session calibration view (session_aggregate)
+    agg_all = _load(AGG_LOG)
+    agg_with_score = [e for e in agg_all if e.get("mean_top_score_bm25") is not None]
+    if len(agg_with_score) >= 5:
+        xs = [e["mean_top_score_bm25"] for e in agg_with_score]
+        ys = [e.get("mean_utility_rate", 0.0) for e in agg_with_score]
+        xm, ym = sum(xs) / len(xs), sum(ys) / len(ys)
+        cov = sum((x - xm) * (y - ym) for x, y in zip(xs, ys)) / len(xs)
+        sx = (sum((x - xm) ** 2 for x in xs) / len(xs)) ** 0.5
+        sy = (sum((y - ym) ** 2 for y in ys) / len(ys)) ** 0.5
+        r_sess = cov / (sx * sy) if sx > 0 and sy > 0 else 0.0
+        print(f"\nCross-session view (session_aggregate, n={len(agg_with_score)}):")
+        print(f"  mean_top_score_bm25 × mean_utility_rate Pearson r = {r_sess:+.3f}")
+        sessions_with_qt = [e for e in agg_all if e.get("query_type_hist")]
+        if sessions_with_qt:
+            qt_totals: dict = {}
+            for e in sessions_with_qt:
+                for qt, cnt in e["query_type_hist"].items():
+                    qt_totals[qt] = qt_totals.get(qt, 0) + cnt
+            total = sum(qt_totals.values())
+            print("  Query type mix across sessions:")
+            for qt, cnt in sorted(qt_totals.items(), key=lambda x: -x[1]):
+                print(f"    {qt:<12} {cnt:>4} turns ({cnt/total*100:.0f}%)")
+
 
 AUTO_TUNE_FILE = Path.home() / ".claude" / "ctx-auto-tune.json"
 CONSENT_FILE = Path.home() / ".claude" / "ctx-telemetry-consent.json"
@@ -376,6 +400,33 @@ def cmd_tune(args):
             recommendations["hybrid_upgrade_hint"] = "needs_more_data"
     else:
         print(f"\nCausal signal: need ≥10 v1.5 records with BM25 scores (current: {len(v15_pairs)}).")
+
+    # Cross-session analysis from session_aggregate (v1.5)
+    agg_events = _load(AGG_LOG)
+    agg_v15 = [e for e in agg_events if e.get("mean_top_score_bm25") is not None]
+    if len(agg_v15) >= 5:
+        xs = [e["mean_top_score_bm25"] for e in agg_v15]
+        ys = [e.get("mean_utility_rate", 0.0) for e in agg_v15]
+        xm, ym = sum(xs) / len(xs), sum(ys) / len(ys)
+        cov = sum((x - xm) * (y - ym) for x, y in zip(xs, ys)) / len(xs)
+        sx = (sum((x - xm) ** 2 for x in xs) / len(xs)) ** 0.5
+        sy = (sum((y - ym) ** 2 for y in ys) / len(ys)) ** 0.5
+        r_session = round(cov / (sx * sy), 4) if sx > 0 and sy > 0 else 0.0
+        recommendations["causal_r_session_level"] = r_session
+        # query_type mix: average KEYWORD fraction across sessions
+        sessions_with_qt = [e for e in agg_events if e.get("query_type_hist")]
+        if sessions_with_qt:
+            kw_fracs = []
+            for e in sessions_with_qt:
+                qt = e["query_type_hist"]
+                total_qt = sum(qt.values())
+                kw_fracs.append(qt.get("KEYWORD", 0) / total_qt if total_qt > 0 else 0)
+            recommendations["mean_keyword_fraction"] = round(sum(kw_fracs) / len(kw_fracs), 4)
+        print(f"\nCross-session causal signal (session_aggregate, n={len(agg_v15)}):")
+        print(f"  mean_top_score_bm25 × mean_utility_rate Pearson r = {r_session:+.3f}")
+        if abs(r_session - recommendations.get("causal_r_bm25_utility", 0.0)) > 0.15:
+            print("  NOTE: Per-turn r differs from session r by >0.15 — aggregation bias present.")
+            print("        Per-turn r is more reliable (larger n, less averaging).")
 
     # Write auto-tune file
     AUTO_TUNE_FILE.write_text(json.dumps(recommendations, indent=2))
