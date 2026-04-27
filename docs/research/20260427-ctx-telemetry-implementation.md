@@ -75,24 +75,41 @@ utility-rate.py (Stop)
 ## ctx-telemetry CLI (v1.5)
 
 ```bash
-ctx-telemetry                   # summary: avg utility% per block + query_type × utility breakdown
+ctx-telemetry                   # summary: avg utility% per block + flywheel health verdict
 ctx-telemetry last [-n N]       # last N events (default 10)
-ctx-telemetry calibrate         # citation bias detection — validates signal quality
+ctx-telemetry calibrate         # citation bias + causal r analysis (v1.5)
+ctx-telemetry tune              # compute auto-tune params → ctx-auto-tune.json
 ctx-telemetry consent           # Stage 2 consent status
 ctx-telemetry consent grant     # opt-in to k-anonymized upload (interactive preview)
 ctx-telemetry consent revoke    # revoke consent
+ctx-telemetry upload [--send]   # Stage 2 dry-run preview (--send when endpoint active)
 ctx-telemetry clear             # delete all local telemetry logs
 ```
 
-Sample output:
+Sample output (v0.3.0):
 ```
-CTX Retrieval Telemetry — 12 session-turn records
-Block           Turns  Avg Util%  Total Cited  Total Injected
-G1                  8      48.0%           19              40
-G2_DOCS             4      33.3%            4              12
+CTX Retrieval Telemetry — 42 session-turn records (schema v1.5)
+Log: /home/user/.claude/ctx-retrieval-events.jsonl
+Semantic layer: vec-daemon up 40/42 | bge-daemon up 38/42
+
+Block          Turns  Avg Util%     Cited   Injected
+G1                28      52.0%        73        140
+G2_DOCS           14      38.5%        27         70
+
 Retrieval method distribution:
-  HYBRID          12  (100.0%)
-Session aggregates: 3 sessions | avg turns=4.0 | avg utility=42.5%
+  HYBRID          42  (100.0%)
+
+Query type × utility_rate (moat metric):
+  QueryType        Turns  Avg Util%
+  --------------------------------
+  KEYWORD             18      58.1%
+  SEMANTIC            15      48.0%
+  TEMPORAL             9      38.7%
+
+Session aggregates: 8 sessions | avg turns=5.3 | avg utility=47.2%
+
+Flywheel health [n=42]: causal-r=+0.35 | upgrade=✓ HYBRID | session-r=+0.28 | kw=43%
+  Run `ctx-telemetry tune` to refresh | `ctx-telemetry calibrate` for full analysis
 ```
 
 ## Privacy Contract
@@ -114,10 +131,10 @@ Requires: `ctx telemetry consent` command + DPA/GDPR review.
 
 ## Related
 - [[projects/CTX/research/20260427-ctx-user-data-flywheel-strategy|20260427-ctx-user-data-flywheel-strategy]]
-- [[projects/CTX/research/20260410-session-6c4f589e-chat-memory|20260410-session-6c4f589e-chat-memory]]
 - [[projects/CTX/research/20260426-citation-probe-v1|20260426-citation-probe-v1]]
-- [[projects/CTX/research/20260409-bm25-memory-generalization-research|20260409-bm25-memory-generalization-research]]
-- [[projects/CTX/research/20260426-g2-docs-hybrid-dense-retrieval|20260426-g2-docs-hybrid-dense-retrieval]]
-- [[projects/CTX/research/20260412-semantic-gap-keyword-vs-contextual|20260412-semantic-gap-keyword-vs-contextual]]
-- [[projects/CTX/research/20260426-g1-hybrid-rrf-dense-retrieval|20260426-g1-hybrid-rrf-dense-retrieval]]
+- [[projects/CTX/research/20260410-session-6c4f589e-chat-memory|20260410-session-6c4f589e-chat-memory]]
 - [[projects/CTX/research/20260424-memory-retrieval-benchmark-landscape|20260424-memory-retrieval-benchmark-landscape]]
+- [[projects/CTX/research/20260409-bm25-memory-generalization-research|20260409-bm25-memory-generalization-research]]
+- [[projects/CTX/research/20260412-semantic-gap-keyword-vs-contextual|20260412-semantic-gap-keyword-vs-contextual]]
+- [[projects/CTX/research/20260426-g2-docs-hybrid-dense-retrieval|20260426-g2-docs-hybrid-dense-retrieval]]
+- [[projects/CTX/research/20260426-g1-hybrid-rrf-dense-retrieval|20260426-g1-hybrid-rrf-dense-retrieval]]

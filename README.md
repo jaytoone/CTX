@@ -296,12 +296,20 @@ export CTX_TELEMETRY=1          # enable for this shell
 
 **View your data:**
 ```bash
-ctx-telemetry                   # summary: avg utility% per block, query type breakdown
+ctx-telemetry                   # summary + flywheel health verdict (causal r, upgrade hint)
 ctx-telemetry last              # last 10 session turns
-ctx-telemetry calibrate         # citation bias detection — validates signal quality
-ctx-telemetry tune              # compute optimal retrieval params and write ctx-auto-tune.json
+ctx-telemetry calibrate         # citation bias + causal r-analysis (v1.5)
+ctx-telemetry tune              # compute auto-tune params → ctx-auto-tune.json
 ctx-telemetry consent           # Stage 2 upload consent status
+ctx-telemetry upload            # Stage 2 dry-run preview
 ctx-telemetry clear             # delete all local telemetry logs
+```
+
+Sample `ctx-telemetry` output:
+```
+CTX Retrieval Telemetry — 42 session-turn records (schema v1.5)
+...
+Flywheel health [n=42]: causal-r=+0.35 | upgrade=✓ HYBRID | kw=43%
 ```
 
 **Auto-tune (flywheel):** After `ctx-telemetry tune` runs with ≥15 records, CTX automatically adjusts retrieval parameters based on your usage patterns (e.g., top_k reduction for query types with lower citation rates). The active tuning state is shown in CTX's context header: `> **CTX auto-tune** [n=42, hybrid✓]`.
