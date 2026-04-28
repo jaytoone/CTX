@@ -45,13 +45,14 @@ CLAUDE_VAULT_DIR = Path.home() / ".local" / "share" / "claude-vault"
 # Daemon scripts shipped in wheel → deployed to ~/.local/share/claude-vault/
 CTX_DAEMONS = ["vec-daemon.py", "bge-daemon.py"]
 
-# The 4 production hooks CTX ships. Each entry: (filename, event, async).
+# The 5 production hooks CTX ships. Each entry: (filename, event, async).
 # Matched against current ~/.claude/settings.json structure.
 CTX_HOOKS = [
     ("chat-memory.py",            "UserPromptSubmit", False),
     ("bm25-memory.py",            "UserPromptSubmit", False, ["--rich"]),
     ("memory-keyword-trigger.py", "UserPromptSubmit", False),
     ("g2-fallback.py",            "PostToolUse",      False),
+    ("utility-rate.py",           "Stop",             True),   # telemetry — async
 ]
 
 
