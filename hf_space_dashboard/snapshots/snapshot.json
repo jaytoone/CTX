@@ -1,0 +1,399 @@
+{
+  "total_events": 990,
+  "window": "2h",
+  "updated": "15:26 UTC",
+  "grade": {
+    "label": "B",
+    "style": "yellow"
+  },
+  "rows": [
+    {
+      "name": "avg utility",
+      "ok": true,
+      "value": 0.45200921423086765,
+      "value_str": "45.2%",
+      "msg": "1766/3907 items cited"
+    },
+    {
+      "name": "vec-daemon",
+      "ok": true,
+      "value": 1.0,
+      "value_str": "100%",
+      "msg": "last 100 events"
+    },
+    {
+      "name": "total events",
+      "ok": true,
+      "value": 0.99,
+      "value_str": "990",
+      "msg": "all time"
+    },
+    {
+      "name": "hook latency",
+      "ok": true,
+      "value": 0.7,
+      "value_str": "~100ms median",
+      "msg": "bm25-memory"
+    }
+  ],
+  "activity": [
+    {
+      "ts": 1777555200,
+      "count": 0
+    },
+    {
+      "ts": 1777555800,
+      "count": 0
+    },
+    {
+      "ts": 1777556400,
+      "count": 0
+    },
+    {
+      "ts": 1777557000,
+      "count": 0
+    },
+    {
+      "ts": 1777557600,
+      "count": 78
+    },
+    {
+      "ts": 1777558200,
+      "count": 0
+    },
+    {
+      "ts": 1777558800,
+      "count": 0
+    },
+    {
+      "ts": 1777559400,
+      "count": 0
+    },
+    {
+      "ts": 1777560000,
+      "count": 0
+    },
+    {
+      "ts": 1777560600,
+      "count": 0
+    },
+    {
+      "ts": 1777561200,
+      "count": 33
+    },
+    {
+      "ts": 1777561800,
+      "count": 0
+    },
+    {
+      "ts": 1777562400,
+      "count": 0
+    }
+  ],
+  "latency_hist": [
+    {
+      "bucket": "<50ms",
+      "count": 0
+    },
+    {
+      "bucket": "50-100ms",
+      "count": 0
+    },
+    {
+      "bucket": "100-200ms",
+      "count": 194
+    },
+    {
+      "bucket": "200-500ms",
+      "count": 2
+    },
+    {
+      "bucket": "500ms-1s",
+      "count": 3
+    },
+    {
+      "bucket": ">1s",
+      "count": 124
+    }
+  ],
+  "utility": {
+    "n_turns": 990,
+    "overall_rate": 0.452,
+    "total_items": 3907,
+    "by_block": {
+      "G1": {
+        "rate": 0.5168943206326384,
+        "referenced": 719,
+        "total": 1391
+      },
+      "G2_DOCS": {
+        "rate": 0.41785492870427776,
+        "referenced": 674,
+        "total": 1613
+      },
+      "CM": {
+        "rate": 0.4140625,
+        "referenced": 371,
+        "total": 896
+      },
+      "G2_CODE": {
+        "rate": 0.2857142857142857,
+        "referenced": 2,
+        "total": 7
+      }
+    },
+    "by_group": {}
+  },
+  "notices": [],
+  "other": [
+    {
+      "label": "CM",
+      "count": 356
+    },
+    {
+      "label": "G2_DOCS",
+      "count": 323
+    },
+    {
+      "label": "G1",
+      "count": 309
+    },
+    {
+      "label": "G2_CODE",
+      "count": 2
+    }
+  ],
+  "recent": [
+    {
+      "time": "hour 493767",
+      "type": "UNKNOWN",
+      "hook": "CM",
+      "block": "UNKNOWN",
+      "duration_ms": null
+    },
+    {
+      "time": "hour 493767",
+      "type": "TEMPORAL",
+      "hook": "G2_DOCS",
+      "block": "HYBRID",
+      "duration_ms": 154
+    },
+    {
+      "time": "hour 493767",
+      "type": "UNKNOWN",
+      "hook": "G1",
+      "block": "UNKNOWN",
+      "duration_ms": null
+    },
+    {
+      "time": "hour 493767",
+      "type": "TEMPORAL",
+      "hook": "G2_DOCS",
+      "block": "HYBRID",
+      "duration_ms": 102
+    },
+    {
+      "time": "hour 493767",
+      "type": "UNKNOWN",
+      "hook": "G1",
+      "block": "UNKNOWN",
+      "duration_ms": null
+    },
+    {
+      "time": "hour 493767",
+      "type": "KEYWORD",
+      "hook": "G2_DOCS",
+      "block": "HYBRID",
+      "duration_ms": 117
+    },
+    {
+      "time": "hour 493767",
+      "type": "UNKNOWN",
+      "hook": "CM",
+      "block": "UNKNOWN",
+      "duration_ms": null
+    },
+    {
+      "time": "hour 493767",
+      "type": "TEMPORAL",
+      "hook": "G2_DOCS",
+      "block": "HYBRID",
+      "duration_ms": 151
+    },
+    {
+      "time": "hour 493767",
+      "type": "UNKNOWN",
+      "hook": "G1",
+      "block": "UNKNOWN",
+      "duration_ms": null
+    },
+    {
+      "time": "hour 493767",
+      "type": "UNKNOWN",
+      "hook": "CM",
+      "block": "UNKNOWN",
+      "duration_ms": null
+    },
+    {
+      "time": "hour 493767",
+      "type": "TEMPORAL",
+      "hook": "G2_DOCS",
+      "block": "HYBRID",
+      "duration_ms": 156
+    },
+    {
+      "time": "hour 493767",
+      "type": "UNKNOWN",
+      "hook": "G1",
+      "block": "UNKNOWN",
+      "duration_ms": null
+    },
+    {
+      "time": "hour 493767",
+      "type": "UNKNOWN",
+      "hook": "CM",
+      "block": "UNKNOWN",
+      "duration_ms": null
+    },
+    {
+      "time": "hour 493767",
+      "type": "KEYWORD",
+      "hook": "G2_DOCS",
+      "block": "HYBRID",
+      "duration_ms": 155
+    },
+    {
+      "time": "hour 493767",
+      "type": "UNKNOWN",
+      "hook": "G1",
+      "block": "UNKNOWN",
+      "duration_ms": null
+    },
+    {
+      "time": "hour 493767",
+      "type": "UNKNOWN",
+      "hook": "CM",
+      "block": "UNKNOWN",
+      "duration_ms": null
+    },
+    {
+      "time": "hour 493767",
+      "type": "TEMPORAL",
+      "hook": "G2_DOCS",
+      "block": "HYBRID",
+      "duration_ms": 150
+    },
+    {
+      "time": "hour 493767",
+      "type": "UNKNOWN",
+      "hook": "G1",
+      "block": "UNKNOWN",
+      "duration_ms": null
+    },
+    {
+      "time": "hour 493767",
+      "type": "UNKNOWN",
+      "hook": "CM",
+      "block": "UNKNOWN",
+      "duration_ms": null
+    },
+    {
+      "time": "hour 493767",
+      "type": "TEMPORAL",
+      "hook": "G2_DOCS",
+      "block": "HYBRID",
+      "duration_ms": 148
+    },
+    {
+      "time": "hour 493767",
+      "type": "UNKNOWN",
+      "hook": "G1",
+      "block": "UNKNOWN",
+      "duration_ms": null
+    },
+    {
+      "time": "hour 493767",
+      "type": "UNKNOWN",
+      "hook": "CM",
+      "block": "UNKNOWN",
+      "duration_ms": null
+    },
+    {
+      "time": "hour 493767",
+      "type": "TEMPORAL",
+      "hook": "G2_DOCS",
+      "block": "HYBRID",
+      "duration_ms": 146
+    },
+    {
+      "time": "hour 493767",
+      "type": "UNKNOWN",
+      "hook": "G1",
+      "block": "UNKNOWN",
+      "duration_ms": null
+    },
+    {
+      "time": "hour 493767",
+      "type": "UNKNOWN",
+      "hook": "CM",
+      "block": "UNKNOWN",
+      "duration_ms": null
+    },
+    {
+      "time": "hour 493767",
+      "type": "TEMPORAL",
+      "hook": "G2_DOCS",
+      "block": "HYBRID",
+      "duration_ms": 145
+    },
+    {
+      "time": "hour 493767",
+      "type": "UNKNOWN",
+      "hook": "G1",
+      "block": "UNKNOWN",
+      "duration_ms": null
+    },
+    {
+      "time": "hour 493767",
+      "type": "UNKNOWN",
+      "hook": "CM",
+      "block": "UNKNOWN",
+      "duration_ms": null
+    },
+    {
+      "time": "hour 493767",
+      "type": "TEMPORAL",
+      "hook": "G2_DOCS",
+      "block": "HYBRID",
+      "duration_ms": 141
+    },
+    {
+      "time": "hour 493767",
+      "type": "UNKNOWN",
+      "hook": "G1",
+      "block": "UNKNOWN",
+      "duration_ms": null
+    }
+  ],
+  "samples": {
+    "prompts": []
+  },
+  "thresholds": {},
+  "schema_version": "v1.4",
+  "hits_by_mode": {
+    "UNKNOWN": 667,
+    "HYBRID": 323
+  },
+  "node_dist": {},
+  "query_dist": {
+    "UNKNOWN": 665,
+    "TEMPORAL": 268,
+    "SEMANTIC": 44,
+    "KEYWORD": 10,
+    "?": 3
+  },
+  "method_dist": {
+    "UNKNOWN": 667,
+    "HYBRID": 323
+  }
+}
