@@ -199,13 +199,12 @@ def step_smoke_test() -> tuple[bool, str]:
         )
     except Exception as e:
         return False, f"hook invocation failed: {e}"
-    if result.returncode != 0 and not inj.exists():
-        return False, f"hook exit {result.returncode}, no injection file produced"
-    if not inj.exists():
-        return False, "hook ran but didn't write last-injection.json (unexpected)"
-    # File exists — hook chain wired. Don't strictly require content (fresh
-    # projects may have no decision corpus yet, which is a valid empty state).
-    return True, f"hook fired, wrote {inj} ({inj.stat().st_size} bytes)"
+    if result.returncode != 0:
+        return False, f"hook exit {result.returncode}: {result.stderr[:200]}"
+    # Fresh installs with no corpus won't write last-injection.json — that's valid.
+    if inj.exists():
+        return True, f"hook fired, wrote {inj} ({inj.stat().st_size} bytes)"
+    return True, "hook fired OK (no corpus yet — last-injection.json not written on fresh install)"
 
 
 # ─────────────────────── commands ───────────────────────
