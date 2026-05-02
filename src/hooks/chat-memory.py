@@ -34,6 +34,14 @@ SCOPE = os.environ.get("CHAT_MEMORY_SCOPE", "project")
 # e.g. "/home/jayone/Project/Moat" or "/home/jayone/Project/Sales:/home/jayone/Project/Moat"
 EXTRA_PROJECTS_RAW = os.environ.get("CHAT_MEMORY_EXTRA_PROJECTS", "")
 
+# CHAT_MEMORY_EXCLUDED_PROJECTS: colon-separated project paths excluded from vault read AND write.
+# Use for repos containing credentials or sensitive data you don't want indexed.
+# e.g. CHAT_MEMORY_EXCLUDED_PROJECTS="/home/user/Project/MySecretRepo"
+_EXCLUDED_RAW = os.environ.get("CHAT_MEMORY_EXCLUDED_PROJECTS", "")
+EXCLUDED_PROJECTS: set[str] = set()
+if _EXCLUDED_RAW:
+    EXCLUDED_PROJECTS.update(p.strip() for p in _EXCLUDED_RAW.split(":") if p.strip())
+
 STOPWORDS = {
     # English
     "the", "a", "an", "is", "are", "was", "were", "be", "been", "being",
@@ -378,10 +386,16 @@ def main():
     except Exception:
         pass
 
+    # Exclusion check: skip vault read/write for sensitive projects
+    cwd = data.get("cwd", "")
+    if cwd and EXCLUDED_PROJECTS:
+        current_project = cwd_to_project(cwd)
+        if current_project in EXCLUDED_PROJECTS:
+            sys.exit(0)  # silently skip — no memory injection, no indexing
+
     # Per-project filtering: cwd → project column key
     project_filters: list[str] | None = None
     if SCOPE == "project":
-        cwd = data.get("cwd", "")
         if cwd:
             main_project = cwd_to_project(cwd)
             extras = [cwd_to_project(p.strip()) for p in EXTRA_PROJECTS_RAW.split(":") if p.strip()]
