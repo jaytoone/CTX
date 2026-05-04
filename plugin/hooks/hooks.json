@@ -7,8 +7,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'python3 -m venv \"${CLAUDE_PLUGIN_ROOT}/.ctx-venv\" 2>/dev/null; PY=\"${CLAUDE_PLUGIN_ROOT}/.ctx-venv/bin/python3\"; $PY -m pip install --quiet ctx-retriever rank_bm25 numpy sqlite-vec 2>/dev/null; $PY -m ctx_retriever.cli.install 2>/dev/null || echo \"[CTX] ctx-install complete\"'",
-            "timeout": 120
+            "command": "bash -c 'set -e; VD=$HOME/.local/share/claude-vault; mkdir -p $VD; PY=python3; if $PY -m venv $VD/venv 2>/dev/null || true; then VPY=$VD/venv/bin/python; $VPY -m ensurepip --upgrade 2>/dev/null || curl -sS https://bootstrap.pypa.io/get-pip.py | $VPY 2>/dev/null || true; $VPY -m pip install --quiet ctx-retriever rank_bm25 numpy sqlite-vec 2>/dev/null; $VPY -m pip install --quiet sentence-transformers 2>/dev/null || true; $VPY -m ctx_retriever.cli.install 2>/dev/null; echo \"[CTX] setup complete (venv=$VD/venv)\"; fi'",
+            "timeout": 180
           }
         ]
       }
@@ -19,7 +19,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'VD=$HOME/.local/share/claude-vault; if python3 -c \"import sentence_transformers\" 2>/dev/null; then python3 -c \"import socket,os; s=socket.socket(socket.AF_UNIX); s.settimeout(0.3); s.connect(os.path.expanduser(\\\"~/.local/share/claude-vault/vec-daemon.sock\\\"))\" 2>/dev/null || { rm -f $VD/vec-daemon.sock; nohup python3 $VD/vec-daemon.py > /tmp/vec-daemon.log 2>&1 & }; python3 -c \"import socket,os; s=socket.socket(socket.AF_UNIX); s.settimeout(0.3); s.connect(os.path.expanduser(\\\"~/.local/share/claude-vault/bge-daemon.sock\\\"))\" 2>/dev/null || { rm -f $VD/bge-daemon.sock; nohup python3 $VD/bge-daemon.py > /tmp/bge-daemon.log 2>&1 & }; else echo \"[CTX] sentence_transformers not found — semantic layer disabled. Install: pip install ctx-retriever[dense]\" > /tmp/ctx-daemon-hint.txt; fi'",
+            "command": "bash -c 'VD=$HOME/.local/share/claude-vault; PY=$VD/venv/bin/python; if [ -x \"$PY\" ] && $PY -c \"import sentence_transformers\" 2>/dev/null; then python3 -c \"import socket,os; s=socket.socket(socket.AF_UNIX); s.settimeout(0.3); s.connect(os.path.expanduser(\\\"~/.local/share/claude-vault/vec-daemon.sock\\\"))\" 2>/dev/null || { rm -f $VD/vec-daemon.sock; nohup $PY $VD/vec-daemon.py > /tmp/vec-daemon.log 2>&1 & }; python3 -c \"import socket,os; s=socket.socket(socket.AF_UNIX); s.settimeout(0.3); s.connect(os.path.expanduser(\\\"~/.local/share/claude-vault/bge-daemon.sock\\\"))\" 2>/dev/null || { rm -f $VD/bge-daemon.sock; nohup $PY $VD/bge-daemon.py > /tmp/bge-daemon.log 2>&1 & }; else echo \"[CTX] vec-daemon venv not ready — BM25-only mode\" > /tmp/ctx-daemon-hint.txt; fi'",
             "async": true
           }
         ]
