@@ -55,6 +55,19 @@ ctx-install                     # register CTX hooks in ~/.claude/settings.json
 
 **That's it.** Restart Claude Code and hooks fire on every prompt.
 
+### Optional: enable cross-encoder reranking (BGE)
+
+By default, CTX uses BM25 + vec-daemon (multilingual-e5-small, ~120MB) for semantic search.
+For higher-quality reranking, enable the BGE cross-encoder (BAAI/bge-reranker-v2-m3, ~2GB):
+
+```bash
+# Add to ~/.claude/settings.json env block:
+CTX_BGE_ENABLE=1
+```
+
+When enabled, bge-daemon starts automatically on session open and reranks retrieved results.
+**Not recommended for machines with less than 4GB RAM or slow internet** (model downloads on first run).
+
 ### What ctx-install does (atomic, backup-first)
 
 1. Verifies the 4 CTX hook files exist at `~/.claude/hooks/` (chat-memory, bm25-memory, memory-keyword-trigger, g2-fallback)
