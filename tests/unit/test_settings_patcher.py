@@ -388,3 +388,54 @@ def test_save_atomic_preserves_original_on_write_error(tmp_path):
     # Original must still be intact.
     saved = json.loads(p.read_text())
     assert saved == original_content, "Original file must not be corrupted on write error"
+
+
+def test_atomic_write_real_filesystem_rename(tmp_path):
+    """Real-disk atomic write: final file correct, no .tmp_ctx residual, backup present."""
+    p = tmp_path / "settings.json"
+    original_data = {"original": True, "key": "old_value"}
+    p.write_text(json.dumps(original_data), encoding="utf-8")
+
+    new_data = {"updated": True, "key": "new_value"}
+    backup_path_str = _save_atomic(p, new_data)
+
+    # Final file must exist and contain the new data.
+    assert p.exists(), "settings.json must exist after atomic write"
+    assert json.loads(p.read_text()) == new_data, "Final file must contain new data"
+
+    # No .tmp_ctx residual file should remain (real rename must have completed).
+    tmp_residual = p.with_suffix(".tmp_ctx")
+    assert not tmp_residual.exists(), "Temp file must not remain after atomic rename"
+
+    # A timestamped backup must have been created with original content.
+    assert backup_path_str, "Backup path must be non-empty for existing-file update"
+    backup = Path(backup_path_str)
+    assert backup.exists(), f"Backup file must exist at {backup}"
+    assert json.loads(backup.read_text()) == original_data, "Backup must contain original data"
+
+
+def test_atomic_write_no_tmp_residual_on_new_file(tmp_path):
+    """For a new file (no prior content), no .tmp_ctx should remain after write."""
+    p = tmp_path / "settings_new.json"
+    assert not p.exists()
+
+    _save_atomic(p, {"brand": "new"})
+
+    assert p.exists()
+    tmp_residual = p.with_suffix(".tmp_ctx")
+    assert not tmp_residual.exists(), "Temp file must not remain after creating new file"
+
+
+def test_atomic_write_backup_name_contains_timestamp(tmp_path):
+    """Backup filename must embed a timestamp (YYYYMMDD_HHMMSS pattern)."""
+    import re
+    p = tmp_path / "settings.json"
+    p.write_text(json.dumps({"v": 1}), encoding="utf-8")
+
+    backup_path_str = _save_atomic(p, {"v": 2})
+
+    backup = Path(backup_path_str)
+    # e.g. settings.backup_20260505_123456.json
+    assert re.search(r"backup_\d{8}_\d{6}", backup.name), (
+        f"Backup filename must contain timestamp: {backup.name}"
+    )
