@@ -363,9 +363,99 @@ def cmd_install(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cleanup_hook_files(
+    force: bool = False,
+    dry_run: bool = False,
+) -> dict[str, list[str]]:
+    """Remove CTX hook files and _bm25/ from ~/.claude/hooks/.
+
+    Returns a dict with three lists:
+      "removed"   — files deleted.
+      "kept"      — files skipped because user modified them (hash mismatch) or
+                    _bm25/ had extra files.
+      "not_found" — files that did not exist (already gone).
+
+    Safety rules:
+      - Hook file: compare SHA-256 against package source.  If hash differs and
+        force=False, keep file and emit a warning.
+      - _bm25/ dir: remove only if every *.py inside matches a known CTX file.
+        If extra files are present and force=False, skip the whole directory.
+      - force=True: skip all hash checks and force-remove everything.
+    """
+    removed: list[str] = []
+    kept: list[str] = []
+    not_found: list[str] = []
+
+    src = _pkg_hooks_dir()
+    # Full list of hook files CTX installs
+    hook_files = [spec[0] for spec in CTX_HOOKS] + ["_ctx_telemetry.py", "utility-rate.py"]
+
+    for fname in hook_files:
+        dst = CLAUDE_HOOKS_DIR / fname
+        if not dst.exists():
+            not_found.append(fname)
+            continue
+        # Hash-based safety check (skip when --force or src unavailable).
+        if not force and src is not None:
+            src_file = src / fname
+            if src_file.is_file() and _file_sha256(dst) != _file_sha256(src_file):
+                kept.append(fname)
+                print(
+                    f"   kept  {fname}  (user-modified; use --force to override)",
+                    file=sys.stderr,
+                )
+                continue
+        if not dry_run:
+            dst.unlink()
+        removed.append(fname)
+
+    # Handle _bm25/ sub-directory
+    dst_bm25 = CLAUDE_HOOKS_DIR / "_bm25"
+    if dst_bm25.is_dir():
+        present_files = list(dst_bm25.glob("*.py"))
+        if src is not None and not force:
+            src_bm25 = src / "_bm25"
+            known_names: set[str] = set()
+            if src_bm25.is_dir():
+                known_names = {f.name for f in src_bm25.glob("*.py")}
+            extra = [f for f in present_files if f.name not in known_names]
+            modified = [
+                f for f in present_files
+                if f.name in known_names
+                and (src_bm25 / f.name).exists()
+                and _file_sha256(f) != _file_sha256(src_bm25 / f.name)
+            ]
+            if extra or modified:
+                reasons = []
+                if extra:
+                    reasons.append(f"{len(extra)} unknown file(s)")
+                if modified:
+                    reasons.append(f"{len(modified)} user-modified file(s)")
+                kept.append("_bm25/")
+                print(
+                    f"   kept  _bm25/  ({', '.join(reasons)}; use --force to override)",
+                    file=sys.stderr,
+                )
+            else:
+                if not dry_run:
+                    shutil.rmtree(dst_bm25)
+                removed.append("_bm25/")
+        else:
+            # force=True or no package source → remove unconditionally
+            if not dry_run:
+                shutil.rmtree(dst_bm25)
+            removed.append("_bm25/")
+    else:
+        not_found.append("_bm25/")
+
+    return {"removed": removed, "kept": kept, "not_found": not_found}
+
+
 def cmd_uninstall(args: argparse.Namespace) -> int:
     print("== ctx-install --uninstall ==")
-    # Build list of commands to remove (matching what install would have added)
+    force = getattr(args, "force", False)
+
+    # 1. Remove hook registrations from settings.json.
     remove = []
     for spec in CTX_HOOKS:
         filename = spec[0]
@@ -374,11 +464,28 @@ def cmd_uninstall(args: argparse.Namespace) -> int:
 
     result = unpatch_settings(CLAUDE_SETTINGS, remove, dry_run=args.dry_run)
     print(result.summary())
-    if result.ok:
-        print("\nCTX hooks removed from settings.json.")
-        print("(Hook files at ~/.claude/hooks/ NOT deleted — remove manually if desired.)")
-        return 0
-    return 5
+    if not result.ok:
+        return 5
+
+    print("\nCTX hooks removed from settings.json.")
+
+    # 2. Clean up hook files and _bm25/ directory.
+    print("\nCleaning up hook files …")
+    cleanup = _cleanup_hook_files(force=force, dry_run=args.dry_run)
+
+    prefix = "(dry-run) " if args.dry_run else ""
+    for name in cleanup["removed"]:
+        print(f"   {prefix}removed  {name}")
+    for name in cleanup["not_found"]:
+        print(f"   not found  {name}  (already gone)")
+
+    if cleanup["kept"]:
+        print(
+            f"\n  {len(cleanup['kept'])} file(s) kept due to user modification"
+            " — re-run with --force to remove."
+        )
+
+    return 0
 
 
 def cmd_status(args: argparse.Namespace) -> int:
@@ -465,7 +572,9 @@ def main() -> int:
     p.add_argument("--dry-run", action="store_true",
                    help="Show what would change; touch no files.")
     p.add_argument("--uninstall", action="store_true",
-                   help="Remove CTX hook registrations from settings.json.")
+                   help="Remove CTX hook registrations from settings.json and clean up hook files.")
+    p.add_argument("--force", action="store_true",
+                   help="With --uninstall: remove hook files unconditionally (skip hash check).")
     p.add_argument("--force-hooks", action="store_true",
                    help="Overwrite existing hook files unconditionally (no hash check).")
     p.add_argument("--no-update-hooks", action="store_true",
