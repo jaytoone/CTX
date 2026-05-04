@@ -60,3 +60,12 @@ packages = [
 [tool.setuptools.package-data]
 "*" = ["*.json", "*.yaml"]
 "ctx_retriever.hooks" = ["*.py", "ctx-telemetry"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests/unit"]
+pythonpath = [".", "src"]
+addopts = "-q --strict-markers"
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "requires_subprocess: marks tests that invoke subprocess (external process)",
+]
