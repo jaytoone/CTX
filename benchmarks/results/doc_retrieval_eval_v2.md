@@ -1,7 +1,7 @@
 # CTX Document Retrieval Evaluation v2
 
-**Date**: 2026-04-03 09:58
-**Corpus**: 62 .md files from docs/
+**Date**: 2026-05-05 05:15
+**Corpus**: 119 .md files from docs/
 **Queries**: 100 (heading_exact + heading_paraphrase + keyword)
 **Metrics**: Recall@3, Recall@5, NDCG@5, MRR
 
@@ -9,58 +9,58 @@
 
 | Strategy | Recall@3 | Recall@5 | NDCG@5 | MRR |
 |----------|----------|----------|--------|-----|
-| CTX-doc (heading+BM25) | **0.870** | **0.940** | 0.815 | 0.782 |
-| BM25 | **0.590** | **0.760** | 0.594 | 0.562 |
-| Dense TF-IDF | **0.560** | **0.670** | 0.546 | 0.537 |
+| CTX-doc (heading+BM25) | **0.740** | **0.790** | 0.680 | 0.662 |
+| BM25 | **0.490** | **0.590** | 0.443 | 0.424 |
+| Dense TF-IDF | **0.490** | **0.610** | 0.472 | 0.452 |
 
 ## Per-Strategy Analysis
 
 ### CTX-doc (heading+BM25)
-- Hits@3: 87/100 (87.0%)
-- Hits@5: 94/100 (94.0%)
-- NDCG@5: 0.815
-- MRR: 0.782
+- Hits@3: 74/100 (74.0%)
+- Hits@5: 79/100 (79.0%)
+- NDCG@5: 0.680
+- MRR: 0.662
 
 **Misses (top 5)**:
-- [keyword] `show information about minimax without` → expected `research/20260328-ctx-downstream-eval-complete.md`
-- [keyword] `find docs related to memory cross` → expected `research/20260325-long-session-context-management.md`
-- [keyword] `which document covers trigger retrieval` → expected `paper_draft_outline.md`
-- [keyword] `nemotron research documentation` → expected `research/20260329-ctx-paper-gap-analysis.md`
-- [keyword] `find docs related to locagent source` → expected `research/20260327-ctx-alternatives-research.md`
+- [keyword] `find docs related to dense import` → expected `research/20260326-ctx-methodology-comparison.md`
+- [keyword] `which document covers graph retrieval` → expected `paper_draft_outline.md`
+- [heading_exact] `original question` → expected `research/20260330-ctx-academic-critique-web-grounded.md`
+- [keyword] `find docs related to beir locagent` → expected `research/20260327-ctx-alternatives-research.md`
+- [keyword] `notes about evaluation quality` → expected `research/20260402-g2-evaluation-methods-research-summary.md`
 
 ### BM25
-- Hits@3: 59/100 (59.0%)
-- Hits@5: 76/100 (76.0%)
-- NDCG@5: 0.594
-- MRR: 0.562
+- Hits@3: 49/100 (49.0%)
+- Hits@5: 59/100 (59.0%)
+- NDCG@5: 0.443
+- MRR: 0.424
 
 **Misses (top 5)**:
-- [heading_paraphrase] `where is ctx — document index documented` → expected `DOC_INDEX.md`
-- [heading_exact] `즉시 실행 순서` → expected `marketing/active_outreach_playbook.md`
-- [heading_exact] `실험 설계` → expected `research/20260327-ctx-downstream-eval.md`
-- [heading_exact] `[expert-research-v2] ctx 약점 보완 대안 기술 분석` → expected `research/20260327-ctx-alternatives-research.md`
-- [heading_exact] `ctx architecture` → expected `ARCHITECTURE.md`
+- [heading_paraphrase] `I need info on [expert-research-v2] ctx 실험 방식 상위 티어 논문 기준 평론` → expected `research/20260324-ctx-methodology-critique-top-tier.md`
+- [heading_exact] `5개 실제 시나리오` → expected `research/20260328-ctx-real-codebase-g2-eval.md`
+- [heading_paraphrase] `find documentation about [expert-research-v2] ctx 성과 평론 — 상위` → expected `research/20260326-ctx-results-review.md`
+- [heading_exact] `g1: cross-session memory recall` → expected `research/20260327-ctx-downstream-eval.md`
+- [keyword] `find docs related to dense import` → expected `research/20260326-ctx-methodology-comparison.md`
 
 ### Dense TF-IDF
-- Hits@3: 56/100 (56.0%)
-- Hits@5: 67/100 (67.0%)
-- NDCG@5: 0.546
-- MRR: 0.537
+- Hits@3: 49/100 (49.0%)
+- Hits@5: 61/100 (61.0%)
+- NDCG@5: 0.472
+- MRR: 0.452
 
 **Misses (top 5)**:
-- [heading_paraphrase] `where is ctx — document index documented` → expected `DOC_INDEX.md`
-- [keyword] `which document covers memory codebase` → expected `research/20260402-production-context-retrieval-research.md`
-- [heading_exact] `즉시 실행 순서` → expected `marketing/active_outreach_playbook.md`
-- [heading_exact] `실험 설계` → expected `research/20260327-ctx-downstream-eval.md`
-- [heading_exact] `[expert-research-v2] ctx 약점 보완 대안 기술 분석` → expected `research/20260327-ctx-alternatives-research.md`
+- [heading_paraphrase] `documentation for ctx: trigger-driven dynamic context loadin` → expected `paper/CTX_paper_draft.md`
+- [heading_paraphrase] `I need info on [expert-research-v2] ctx 실험 방식 상위 티어 논문 기준 평론` → expected `research/20260324-ctx-methodology-critique-top-tier.md`
+- [heading_exact] `5개 실제 시나리오` → expected `research/20260328-ctx-real-codebase-g2-eval.md`
+- [heading_paraphrase] `find documentation about [expert-research-v2] ctx 성과 평론 — 상위` → expected `research/20260326-ctx-results-review.md`
+- [heading_exact] `g1: cross-session memory recall` → expected `research/20260327-ctx-downstream-eval.md`
 
 ## Per-Query-Type Breakdown
 
 | Type | N | CTX R@3 | BM25 R@3 | Dense R@3 |
 |------|---|---------|----------|-----------|
-| heading_exact | 37 | 0.973 | 0.595 | 0.514 |
-| heading_paraphrase | 31 | 1.000 | 0.548 | 0.613 |
-| keyword | 32 | 0.625 | 0.625 | 0.562 |
+| heading_exact | 32 | 0.812 | 0.531 | 0.469 |
+| heading_paraphrase | 34 | 1.000 | 0.529 | 0.588 |
+| keyword | 34 | 0.412 | 0.412 | 0.412 |
 
 ## Method Description
 
@@ -72,6 +72,6 @@
 
 | Stat | Value |
 |------|-------|
-| Total docs | 62 |
-| Average headings/doc | 14.5 |
-| Average keywords/doc | 14.8 |
+| Total docs | 119 |
+| Average headings/doc | 19.0 |
+| Average keywords/doc | 15.0 |

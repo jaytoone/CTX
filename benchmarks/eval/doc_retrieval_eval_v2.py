@@ -19,8 +19,13 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
+import sys
+import os as _os
+sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.dirname(
+    _os.path.abspath(__file__)))), 'src', 'hooks'))
+
 import numpy as np
-from rank_bm25 import BM25Okapi
+from _bm25.ranker import score_corpus_bm25
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -270,10 +275,12 @@ def rank_tfidf(query: str, docs: List[DocFile],
 def rank_ctx_doc(
     query: "str | DocQuery",
     docs: List[DocFile],
-    bm25_index: "BM25Okapi | None" = None,
+    bm25_index=None,  # unused — kept for backward compat; doc_tokens used instead
     doc_tokens: "List[List[str]] | None" = None,
 ) -> List[Tuple[str, float]]:
     """CTX-doc: heading match + BM25 (query_type-aware blending).
+
+    BM25 scoring via _bm25/ranker.score_corpus_bm25 (canonical single source).
 
     keyword queries: BM25 dominant (heading overlap weight halved, bm25 norm unpenalized)
     other queries:   heading dominant (original weights)
@@ -311,10 +318,12 @@ def rank_ctx_doc(
             if score > 0:
                 scored[doc.rel_path] = score
 
-    # Stage 2: BM25 augmentation
-    if bm25_index is not None:
+    # Stage 2: BM25 augmentation via _bm25/ranker.score_corpus_bm25 (canonical)
+    if doc_tokens is not None:
         q_tokens = re.findall(r'\b[a-z]{2,}\b', query_lower)
-        bm25_scores = bm25_index.get_scores(q_tokens)
+        bm25_scores = score_corpus_bm25(doc_tokens, q_tokens)
+        if bm25_scores is None:
+            bm25_scores = np.zeros(len(docs))
         max_bm25 = float(np.max(bm25_scores)) if bm25_scores.max() > 0 else 1.0
         for i, bm25_s in enumerate(bm25_scores):
             fpath = docs[i].rel_path
@@ -445,9 +454,9 @@ def main() -> None:
     )
     tfidf_matrix = vectorizer.fit_transform([d.content for d in docs])
 
-    # Build BM25 index for CTX-doc augmentation (enriched: stem+heading for heading queries)
+    # Build enriched token lists for CTX-doc BM25 augmentation (stem+heading for heading queries)
+    # score_corpus_bm25 (_bm25/ranker.py) is the single canonical BM25 primitive — no BM25Okapi here
     doc_token_lists_enriched = [_doc_tokens_with_stem(d) for d in docs]
-    bm25_idx = BM25Okapi(doc_token_lists_enriched)
 
     print("Running evaluations...")
 
@@ -455,12 +464,12 @@ def main() -> None:
 
     # Strategy 1: CTX-doc (query_type-aware routing)
     # keyword queries: TF-only BM25 (rank_bm25) — matches/beats 0.724 baseline
-    # heading queries: heading match + BM25Okapi augmentation (rank_ctx_doc)
+    # heading queries: heading match + score_corpus_bm25 augmentation (rank_ctx_doc)
     ctx_result = evaluate_strategy(
         "CTX-doc (heading+BM25)",
         valid_queries,
         lambda q: (rank_bm25(q.text, docs) if q.query_type == "keyword"
-                   else rank_ctx_doc(q, docs, bm25_index=bm25_idx)),
+                   else rank_ctx_doc(q, docs, doc_tokens=doc_token_lists_enriched)),
     )
     results.append(ctx_result)
 
