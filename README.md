@@ -104,6 +104,17 @@ _bm25/
 - `_bm25/code_search.py` G2-GREP 정렬: 동점 score 의 비결정성 제거 (`count` → `(-count, path)`)
 - Telemetry path: 활성/비활성 gate 캐싱 + lazy import (비활성 시 hook latency 영향 없음)
 
+## Empirical eval — Context Mode 와 같이 쓸 때 (2026-05-05)
+
+CTX 와 [`mksglu/context-mode`](https://github.com/mksglu/context-mode) plugin 을 동시 활성화한 환경에서 5 시나리오 × 4 상태 (CTX+CM / CM only / CTX only / 둘다 off) 매트릭스 측정. `claude -p --model opus` headless 28 측정, 총 $10.58. Gemini-as-judge 로 응답 품질 비교.
+
+요점:
+- **코드 분석 / 한국어 검색**: 둘다 활성이 1위 — CTX 의 G1/G2 retrieval + Context Mode 의 도구 압축 시너지
+- **Compaction / 결정 근거 정리**: CTX only 가 1위 — Context Mode 가 노이즈 추가
+- **Headless `claude -p` + 도구 호출 많은 작업**: Context Mode 의 `ctx_batch_execute` 가 권한 prompt 응답 불가로 abort. `--dangerously-skip-permissions` 또는 `skipDangerousModePermissionPrompt: true` 면 정상
+
+상세 데이터 / 표 / 한계: [`docs/refactor/EVAL_RESULTS.md`](docs/refactor/EVAL_RESULTS.md). 한국어 블로그 포스트: [`docs/community/BLOG_POST_eval_ko.md`](docs/community/BLOG_POST_eval_ko.md).
+
 ## 테스트
 
 ### 회귀 가드 (deterministic hook output)
