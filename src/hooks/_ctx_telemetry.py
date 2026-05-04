@@ -134,6 +134,21 @@ _ALLOWED_KEYS = {
     # A/B scaffold: UserPromptSubmit hook skipped injection because CTX_AB_DISABLE=1.
     # Presence of these events lets the dashboard compute control-arm sample counts.
     "ab_skipped": {"hook", "reason"},
+    # bm25-memory: overall invocation summary (emitted once per hook run)
+    "hook_complete": {
+        "hook", "latency_ms", "exit_code",
+        "query_type",
+        "g1_top_score_bm25", "g1_top_score_dense", "g1_count",
+        "g2_docs_count", "g2_code_count", "g2_hooks_count",
+        "fallback_reasons", "blocks_fired",
+    },
+    # bm25-memory: optional per-stage events
+    "g1_done": {"hook", "g1_top_score_bm25", "g1_top_score_dense", "g1_count", "duration_ms"},
+    "g2_docs_done": {"hook", "g2_docs_count", "top_score", "duration_ms"},
+    "g2_code_done": {"hook", "g2_code_count", "fallback_reason", "duration_ms"},
+    "g2_hooks_done": {"hook", "g2_hooks_count", "duration_ms"},
+    "fallback_emitted": {"hook", "reason"},
+    "prompt_received": {"hook", "query_type", "prompt_len"},
 }
 
 

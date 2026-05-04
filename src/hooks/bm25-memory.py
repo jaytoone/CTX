@@ -58,12 +58,17 @@ RICH = "--rich" in sys.argv
 _last_retrieval_scores = _ranker_scores
 
 
+_HNAME = "bm25-memory"
+
+
 def _log_event(event_type, payload):
-    """Opt-in telemetry wrapper — silent no-op if gate off. Never breaks hook path."""
+    """Opt-in telemetry wrapper — silent no-op if gate off. Never breaks hook path.
+    Automatically injects hook=_HNAME so callers don't repeat it."""
     try:
         sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
         from _ctx_telemetry import log_event
-        log_event(event_type, payload)
+        merged = {"hook": _HNAME, **(payload or {})}
+        log_event(event_type, merged)
     except Exception:
         pass
 
@@ -91,8 +96,22 @@ def main():
     except Exception:
         pass
     lines = []
-    _blocks_fired = []  # for final hook_invoked telemetry summary
+    _blocks_fired = []  # for final hook_complete telemetry summary
+    _fallback_reasons: list[str] = []   # accumulated fallback tags for hook_complete
     _retrieval_meta = {"ts": _time.time(), "blocks": {}}  # retrieval_event telemetry
+    _query_type: str = ""
+
+    # Classify query type early (used in hook_complete and prompt_received)
+    try:
+        _query_type = _classify_query_type(prompt)
+    except Exception:
+        _query_type = "unknown"
+
+    # Optional: prompt_received event (lightweight, emitted unconditionally)
+    _log_event("prompt_received", {
+        "query_type": _query_type,
+        "prompt_len": len(prompt) if prompt else 0,
+    })
 
     # 0a. Pending decisions from previous session (Stop hook → queue file)
     pending = consume_pending_decisions(project_dir)
@@ -105,6 +124,12 @@ def main():
         lines.append("[SESSION NOTES (미커밋 판단)]")
         lines.extend(session_notes)
 
+    # ── Fallback detection: check daemon availability before G1 ─────────────
+    if _VEC_DISABLED or not _VEC_SOCK.exists():
+        _fallback_reasons.append("vec_daemon_down")
+    if not _BGE_SOCK.exists():
+        _fallback_reasons.append("bge_daemon_down")
+
     # 1. G1: Hybrid BM25+dense RRF over decision corpus (2026-04-26)
     # Uses hybrid_rank_decisions() when vec-daemon is up (BM25+dense→RRF→rerank).
     # Falls back to bm25_rank_decisions() if dense unavailable — explicit coverage.
@@ -112,11 +137,21 @@ def main():
     _t_g1 = _time.perf_counter()
     corpus = get_decision_corpus(project_dir)
     g1_header = ""
+    _g1_count = 0
+    _g1_top_lexical: float | None = None
+    _g1_dense_top: float | None = None
     if corpus:
         _g1_top_k = _get_g1_top_k(prompt, _AUTO_TUNE)
         _last_retrieval_scores.clear()
         relevant = hybrid_rank_decisions(corpus, prompt, top_k=_g1_top_k)
         if relevant:
+            _g1_count = len(relevant)
+            # Capture scores for hook_complete
+            if "bm25_top" in _last_retrieval_scores:
+                _g1_top_lexical = round(_last_retrieval_scores["bm25_top"], 4)
+            if "dense_top" in _last_retrieval_scores:
+                _g1_dense_top = round(_last_retrieval_scores["dense_top"], 4)
+
             # Build forced display header (mechanically injected, not advisory)
             first_subj = relevant[0]["subject"][:70]
             rest_count = len(relevant) - 1
@@ -131,7 +166,7 @@ def main():
                 prefix = f"  > [{date}] " if date else "  > "
                 lines.append(f"{prefix}{subj}")
             _log_event("block_fired", {
-                "hook": "bm25-memory", "block": "g1_decisions",
+                "block": "g1_decisions",
                 "count": len(relevant),
                 "duration_ms": int((_time.perf_counter() - _t_g1) * 1000),
             })
@@ -143,11 +178,21 @@ def main():
                 "duration_ms": int((_time.perf_counter() - _t_g1) * 1000),
                 "query_type": _classify_query_type(prompt),
             }
-            if "bm25_top" in _last_retrieval_scores:
-                _g1_meta["top_score_bm25"] = round(_last_retrieval_scores["bm25_top"], 4)
-            if "dense_top" in _last_retrieval_scores:
-                _g1_meta["top_score_dense"] = round(_last_retrieval_scores["dense_top"], 4)
+            if _g1_top_lexical is not None:
+                _g1_meta["top_score_bm25"] = _g1_top_lexical
+            if _g1_dense_top is not None:
+                _g1_meta["top_score_dense"] = _g1_dense_top
             _retrieval_meta["blocks"]["g1_decisions"] = _g1_meta
+            # Stage-level event
+            _g1_event: dict = {
+                "g1_count": _g1_count,
+                "duration_ms": int((_time.perf_counter() - _t_g1) * 1000),
+            }
+            if _g1_top_lexical is not None:
+                _g1_event["g1_top_score_bm25"] = _g1_top_lexical
+            if _g1_dense_top is not None:
+                _g1_event["g1_top_score_dense"] = _g1_dense_top
+            _log_event("g1_done", _g1_event)
             # Citation probe: log G1 retrieved nodes
             log_retrieved_nodes(project_dir, _session_id, prompt, "g1_decisions", [
                 {"id": c.get("hash", c["subject"][:20]), "text": c["subject"], "date": c.get("date", "")}
@@ -157,6 +202,7 @@ def main():
     # 2. G2: BM25 over project docs
     g2_files = []
     g2_keywords = []
+    _g2_docs_count = 0
     if prompt:
         _t_g2d = _time.perf_counter()
         _g2d_top_k = _get_g2d_top_k(prompt, _AUTO_TUNE)
@@ -164,6 +210,7 @@ def main():
         _last_retrieval_scores.pop("dense_top", None)
         doc_chunks = hybrid_search_docs(project_dir, prompt, top_k=_g2d_top_k)
         if doc_chunks:
+            _g2_docs_count = len(doc_chunks)
             lines.append("[G2-DOCS] (BM25+dense RRF relevant research docs)")
             for chunk in doc_chunks:
                 chunk_lines = chunk.strip().split("\n")
@@ -183,7 +230,7 @@ def main():
                 if snippet:
                     lines.append(f"    {snippet}")
             _log_event("block_fired", {
-                "hook": "bm25-memory", "block": "g2_docs",
+                "block": "g2_docs",
                 "count": len(doc_chunks),
                 "duration_ms": int((_time.perf_counter() - _t_g2d) * 1000),
             })
@@ -196,11 +243,23 @@ def main():
                 "duration_ms": int((_time.perf_counter() - _t_g2d) * 1000),
                 "query_type": _classify_query_type(prompt),
             }
+            _g2d_top_score: float | None = None
             if "bm25_top" in _last_retrieval_scores:
                 _g2d_meta["top_score_bm25"] = round(_last_retrieval_scores["bm25_top"], 4)
+                _g2d_top_score = _g2d_meta["top_score_bm25"]
             if "dense_top" in _last_retrieval_scores:
                 _g2d_meta["top_score_dense"] = round(_last_retrieval_scores["dense_top"], 4)
+                if _g2d_top_score is None:
+                    _g2d_top_score = _g2d_meta["top_score_dense"]
             _retrieval_meta["blocks"]["g2_docs"] = _g2d_meta
+            # Stage-level event
+            _g2d_event: dict = {
+                "g2_docs_count": _g2_docs_count,
+                "duration_ms": int((_time.perf_counter() - _t_g2d) * 1000),
+            }
+            if _g2d_top_score is not None:
+                _g2d_event["top_score"] = _g2d_top_score
+            _log_event("g2_docs_done", _g2d_event)
             # Citation probe: log G2-DOCS retrieved nodes
             log_retrieved_nodes(project_dir, _session_id, prompt, "g2_docs", [
                 {"id": chunk.strip().split("\n")[0].split(" §")[0].strip(), "text": chunk.strip().split("\n")[0][:80]}
@@ -208,6 +267,7 @@ def main():
             ])
 
     # 3. G2: Code file discovery (graph → grep fallback)
+    _g2_code_count = 0
     if prompt:
         keywords = extract_keywords(prompt)
         g2_keywords = keywords[:3]
@@ -219,8 +279,10 @@ def main():
                 stale_warn = check_and_trigger_reindex(project_dir, db_path)
                 if stale_warn:
                     lines.append(stale_warn)
+                    _fallback_reasons.append("mcp_db_stale")
                 graph_results = search_graph_for_prompt(db_path, keywords)
                 if graph_results:
+                    _g2_code_count = len(graph_results)
                     lines.append(f"[G2-PREFETCH] Related code for '{' '.join(keywords[:3])}':")
                     seen_files = set()
                     for label, name, fpath in graph_results:
@@ -229,40 +291,57 @@ def main():
                     if seen_files:
                         lines.append(f"  Start with: {', '.join(sorted(seen_files)[:3])}")
                     _log_event("block_fired", {
-                        "hook": "bm25-memory", "block": "g2_prefetch",
+                        "block": "g2_prefetch",
                         "count": len(graph_results),
                         "duration_ms": int((_time.perf_counter() - _t_g2p) * 1000),
                     })
                     _blocks_fired.append("g2_prefetch")
+                _log_event("g2_code_done", {
+                    "g2_code_count": _g2_code_count,
+                    "duration_ms": int((_time.perf_counter() - _t_g2p) * 1000),
+                })
             else:
                 # Fallback: git grep
+                _fallback_reasons.append("mcp_db_missing")
                 files = search_files_by_grep(project_dir, keywords)
                 if files:
+                    _g2_code_count = len(files)
                     lines.append(f"[G2-GREP] Files matching '{' '.join(keywords[:3])}' (grep):")
                     for f in files:
                         lines.append(f"  {f}")
                     lines.append(f"  Start with: {', '.join(files[:3])}")
                     _log_event("block_fired", {
-                        "hook": "bm25-memory", "block": "g2_grep",
+                        "block": "g2_grep",
                         "count": len(files),
                         "duration_ms": int((_time.perf_counter() - _t_g2p) * 1000),
                     })
                     _blocks_fired.append("g2_grep")
+                _log_event("g2_code_done", {
+                    "g2_code_count": _g2_code_count,
+                    "fallback_reason": "grep_fallback",
+                    "duration_ms": int((_time.perf_counter() - _t_g2p) * 1000),
+                })
 
     # 3b. G2: Hooks file discovery (when hook-related terms in prompt)
+    _g2_hooks_count = 0
     if prompt and _has_hooks_keywords(prompt):
         _t_g2h = _time.perf_counter()
         hook_results = search_hooks_files(prompt)
         if hook_results:
+            _g2_hooks_count = len(hook_results)
             lines.append(f"[G2-HOOKS] Hook files matching '{prompt[:40]}':")
             for hp, score in hook_results:
                 lines.append(f"  {hp}  (score={score:.1f})")
             _log_event("block_fired", {
-                "hook": "bm25-memory", "block": "g2_hooks",
+                "block": "g2_hooks",
                 "count": len(hook_results),
                 "duration_ms": int((_time.perf_counter() - _t_g2h) * 1000),
             })
             _blocks_fired.append("g2_hooks")
+        _log_event("g2_hooks_done", {
+            "g2_hooks_count": _g2_hooks_count,
+            "duration_ms": int((_time.perf_counter() - _t_g2h) * 1000),
+        })
 
     # 4. World model (--rich)
     if RICH:
@@ -283,8 +362,25 @@ def main():
         emit_output(lines, header_lines)
 
     # Final summary event: one record per hook invocation (outside `if lines:`)
+    # Always emitted — this is the primary metric record.
+    _hook_complete: dict = {
+        "latency_ms": int((_time.perf_counter() - _t_start) * 1000),
+        "exit_code": 0,
+        "query_type": _query_type,
+        "g1_count": _g1_count,
+        "g2_docs_count": _g2_docs_count,
+        "g2_code_count": _g2_code_count,
+        "g2_hooks_count": _g2_hooks_count,
+        "blocks_fired": ",".join(_blocks_fired) if _blocks_fired else "",
+        "fallback_reasons": ",".join(_fallback_reasons) if _fallback_reasons else "",
+    }
+    if _g1_top_lexical is not None:
+        _hook_complete["g1_top_score_bm25"] = _g1_top_lexical
+    if _g1_dense_top is not None:
+        _hook_complete["g1_top_score_dense"] = _g1_dense_top
+    _log_event("hook_complete", _hook_complete)
+    # Also emit legacy hook_invoked for dashboard backward compat
     _log_event("hook_invoked", {
-        "hook": "bm25-memory",
         "duration_ms": int((_time.perf_counter() - _t_start) * 1000),
         "prompt_len": len(prompt) if prompt else 0,
     })
