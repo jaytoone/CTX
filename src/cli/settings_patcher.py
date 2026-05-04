@@ -53,17 +53,19 @@ def _load(path: Path) -> dict:
 
 
 def _save_atomic(path: Path, data: dict) -> str:
-    """Write data to path atomically (temp file + rename). Returns backup path."""
+    """Write data to path atomically (temp file + rename). Returns backup path or ''."""
     path.parent.mkdir(parents=True, exist_ok=True)
     ts = time.strftime("%Y%m%d_%H%M%S")
     backup = path.with_suffix(f".backup_{ts}.json")
+    backup_made = False
     if path.exists():
         shutil.copy2(path, backup)
+        backup_made = True
 
     tmp = path.with_suffix(".tmp_ctx")
     tmp.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
     os.replace(tmp, path)
-    return str(backup) if path.exists() else ""
+    return str(backup) if backup_made else ""
 
 
 def _cmd_in_settings(settings: dict, command: str) -> bool:

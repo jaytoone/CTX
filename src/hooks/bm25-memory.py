@@ -60,15 +60,30 @@ _last_retrieval_scores = _ranker_scores
 
 _HNAME = "bm25-memory"
 
+# ── Telemetry gate — evaluated once at module load ───────────────────────────
+# Checking os.environ + Path.home() on every _log_event call adds latency even
+# when telemetry is disabled.  Cache the result at import time so disabled path
+# is a single bool check with no I/O.
+_TELEMETRY_ENABLED: bool = (
+    os.environ.get("CTX_TELEMETRY") == "1"
+    or (Path.home() / ".claude" / "ctx-telemetry.enabled").exists()
+)
+_log_event_impl = None  # lazy import; set on first enabled call
+
 
 def _log_event(event_type, payload):
-    """Opt-in telemetry wrapper — silent no-op if gate off. Never breaks hook path.
+    """Opt-in telemetry wrapper — zero-cost early return when gate is off.
     Automatically injects hook=_HNAME so callers don't repeat it."""
+    if not _TELEMETRY_ENABLED:
+        return
+    global _log_event_impl
     try:
-        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-        from _ctx_telemetry import log_event
+        if _log_event_impl is None:
+            sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+            from _ctx_telemetry import log_event as _impl
+            _log_event_impl = _impl
         merged = {"hook": _HNAME, **(payload or {})}
-        log_event(event_type, merged)
+        _log_event_impl(event_type, merged)
     except Exception:
         pass
 

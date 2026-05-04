@@ -230,7 +230,7 @@ def search_files_by_grep(project_dir, keywords, limit=5):
                 scored.append((int(count), fpath.strip()))
             except ValueError:
                 continue
-        scored.sort(key=lambda x: -x[0])
+        scored.sort(key=lambda x: (-x[0], x[1]))
         files = [f for _, f in scored]
         code = [
             f for f in files

@@ -20,6 +20,7 @@ to ~/.claude/hooks/ on first install. Subsequent installs are idempotent.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import importlib.resources
 import json
 import os
@@ -100,15 +101,70 @@ def _pkg_hooks_dir() -> Path | None:
         return None
 
 
-def step_copy_hooks(dry_run: bool = False) -> tuple[int, int, list[str]]:
+def _file_sha256(path: Path) -> str:
+    """Return hex SHA-256 of file contents."""
+    h = hashlib.sha256()
+    h.update(path.read_bytes())
+    return h.hexdigest()
+
+
+def _copy_hook_file(
+    src_file: Path,
+    dst_file: Path,
+    *,
+    force: bool,
+    no_update: bool,
+    dry_run: bool,
+    chmod: int,
+) -> str:
+    """Copy src_file → dst_file with update policy.
+
+    Returns one of: "copied", "updated", "unchanged", "skipped".
+    Side-effects: creates backup before overwrite; skips if no_update.
+    """
+    if not dst_file.is_file():
+        # New file — always copy
+        if not dry_run:
+            shutil.copy2(src_file, dst_file)
+            dst_file.chmod(chmod)
+        return "copied"
+
+    if no_update:
+        return "skipped"
+
+    if not force and _file_sha256(src_file) == _file_sha256(dst_file):
+        return "unchanged"
+
+    # Hash differs (or --force) → update with timestamped backup
+    if not dry_run:
+        ts = time.strftime("%Y%m%d_%H%M%S")
+        backup = dst_file.with_suffix(f".backup_{ts}{dst_file.suffix}")
+        shutil.copy2(dst_file, backup)
+        shutil.copy2(src_file, dst_file)
+        dst_file.chmod(chmod)
+    return "updated"
+
+
+def step_copy_hooks(
+    dry_run: bool = False,
+    force: bool = False,
+    no_update: bool = False,
+) -> tuple[int, int, int, list[str]]:
     """Copy hook files from the installed package to ~/.claude/hooks/.
-    Returns (copied, skipped, errors)."""
+
+    Update policy (applied to each existing file):
+      - Default:       hash-compare; update if different (creates .backup_<ts> first)
+      - --force-hooks: overwrite unconditionally without hash check
+      - --no-update-hooks: skip existing files (legacy behaviour)
+
+    Returns (copied, updated, skipped, errors).
+    """
     src = _pkg_hooks_dir()
     if src is None:
-        return 0, 0, ["Package hooks dir not found — run `pip install ctx-retriever` first"]
+        return 0, 0, 0, ["Package hooks dir not found — run `pip install ctx-retriever` first"]
 
     CLAUDE_HOOKS_DIR.mkdir(parents=True, exist_ok=True)
-    copied, skipped, errors = 0, 0, []
+    copied, updated, skipped, errors = 0, 0, 0, []
 
     # Hook filenames we care about (from CTX_HOOKS + telemetry helper)
     hook_files = [spec[0] for spec in CTX_HOOKS] + ["_ctx_telemetry.py", "utility-rate.py"]
@@ -117,40 +173,49 @@ def step_copy_hooks(dry_run: bool = False) -> tuple[int, int, list[str]]:
         src_file = src / fname
         dst_file = CLAUDE_HOOKS_DIR / fname
         if not src_file.is_file():
-            continue  # optional file (utility-rate.py not in CTX_HOOKS list)
-        if dst_file.is_file():
-            skipped += 1
+            continue  # optional file
+        try:
+            action = _copy_hook_file(
+                src_file, dst_file,
+                force=force, no_update=no_update,
+                dry_run=dry_run, chmod=0o755,
+            )
+        except OSError as e:
+            errors.append(f"copy {fname}: {e}")
             continue
-        if not dry_run:
-            try:
-                shutil.copy2(src_file, dst_file)
-                dst_file.chmod(0o755)
-                copied += 1
-            except OSError as e:
-                errors.append(f"copy {fname}: {e}")
-        else:
-            copied += 1  # count as would-copy in dry-run
+        if action == "copied":
+            copied += 1
+        elif action == "updated":
+            updated += 1
+        else:  # "unchanged" or "skipped"
+            skipped += 1
 
     # Copy _bm25/ sub-package (required by bm25-memory.py at runtime).
-    # Uses copytree with dirs_exist_ok for idempotency.
     src_bm25 = src / "_bm25"
     dst_bm25 = CLAUDE_HOOKS_DIR / "_bm25"
     if src_bm25.is_dir():
         bm25_files = list(src_bm25.glob("*.py"))
         if not dry_run:
             dst_bm25.mkdir(parents=True, exist_ok=True)
-            for py_file in bm25_files:
-                dst_f = dst_bm25 / py_file.name
-                try:
-                    shutil.copy2(py_file, dst_f)
-                    dst_f.chmod(0o644)
-                    copied += 1
-                except OSError as e:
-                    errors.append(f"copy _bm25/{py_file.name}: {e}")
-        else:
-            copied += len(bm25_files)
+        for py_file in bm25_files:
+            dst_f = dst_bm25 / py_file.name
+            try:
+                action = _copy_hook_file(
+                    py_file, dst_f,
+                    force=force, no_update=no_update,
+                    dry_run=dry_run, chmod=0o644,
+                )
+            except OSError as e:
+                errors.append(f"copy _bm25/{py_file.name}: {e}")
+                continue
+            if action == "copied":
+                copied += 1
+            elif action == "updated":
+                updated += 1
+            else:
+                skipped += 1
 
-    return copied, skipped, errors
+    return copied, updated, skipped, errors
 
 
 def step_copy_daemons(dry_run: bool = False) -> tuple[int, int, list[str]]:
@@ -233,9 +298,13 @@ def cmd_install(args: argparse.Namespace) -> int:
     print(f"Target: {CLAUDE_SETTINGS}")
     print(f"Hooks dir: {CLAUDE_HOOKS_DIR}\n")
 
-    # 1. Copy hook files from package (if not already present)
-    copied, skipped, errors = step_copy_hooks(dry_run=args.dry_run)
-    print(f"1/4 hook files:  copied={copied}  already-present={skipped}")
+    # 1. Copy hook files from package (update policy: hash-compare by default)
+    force = getattr(args, "force_hooks", False)
+    no_update = getattr(args, "no_update_hooks", False)
+    copied, updated, skipped, errors = step_copy_hooks(
+        dry_run=args.dry_run, force=force, no_update=no_update,
+    )
+    print(f"1/4 hook files:  copied={copied}  updated={updated}  unchanged/skipped={skipped}")
     if errors:
         for e in errors:
             print(f"   ✗ {e}")
@@ -397,6 +466,10 @@ def main() -> int:
                    help="Show what would change; touch no files.")
     p.add_argument("--uninstall", action="store_true",
                    help="Remove CTX hook registrations from settings.json.")
+    p.add_argument("--force-hooks", action="store_true",
+                   help="Overwrite existing hook files unconditionally (no hash check).")
+    p.add_argument("--no-update-hooks", action="store_true",
+                   help="Skip existing hook files even if outdated (legacy behaviour).")
     p.add_argument("command", nargs="?", default=None,
                    help="Optional: 'status' to check current install state.")
     args = p.parse_args()

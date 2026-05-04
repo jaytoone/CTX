@@ -189,13 +189,14 @@ def test_dry_run_prints_summary_no_write(tmp_path):
     with (
         patch.object(install_mod, "CLAUDE_SETTINGS", settings_file),
         patch.object(install_mod, "CLAUDE_HOOKS_DIR", tmp_path / ".claude" / "hooks"),
-        patch("install.step_copy_hooks", return_value=(3, 0, [])),
+        patch("install.step_copy_hooks", return_value=(3, 0, 0, [])),
         patch("install.step_copy_daemons", return_value=(0, 0, [])),
         patch("install.step_verify_hooks_present", return_value=(True, ["chat-memory.py"], [])),
         patch("install.step_smoke_test", return_value=(True, "smoke OK")),
     ):
         import argparse
-        args = argparse.Namespace(dry_run=True, uninstall=False, command=None)
+        args = argparse.Namespace(dry_run=True, uninstall=False, command=None,
+                                  force_hooks=False, no_update_hooks=False)
         rc = install_mod.cmd_install(args)
 
     # Dry run always returns 0 and must not create the settings file.
@@ -242,10 +243,11 @@ def test_uninstall_removes_ctx_hooks_only(tmp_path):
 
 
 def test_step_copy_hooks_no_package_returns_error():
-    """step_copy_hooks returns (0, 0, [error]) when package hooks dir not found."""
+    """step_copy_hooks returns (0, 0, 0, [error]) when package hooks dir not found."""
     with patch("install._pkg_hooks_dir", return_value=None):
-        copied, skipped, errors = install_mod.step_copy_hooks()
+        copied, updated, skipped, errors = install_mod.step_copy_hooks()
     assert copied == 0
+    assert updated == 0
     assert skipped == 0
     assert len(errors) == 1
     assert "ctx-retriever" in errors[0].lower() or "not found" in errors[0].lower()
@@ -265,7 +267,7 @@ def test_step_copy_hooks_dry_run_counts_but_no_write(tmp_path):
         patch("install._pkg_hooks_dir", return_value=fake_src),
         patch.object(install_mod, "CLAUDE_HOOKS_DIR", fake_dst),
     ):
-        copied, skipped, errors = install_mod.step_copy_hooks(dry_run=True)
+        copied, updated, skipped, errors = install_mod.step_copy_hooks(dry_run=True)
 
     assert copied > 0
     assert errors == []
@@ -274,24 +276,97 @@ def test_step_copy_hooks_dry_run_counts_but_no_write(tmp_path):
 
 
 def test_step_copy_hooks_skips_already_present(tmp_path):
-    """step_copy_hooks skips files that already exist in the hooks dir."""
+    """step_copy_hooks with identical content reports unchanged (skipped) and does not copy."""
     fake_src = tmp_path / "pkg_hooks"
     fake_src.mkdir()
-    (fake_src / "bm25-memory.py").write_text("# fake bm25")
+    content = "# fake bm25 — identical content"
+    (fake_src / "bm25-memory.py").write_text(content)
 
     fake_dst = tmp_path / "claude_hooks"
     fake_dst.mkdir()
-    # Pre-create the destination file.
-    (fake_dst / "bm25-memory.py").write_text("# already there")
+    # Pre-create the destination file with identical content (same hash → unchanged).
+    (fake_dst / "bm25-memory.py").write_text(content)
 
     with (
         patch("install._pkg_hooks_dir", return_value=fake_src),
         patch.object(install_mod, "CLAUDE_HOOKS_DIR", fake_dst),
     ):
-        copied, skipped, errors = install_mod.step_copy_hooks()
+        copied, updated, skipped, errors = install_mod.step_copy_hooks()
 
     assert skipped > 0
     assert copied == 0
+    assert updated == 0
+
+
+def test_step_copy_hooks_updates_changed_file(tmp_path):
+    """step_copy_hooks updates an existing file when hash differs (creates backup)."""
+    fake_src = tmp_path / "pkg_hooks"
+    fake_src.mkdir()
+    (fake_src / "bm25-memory.py").write_text("# NEW VERSION")
+
+    fake_dst = tmp_path / "claude_hooks"
+    fake_dst.mkdir()
+    # Pre-create the destination file with different content.
+    (fake_dst / "bm25-memory.py").write_text("# OLD VERSION")
+
+    with (
+        patch("install._pkg_hooks_dir", return_value=fake_src),
+        patch.object(install_mod, "CLAUDE_HOOKS_DIR", fake_dst),
+    ):
+        copied, updated, skipped, errors = install_mod.step_copy_hooks()
+
+    assert updated > 0
+    assert copied == 0
+    assert errors == []
+    # Destination should now have new content.
+    assert (fake_dst / "bm25-memory.py").read_text() == "# NEW VERSION"
+    # A backup should have been created.
+    backups = list(fake_dst.glob("bm25-memory.backup_*.py"))
+    assert len(backups) == 1
+    assert backups[0].read_text() == "# OLD VERSION"
+
+
+def test_step_copy_hooks_no_update_skips_changed(tmp_path):
+    """--no-update-hooks skips even when hash differs."""
+    fake_src = tmp_path / "pkg_hooks"
+    fake_src.mkdir()
+    (fake_src / "bm25-memory.py").write_text("# NEW VERSION")
+
+    fake_dst = tmp_path / "claude_hooks"
+    fake_dst.mkdir()
+    (fake_dst / "bm25-memory.py").write_text("# OLD VERSION")
+
+    with (
+        patch("install._pkg_hooks_dir", return_value=fake_src),
+        patch.object(install_mod, "CLAUDE_HOOKS_DIR", fake_dst),
+    ):
+        copied, updated, skipped, errors = install_mod.step_copy_hooks(no_update=True)
+
+    assert skipped > 0
+    assert updated == 0
+    # File must remain unchanged.
+    assert (fake_dst / "bm25-memory.py").read_text() == "# OLD VERSION"
+
+
+def test_step_copy_hooks_force_overwrites(tmp_path):
+    """--force-hooks overwrites even when hash is identical."""
+    fake_src = tmp_path / "pkg_hooks"
+    fake_src.mkdir()
+    content = "# same content"
+    (fake_src / "bm25-memory.py").write_text(content)
+
+    fake_dst = tmp_path / "claude_hooks"
+    fake_dst.mkdir()
+    (fake_dst / "bm25-memory.py").write_text(content)
+
+    with (
+        patch("install._pkg_hooks_dir", return_value=fake_src),
+        patch.object(install_mod, "CLAUDE_HOOKS_DIR", fake_dst),
+    ):
+        copied, updated, skipped, errors = install_mod.step_copy_hooks(force=True)
+
+    # force=True → "updated" path even if hashes match
+    assert updated > 0
 
 
 def test_step_verify_hooks_present_detects_missing(tmp_path):
@@ -461,7 +536,7 @@ def test_step_copy_hooks_actual_copy(tmp_path):
         patch("install._pkg_hooks_dir", return_value=fake_src),
         patch.object(install_mod, "CLAUDE_HOOKS_DIR", fake_dst),
     ):
-        copied, skipped, errors = install_mod.step_copy_hooks(dry_run=False)
+        copied, updated, skipped, errors = install_mod.step_copy_hooks(dry_run=False)
 
     assert copied > 0
     assert errors == []
@@ -483,13 +558,14 @@ def test_cmd_install_smoke_test_fail_returns_4(tmp_path, capsys):
         patch.object(install_mod, "CLAUDE_SETTINGS", settings_file),
         patch.object(install_mod, "CLAUDE_HOOKS_DIR", fake_hooks),
         patch.object(install_mod, "CLAUDE_VAULT_DIR", fake_vault),
-        patch("install.step_copy_hooks", return_value=(2, 0, [])),
+        patch("install.step_copy_hooks", return_value=(2, 0, 0, [])),
         patch("install.step_copy_daemons", return_value=(0, 0, [])),
         patch("install.step_verify_hooks_present", return_value=(True, list(spec[0] for spec in CTX_HOOKS), [])),
         patch("install.step_smoke_test", return_value=(False, "bm25-memory.py missing")),
     ):
         import argparse
-        args = argparse.Namespace(dry_run=False, uninstall=False, command=None)
+        args = argparse.Namespace(dry_run=False, uninstall=False, command=None,
+                                  force_hooks=False, no_update_hooks=False)
         rc = install_mod.cmd_install(args)
 
     assert rc == 4
@@ -504,12 +580,13 @@ def test_cmd_install_hook_copy_failure_returns_2(tmp_path, capsys):
     with (
         patch.object(install_mod, "CLAUDE_SETTINGS", settings_file),
         patch.object(install_mod, "CLAUDE_HOOKS_DIR", fake_hooks),
-        patch("install.step_copy_hooks", return_value=(0, 0, ["copy chat-memory.py: Permission denied"])),
+        patch("install.step_copy_hooks", return_value=(0, 0, 0, ["copy chat-memory.py: Permission denied"])),
         patch("install.step_copy_daemons", return_value=(0, 0, [])),
         patch("install.step_verify_hooks_present", return_value=(True, [], [])),
     ):
         import argparse
-        args = argparse.Namespace(dry_run=False, uninstall=False, command=None)
+        args = argparse.Namespace(dry_run=False, uninstall=False, command=None,
+                                  force_hooks=False, no_update_hooks=False)
         rc = install_mod.cmd_install(args)
 
     assert rc == 2
@@ -524,12 +601,13 @@ def test_cmd_install_missing_hooks_after_copy_returns_2(tmp_path, capsys):
     with (
         patch.object(install_mod, "CLAUDE_SETTINGS", settings_file),
         patch.object(install_mod, "CLAUDE_HOOKS_DIR", fake_hooks),
-        patch("install.step_copy_hooks", return_value=(0, 0, [])),
+        patch("install.step_copy_hooks", return_value=(0, 0, 0, [])),
         patch("install.step_copy_daemons", return_value=(0, 0, [])),
         patch("install.step_verify_hooks_present", return_value=(False, [], ["bm25-memory.py"])),
     ):
         import argparse
-        args = argparse.Namespace(dry_run=False, uninstall=False, command=None)
+        args = argparse.Namespace(dry_run=False, uninstall=False, command=None,
+                                  force_hooks=False, no_update_hooks=False)
         rc = install_mod.cmd_install(args)
 
     assert rc == 2
@@ -545,13 +623,14 @@ def test_cmd_install_success_returns_0(tmp_path, capsys):
         patch.object(install_mod, "CLAUDE_SETTINGS", settings_file),
         patch.object(install_mod, "CLAUDE_HOOKS_DIR", fake_hooks),
         patch.object(install_mod, "CLAUDE_VAULT_DIR", tmp_path / "vault"),
-        patch("install.step_copy_hooks", return_value=(5, 0, [])),
+        patch("install.step_copy_hooks", return_value=(5, 0, 0, [])),
         patch("install.step_copy_daemons", return_value=(2, 0, [])),
         patch("install.step_verify_hooks_present", return_value=(True, list(spec[0] for spec in CTX_HOOKS), [])),
         patch("install.step_smoke_test", return_value=(True, "hook fired OK")),
     ):
         import argparse
-        args = argparse.Namespace(dry_run=False, uninstall=False, command=None)
+        args = argparse.Namespace(dry_run=False, uninstall=False, command=None,
+                                  force_hooks=False, no_update_hooks=False)
         rc = install_mod.cmd_install(args)
 
     assert rc == 0

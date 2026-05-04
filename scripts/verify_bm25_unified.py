@@ -12,7 +12,16 @@ Checks:
 Exit 0 = all checks pass. Exit 1 = any check failed.
 """
 
+import os
 import sys
+
+# Self-contained: ensure the project root is on sys.path so `src` is importable
+# when running directly without PYTHONPATH (e.g. `python3 scripts/verify_bm25_unified.py`).
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+_PROJECT_ROOT = os.path.dirname(_SCRIPT_DIR)
+if _PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, _PROJECT_ROOT)
+
 
 def check(label, condition, detail=""):
     status = "PASS" if condition else "FAIL"

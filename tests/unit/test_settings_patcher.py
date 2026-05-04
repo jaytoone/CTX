@@ -140,6 +140,28 @@ def test_no_backup_when_file_missing(tmp_path):
     assert len(backups) == 0
 
 
+def test_save_atomic_returns_empty_string_for_new_file(tmp_path):
+    """_save_atomic returns '' (not a path) when creating a brand-new file."""
+    p = tmp_path / "settings.json"
+    # File must NOT exist before the call.
+    assert not p.exists()
+    result = _save_atomic(p, {"key": "value"})
+    assert result == "", f"Expected empty string for new file, got: {result!r}"
+    assert p.exists(), "File should have been created"
+
+
+def test_save_atomic_returns_backup_path_for_existing_file(tmp_path):
+    """_save_atomic returns the backup path string when updating an existing file."""
+    p = tmp_path / "settings.json"
+    p.write_text(json.dumps({"original": True}), encoding="utf-8")
+    result = _save_atomic(p, {"updated": True})
+    assert result != "", "Expected backup path for existing file, got empty string"
+    assert result.endswith(".json")
+    backup = Path(result)
+    assert backup.exists(), f"Backup file should exist at {backup}"
+    assert json.loads(backup.read_text()) == {"original": True}
+
+
 def test_parent_dirs_created_if_missing(tmp_path):
     """_save_atomic creates parent directories if they don't exist."""
     p = tmp_path / "deep" / "nested" / "settings.json"

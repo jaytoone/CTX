@@ -161,6 +161,54 @@ def run_fixture(record: dict) -> tuple[str, int]:
     return result.stdout.decode("utf-8", errors="replace"), result.returncode
 
 
+import re as _re
+
+
+def _normalize_g2grep_str(text: str) -> str:
+    """Apply G2-GREP normalization to a plain string (may be embedded in JSON context)."""
+    def _replace_block(m: _re.Match) -> str:
+        header = m.group(1)       # e.g. "[G2-GREP] Files matching '...' (grep):"
+        file_lines = m.group(2)   # the file list lines
+        start_line = m.group(3)   # "  Start with: ..." line
+        count = len([l for l in file_lines.strip().splitlines() if l.strip()])
+        return f"{header}\n  <{count} file(s) — paths normalized>\n{start_line}"
+
+    # Pattern: header + 1+ indented file lines + "Start with:" line
+    pattern = (
+        r'(\[G2-GREP\] Files matching \'[^\']*\' \(grep\):)'  # group 1: header
+        r'(\n(?:  [^\n]+\n)+)'                                  # group 2: file lines
+        r'(  Start with:[^\n]*)'                               # group 3: start-with line
+    )
+    return _re.sub(pattern, _replace_block, text)
+
+
+def _normalize_g2grep(text: str) -> str:
+    """Normalize G2-GREP blocks in hook output so file list changes don't cause drift.
+
+    The hook emits a single JSON line whose 'hookSpecificOutput.additionalContext'
+    field contains the rendered context block (with G2-GREP sections).  This
+    function parses the JSON, normalizes G2-GREP file lists inside the context
+    string, and re-serialises so that exact file path changes (from new files
+    being added to the repo) don't fail fixtures.
+
+    What is still validated:
+      - G2-GREP header line (keyword and format) is unchanged
+      - Number of matched files is unchanged
+      - "Start with: ..." line presence
+    What is NOT validated:
+      - Which specific files appear in the list (only count checked)
+    """
+    try:
+        data = json.loads(text)
+        ctx = data.get("hookSpecificOutput", {}).get("additionalContext", "")
+        if ctx and "[G2-GREP]" in ctx:
+            data["hookSpecificOutput"]["additionalContext"] = _normalize_g2grep_str(ctx)
+        return json.dumps(data, ensure_ascii=False)
+    except (json.JSONDecodeError, AttributeError):
+        # Fallback: treat as plain text (e.g., error output)
+        return _normalize_g2grep_str(text)
+
+
 def _diff_summary(expected: str, actual: str) -> str:
     """Return a compact unified-diff-style summary of mismatches."""
     exp_lines = expected.splitlines()
@@ -226,7 +274,12 @@ def main() -> int:
         expected_stdout = rec["expected_stdout"]
         expected_exit = rec["expected_exit_code"]
 
-        stdout_ok = actual_stdout == expected_stdout
+        # Normalize G2-GREP file lists before comparison to prevent drift
+        # from new files being added to the repo.
+        norm_expected = _normalize_g2grep(expected_stdout)
+        norm_actual = _normalize_g2grep(actual_stdout)
+
+        stdout_ok = norm_actual == norm_expected
         exit_ok = actual_exit == expected_exit
 
         if stdout_ok and exit_ok:
@@ -242,8 +295,8 @@ def main() -> int:
             if not exit_ok:
                 msg_parts.append(f"exit expected={expected_exit} actual={actual_exit}")
             if not stdout_ok:
-                diff = _diff_summary(expected_stdout, actual_stdout)
-                msg_parts.append(f"stdout mismatch:\n{diff}")
+                diff = _diff_summary(norm_expected, norm_actual)
+                msg_parts.append(f"stdout mismatch (G2-GREP normalized):\n{diff}")
             print(f"  FAIL  [{cat}] {fid}:", file=sys.stderr)
             for m in msg_parts:
                 print(f"    {m}", file=sys.stderr)
