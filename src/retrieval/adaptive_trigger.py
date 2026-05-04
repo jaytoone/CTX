@@ -22,6 +22,17 @@ from rank_bm25 import BM25Okapi
 from src.retrieval.full_context import RetrievalResult, estimate_tokens
 from src.trigger.trigger_classifier import TriggerClassifier, TriggerType
 
+# Canonical tokenizer shared with production hook (Task C unification).
+# tokenize()          — corpus-side (drop_stopwords=False) and query-side (True)
+# expand_query_tokens() — synonym expansion (KO↔EN, CTX domain vocab)
+# score_corpus_bm25() — generic BM25 scorer returning raw numpy score array
+try:
+    from src.hooks._bm25.tokenizer import tokenize as _bm25_tokenize, expand_query_tokens as _bm25_expand
+    from src.hooks._bm25.ranker import score_corpus_bm25 as _bm25_score
+    _HAS_UNIFIED_TOKENIZER = True
+except ImportError:
+    _HAS_UNIFIED_TOKENIZER = False
+
 # Directories to exclude from indexing (venvs, build artifacts, VCS, caches)
 _EXCLUDED_DIRS = frozenset({
     'venv', '.venv', 'env', '.env',
@@ -148,10 +159,16 @@ class AdaptiveTriggerRetriever:
                 # Build import graph
                 self._index_imports(rel_path, content)
 
-                # Tokenize for BM25 (unigrams + selective bigrams for multi-word concepts)
-                expanded = re.sub(r'([a-z])([A-Z])', r'\1 \2', content)
-                expanded = expanded.replace("_", " ")
-                tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', expanded.lower())
+                # Tokenize for BM25 — use canonical production tokenizer when available.
+                # Fallback keeps original regex for environments without _bm25 package.
+                if _HAS_UNIFIED_TOKENIZER:
+                    # Production tokenizer: Korean particle strip + Porter stem + decimal preserve
+                    tokens = _bm25_tokenize(content, drop_stopwords=False)
+                else:
+                    expanded = re.sub(r'([a-z])([A-Z])', r'\1 \2', content)
+                    expanded = expanded.replace("_", " ")
+                    tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', expanded.lower())
+                # Selective bigrams for multi-word concept matching (both paths)
                 bigrams = [
                     f"{tokens[i]}_{tokens[i+1]}"
                     for i in range(len(tokens) - 1)
@@ -492,8 +509,12 @@ class AdaptiveTriggerRetriever:
         # Raw content search finds files mentioning the symbol (e.g. in docstrings) but gives
         # no ordering signal. BM25 on the full query text provides a reliable reranking.
         if self.bm25 is not None and all(v == 0.5 for v in matched_files.values()):
-            full_exp = re.sub(r'([a-z])([A-Z])', r'\1 \2', query_text).replace("_", " ")
-            full_tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', full_exp.lower())
+            if _HAS_UNIFIED_TOKENIZER:
+                full_tokens = _bm25_tokenize(query_text, drop_stopwords=True)
+                full_tokens = _bm25_expand(full_tokens)
+            else:
+                full_exp = re.sub(r'([a-z])([A-Z])', r'\1 \2', query_text).replace("_", " ")
+                full_tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', full_exp.lower())
             if full_tokens:
                 bm25_scores = self.bm25.get_scores(full_tokens)
                 bm25_max = float(np.max(bm25_scores)) if bm25_scores.max() > 0 else 1.0
@@ -532,12 +553,21 @@ class AdaptiveTriggerRetriever:
         # Full-query tokens provide recall when concept extraction loses information
         # (e.g. long docstrings, COIR-style natural-language-to-code queries).
         if self.bm25 is not None:
-            concept_expanded = re.sub(r'([a-z])([A-Z])', r'\1 \2', concept).replace("_", " ")
-            concept_tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', concept_expanded.lower())
-            # Fallback to full query_text tokens if concept is empty or trivial
-            if not concept_tokens or all(len(t) <= 2 for t in concept_tokens):
-                full_exp = re.sub(r'([a-z])([A-Z])', r'\1 \2', query_text).replace("_", " ")
-                concept_tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', full_exp.lower())
+            if _HAS_UNIFIED_TOKENIZER:
+                # Canonical tokenizer: Korean strip + stem + synonym expansion
+                concept_tokens = _bm25_tokenize(concept, drop_stopwords=True)
+                concept_tokens = _bm25_expand(concept_tokens)
+                # Fallback to full query_text tokens if concept is empty or trivial
+                if not concept_tokens or all(len(t) <= 2 for t in concept_tokens):
+                    concept_tokens = _bm25_tokenize(query_text, drop_stopwords=True)
+                    concept_tokens = _bm25_expand(concept_tokens)
+            else:
+                concept_expanded = re.sub(r'([a-z])([A-Z])', r'\1 \2', concept).replace("_", " ")
+                concept_tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', concept_expanded.lower())
+                # Fallback to full query_text tokens if concept is empty or trivial
+                if not concept_tokens or all(len(t) <= 2 for t in concept_tokens):
+                    full_exp = re.sub(r'([a-z])([A-Z])', r'\1 \2', query_text).replace("_", " ")
+                    concept_tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', full_exp.lower())
 
             # Add bigrams to concept query (matches bigrams in BM25 corpus index)
             concept_bigrams = [
@@ -552,8 +582,12 @@ class AdaptiveTriggerRetriever:
             concept_max = float(np.max(concept_scores)) if concept_scores.max() > 0 else 1.0
 
             # Full-query BM25 — always computed for hybrid blend
-            full_exp = re.sub(r'([a-z])([A-Z])', r'\1 \2', query_text).replace("_", " ")
-            full_tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', full_exp.lower())
+            if _HAS_UNIFIED_TOKENIZER:
+                full_tokens = _bm25_tokenize(query_text, drop_stopwords=True)
+                full_tokens = _bm25_expand(full_tokens)
+            else:
+                full_exp = re.sub(r'([a-z])([A-Z])', r'\1 \2', query_text).replace("_", " ")
+                full_tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', full_exp.lower())
             full_bigrams = [
                 f"{full_tokens[i]}_{full_tokens[i+1]}"
                 for i in range(len(full_tokens) - 1)
@@ -879,8 +913,12 @@ class AdaptiveTriggerRetriever:
         # where import traversal finds no internal deps (external libs not in corpus).
         bm25_scores_arr: "np.ndarray | None" = None
         if self.bm25 is not None:
-            expanded = re.sub(r'([a-z])([A-Z])', r'\1 \2', query_text).replace("_", " ")
-            query_tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', expanded.lower())
+            if _HAS_UNIFIED_TOKENIZER:
+                query_tokens = _bm25_tokenize(query_text, drop_stopwords=True)
+                query_tokens = _bm25_expand(query_tokens)
+            else:
+                expanded = re.sub(r'([a-z])([A-Z])', r'\1 \2', query_text).replace("_", " ")
+                query_tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', expanded.lower())
             bigrams = [
                 f"{query_tokens[i]}_{query_tokens[i+1]}"
                 for i in range(len(query_tokens) - 1)
@@ -1038,8 +1076,13 @@ class AdaptiveTriggerRetriever:
                 strategy="adaptive_trigger",
             )
 
-        expanded = re.sub(r'([a-z])([A-Z])', r'\1 \2', query_text).replace("_", " ")
-        query_tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', expanded.lower())
+        if _HAS_UNIFIED_TOKENIZER:
+            # Canonical production tokenizer: stopword drop + stem + synonym expansion
+            query_tokens = _bm25_tokenize(query_text, drop_stopwords=True)
+            query_tokens = _bm25_expand(query_tokens)
+        else:
+            expanded = re.sub(r'([a-z])([A-Z])', r'\1 \2', query_text).replace("_", " ")
+            query_tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]{1,}', expanded.lower())
         bigrams = [
             f"{query_tokens[i]}_{query_tokens[i+1]}"
             for i in range(len(query_tokens) - 1)

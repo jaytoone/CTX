@@ -80,6 +80,31 @@ def rrf_merge(list_a, list_b, k_rrf=60):
     return [hash_to_item[h] for h in merged_keys]
 
 
+def score_corpus_bm25(tokenized_corpus, query_tokens):
+    """Generic BM25 scorer — returns raw numpy score array.
+
+    This is the canonical low-level primitive used by both the eval pipeline
+    (adaptive_trigger.py) and the production hook (bm25_rank_decisions).
+    Callers that need top-k with MMR/dedup should use bm25_rank_decisions();
+    callers that need the full score vector for blending should use this.
+
+    Args:
+        tokenized_corpus: list[list[str]] — pre-tokenized documents.
+        query_tokens: list[str] — pre-tokenized query (tokenize() output).
+
+    Returns:
+        np.ndarray of shape (len(tokenized_corpus),) or None if rank_bm25 unavailable.
+    """
+    if not HAS_BM25 or not tokenized_corpus or not query_tokens:
+        return None
+    try:
+        import numpy as np
+        bm25 = BM25Okapi(tokenized_corpus)
+        return np.array(bm25.get_scores(query_tokens))
+    except Exception:
+        return None
+
+
 def bm25_rank_decisions(corpus, query, top_k=7, min_score=0.5,
                         adaptive_floor_ratio=0.35, mmr_jaccard_threshold=0.70,
                         skip_rerank=False):
