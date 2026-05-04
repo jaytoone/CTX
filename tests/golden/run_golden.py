@@ -15,13 +15,28 @@ Environment:
     the current process environment (so PATH / PYTHONPATH are inherited).
     HOME is overridden to /tmp/ctx_golden_home to isolate side effects.
 
+python_bin field (optional):
+    Each fixture may carry a "python_bin" field specifying the interpreter to
+    use.  Relative paths are resolved from the project root.  Absolute paths
+    are used as-is.  If the field is absent, sys.executable (the interpreter
+    running this script) is used.  If the specified interpreter does not exist
+    the fixture is an immediate FAIL — it is never silently skipped.
+
+    Fallback fixtures (no python_bin):  system Python, the BM25 library absent →
+        HAS_BM25=False path, G1/G2-DOCS return [] (only G2-GREP emitted).
+    BM25-path fixtures (python_bin=".venv-golden/bin/python"):  BM25 library
+        present (v0.2.2) → HAS_BM25=True path, G1 [RECENT DECISIONS] + G2-DOCS
+        blocks emitted alongside G2-GREP.
+
 Note on HAS_BM25:
-    rank_bm25 is not installed in the default Python 3.14 (Homebrew) environment
-    used by this machine.  G1 / G2-DOCS BM25 ranking therefore returns [] and
-    only G2-GREP (git grep) + Session Notes + World Model are emitted.
-    The fixtures capture that fallback behaviour faithfully — they will continue
-    to pass after Task A decomposition as long as the same code paths execute.
-    If rank_bm25 is later installed, run with --update to refresh expected outputs.
+    The BM25 library (package name: rank-bm25) is not installed in the default
+    Python 3.14 (Homebrew) environment used by this machine.  G1 / G2-DOCS BM25
+    ranking therefore returns [] and only G2-GREP (git grep) + Session Notes +
+    World Model are emitted.  The fixtures capture that fallback behaviour
+    faithfully — they will continue to pass after Task A decomposition as long as
+    the same code paths execute.
+    BM25-path fixtures (suffix _bm25path) use .venv-golden/bin/python where the
+    BM25 library is installed; these capture the full G1+G2-DOCS output.
 """
 
 import argparse
@@ -38,12 +53,34 @@ PROJECT_DIR = str(Path(__file__).parent.parent.parent.resolve())
 
 
 def _ensure_golden_home() -> None:
-    """Create /tmp/ctx_golden_home skeleton if absent."""
-    home = Path("/tmp/ctx_golden_home/.claude")
-    home.mkdir(parents=True, exist_ok=True)
-    # No ctx-auto-tune.json → auto-tune disabled (consistent with capture)
-    vault = Path("/tmp/ctx_golden_home/.local/share/claude-vault")
-    vault.mkdir(parents=True, exist_ok=True)
+    """Create HOME skeleton directories for both fallback and BM25-path fixtures."""
+    for home_root in ("/tmp/ctx_golden_home", "/tmp/ctx_golden_home_bm25"):
+        home = Path(home_root) / ".claude"
+        home.mkdir(parents=True, exist_ok=True)
+        # No ctx-auto-tune.json → auto-tune disabled (consistent with capture)
+        vault = Path(home_root) / ".local/share/claude-vault"
+        vault.mkdir(parents=True, exist_ok=True)
+
+
+def _resolve_python_bin(python_bin: str | None) -> str:
+    """Resolve python_bin field to an absolute path.
+
+    Relative paths are resolved from the project root (PROJECT_DIR).
+    If python_bin is None, fall back to sys.executable.
+    Raises FileNotFoundError if the resolved path does not exist.
+    """
+    if python_bin is None:
+        return sys.executable
+    p = Path(python_bin)
+    if not p.is_absolute():
+        p = Path(PROJECT_DIR) / p
+    if not p.exists():
+        raise FileNotFoundError(
+            f"python_bin interpreter not found: {p}\n"
+            f"  (original value: {python_bin!r})\n"
+            f"  Ensure .venv-golden is set up: pip install rank-bm25 numpy"
+        )
+    return str(p)
 
 
 def _build_env(fixture_env: dict) -> dict:
@@ -56,9 +93,14 @@ def _build_env(fixture_env: dict) -> dict:
 
 
 def run_fixture(record: dict) -> tuple[str, int]:
-    """Run a single fixture, return (stdout, exit_code)."""
+    """Run a single fixture, return (stdout, exit_code).
+
+    Uses the interpreter specified by the fixture's optional "python_bin" field.
+    Relative paths are resolved from PROJECT_DIR.  Missing interpreter → FAIL.
+    """
     stdin_bytes = json.dumps(record["stdin"], ensure_ascii=False).encode("utf-8")
-    cmd = [sys.executable, str(HOOK_PATH)] + record.get("argv", [])
+    python_bin = _resolve_python_bin(record.get("python_bin"))
+    cmd = [python_bin, str(HOOK_PATH)] + record.get("argv", [])
     env = _build_env(record["env"])
 
     result = subprocess.run(
@@ -126,7 +168,12 @@ def main() -> int:
     for rec in records:
         fid = rec["id"]
         cat = rec["category"]
-        actual_stdout, actual_exit = run_fixture(rec)
+        try:
+            actual_stdout, actual_exit = run_fixture(rec)
+        except FileNotFoundError as exc:
+            print(f"  FAIL  [{cat}] {fid}: interpreter missing — {exc}", file=sys.stderr)
+            failures.append(fid)
+            continue
 
         expected_stdout = rec["expected_stdout"]
         expected_exit = rec["expected_exit_code"]
