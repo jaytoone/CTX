@@ -30,6 +30,7 @@ from pathlib import Path
 # ── _bm25 package import (script entry-point path hack) ──────────────────────
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _bm25.tokenizer import tokenize, expand_query_tokens  # noqa: E402
+from _bm25.autotune import AUTO_TUNE as _AUTO_TUNE, AUTO_TUNE_ACTIVE as _AUTO_TUNE_ACTIVE  # noqa: E402
 
 try:
     from rank_bm25 import BM25Okapi
@@ -50,19 +51,6 @@ RICH = "--rich" in sys.argv
 _VEC_SOCK = Path.home() / ".local/share/claude-vault/vec-daemon.sock"
 _VEC_TIMEOUT = 0.8   # seconds — fail fast if daemon is down
 _VEC_DISABLED = os.environ.get("CTX_DISABLE_SEMANTIC_RERANK") == "1"
-
-# ── Auto-tune: read flywheel parameter recommendations (ctx-telemetry tune output) ──
-_AUTO_TUNE_PATH = Path.home() / ".claude" / "ctx-auto-tune.json"
-_AUTO_TUNE: dict = {}
-_AUTO_TUNE_ACTIVE: bool = False
-try:
-    if _AUTO_TUNE_PATH.exists():
-        _auto_tune_raw = json.loads(_AUTO_TUNE_PATH.read_text())
-        if isinstance(_auto_tune_raw, dict):
-            _AUTO_TUNE = _auto_tune_raw
-            _AUTO_TUNE_ACTIVE = True
-except Exception:
-    pass
 
 # Retrieval score capture: populated by bm25_rank_decisions / dense_rank_decisions
 # so callers can read top_score_bm25 / top_score_dense without signature changes.
