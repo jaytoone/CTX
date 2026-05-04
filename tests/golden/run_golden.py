@@ -132,8 +132,8 @@ def _build_env(fixture_env: dict) -> dict:
     return env
 
 
-def run_fixture(record: dict) -> tuple[str, int]:
-    """Run a single fixture, return (stdout, exit_code).
+def run_fixture(record: dict) -> tuple[str, str, int]:
+    """Run a single fixture, return (stdout, stderr, exit_code).
 
     Uses the interpreter specified by the fixture's optional "python_bin" field.
     Relative paths are resolved from PROJECT_DIR.  Missing interpreter → FAIL.
@@ -158,7 +158,11 @@ def run_fixture(record: dict) -> tuple[str, int]:
         env=env,
         cwd=PROJECT_DIR,
     )
-    return result.stdout.decode("utf-8", errors="replace"), result.returncode
+    return (
+        result.stdout.decode("utf-8", errors="replace"),
+        result.stderr.decode("utf-8", errors="replace"),
+        result.returncode,
+    )
 
 
 import re as _re
@@ -265,7 +269,7 @@ def main() -> int:
         fid = rec["id"]
         cat = rec["category"]
         try:
-            actual_stdout, actual_exit = run_fixture(rec)
+            actual_stdout, actual_stderr, actual_exit = run_fixture(rec)
         except FileNotFoundError as exc:
             print(f"  FAIL  [{cat}] {fid}: interpreter missing — {exc}", file=sys.stderr)
             failures.append(fid)
@@ -273,6 +277,8 @@ def main() -> int:
 
         expected_stdout = rec["expected_stdout"]
         expected_exit = rec["expected_exit_code"]
+        # expected_stderr is optional — absent means "skip stderr check" (backward-compat).
+        expected_stderr: str | None = rec.get("expected_stderr")
 
         # Normalize G2-GREP file lists before comparison to prevent drift
         # from new files being added to the repo.
@@ -281,14 +287,23 @@ def main() -> int:
 
         stdout_ok = norm_actual == norm_expected
         exit_ok = actual_exit == expected_exit
+        # stderr comparison: only when fixture has explicit expected_stderr field.
+        stderr_ok = (expected_stderr is None) or (actual_stderr == expected_stderr)
 
-        if stdout_ok and exit_ok:
+        if stdout_ok and exit_ok and stderr_ok:
             print(f"  PASS  [{cat}] {fid}")
         elif args.update:
             rec["expected_stdout"] = actual_stdout
             rec["expected_exit_code"] = actual_exit
+            # Update expected_stderr only if the fixture already had the field.
+            if expected_stderr is not None:
+                rec["expected_stderr"] = actual_stderr
             rec["elapsed_ms_observed"] = rec.get("elapsed_ms_observed", 0)
-            print(f"  UPDATE [{cat}] {fid}  (exit: {expected_exit}→{actual_exit}, stdout_changed={not stdout_ok})")
+            stderr_changed = (expected_stderr is not None) and (actual_stderr != expected_stderr)
+            print(
+                f"  UPDATE [{cat}] {fid}  (exit: {expected_exit}→{actual_exit},"
+                f" stdout_changed={not stdout_ok}, stderr_changed={stderr_changed})"
+            )
             updated.append(fid)
         else:
             msg_parts = []
@@ -297,6 +312,9 @@ def main() -> int:
             if not stdout_ok:
                 diff = _diff_summary(norm_expected, norm_actual)
                 msg_parts.append(f"stdout mismatch (G2-GREP normalized):\n{diff}")
+            if not stderr_ok:
+                diff = _diff_summary(expected_stderr or "", actual_stderr)
+                msg_parts.append(f"stderr mismatch:\n{diff}")
             print(f"  FAIL  [{cat}] {fid}:", file=sys.stderr)
             for m in msg_parts:
                 print(f"    {m}", file=sys.stderr)
