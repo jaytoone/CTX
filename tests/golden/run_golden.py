@@ -51,6 +51,46 @@ FIXTURE_PATH = Path(__file__).parent / "bm25_memory_outputs.jsonl"
 HOOK_PATH = Path(__file__).parent.parent.parent / "src" / "hooks" / "bm25-memory.py"
 PROJECT_DIR = str(Path(__file__).parent.parent.parent.resolve())
 
+# Frozen decision corpus for BM25-path fixtures.
+# Captured at commit b398ee8 (220 entries, embeddings stripped).
+# Injected into .omc/decision_corpus.json before each _bm25path fixture run,
+# with the current git HEAD written into the "head" field so bm25-memory.py
+# treats it as a valid cache hit and skips rebuilding from git log.
+# This isolates BM25-path fixtures from future git commits.
+FROZEN_CORPUS_PATH = Path(__file__).parent / "bm25_path_corpus_frozen.json"
+
+
+def _get_git_head() -> str:
+    """Return the current git HEAD SHA, or empty string on failure."""
+    try:
+        return subprocess.check_output(
+            ["git", "rev-parse", "HEAD"],
+            cwd=PROJECT_DIR,
+            stderr=subprocess.DEVNULL,
+        ).decode().strip()
+    except Exception:
+        return ""
+
+
+def _inject_frozen_corpus() -> None:
+    """Write frozen corpus into .omc/decision_corpus.json with current HEAD.
+
+    bm25-memory.py checks cache_path head == current HEAD to decide whether
+    to use the cache.  By injecting the frozen corpus with the current HEAD,
+    we make the hook use our fixed corpus regardless of new git commits.
+    """
+    if not FROZEN_CORPUS_PATH.exists():
+        return
+    head = _get_git_head()
+    frozen = json.loads(FROZEN_CORPUS_PATH.read_text())
+    cache_path = Path(PROJECT_DIR) / ".omc" / "decision_corpus.json"
+    cache_path.parent.mkdir(exist_ok=True)
+    cache_path.write_text(json.dumps({
+        "head": head,
+        "corpus": frozen["corpus"],
+        "emb_head": "",  # no embeddings → dense path disabled, BM25-only
+    }, ensure_ascii=False))
+
 
 def _ensure_golden_home() -> None:
     """Create HOME skeleton directories for both fallback and BM25-path fixtures."""
@@ -97,11 +137,19 @@ def run_fixture(record: dict) -> tuple[str, int]:
 
     Uses the interpreter specified by the fixture's optional "python_bin" field.
     Relative paths are resolved from PROJECT_DIR.  Missing interpreter → FAIL.
+
+    For BM25-path fixtures (python_bin set), injects frozen decision corpus
+    before running so G1 BM25 ranking is stable across git commits.
     """
     stdin_bytes = json.dumps(record["stdin"], ensure_ascii=False).encode("utf-8")
     python_bin = _resolve_python_bin(record.get("python_bin"))
     cmd = [python_bin, str(HOOK_PATH)] + record.get("argv", [])
     env = _build_env(record["env"])
+
+    # Inject frozen corpus for BM25-path fixtures to prevent G1 rank drift
+    # caused by new commits being added to the decision corpus.
+    if record.get("python_bin"):
+        _inject_frozen_corpus()
 
     result = subprocess.run(
         cmd,
