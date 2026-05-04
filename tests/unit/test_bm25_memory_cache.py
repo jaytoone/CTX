@@ -44,12 +44,16 @@ def _run_hook(project_dir: Path, env: dict, timeout: int = HOOK_TIMEOUT) -> subp
         "prompt": "BM25 decisions recently?",
         "cwd": str(project_dir),
     })
+    # Ensure the hook reads the correct project_dir via env var AND process cwd.
+    # bm25-memory.py uses os.environ.get("CLAUDE_PROJECT_DIR", os.getcwd()) at line ~79.
+    env = {**env, "CLAUDE_PROJECT_DIR": str(project_dir)}
     return subprocess.run(
         [_PYTHON, HOOK_PATH, "--rich"],
         input=payload,
         capture_output=True,
         text=True,
         env=env,
+        cwd=str(project_dir),
         timeout=timeout,
     )
 
@@ -133,13 +137,20 @@ def test_cache_path_under_omc(tmp_project, hook_env):
 
 
 def test_cache_invalidated_on_head_change(tmp_project, hook_env):
-    """After a new commit, the cache head field must reflect the new HEAD."""
+    """After a new commit, the cache head field must reflect the new HEAD.
+
+    tmp_project has a 'feat: initial commit' which _is_decision() recognises,
+    so the cache is always written on first run.
+    """
     # Run hook once to warm the cache.
     _run_hook(tmp_project, hook_env)
 
     cache_after_first = _read_cache(tmp_project)
-    if cache_after_first is None:
-        pytest.skip("No cache written (no decision commits in fresh repo) — skip HEAD change test")
+    assert cache_after_first is not None, (
+        "Cache was not written after first hook run. "
+        "tmp_project has 'feat: initial commit' which should be a decision commit. "
+        "Check _is_decision() or CLAUDE_PROJECT_DIR injection."
+    )
 
     head_first = cache_after_first.get("head")
 
@@ -153,9 +164,9 @@ def test_cache_invalidated_on_head_change(tmp_project, hook_env):
     _run_hook(tmp_project, hook_env)
 
     cache_after_second = _read_cache(tmp_project)
-    if cache_after_second is None:
-        # Cache wasn't updated for some reason — test is inconclusive.
-        pytest.skip("Cache not written after second run")
+    assert cache_after_second is not None, (
+        "Cache was not written after second hook run."
+    )
 
     assert cache_after_second.get("head") == head_second, (
         f"Cache head should be updated to {head_second!r}, "
@@ -164,20 +175,24 @@ def test_cache_invalidated_on_head_change(tmp_project, hook_env):
 
 
 def test_cache_hit_when_head_same(tmp_project, hook_env):
-    """When HEAD hasn't changed, the cache mtime must not change (no rebuild)."""
-    # Add a decision commit so cache is written.
-    _git_add_commit(tmp_project, "feat: decision commit for cache-hit test")
+    """When HEAD hasn't changed, the cache mtime must not change (no rebuild).
+
+    tmp_project already has 'feat: initial commit', so no extra commit needed.
+    """
+    # Run once to warm the cache (tmp_project's initial commit is a decision commit).
     _run_hook(tmp_project, hook_env)
 
     cache_path = tmp_project / ".omc" / "decision_corpus.json"
-    if not cache_path.exists():
-        pytest.skip("No cache file after first run — skip cache-hit test")
+    assert cache_path.exists(), (
+        "Cache was not written after first hook run. "
+        "Check CLAUDE_PROJECT_DIR injection or _is_decision() logic."
+    )
 
     mtime_first = cache_path.stat().st_mtime
     # Small sleep to make mtime difference detectable.
     time.sleep(0.1)
 
-    # Run hook again WITHOUT any new commit.
+    # Run hook again WITHOUT any new commit — HEAD is unchanged.
     _run_hook(tmp_project, hook_env)
 
     mtime_second = cache_path.stat().st_mtime

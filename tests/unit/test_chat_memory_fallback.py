@@ -179,21 +179,31 @@ def test_chat_memory_respects_excluded_project(base_env, tmp_home):
 
 
 def test_chat_memory_no_crash_on_missing_sqlite_vec(base_env):
-    """If sqlite_vec is not importable, hook must fail gracefully (not traceback)."""
-    # We patch sqlite_vec availability by pointing to a broken module path.
-    # The simplest way: add a fake sqlite_vec that raises ImportError to sys.path.
-    import tempfile, textwrap
+    """If sqlite_vec is not importable, hook must exit 0 with a warning — no traceback."""
+    # Patch sqlite_vec availability: prepend a fake module that raises ImportError.
+    import tempfile
 
     with tempfile.TemporaryDirectory() as td:
         fake_mod = Path(td) / "sqlite_vec.py"
-        fake_mod.write_text("raise ImportError('no sqlite_vec for test')")
+        fake_mod.write_text("raise ImportError('no sqlite_vec for test')\n")
         env = {**base_env, "PYTHONPATH": td}
 
         result = _run_hook(
             {"prompt": "What BM25 decisions did we make about retrieval scoring?"},
             env,
         )
-        # Hook may exit non-zero here (import error kills the script), but
-        # the critical requirement is: no infinite hang (timeout would cause exception).
-        # We just verify it completes within the timeout.
-        assert result.returncode is not None  # completed (not timed out)
+        # Must exit cleanly (graceful fallback to BM25-only mode).
+        assert result.returncode == 0, (
+            f"Hook crashed (exit {result.returncode}) when sqlite_vec is missing.\n"
+            f"stderr: {result.stderr[:500]}"
+        )
+        # Must emit the ⚠ warning to stderr (not silently swallow the import error).
+        assert "sqlite_vec missing" in result.stderr, (
+            "Expected '⚠ sqlite_vec missing' warning in stderr, got:\n"
+            + result.stderr[:500]
+        )
+        # Must not print a Python traceback.
+        assert "Traceback" not in result.stderr, (
+            "Unexpected Python traceback when sqlite_vec is missing:\n"
+            + result.stderr[:500]
+        )

@@ -49,6 +49,7 @@ packages = [
     "ctx_retriever.data",
     "ctx_retriever.evaluator",
     "ctx_retriever.hooks",
+    "ctx_retriever.hooks._bm25",
     "ctx_retriever.retrieval",
     "ctx_retriever.trigger",
     "ctx_retriever.visualizer",
@@ -60,6 +61,7 @@ packages = [
 [tool.setuptools.package-data]
 "*" = ["*.json", "*.yaml"]
 "ctx_retriever.hooks" = ["*.py", "ctx-telemetry"]
+"ctx_retriever.hooks._bm25" = ["*.py"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests/unit"]

@@ -131,6 +131,25 @@ def step_copy_hooks(dry_run: bool = False) -> tuple[int, int, list[str]]:
         else:
             copied += 1  # count as would-copy in dry-run
 
+    # Copy _bm25/ sub-package (required by bm25-memory.py at runtime).
+    # Uses copytree with dirs_exist_ok for idempotency.
+    src_bm25 = src / "_bm25"
+    dst_bm25 = CLAUDE_HOOKS_DIR / "_bm25"
+    if src_bm25.is_dir():
+        bm25_files = list(src_bm25.glob("*.py"))
+        if not dry_run:
+            dst_bm25.mkdir(parents=True, exist_ok=True)
+            for py_file in bm25_files:
+                dst_f = dst_bm25 / py_file.name
+                try:
+                    shutil.copy2(py_file, dst_f)
+                    dst_f.chmod(0o644)
+                    copied += 1
+                except OSError as e:
+                    errors.append(f"copy _bm25/{py_file.name}: {e}")
+        else:
+            copied += len(bm25_files)
+
     return copied, skipped, errors
 
 
