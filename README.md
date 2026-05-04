@@ -1,391 +1,192 @@
-# CTX: Trigger-Driven Dynamic Context Loading for Code-Aware LLM Agents
+# tunaCtx
 
-[![PyPI version](https://img.shields.io/pypi/v/ctx-retriever)](https://pypi.org/project/ctx-retriever/)
-[![PyPI downloads](https://img.shields.io/pypi/dm/ctx-retriever)](https://pypi.org/project/ctx-retriever/)
-[![Python](https://img.shields.io/badge/python-3.9%2B-blue)](https://pypi.org/project/ctx-retriever/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![HuggingFace Demo](https://img.shields.io/badge/HuggingFace-Demo-orange)](https://huggingface.co/spaces/Be2Jay/ctx-demo)
-[![Publish to PyPI](https://github.com/jaytoone/CTX/actions/workflows/publish.yml/badge.svg)](https://github.com/jaytoone/CTX/actions/workflows/publish.yml)
+원본 [jaytoone/CTX](https://github.com/jaytoone/CTX) 를 production-level 로 리팩토링/보강한 fork.
+retrieval 알고리즘은 원본 그대로 유지. Claude Code hook 구현이 실제 사용 환경에서 안전하게 운영되도록 모듈 분해, 패키징/설치 정합성, 회귀 가드, 텔레메트리만 손봤음.
 
-![CTX Knowledge Graph — decisions, docs, and prompts in real time](docs/media/ctx-cover-graph.png)
+## 어디에 어떻게 쓰는가
 
-CTX classifies developer queries into four trigger types and routes each to a specialized retrieval pipeline. For dependency-sensitive queries, CTX traverses the codebase import graph to resolve transitive relationships that keyword and embedding methods miss. It achieves **1.9x higher Token-Efficiency Score** than BM25 while using only **5.2% of tokens**, and **outperforms BM25 on held-out external codebases** (Flask, FastAPI, Requests — mean R@5 +0.163).
+- **환경**: Claude Code (CLI / IDE / web).
+- **트리거**: 사용자가 프롬프트 보낼 때마다 실행되는 `UserPromptSubmit` hook.
+- **역할**: 프롬프트에 관련된 과거 의사결정(G1) + 관련 docs/코드(G2) 를 자동으로 context 에 주입.
+- **외부 의존성**: LLM API 호출 없음. 로컬 BM25 + (옵션) vec-daemon (multilingual-e5-small) + (옵션) BGE cross-encoder.
 
-> **Key insight**: code import graphs encode structural dependency information that text-based RAG cannot capture. CTX achieves Recall@5 = 1.0 on implicit dependency queries vs 0.4 for BM25.
-
-**[▶ Dashboard demo (39s)](https://drive.google.com/file/d/1b4ZvbRYkXKTepKDx8N7gLfim-zLDiCGo/view?usp=sharing)**
-
-## Install
+### 설치
 
 ```bash
-pip install ctx-retriever
-```
-
-Or from source:
-
-```bash
-git clone https://github.com/jaytoone/CTX
-cd CTX
+git clone https://github.com/hang-in/tunaCtx
+cd tunaCtx
 pip install -e .
+ctx-install
 ```
 
-## Quick Start
+`ctx-install` 동작:
+1. `~/.claude/hooks/` 에 hook 파일 + `_bm25/` sub-package 복사 (atomic write + 타임스탬프 backup)
+2. `~/.claude/settings.json` 에 hook command 등록 (기존 다른 도구 hook 보존, 멱등 — 재실행해도 중복 추가 없음)
+3. 기존 hook 파일이 있으면 hash 비교 → 다르면 자동 update + `.backup_<TS>.py` 생성
 
-```python
-from ctx_retriever.retrieval.adaptive_trigger import AdaptiveTriggerRetriever
+플래그:
 
-# Point at any codebase directory
-retriever = AdaptiveTriggerRetriever("/path/to/your/project")
+| 플래그 | 동작 |
+|---|---|
+| `--dry-run` | 실제 변경 없이 미리보기 |
+| `--force-hooks` | hash 비교 없이 강제 덮어쓰기 |
+| `--no-update-hooks` | 기존 파일 무조건 skip (사용자 수정 보존) |
+| `--uninstall` | settings.json 의 hook 등록 제거 |
+| `status` (positional) | 설치 상태 점검 |
 
-# Retrieve relevant files for any natural-language query
-result = retriever.retrieve(
-    query_id="my_query",
-    query_text="how does authentication work?",
-    k=5
-)
-
-for filepath in result.retrieved_files:
-    print(filepath, result.scores[filepath])
-```
-
-## Claude Code Hook (Recommended)
-
-CTX runs as a set of Claude Code hooks that inject relevant past decisions, docs, and code into every prompt. Install is one command:
+### 텔레메트리 (opt-in, 로컬)
 
 ```bash
-pip install ctx-retriever
-ctx-install                     # register CTX hooks in ~/.claude/settings.json
+export CTX_TELEMETRY=1                          # 현재 셸만
+# 또는: touch ~/.claude/ctx-telemetry.enabled    # 영구
 ```
 
-**That's it.** Restart Claude Code and hooks fire on every prompt.
+활성화 시 `~/.claude/ctx-telemetry.jsonl` 에 retrieval event 기록 (network upload 없음).
+비활성 시 zero-cost early return — orchestrator 모듈 로드 시 gate 1 회 평가 + 호출당 bool 체크 (≈ 0.01µs).
 
-### Optional: enable cross-encoder reranking (BGE)
+이벤트 종류: `hook_complete`, `prompt_received`, `g1_done`, `g2_docs_done`, `g2_code_done`, `g2_hooks_done`, `hook_invoked`. 스키마 명세는 `docs/refactor/TELEMETRY_SCHEMA.md`.
 
-By default, CTX uses BM25 + vec-daemon (multilingual-e5-small, ~120MB) for semantic search.
-For higher-quality reranking, enable the BGE cross-encoder (BAAI/bge-reranker-v2-m3, ~2GB):
+### 제어 태그
+
+| 태그 | 효과 |
+|---|---|
+| `[noctx]` | 해당 프롬프트에서 CTX context 주입 disable |
+| `[fix]` | anti-anchoring 모드 — 기존 구현을 그대로 베끼지 않도록 reminder 추가 |
+
+`[fix]` 는 prompt 가 `fix:` / `bug:` / `refactor:` / `replace:` 로 시작할 때도 자동 트리거.
+
+## 이 fork 에서 한 작업
+
+원본 CTX 의 retrieval 알고리즘 변경 없음. production readiness 만 보강.
+
+### 모듈 분해
+
+`src/hooks/bm25-memory.py` (1837 줄 단일 파일) → orchestrator 300 줄 + `src/hooks/_bm25/` 11 개 모듈:
+
+```
+_bm25/
+  tokenizer.py     # 한국어 조사 strip + Porter stemmer + stopword
+  rerank.py        # vec-daemon bi-encoder + BGE cross-encoder
+  autotune.py      # ctx-auto-tune.json 파라미터 reader
+  corpus.py        # G1 decision corpus (git HEAD 키 캐시)
+  ranker.py        # BM25 ranking primitives (canonical)
+  docs_search.py   # G2-DOCS BM25 + hybrid
+  code_search.py   # G2 code 파일 검색 + grep fallback
+  hooks_search.py  # ~/.claude/hooks/*.py BM25 검색
+  session.py       # 세션 로컬 상태 헬퍼
+  injection.py     # P1 utility tracking
+  output.py        # stdout/stderr 헤더 emit
+```
+
+각 모듈 ≤ 400 줄. stdin JSON 스키마, stdout 출력 포맷, 캐시 파일 경로(`.omc/decision_corpus.json`, `.omc/docs_corpus_emb.json`), 환경 변수 이름 모두 원본과 동일.
+
+### eval ↔ production BM25 통합
+
+- 단일 토크나이저: `_bm25/tokenizer.tokenize`
+- 단일 BM25 ranking primitive: `_bm25/ranker.score_corpus_bm25`
+- 통합된 caller:
+  - `src/retrieval/adaptive_trigger.py`
+  - `benchmarks/eval/doc_retrieval_eval_v2.py`
+  - `src/retrieval/bm25_retriever.py`
+  - `src/evaluator/coir_evaluator.py`
+- archival 성격의 benchmark 스크립트(11+ 개)는 의도적으로 자체 구현 유지 — 과거 A/B 비교의 의미 보존
+
+### 패키징 / 설치 정합성
+
+- `_bm25/` sub-package 가 wheel 에 정상 포함되도록 `pyproject.toml` 의 `[tool.setuptools] packages` + `package-data` 수정
+- `ctx-install` 이 `_bm25/` 디렉토리도 재귀 복사하도록 변경
+- 기존 hook 파일에 대한 hash 기반 자동 update 정책 + `--force-hooks` / `--no-update-hooks` 플래그
+- `_save_atomic`: temp 파일 + `os.replace` + 타임스탬프 backup. 신규 파일 생성 시 backup 반환값 정확성 보장.
+
+### 안전성 보강
+
+- `chat-memory.py:import sqlite_vec` 무방어 → `try/except ImportError` + graceful fallback (sqlite_vec 부재 환경에서도 hook 죽지 않음)
+- `_bm25/code_search.py` G2-GREP 정렬: 동점 score 의 비결정성 제거 (`count` → `(-count, path)`)
+- Telemetry path: 활성/비활성 gate 캐싱 + lazy import (비활성 시 hook latency 영향 없음)
+
+## 테스트
+
+### 회귀 가드 (deterministic hook output)
 
 ```bash
-# Add to ~/.claude/settings.json env block:
-CTX_BGE_ENABLE=1
+python3 tests/golden/run_golden.py
+# → 26/26 fixtures passed
 ```
 
-When enabled, bge-daemon starts automatically on session open and reranks retrieved results.
-**Not recommended for machines with less than 4GB RAM or slow internet** (model downloads on first run).
+26 개 픽스처는 deterministic 모드(`CTX_DISABLE_SEMANTIC_RERANK=1`, `CTX_CROSS_ENCODER=0`)로 캡처된 hook stdout 의 byte-level 비교. G2-GREP 블록은 file list drift 방지를 위해 normalize 비교 (헤더 / count / "Start with" 형식만 검증).
 
-### What ctx-install does (atomic, backup-first)
+카테고리 (각 카테고리는 fallback 경로 + BM25 경로 양쪽 캡처):
+- keyword_single (3+3)
+- korean_paraphrase (2+2)
+- english_code (2+2)
+- avoidance / `[noctx]` / `fix:` (2+2)
+- empty / 매우 짧은 prompt (3+2)
+- hooks_keyword (2+2)
 
-1. Verifies the 4 CTX hook files exist at `~/.claude/hooks/` (chat-memory, bm25-memory, memory-keyword-trigger, g2-fallback)
-2. Reads `~/.claude/settings.json`, takes a timestamped backup (`settings.json.bak.<TS>`)
-3. Merges the CTX hook registrations into the existing `hooks` dict **without overwriting your other hooks** (dedupes by command string — safe to re-run)
-4. Atomically writes the new settings.json (temp-file-then-rename — never leaves partial state on disk)
-5. Smoke-tests by firing `bm25-memory.py` once with a dummy prompt and confirming `last-injection.json` gets written
-
-### Other subcommands
+### 단위 테스트
 
 ```bash
-ctx-install --dry-run           # show what would change, touch nothing
-ctx-install status              # verify hook file presence + settings.json registration + last fire
-ctx-install --uninstall         # remove CTX hook registrations (hook files left in place)
+.venv-golden/bin/python -m pytest tests/unit -q
+# → 82 passed in <2s
 ```
 
-### Manual install (legacy — only needed if `ctx-install` fails)
+| 파일 | 테스트 수 | 영역 |
+|---|---|---|
+| `test_settings_patcher.py` | 22 | atomic write, backup, idempotency, dry-run, unpatch, corrupted JSON |
+| `test_install_cli.py` | 32 | hook 복사 / hash update / force flag / no-update flag, settings merge |
+| `test_chat_memory_fallback.py` | 9 | vault.db 없음, vec-daemon down, sqlite_vec 부재, invalid stdin |
+| `test_bm25_memory_cache.py` | 7 | HEAD-keyed cache invalidation, corrupted cache 복구 |
+| `test_bm25_memory_telemetry.py` | 6 | 활성/비활성 latency, fallback reason capture, exception 시 graceful |
+| `test_code_search_sort.py` | 6 | `(-count, path)` deterministic sort |
+
+커버리지: `settings_patcher.py` 93%, `install.py` 73%.
+
+### BM25 통합 검증
 
 ```bash
-# 1. Copy hook files to ~/.claude/hooks/
-# 2. Register each in ~/.claude/settings.json under the appropriate event key
+.venv-golden/bin/python scripts/verify_bm25_unified.py
+# → ALL CHECKS PASSED
 ```
 
-Example settings block (what ctx-install writes for you):
+`tokenize` import / `score_corpus_bm25` 동작 / `AdaptiveTriggerRetriever` corpus build 가 모두 통합된 `_bm25/` 경로를 통과하는지 검증.
 
-```json
-{
-  "hooks": {
-    "UserPromptSubmit": [
-      { "hooks": [{ "type": "command", "command": "python3 $HOME/.claude/hooks/chat-memory.py" }] },
-      { "hooks": [{ "type": "command", "command": "python3 $HOME/.claude/hooks/bm25-memory.py --rich" }] },
-      { "hooks": [{ "type": "command", "command": "python3 $HOME/.claude/hooks/memory-keyword-trigger.py" }] }
-    ],
-    "PostToolUse": [
-      { "matcher": "Grep",
-        "hooks": [{ "type": "command", "command": "python3 $HOME/.claude/hooks/g2-fallback.py" }] }
-    ]
-  }
-}
-```
+## 알려진 후속 항목
 
-**What you get in each prompt:**
-```
-[CTX] Trigger: EXPLICIT_SYMBOL | Query: AuthService | Confidence: 0.70 | Intent: judge from prompt
-Code files (3/847 total):
-• src/auth/service.py [score=1.000]
-• src/auth/middleware.py [score=0.823]
-• tests/test_auth.py [score=0.741]
-(Use the prompt intent to decide how to treat this context.)
-```
+- `tests/golden/run_golden.py` 가 stderr 비교 미실시 — `emit_output()` 의 stderr regression 가드 없음 (다음 사이클)
+- `ctx-install --uninstall` 이 hook 파일 자체와 `_bm25/` 디렉토리 cleanup 안 함 (settings.json 등록만 제거)
+- `_bm25/__init__.py` 의 public re-export 문서와 실제 구현 mismatch (현재 callers 가 submodule 직접 import 라 동작 문제는 아님)
 
-## Validate on your own transcripts
-
-Before installing, you can measure what CTX *would* give you on your own Claude Code transcripts — no install, no signup, no upload:
-
-```bash
-python3 benchmarks/ctx_validate.py --days 7
-```
-
-stdlib-only; reads `~/.claude/projects/*/<session>.jsonl` locally and emits a Wilson-95-CI markdown report:
+## 디렉토리 구조
 
 ```
-- Text match rate:   26.9% [23.2%, 31.1%] ±4.0pp  (n=201)
-- Tool-use match:    11.1% [8.6%, 14.2%]  ±2.8pp
-- Union (either):    32.8% [28.7%, 37.1%] ±4.2pp
-Per response-type:
-  prose:       51.2% ±10.3pp  (n=86)
-  tool_heavy:  26.2% ±8.2pp   (n=107)
-  mixed:       25.0% ±26.0pp  (n=8)
-```
-
-**What this measures** — distinctive terms from each user prompt, substring-matched against the assistant's response text AND tool_use parameters (file_path/command/pattern). On turns where CTX's hooks would surface related context, this rate approximates the *ceiling* of plausible utility. It is NOT a direct CTX measurement — install CTX and compare against live `utility_measured` telemetry for the actual delta. Use it to decide "is this signal worth pursuing?" before committing to install.
-
-Live dashboard (after install):
-
-![CTX Telemetry Dashboard](docs/media/ctx-cover.png)
-
-The dashboard visualizes utility in four stacked views — pooled rate with 95% CI, per-block breakdown (g1/g2_docs/g2_prefetch), by response type (prose/mixed/tool_heavy), and by item age (0-7d / 7-30d / 30d+). The knowledge graph below it lights up decisions in coral when Claude actually used them in the last 7 days; dead-weight decisions (no recent references) appear muted — pruning candidates.
-
-## Hook Performance
-
-CTX adds no LLM calls — latency is purely algorithmic (BM25 + BFS indexing):
-
-| Project | Language | Files | Hook Latency |
-|---------|----------|-------|-------------|
-| Small project | Python | ~88 | ~40ms |
-| Medium project | Python | ~215 | ~165ms |
-| Large project | TypeScript | ~651 | ~270ms |
-| Very large | any | >2000 | skipped (auto-excluded) |
-
-The hook is skipped for prompts <15 chars, slash commands, `[noctx]` tags, and codebases with <3 files.
-
-**Control tags** you can add to any prompt:
-
-| Tag | Effect |
-|-----|--------|
-| `[noctx]` | Disable CTX for this prompt |
-| `[fix]` | Fix/Replace mode — adds anti-anchoring reminder so Claude doesn't copy the existing (potentially wrong) implementation |
-
-`[fix]` is also auto-triggered when the prompt starts with `fix:`, `bug:`, `refactor:`, or `replace:`.
-
-## Trigger Types
-
-| Trigger | When Used | Mechanism |
-|---------|-----------|-----------|
-| `EXPLICIT_SYMBOL` | Query names a class/function | Symbol index lookup |
-| `SEMANTIC_CONCEPT` | Query describes a concept | BM25 keyword scoring |
-| `IMPLICIT_CONTEXT` | Dependency queries ("what uses X") | BFS import graph traversal |
-| `TEMPORAL_HISTORY` | Recent changes / history | Session file tracker |
-
-## Results
-
-### Synthetic Benchmark (50 files, 166 queries)
-
-| Strategy | Recall@5 | Token Usage | TES |
-|----------|----------|-------------|-----|
-| Full Context | 0.075 | 100.0% | 0.019 |
-| BM25 | 0.982 | 18.7% | 0.410 |
-| Dense TF-IDF | 0.973 | 21.0% | 0.406 |
-| GraphRAG-lite | 0.523 | 24.0% | 0.218 |
-| LlamaIndex | 0.972 | 20.1% | 0.405 |
-| Chroma Dense | 0.829 | 19.3% | 0.346 |
-| Hybrid Dense+CTX | 0.725 | 23.6% | 0.303 |
-| **CTX (Ours)** | **0.874** | **5.2%** | **0.776** |
-
-**TES** = Recall@5 / ln(1 + files_loaded). Higher = better token efficiency.
-
-### External Codebase Benchmark (Flask, FastAPI, Requests)
-
-CTX outperforms BM25 on all three held-out external codebases in code-to-code structural retrieval:
-
-| Codebase | Files | CTX R@5 | BM25 R@5 | Δ |
-|----------|-------|---------|----------|---|
-| Flask | 79 | **0.545** | 0.347 | **+0.198** |
-| FastAPI | 928 | **0.328** | 0.174 | **+0.154** |
-| Requests | 35 | **0.626** | 0.489 | **+0.137** |
-| **Mean** | — | **0.500** | 0.337 | **+0.163** |
-
-*Bootstrap 95% CI: external mean [0.441, 0.550]*
-
-### COIR External Benchmark (CodeSearchNet Python)
-
-| Strategy | Recall@1 | Recall@5 | MRR |
-|----------|----------|----------|-----|
-| Dense Embedding (MiniLM) | 0.960 | 1.000 | 0.978 |
-| Hybrid Dense+CTX | 0.930 | 0.950 | 0.940 |
-| BM25 | 0.920 | 0.980 | 0.946 |
-| CTX Adaptive Trigger | 0.720 | 0.740 | 0.728 |
-
-### Downstream LLM Evaluation
-
-CTX context injected into developer prompts improves LLM task quality across two models:
-
-| Scenario | WITH CTX | WITHOUT CTX | Δ |
-|----------|----------|-------------|---|
-| G1 (session memory recall) | 1.000 | 0.110 | **+0.890** |
-| G2 (CTX-specific knowledge) | 0.688 | 0.000 | **+0.688** |
-
-G1: CTX persistent memory enables perfect cross-session recall (vs 11% without). G2: CTX context eliminates hallucination on CTX-specific API queries.
-
-### Key Findings
-
-- CTX achieves **1.9x higher TES** than BM25 with only 5.2% token usage
-- CTX achieves **perfect Recall@5 (1.0)** on IMPLICIT_CONTEXT dependency queries
-- CTX **outperforms BM25 on all 3 external codebases** in code-to-code retrieval (mean +0.163 R@5)
-- CTX context improves downstream LLM task quality: **G1 +0.890**, **G2 +0.688**
-- Trigger classifier achieves **100% accuracy** (all 4 types F1=1.00) on synthetic benchmark
-- CTX Adaptive Trigger achieves **R@5=0.740 on COIR** (improved from 0.380 via BM25 hybrid + CamelCase fix)
-- Hybrid Dense+CTX achieves R@5=0.950 on COIR — best of both worlds
-- No single strategy dominates all dimensions — workload determines optimal choice
-
-## When to Use CTX
-
-**CTX excels when:**
-- You need dependency-aware retrieval: `IMPLICIT_CONTEXT` queries (e.g., "what uses AuthService?") achieve perfect Recall@5 (1.0) via BFS import graph traversal
-- Working with a **known codebase** with established symbol/import structure — code-to-code retrieval outperforms BM25 on real projects (Flask: +0.198, FastAPI: +0.154, Requests: +0.137)
-- Token budget is critical — CTX uses only **5.2% of tokens** vs 18.7% for BM25 (TES: 1.9x higher)
-- Queries name **explicit symbols** (class names, function names) — EXPLICIT_SYMBOL trigger routes directly to symbol index
-
-**CTX is not designed for:**
-- **Text-to-code semantic search** (COIR-style): finding code from natural-language descriptions. CTX R@5=0.740 vs BM25=0.980 on CodeSearchNet Python — still a gap; for best results use Dense Embedding or Hybrid Dense+CTX instead
-- **Large unseen codebases** (>500 files, no prior indexing): heuristic symbol extraction degrades at scale; consider AST-based indexers
-- **Natural-language concept queries** without code keywords: SEMANTIC_CONCEPT trigger falls back to BM25, losing CTX's structural advantage
-
-## Running Experiments
-
-```bash
-# Synthetic benchmark
-python run_experiment.py --dataset-size small --strategy all
-
-# Real codebase
-python run_experiment.py --dataset-source real --project-path /path/to/project --strategy all
-
-# COIR external benchmark
-python run_coir_eval.py --n-queries 100
-
-# Ablation study
-python run_experiment.py --dataset-size small --mode ablation
-```
-
-Results are written to `benchmarks/results/`.
-
-## Project Structure
-
-```
-CTX/
+tunaCtx/
   src/
-    retrieval/            # Retrieval strategies (8 total)
-      adaptive_trigger.py # CTX core: trigger-driven retrieval
-      hybrid_dense_ctx.py # Hybrid: dense seed + graph expansion
-      bm25_retriever.py   # BM25 sparse retrieval
-      dense_retriever.py  # TF-IDF dense retrieval
-      chroma_retriever.py # ChromaDB + sentence-transformers
-      graph_rag.py        # GraphRAG-lite baseline
-      llamaindex_retriever.py # LlamaIndex AST-aware chunking
-      full_context.py     # Full context baseline
-    trigger/              # Trigger classifier (4 types)
-    evaluator/            # Benchmark runner, metrics, COIR
-    data/                 # Dataset generation, real codebase loader
-  hooks/
-    ctx_real_loader.py    # Claude Code UserPromptSubmit hook
-    ctx_session_tracker.py # PostToolUse session tracker
+    hooks/
+      bm25-memory.py        # orchestrator (300 lines)
+      _bm25/                # 분해된 11 개 sub-module (canonical)
+      chat-memory.py
+      memory-keyword-trigger.py
+      g2-fallback.py
+      _ctx_telemetry.py
+    retrieval/              # 원본 retrieval strategy (8 종)
+    cli/
+      install.py            # ctx-install
+      settings_patcher.py   # atomic settings.json patcher
+      telemetry.py          # ctx-telemetry
+  tests/
+    golden/                 # hook output 회귀 가드 (26 fixtures)
+    unit/                   # 단위 테스트 (82)
   benchmarks/
-    results/              # Experiment results and reports
+    eval/
+    results/
   docs/
-    claude_code_integration.md  # Claude Code setup guide
-    paper/                # Paper draft (markdown + LaTeX)
+    refactor/
+      PRODUCTION_REFACTOR_PLAN.md   # 본 사이클 plan 문서
+      TELEMETRY_SCHEMA.md           # 텔레메트리 이벤트 스키마
+  scripts/
+    verify_bm25_unified.py  # BM25 통합 sanity check
 ```
 
-## Telemetry (opt-in, local-only)
+## 라이선스
 
-CTX can log retrieval quality metrics locally to help you understand how well the context injection is working.
-
-**Opt in:**
-```bash
-export CTX_TELEMETRY=1          # enable for this shell
-# or: touch ~/.claude/ctx-telemetry.enabled   # persist across shells
-```
-
-**View your data:**
-```bash
-ctx-telemetry                   # summary + flywheel health verdict (causal r, upgrade hint)
-ctx-telemetry last              # last 10 session turns
-ctx-telemetry calibrate         # citation bias + causal r-analysis (v1.5)
-ctx-telemetry tune              # compute auto-tune params → ctx-auto-tune.json
-ctx-telemetry cluster [-p DIR]  # detect tech stack → project_type_hint in ctx-auto-tune.json
-ctx-telemetry consent           # Stage 2 upload consent status
-ctx-telemetry upload            # Stage 2 dry-run preview
-ctx-telemetry clear             # delete all local telemetry logs
-```
-
-Sample `ctx-telemetry` output:
-```
-CTX Retrieval Telemetry — 42 session-turn records (schema v1.6)
-...
-Flywheel health [n=42]: causal-r=+0.35 | upgrade=✓ HYBRID | kw=43%
-```
-
-**Auto-tune (flywheel):** After `ctx-telemetry tune` runs with ≥15 records, CTX automatically adjusts retrieval parameters based on your usage patterns (e.g., top_k reduction for query types with lower citation rates). The active tuning state is shown in CTX's context header: `> **CTX auto-tune** [n=42, hybrid✓]`.
-
-With ≥10 v1.5 records, `tune` also computes a causal signal: Pearson r between BM25 top retrieval score and citation rate. High r (>0.30) means quality-driven citations — HYBRID upgrade is worthwhile. Low r (<0.10) suggests position bias may be dominant — validate before upgrading. This is stored as `hybrid_upgrade_hint` in `ctx-auto-tune.json`.
-
-**Project cluster detection (Stage 3 prerequisite):** `ctx-telemetry cluster` scans your project's source files, matches term frequencies against tech-stack signature profiles (python_ml, python_backend, nextjs_react, rust_systems, go_backend), and writes `project_type_hint` to `ctx-auto-tune.json`. This is a local-first proxy for the Stage 3 `project_type_id` cluster — enabling cold-start pre-warming without requiring cross-user data. Example output:
-```
-python_ml            ██████████████████████████████    80.0%  (18 keywords matched)
-python_backend       ███████                           19.0%  (13 keywords matched)
-Project type: python_ml  (confidence: HIGH)
-```
-
-### What is collected (schema v1.6)
-
-All data stays on your machine at `~/.claude/ctx-retrieval-events.jsonl`. Nothing is uploaded.
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `user_id` | string(16) | SHA256(machine-id + install-month)[:16] — anonymous, changes on reinstall |
-| `session_id_hash` | string(16) | SHA256(session_id)[:16] — non-reversible |
-| `ts_unix_hour` | int | Unix timestamp truncated to hour |
-| `hook_source` | enum | G1 / G2_DOCS / G2_CODE / CM |
-| `query_type` | enum | KEYWORD / SEMANTIC / TEMPORAL |
-| `retrieval_method` | enum | HYBRID / BM25 / UNKNOWN |
-| `candidates_returned` | int | Number of candidates before ranking |
-| `total_injected` | int | Items injected into context |
-| `total_cited` | int | Items referenced by the AI response |
-| `utility_rate` | float | cited / injected — retrieval precision proxy |
-| `session_turn_index` | int | Turn index within the current session |
-| `vec_daemon_up` | bool | Whether semantic layer was active |
-| `bge_daemon_up` | bool | Whether cross-encoder reranker was active |
-| `duration_ms` | int | Per-block retrieval latency |
-| `top_score_bm25` | float\|null | Max BM25 score — causal calibration signal (v1.5) |
-| `top_score_dense` | float\|null | Max cosine similarity score (v1.5) |
-
-### What is NOT collected
-
-- ❌ No query text, response text, or code content
-- ❌ No file names, commit messages, or project paths
-- ❌ No email, device name, or personally identifiable information
-- ❌ No network requests — Stage 1 is local-only
-
-### Privacy design
-
-- `user_id` = SHA256(machine-id + month-boundary) — not linkable to email or name; changes on reinstall
-- Timestamps truncated to **hour** (not minute)
-- All content stripped — only counts, rates, method names, and latency
-- Follows [Sourcegraph's numeric-only telemetry](https://sourcegraph.com/docs/admin/telemetry) pattern
-
-**Stage 2 (not yet implemented):** opt-in upload of k-anonymized `session_aggregate` rows via `ctx-telemetry consent`. Rows with fewer than 5 users per (date × project_type) window are suppressed before any upload.
-
-## Paper
-
-- Paper draft: [`docs/paper/CTX_paper_draft.md`](docs/paper/CTX_paper_draft.md)
-- arXiv: TBD
-- EMNLP 2026 submission: TBD
-
-## License
-
-MIT
+MIT. 원본 [jaytoone/CTX](https://github.com/jaytoone/CTX) (MIT) 의 copyright 와 함께 명시. `LICENSE` 참조.
