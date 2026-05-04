@@ -182,18 +182,20 @@ def evaluate_bm25(
     corpus: List[COIRCorpusEntry],
 ) -> COIRResult:
     """Evaluate BM25 retrieval on COIR benchmark."""
-    from rank_bm25 import BM25Okapi
+    from src.hooks._bm25.ranker import score_corpus_bm25
 
-    # Tokenize corpus
+    # Tokenize corpus — simple whitespace split preserves COIR's code-search
+    # vocabulary (tokens like "def", "return", "self" are meaningful signal here).
     tokenized_corpus = [doc.code.lower().split() for doc in corpus]
-    bm25 = BM25Okapi(tokenized_corpus)
 
     rankings = []
     per_query = []
 
     for q in queries:
         tokenized_query = q.query_text.lower().split()
-        scores = bm25.get_scores(tokenized_query)
+        scores = score_corpus_bm25(tokenized_corpus, tokenized_query)
+        if scores is None:
+            scores = np.zeros(len(corpus))
         ranked_indices = np.argsort(scores)[::-1].tolist()
         rankings.append(ranked_indices)
 
