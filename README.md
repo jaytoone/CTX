@@ -147,7 +147,7 @@ Per response-type:
 
 Live dashboard (after install):
 
-![CTX Telemetry Dashboard](iter5-full.png)
+![CTX Telemetry Dashboard](docs/media/ctx-cover.png)
 
 The dashboard visualizes utility in four stacked views — pooled rate with 95% CI, per-block breakdown (g1/g2_docs/g2_prefetch), by response type (prose/mixed/tool_heavy), and by item age (0-7d / 7-30d / 30d+). The knowledge graph below it lights up decisions in coral when Claude actually used them in the last 7 days; dead-weight decisions (no recent references) appear muted — pruning candidates.
 
