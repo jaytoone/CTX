@@ -24,15 +24,25 @@ In two scenarios (commit analysis, TODO grep across .py files), the response wit
 
 ```
 "ctx_batch_execute 권한 거부됨" / permission denied for ctx_batch_execute
+"Permission needed. Asking the user to grant ctx_batch_execute..."
 ```
 
-The model attempted to use Context Mode's batch tool but the headless environment couldn't surface the permission prompt, so the call was denied and the entire task aborted. The "both active" state ranked 4th out of 4 in those two scenarios — beaten by no-tooling baseline.
+The model attempted to use Context Mode's batch tool but the headless environment couldn't surface the permission prompt, so the call was denied and the entire task aborted. The "both active" state initially ranked 4th of 4 in those two scenarios.
 
-This is not a bug in Context Mode per se — it's a configuration friction in headless / CI environments. Possible mitigations from your side:
+**Verification with `--dangerously-skip-permissions`** (8 additional measurements, +$2.57):
+
+| Scenario | default permissions (1st run) | with `--dangerously-skip-permissions` |
+|---|---|---|
+| 30-commit analysis (state A) | `Permission needed. Asking the user to grant...` (abort) | `## seCall 최근 30개 commit 분석... feat: 9건, fix: 6건...` (full analysis) |
+| TODO grep across .py (state A) | `ctx_batch_execute 권한 거부됨. Grep tool로 진행` (partial fallback) | `프로젝트 .py 파일 203개 중 # TODO/FIXME/XXX/HACK 주석은 0건` (precise, includes .venv-golden noise filtering) |
+
+So the "Pattern 1" ranking issue is **definitely a headless permission artifact**, not a defect in Context Mode itself. Cost goes up 13–21% with skip-perm because `ctx_batch_execute` actually runs — which is the intended behavior.
+
+Possible mitigations from your side:
 
 - Ship a documented `--allow-ctx-tools` env var or settings flag for headless use
 - Or auto-skip ctx_batch_execute when stdin/stdout aren't TTY
-- Or document the headless permission story in the README
+- Or document the headless permission story in the README (e.g. recommend `--dangerously-skip-permissions` for CI)
 
 ### Pattern 2 — `ctx_batch_execute` cost in low-tool-density scenarios
 
