@@ -125,7 +125,7 @@
 
 **기존 인프라 활용**
 - `src/hooks/_ctx_telemetry.py` (210줄) — `chat-memory.py` 가 이미 사용 중.
-- 출력: `~/.claude/ctx-retrieval-events.jsonl`
+- 출력: `~/.claude/ctx-retrieval-events.jsonl` <!-- ⚠ post-Phase-9 정정: 실제 구현은 `~/.claude/ctx-telemetry.jsonl` 사용. 코드(`_ctx_telemetry.py:33`)와 README 가 source of truth. -->
 - 활성화: `CTX_TELEMETRY=1` env 또는 `~/.claude/ctx-telemetry.enabled` 파일 존재.
 - 비활성화 시 zero overhead(early return).
 
