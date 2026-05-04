@@ -7,9 +7,13 @@
 [![HuggingFace Demo](https://img.shields.io/badge/HuggingFace-Demo-orange)](https://huggingface.co/spaces/jaytoone/ctx-demo)
 [![Publish to PyPI](https://github.com/jaytoone/CTX/actions/workflows/publish.yml/badge.svg)](https://github.com/jaytoone/CTX/actions/workflows/publish.yml)
 
+![CTX Knowledge Graph — decisions, docs, and prompts in real time](docs/media/ctx-cover-graph.png)
+
 CTX classifies developer queries into four trigger types and routes each to a specialized retrieval pipeline. For dependency-sensitive queries, CTX traverses the codebase import graph to resolve transitive relationships that keyword and embedding methods miss. It achieves **1.9x higher Token-Efficiency Score** than BM25 while using only **5.2% of tokens**, and **outperforms BM25 on held-out external codebases** (Flask, FastAPI, Requests — mean R@5 +0.163).
 
 > **Key insight**: code import graphs encode structural dependency information that text-based RAG cannot capture. CTX achieves Recall@5 = 1.0 on implicit dependency queries vs 0.4 for BM25.
+
+**[▶ Dashboard demo (39s)](https://drive.google.com/file/d/1b4ZvbRYkXKTepKDx8N7gLfim-zLDiCGo/view?usp=sharing)**
 
 ## Install
 
