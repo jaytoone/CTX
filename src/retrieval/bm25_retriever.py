@@ -1,22 +1,30 @@
 """
 BM25 sparse keyword retrieval strategy.
 
-Uses the rank_bm25 library for keyword-based file retrieval.
+Uses the canonical _bm25 core for keyword-based file retrieval.
 """
 
 import os
 import re
 from typing import Dict, List
 
-from rank_bm25 import BM25Okapi
+from src.hooks._bm25.ranker import score_corpus_bm25
 
 from src.retrieval.full_context import RetrievalResult, estimate_tokens
 
 
 def _tokenize(text: str) -> List[str]:
-    """Simple tokenizer: split on non-alphanumeric, lowercase, filter short tokens."""
-    tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]*', text.lower())
-    return [t for t in tokens if len(t) > 1]
+    """Identifier-focused tokenizer: alphanumeric/underscore tokens, len > 1.
+
+    Kept as a local wrapper so callers inside this module use a consistent
+    vocabulary suited for source-code files (identifier tokens only).
+    Delegates to the canonical _bm25 tokenizer with stopwords disabled so
+    IDF handles common terms naturally.
+    """
+    # Use canonical tokenizer but post-filter to identifier-shaped tokens
+    # (mirrors original regex: r'[a-zA-Z_][a-zA-Z0-9_]*', len > 1)
+    raw = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]*', text.lower())
+    return [t for t in raw if len(t) > 1]
 
 
 class BM25Retriever:
@@ -28,7 +36,7 @@ class BM25Retriever:
         self.file_paths: List[str] = []
         self.file_tokens: List[List[str]] = []
         self.total_tokens = 0
-        self.bm25 = None
+        self._has_index = False
         self._index()
 
     def _index(self) -> None:
@@ -46,11 +54,11 @@ class BM25Retriever:
                     self.total_tokens += estimate_tokens(content)
 
         if self.file_tokens:
-            self.bm25 = BM25Okapi(self.file_tokens)
+            self._has_index = True
 
     def retrieve(self, query_id: str, query_text: str, k: int = 10) -> RetrievalResult:
         """Retrieve top-k files using BM25 scoring."""
-        if self.bm25 is None:
+        if not self._has_index:
             return RetrievalResult(
                 query_id=query_id,
                 retrieved_files=[],
@@ -61,7 +69,17 @@ class BM25Retriever:
             )
 
         query_tokens = _tokenize(query_text)
-        raw_scores = self.bm25.get_scores(query_tokens)
+        raw_scores = score_corpus_bm25(self.file_tokens, query_tokens)
+
+        if raw_scores is None:
+            return RetrievalResult(
+                query_id=query_id,
+                retrieved_files=[],
+                scores={},
+                tokens_used=0,
+                total_tokens=self.total_tokens,
+                strategy="bm25",
+            )
 
         # Rank files by score
         scored_files = sorted(
