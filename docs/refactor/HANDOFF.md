@@ -2,14 +2,15 @@
 
 | 항목 | 값 |
 |---|---|
-| 마지막 갱신 | 2026-05-05 |
-| 작업 식별자 | Phase 0 → Task A/B/C/D → Phase 9 → Cycle-2 |
+| 마지막 갱신 | 2026-05-05 (Cycle-3 docs 사이클 종료 시점) |
+| 작업 식별자 | Phase 0 → Task A/B/C/D → Phase 9 → Cycle-2 → Cycle-3 (docs hygiene) |
+| 작업 디렉토리 | `/Users/d9ng/privateProject/tunaCtx` (clone 후 fork remote 로 운영, 정식 GitHub fork 아님) |
 | 현재 브랜치 | `master` (= `origin/master` = `hang-in/tunaCtx:master`) |
-| 마지막 commit | `2a68213 docs(refactor): annotate telemetry jsonl path discrepancy in plan` |
-| 회귀 가드 상태 | golden **26/26 PASS** / pytest **105 PASS / 0 skip** |
+| 마지막 commit | `ca0c4b6 docs: refresh stale R@5=0.152 references with iter11 measurement (0.595)` |
+| 회귀 가드 상태 | golden **15/26 PASS** (11 fallback drift, §6-1 함정 — production 회귀 아님) / pytest **105 PASS / 0 skip** |
 | 원본 upstream | `https://github.com/jaytoone/CTX` (remote: `upstream`) |
 | Fork remote | `https://github.com/hang-in/tunaCtx` (remote: `origin`) |
-| Upstream issue | `https://github.com/jaytoone/CTX/issues/1` (fork 알림) |
+| Upstream issues | #1 fork 알림 (2026-05-04) / #2 docs R@5 정합성 정정 권고 (2026-05-05, 본 사이클) |
 
 ## 1. 이 fork 의 정체
 
@@ -32,6 +33,7 @@
 | **Phase 9** (codex 최종 리뷰) | Critical 1 + Major 4 + Minor 3 + golden 옵션 B 권고 | — |
 | **Phase 9 후속** | Critical (`ctx-install` hash-based update) + Major #1/#2/#4 + Minor #1 + golden 옵션 B (G2-GREP normalize) | golden 25→26/26 회복 |
 | **Cycle-2** | golden runner stderr 가드 (옵션), atomic write 실 filesystem 검증, `_bm25/__init__.py` 17함수 re-export, `--uninstall` cleanup, plan footer | pytest 82→105/0 |
+| **Cycle-3 (docs hygiene)** | (a) README 검색 stack bullet 추가 — "BM25 만" 커뮤니티 오해 정정 / (b) R@5=0.152 stale 인용 갱신 (CLAUDE.md L91·L197, PRODUCTION_REFACTOR_PLAN.md L263) — iter11 재측정 Mean R@5=0.595 인용 / (c) README 에 외부 codebase 측정값 (참고) bullet 추가 + upstream issue 링크 / (d) upstream issue #2 발행 (docs R@5 정합성) | pytest 105/0 / golden 15/26 (fallback drift §6-1) |
 
 ## 3. 현재 코드 상태
 
@@ -119,28 +121,28 @@ scripts/
   - Stop: utility-rate
 - backup: `~/.claude/settings.backup_20260505_063258.json`
 
-### 현재 알려진 제약
+### 현재 알려진 제약 (Cycle-3 시점 갱신, 2026-05-05 기준)
 
-- **system python3** (`/opt/homebrew/bin/python3` = 3.14, PEP 668 보호) 에 `rank_bm25` / `numpy` 미설치
-- 결과: hook 이 BM25 fallback 경로로 실행 (G2-GREP / session-notes / world-model 만 활용, BM25 ranking quality 미발휘)
-- vec-daemon / bge-daemon 은 다음 Claude Code 세션 시작 시 자동 기동되도록 구성됨 (현재 세션 검증 시점에는 down 상태 — hook output 에 `⚠ Semantic layer: vec-daemon down — BM25-only mode` 표시)
+이전 HANDOFF 의 "fallback 모드 / daemon down" 기술은 **Cycle-3 시점에 모두 해소됨**. 실측 결과:
 
-### BM25 / 의미층 활성화 (옵션 C — pipx 격리, 권장)
+- ✅ **hook command 가 pipx python 사용 중**: `~/.claude/settings.json` 의 5개 hook command 모두 `/Users/d9ng/.local/pipx/venvs/ctx-retriever/bin/python` 경로 — system python3 fallback 아님
+- ✅ **pipx venv 패키지 정상**: `rank_bm25`, `numpy 2.4.4`, `sklearn 1.8.0`, `networkx 3.6.1` 모두 설치됨
+- ✅ **vec-daemon running** (PID 24808 — 검증 시점, socket active)
+- ✅ **bge-daemon running** (PID 25006 — `BAAI/bge-reranker-v2-m3` 모델 로드 완료, socket active)
+- → 옵션 C (pipx 격리) 가 적용 완료된 상태로 운영 중. 옵션 B / 옵션 C 활성화 가이드 (아래 §4-1, §4-2) 는 재설치 시 참고용으로만 보존
+
+### §4-1. BM25 / 의미층 활성화 (옵션 C — pipx 격리, 권장 — **현재 적용된 옵션**)
 
 ```bash
 # 1. pipx 설치 (없으면)
 brew install pipx
 pipx ensurepath
 
-# 2. ctx-retriever 격리 설치
-pipx install /Users/d9ng/privateProject/_research/_util/CTX
+# 2. ctx-retriever 격리 설치 (작업 디렉토리 = 현재 tunaCtx clone)
+pipx install /Users/d9ng/privateProject/tunaCtx
 # → ~/.local/pipx/venvs/ctx-retriever/bin/ 에 ctx-install / ctx-telemetry / python 위치
 
-# 3. hook command 를 pipx python 으로 갱신 — 두 가지 방식:
-#    (a) settings.json 직접 편집 (단순, 한 번에)
-#    (b) install.py 에 --hook-python 옵션 추가 (영구적 솔루션, 사이클 추가)
-
-# (a) 방식 예시:
+# 3. settings.json 의 hook command 의 python 경로를 pipx python 으로:
 # python3 $HOME/.claude/hooks/bm25-memory.py --rich
 # →
 # /Users/d9ng/.local/pipx/venvs/ctx-retriever/bin/python $HOME/.claude/hooks/bm25-memory.py --rich
@@ -150,18 +152,18 @@ nohup ~/.local/pipx/venvs/ctx-retriever/bin/python ~/.local/share/claude-vault/v
 nohup ~/.local/pipx/venvs/ctx-retriever/bin/python ~/.local/share/claude-vault/bge-daemon.py >/dev/null 2>&1 &
 ```
 
-### BM25 / 의미층 활성화 (옵션 B — 현재 dev venv 사용, 빠름)
+### §4-2. BM25 / 의미층 활성화 (옵션 B — 현재 dev venv 사용, 빠름)
 
 ```bash
 # .venv-golden 가 이미 ctx-retriever editable + rank_bm25 + numpy + sklearn + networkx 설치됨
-# settings.json 에서 5개 hook command 의 'python3' 를 venv python 으로 교체:
+# settings.json 에서 hook command 의 'python3' 를 venv python 으로 교체:
 # python3 $HOME/.claude/hooks/...
 # →
-# /Users/d9ng/privateProject/_research/_util/CTX/.venv-golden/bin/python $HOME/.claude/hooks/...
+# /Users/d9ng/privateProject/tunaCtx/.venv-golden/bin/python $HOME/.claude/hooks/...
 
 # vec-daemon / bge-daemon 도 동일하게:
-nohup /Users/d9ng/privateProject/_research/_util/CTX/.venv-golden/bin/python ~/.local/share/claude-vault/vec-daemon.py >/dev/null 2>&1 &
-nohup /Users/d9ng/privateProject/_research/_util/CTX/.venv-golden/bin/python ~/.local/share/claude-vault/bge-daemon.py >/dev/null 2>&1 &
+nohup /Users/d9ng/privateProject/tunaCtx/.venv-golden/bin/python ~/.local/share/claude-vault/vec-daemon.py >/dev/null 2>&1 &
+nohup /Users/d9ng/privateProject/tunaCtx/.venv-golden/bin/python ~/.local/share/claude-vault/bge-daemon.py >/dev/null 2>&1 &
 ```
 
 옵션 B 는 이 dev 머신에 한정. 다른 머신/사용자 재현 시 옵션 C 권장.
@@ -180,11 +182,14 @@ cp ~/.claude/settings.backup_20260505_063258.json ~/.claude/settings.json
 ## 5. 검증 명령 (다음 세션에서 sanity check)
 
 ```bash
-cd /Users/d9ng/privateProject/_research/_util/CTX
+cd /Users/d9ng/privateProject/tunaCtx
 
 # 회귀 가드 (deterministic hook output)
-python3 tests/golden/run_golden.py
-# 기대: 26/26 fixtures passed
+.venv-golden/bin/python tests/golden/run_golden.py
+# 기대: 15/26 fixtures passed (Cycle-3 시점)
+# — 11 fallback variant 가 git log drift 영향으로 FAIL 중. §6-1 참조.
+# — bm25path variant 12/12 PASS — frozen corpus 메커니즘 정상.
+# — fixture refresh 가 필요한 경우: --update 후 production 동작 변화 없는지 확인 후 commit
 
 # 단위 테스트
 .venv-golden/bin/python -m pytest tests/unit -q
@@ -239,19 +244,37 @@ drift 가 발생하는 것은 production 회귀가 아니라 입력 데이터(gi
 
 `benchmarks/eval/g1_*.py`, `g2_*.py`, `mab_*.py`, `nemotron_*.py`, `retrieve_ctx_v2.py` 등이 자체 BM25Okapi 구현. **통합 시 paper headline 결과 (MAB N=50 ctx_v3=0.880 등) 가 변할 수 있음** — 즉 frozen 결과의 회귀 risk. 통합 욕심 내지 말 것.
 
+### 6-6. 외부 codebase R@5 수치의 다중성 (Cycle-3 발견)
+
+upstream / fork docs 에 외부 codebase R@5 가 **여러 시점 측정값으로 공존** —
+- `0.152`: 가장 옛날 baseline (`docs/research/20260326-ctx-methodology-comparison.md` L70 — pre-fix, 자체 텍스트에서 stale 인정)
+- `0.495`: SEMANTIC trigger fix 후 (commits `727b5c3`)
+- `0.595`: iter11 재측정 (`benchmarks/results/reeval_external_iter11.json` — Mean R@5 = 0.595, Flask 0.6462 / FastAPI 0.3870 / Requests 0.7526). **Cycle-3 시점에서 가장 신뢰할 만한 수치.**
+- `0.744`: `docs/benchmark/g1_g2_publication_framework.md` 의 또 다른 평가 framework — canonical 여부 upstream 확인 필요
+
+Cycle-3 에서 fork 내부 인용은 0.595 로 통일했지만, **upstream 의 응답 (issue #2) 받기 전까지는 단정 금지**. 다음 세션에서 R@5 인용할 때 본 사이클 발견 환기.
+
+또한 `benchmarks/eval/reeval_external.py` 를 직접 재실행하려면 입력 query JSON (`benchmark_real_eval_*.json`) 이 repo 에 없음 (`find` 결과 0건) — git history 복원 또는 upstream 문의 선행 필요.
+
 ## 7. upstream 처리 (참고)
 
-`https://github.com/jaytoone/CTX/issues/1` 등록됨. 응답 시 시나리오:
-- **upstream 이 PR 환영** → 본 fork 의 변경을 5개 정도 작은 PR 로 분해 (Task A 분해, Task B 테스트, Task C 통합, packaging fix, telemetry instrument 별도). 각각 독립 가능하도록.
+upstream issues:
+- `#1` (2026-05-04): fork 알림 + PR 의향 — 응답 대기 중
+- `#2` (2026-05-05, Cycle-3): docs R@5 정합성 정정 권고 — 응답 대기 중
+
+응답 시 시나리오:
+- **upstream 이 PR 환영** → 본 fork 의 변경을 5개 정도 작은 PR 로 분해 (Task A 분해, Task B 테스트, Task C 통합, packaging fix, telemetry instrument 별도). 각각 독립 가능하도록. issue #2 는 docs only PR 로 별도 분리.
 - **upstream 응답 없거나 보류** → fork 단독 운영. README 에 명시된 대로 downstream maintenance.
 
 ## 8. 다음 세션이 처음 할 행동
 
-1. `cd /Users/d9ng/privateProject/_research/_util/CTX`
+1. `cd /Users/d9ng/privateProject/tunaCtx`
 2. 본 문서 (`docs/refactor/HANDOFF.md`) 읽기
-3. `git log --oneline -5` 로 최신 commit 확인 — `2a68213` 가 마지막이어야 함
-4. `python3 tests/golden/run_golden.py` 로 26/26 확인
-5. user 의 새 요청 들으며 본 문서의 §6 함정 회피
+3. `git log --oneline -5` 로 최신 commit 확인 — `ca0c4b6` 가 마지막이어야 함
+4. `.venv-golden/bin/python tests/golden/run_golden.py` 로 15/26 확인 (11 fallback drift 는 §6-1 함정으로 알려진 상태)
+5. `.venv-golden/bin/python -m pytest tests/unit -q` 로 105/0 확인
+6. upstream issues #1 / #2 응답 확인 — `gh issue view 1 --repo jaytoone/CTX --comments` / `gh issue view 2 --repo jaytoone/CTX --comments`
+7. user 의 새 요청 들으며 본 문서의 §6 함정 회피
 
 ## 9. 의도적으로 안 한 것 (다음 세션도 따를 것)
 
@@ -266,7 +289,10 @@ drift 가 발생하는 것은 production 회귀가 아니라 입력 데이터(gi
 ## 10. 환경 메타
 
 - macOS Darwin 25.4.0
+- 작업 디렉토리: `/Users/d9ng/privateProject/tunaCtx` (clone 후 `origin = hang-in/tunaCtx` 추가, GitHub 정식 fork 아님)
 - system python3: `/opt/homebrew/bin/python3` (3.14, PEP 668 protected, **rank_bm25 미설치**)
 - dev venv: `.venv-golden/bin/python` (3.14, rank_bm25 + numpy + sklearn + networkx + ctx-retriever editable 설치됨)
+- pipx venv: `~/.local/pipx/venvs/ctx-retriever/bin/python` (3.14, 동일 패키지 + 격리 — **현재 hook command 가 사용 중인 python**)
+- vec-daemon / bge-daemon: pipx python 으로 기동 중 (Cycle-3 검증 시점 PID 24808 / 25006)
 - gh CLI: 인증 완료 (`dghong-d9ng` account)
 - Claude Code: 본 conversation 의 hook 동작 확인됨 (UserPromptSubmit hook 이 prompt 마다 fire)
