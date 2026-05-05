@@ -2,15 +2,16 @@
 
 | 항목 | 값 |
 |---|---|
-| 마지막 갱신 | 2026-05-05 (Cycle-3 docs 사이클 종료 시점) |
-| 작업 식별자 | Phase 0 → Task A/B/C/D → Phase 9 → Cycle-2 → Cycle-3 (docs hygiene) |
+| 마지막 갱신 | 2026-05-05 (Cycle-3.5 — Windows TCP fallback PR 머지 + upstream 협업 라운드 1 종료) |
+| 작업 식별자 | Phase 0 → Task A/B/C/D → Phase 9 → Cycle-2 → Cycle-3 (docs hygiene) → Cycle-3.5 (PR #1 merge + upstream coordination) |
 | 작업 디렉토리 | `/Users/d9ng/privateProject/tunaCtx` (clone 후 fork remote 로 운영, 정식 GitHub fork 아님) |
 | 현재 브랜치 | `master` (= `origin/master` = `hang-in/tunaCtx:master`) |
-| 마지막 commit | `ca0c4b6 docs: refresh stale R@5=0.152 references with iter11 measurement (0.595)` |
+| 마지막 commit | `29f241c feat(hooks): Windows TCP loopback fallback for AF_UNIX-less CPython (#1)` |
 | 회귀 가드 상태 | golden **15/26 PASS** (11 fallback drift, §6-1 함정 — production 회귀 아님) / pytest **105 PASS / 0 skip** |
 | 원본 upstream | `https://github.com/jaytoone/CTX` (remote: `upstream`) |
 | Fork remote | `https://github.com/hang-in/tunaCtx` (remote: `origin`) |
-| Upstream issues | #1 fork 알림 (2026-05-04) / #2 docs R@5 정합성 정정 권고 (2026-05-05, 본 사이클) |
+| Upstream issues | #1 fork 알림 (2026-05-04, jaytoone 답변 + 우리 reply 발행, **응답 대기**) / #2 docs R@5 정합성 정정 (2026-05-05, jaytoone fix 적용 + **CLOSED**) |
+| Fork PR | #1 Windows TCP fallback (2026-05-05, gemini 5건 반영, **MERGED** `29f241c`) |
 
 ## 1. 이 fork 의 정체
 
@@ -34,6 +35,7 @@
 | **Phase 9 후속** | Critical (`ctx-install` hash-based update) + Major #1/#2/#4 + Minor #1 + golden 옵션 B (G2-GREP normalize) | golden 25→26/26 회복 |
 | **Cycle-2** | golden runner stderr 가드 (옵션), atomic write 실 filesystem 검증, `_bm25/__init__.py` 17함수 re-export, `--uninstall` cleanup, plan footer | pytest 82→105/0 |
 | **Cycle-3 (docs hygiene)** | (a) README 검색 stack bullet 추가 — "BM25 만" 커뮤니티 오해 정정 / (b) R@5=0.152 stale 인용 갱신 (CLAUDE.md L91·L197, PRODUCTION_REFACTOR_PLAN.md L263) — iter11 재측정 Mean R@5=0.595 인용 / (c) README 에 외부 codebase 측정값 (참고) bullet 추가 + upstream issue 링크 / (d) upstream issue #2 발행 (docs R@5 정합성) | pytest 105/0 / golden 15/26 (fallback drift §6-1) |
+| **Cycle-3.5 (PR merge + upstream coord)** | (a) PR #1 Windows TCP fallback 머지 (`29f241c`) — gemini 5건 반영 (`socket` import top-level 정리, `SO_REUSEADDR` Windows 가드) / (b) upstream issue #2 jaytoone fix 후 close + 우리 감사 댓글 / (c) upstream issue #1 jaytoone 질문 3개 + PR shape 답변 발행 (Q1 tokenizer canonical, Q2 sqlite_vec graceful, Q3 install hash-based, PR 분해 5단계 + subtoken splitter 별도 사이클 명시) | pytest 105/0 / golden 15/26 (drift 동일) |
 
 ## 3. 현재 코드 상태
 
@@ -249,37 +251,57 @@ drift 가 발생하는 것은 production 회귀가 아니라 입력 데이터(gi
 upstream / fork docs 에 외부 codebase R@5 가 **여러 시점 측정값으로 공존** —
 - `0.152`: 가장 옛날 baseline (`docs/research/20260326-ctx-methodology-comparison.md` L70 — pre-fix, 자체 텍스트에서 stale 인정)
 - `0.495`: SEMANTIC trigger fix 후 (commits `727b5c3`)
-- `0.595`: iter11 재측정 (`benchmarks/results/reeval_external_iter11.json` — Mean R@5 = 0.595, Flask 0.6462 / FastAPI 0.3870 / Requests 0.7526). **Cycle-3 시점에서 가장 신뢰할 만한 수치.**
-- `0.744`: `docs/benchmark/g1_g2_publication_framework.md` 의 또 다른 평가 framework — canonical 여부 upstream 확인 필요
+- `0.595`: iter11 재측정 (`benchmarks/results/reeval_external_iter11.json` — Mean R@5 = 0.595, Flask 0.6462 / FastAPI 0.3870 / Requests 0.7526). **canonical 확정 (jaytoone 답변 in issue #2)**.
+- `0.744`: `docs/benchmark/g1_g2_publication_framework.md` 의 다른 평가 framework — **superseded by iter11** (jaytoone 명시).
 
-Cycle-3 에서 fork 내부 인용은 0.595 로 통일했지만, **upstream 의 응답 (issue #2) 받기 전까지는 단정 금지**. 다음 세션에서 R@5 인용할 때 본 사이클 발견 환기.
+Cycle-3 에서 fork 내부 인용은 0.595 로 통일 + Cycle-3.5 에서 jaytoone 답변으로 canonical 확정. 다음 세션부터 R@5 인용은 **0.595 = canonical** 로 단정 가능.
 
 또한 `benchmarks/eval/reeval_external.py` 를 직접 재실행하려면 입력 query JSON (`benchmark_real_eval_*.json`) 이 repo 에 없음 (`find` 결과 0건) — git history 복원 또는 upstream 문의 선행 필요.
+
+### 6-7. README.md 의 upstream PR 제외 (Cycle-3.5 결정)
+
+**README.md 는 upstream PR scope 에 포함하지 않음** — fork 와 upstream 의 방향성이 다르기 때문:
+- upstream README: paper / benchmark 헤드라인 / academic 톤
+- fork README: production hook 운영 / 설치 / 적용 가이드 / `검색 stack` 명시 / 외부 codebase 측정값 참고 / Empirical eval (Context Mode) 등
+
+향후 upstream PR 분해 진행 시 (issue #1 의 5단계 plan):
+- Tokenizer unification / sqlite_vec graceful / install hash-update / bm25-memory 분해 / telemetry instrumentation — 모두 **README 수정 없이** 코드/테스트만 cherry-pick
+- README 갱신은 fork 단독 유지 — 두 repo 의 사용자 페르소나가 다르다는 인정
 
 ## 7. upstream 처리 (참고)
 
 upstream issues:
-- `#1` (2026-05-04): fork 알림 + PR 의향 — 응답 대기 중
-- `#2` (2026-05-05, Cycle-3): docs R@5 정합성 정정 권고 — 응답 대기 중
+- `#1` (2026-05-04): fork 알림 → jaytoone 답변 (3 questions + PR 환영) → 우리 reply 발행 (Cycle-3.5) — **응답 대기 중** (어느 PR shape 로 진행할지)
+- `#2` (2026-05-05): docs R@5 정합성 정정 권고 → jaytoone 즉시 fix push + canonical 0.595 확정 → 우리 감사 댓글 + close — **CLOSED**
 
-응답 시 시나리오:
-- **upstream 이 PR 환영** → 본 fork 의 변경을 5개 정도 작은 PR 로 분해 (Task A 분해, Task B 테스트, Task C 통합, packaging fix, telemetry instrument 별도). 각각 독립 가능하도록. issue #2 는 docs only PR 로 별도 분리.
-- **upstream 응답 없거나 보류** → fork 단독 운영. README 에 명시된 대로 downstream maintenance.
+PR shape 응답 시 시나리오:
+- **upstream 이 5단계 분해 환영** → issue #1 reply 의 순서대로 진행:
+  1. Tokenizer unification (가장 작고 안전)
+  2. sqlite_vec graceful degradation
+  3. install.py hash-based update + atomic settings_patcher
+  4. bm25-memory.py 11 sub-module 분해 (의존: 1 land 후)
+  5. Telemetry instrumentation
+  6. **(별도)** subtoken splitter — 우리도 미구현, 아직 fork 에 없음. jaytoone 의지에 따라 협업
+- **upstream 이 bundled PR 선호** → 한 번에 큰 PR. 단 회귀 가드는 동일 (golden + 105 unit)
+- **upstream 응답 없거나 보류** → fork 단독 운영 (downstream maintenance)
+
+PR 분해 시 **README 수정은 절대 포함 X** (§6-7 참조).
 
 ## 8. 다음 세션이 처음 할 행동
 
 1. `cd /Users/d9ng/privateProject/tunaCtx`
 2. 본 문서 (`docs/refactor/HANDOFF.md`) 읽기
-3. `git log --oneline -5` 로 최신 commit 확인 — `ca0c4b6` 가 마지막이어야 함
+3. `git log --oneline -5` 로 최신 commit 확인 — `29f241c` 가 마지막이어야 함
 4. `.venv-golden/bin/python tests/golden/run_golden.py` 로 15/26 확인 (11 fallback drift 는 §6-1 함정으로 알려진 상태)
 5. `.venv-golden/bin/python -m pytest tests/unit -q` 로 105/0 확인
-6. upstream issues #1 / #2 응답 확인 — `gh issue view 1 --repo jaytoone/CTX --comments` / `gh issue view 2 --repo jaytoone/CTX --comments`
+6. upstream issue #1 의 jaytoone 응답 확인 — `gh issue view 1 --repo jaytoone/CTX --comments` (PR shape 결정 후 5단계 분해 첫 PR 시작 가능)
 7. user 의 새 요청 들으며 본 문서의 §6 함정 회피
 
 ## 9. 의도적으로 안 한 것 (다음 세션도 따를 것)
 
 - ✗ paper 작성, paper 관련 README 추가
 - ✗ 마케팅 톤 (benchmark 자랑, "1.9x higher TES" 같은 것)
+- ✗ **upstream PR 에 README.md 포함** (Cycle-3.5 결정, §6-7 참조 — fork 와 upstream 의 사용자 페르소나 다름)
 - ✗ archival benchmark 11+개의 BM25 통합
 - ✗ retrieval 알고리즘 변경
 - ✗ `~/.claude/settings.json` 의 hook command 를 명시적 user 승인 없이 변경
