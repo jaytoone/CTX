@@ -26,6 +26,9 @@ except ImportError:
 
 VAULT_DB     = os.path.expanduser("~/.local/share/claude-vault/vault.db")
 VEC_SOCK     = os.path.expanduser("~/.local/share/claude-vault/vec-daemon.sock")
+# Windows fallback: AF_UNIX missing on MSVC-built CPython → TCP loopback.
+VEC_USE_TCP  = not hasattr(socket, "AF_UNIX")
+VEC_PORT     = int(os.environ.get("CTX_VEC_PORT", "29501"))
 MAX_RESULTS  = 3
 MAX_CHARS_PER_MSG = 400
 MIN_KEYWORD_LEN   = 3
@@ -95,12 +98,17 @@ def cwd_to_project(cwd: str) -> str:
 
 def get_query_embedding(query: str) -> list[float] | None:
     """Get query embedding from vec-daemon via Unix socket. Returns None if unavailable."""
-    if not os.path.exists(VEC_SOCK):
-        return None
     try:
-        sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        sock.settimeout(VEC_TIMEOUT)
-        sock.connect(VEC_SOCK)
+        if VEC_USE_TCP:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.settimeout(VEC_TIMEOUT)
+            sock.connect(("127.0.0.1", VEC_PORT))
+        else:
+            if not os.path.exists(VEC_SOCK):
+                return None
+            sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            sock.settimeout(VEC_TIMEOUT)
+            sock.connect(VEC_SOCK)
         req = json.dumps({"q": query}) + "\n"
         sock.sendall(req.encode("utf-8"))
         buf = b""

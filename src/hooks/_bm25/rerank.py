@@ -16,6 +16,7 @@ Provides:
 """
 import json
 import os
+import socket
 from pathlib import Path
 
 # ── Vec-daemon config ────────────────────────────────────────────────────────
@@ -30,6 +31,11 @@ BGE_SOCK = Path.home() / ".local/share/claude-vault/bge-daemon.sock"
 BGE_TIMEOUT = 2.0   # seconds — rerank 20 cands typically <80ms, give slack
 USE_CROSS_ENCODER = os.environ.get("CTX_CROSS_ENCODER", "1") != "0"
 
+# Windows fallback: AF_UNIX missing on MSVC-built CPython → TCP loopback.
+USE_TCP = not hasattr(socket, "AF_UNIX")
+VEC_PORT = int(os.environ.get("CTX_VEC_PORT", "29501"))
+BGE_PORT = int(os.environ.get("CTX_BGE_PORT", "29502"))
+
 
 def _bge_rerank(query: str, docs: list):
     """Query the running bge-daemon for cross-encoder scores.
@@ -38,13 +44,19 @@ def _bge_rerank(query: str, docs: list):
     Caller applies sigmoid + filtering. Fail-fast: 2s timeout keeps the hook
     responsive if the daemon is wedged.
     """
-    if not USE_CROSS_ENCODER or not BGE_SOCK.exists():
+    if not USE_CROSS_ENCODER:
+        return None
+    if not USE_TCP and not BGE_SOCK.exists():
         return None
     try:
-        import socket as _sk
-        s = _sk.socket(_sk.AF_UNIX, _sk.SOCK_STREAM)
-        s.settimeout(BGE_TIMEOUT)
-        s.connect(str(BGE_SOCK))
+        if USE_TCP:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.settimeout(BGE_TIMEOUT)
+            s.connect(("127.0.0.1", BGE_PORT))
+        else:
+            s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            s.settimeout(BGE_TIMEOUT)
+            s.connect(str(BGE_SOCK))
         payload = (json.dumps({"query": query[:400],
                                "docs": [str(d)[:400] for d in docs]}) + "\n").encode("utf-8")
         s.sendall(payload)
@@ -66,13 +78,19 @@ def _bge_rerank(query: str, docs: list):
 def vec_embed(text: str):
     """Query the running vec-daemon for an embedding. Returns list[float] or None.
     Uses the same Unix socket protocol as chat-memory.py; 0 if daemon is down."""
-    if VEC_DISABLED or not VEC_SOCK.exists():
+    if VEC_DISABLED:
+        return None
+    if not USE_TCP and not VEC_SOCK.exists():
         return None
     try:
-        import socket
-        s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        s.settimeout(VEC_TIMEOUT)
-        s.connect(str(VEC_SOCK))
+        if USE_TCP:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.settimeout(VEC_TIMEOUT)
+            s.connect(("127.0.0.1", VEC_PORT))
+        else:
+            s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            s.settimeout(VEC_TIMEOUT)
+            s.connect(str(VEC_SOCK))
         payload = (json.dumps({"q": text[:1000]}) + "\n").encode("utf-8")
         s.sendall(payload)
         buf = b""

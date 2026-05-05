@@ -35,6 +35,10 @@ STOP_FILE   = Path.home() / ".local/share/claude-vault/bge-daemon.stop"
 LOG_FILE    = Path.home() / ".local/share/claude-vault/bge-daemon.log"
 MODEL_NAME  = os.environ.get("CTX_BGE_MODEL", "BAAI/bge-reranker-v2-m3")
 
+# Windows fallback: AF_UNIX is not exposed by MSVC-built CPython. Use TCP loopback.
+USE_TCP = not hasattr(socket, "AF_UNIX")
+BGE_PORT = int(os.environ.get("CTX_BGE_PORT", "29502"))
+
 # ── control flags ──────────────────────────────────────────────
 if "--stop" in sys.argv:
     STOP_FILE.write_text("stop")
@@ -54,9 +58,14 @@ if "--status" in sys.argv:
     # socket probe
     ok = False
     try:
-        s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        s.settimeout(2.0)
-        s.connect(str(SOCKET_PATH))
+        if USE_TCP:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.settimeout(2.0)
+            s.connect(("127.0.0.1", BGE_PORT))
+        else:
+            s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            s.settimeout(2.0)
+            s.connect(str(SOCKET_PATH))
         s.sendall(b'{"query":"ping","docs":["pong"]}\n')
         resp = b""
         while b"\n" not in resp:
@@ -79,8 +88,8 @@ if PID_FILE.exists():
         os.kill(existing_pid, 0)
         print(f"[bge-daemon] Already running (PID {existing_pid}). Exiting.")
         sys.exit(0)
-    except (ProcessLookupError, ValueError):
-        pass   # stale PID file, continue
+    except (ProcessLookupError, ValueError, OSError):
+        pass   # stale PID file (or Windows os.kill not supported), continue
 
 def log(msg):
     line = f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] {msg}"
@@ -167,16 +176,30 @@ def main():
     except Exception as e:
         log(f"warmup failed: {e}")
 
-    if SOCKET_PATH.exists():
-        SOCKET_PATH.unlink()
     PID_FILE.write_text(str(os.getpid()))
 
-    srv = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-    srv.bind(str(SOCKET_PATH))
-    os.chmod(str(SOCKET_PATH), 0o600)
+    if USE_TCP:
+        srv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # Skip SO_REUSEADDR on Windows: semantics differ (allows multiple
+        # bind to same port → port hijacking risk). Linux/macOS keep TIME_WAIT
+        # rebinding behavior.
+        if sys.platform != "win32":
+            srv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        srv.bind(("127.0.0.1", BGE_PORT))
+        listen_target = f"127.0.0.1:{BGE_PORT}"
+    else:
+        if SOCKET_PATH.exists():
+            SOCKET_PATH.unlink()
+        srv = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        srv.bind(str(SOCKET_PATH))
+        try:
+            os.chmod(str(SOCKET_PATH), 0o600)
+        except OSError:
+            pass
+        listen_target = str(SOCKET_PATH)
     srv.listen(8)
     srv.settimeout(1.0)
-    log(f"listening on {SOCKET_PATH}")
+    log(f"listening on {listen_target}")
 
     while True:
         if STOP_FILE.exists():
@@ -193,7 +216,8 @@ def main():
             log(f"accept error: {e}")
 
     srv.close()
-    SOCKET_PATH.unlink(missing_ok=True)
+    if not USE_TCP:
+        SOCKET_PATH.unlink(missing_ok=True)
     PID_FILE.unlink(missing_ok=True)
     log("stopped")
 

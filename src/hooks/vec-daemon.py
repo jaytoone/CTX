@@ -21,6 +21,10 @@ PID_FILE    = Path.home() / ".local/share/claude-vault/vec-daemon.pid"
 STOP_FILE   = Path.home() / ".local/share/claude-vault/vec-daemon.stop"
 MODEL_NAME  = "intfloat/multilingual-e5-small"
 
+# Windows fallback: AF_UNIX is not exposed by MSVC-built CPython. Use TCP loopback.
+USE_TCP = not hasattr(socket, "AF_UNIX")
+VEC_PORT = int(os.environ.get("CTX_VEC_PORT", "29501"))
+
 if "--stop" in sys.argv:
     STOP_FILE.write_text("stop")
     print("Stop file written.")
@@ -33,8 +37,8 @@ if PID_FILE.exists():
         os.kill(existing_pid, 0)
         print(f"[vec-daemon] Already running (PID {existing_pid}). Exiting.")
         sys.exit(0)
-    except (ProcessLookupError, ValueError):
-        pass  # stale PID file, continue
+    except (ProcessLookupError, ValueError, OSError):
+        pass  # stale PID file (or Windows os.kill not supported), continue
 
 def load_model():
     from sentence_transformers import SentenceTransformer
@@ -78,18 +82,27 @@ def main():
     model = load_model()
     print(f"[vec-daemon] Model ready in {time.time()-t0:.1f}s", flush=True)
 
-    # Clean up stale socket
-    if SOCKET_PATH.exists():
-        SOCKET_PATH.unlink()
-
     # Write PID
     PID_FILE.write_text(str(os.getpid()))
 
-    srv = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-    srv.bind(str(SOCKET_PATH))
+    if USE_TCP:
+        srv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # Skip SO_REUSEADDR on Windows: semantics differ (allows multiple
+        # bind to same port → port hijacking risk). Linux/macOS keep TIME_WAIT
+        # rebinding behavior.
+        if sys.platform != "win32":
+            srv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        srv.bind(("127.0.0.1", VEC_PORT))
+        listen_target = f"127.0.0.1:{VEC_PORT}"
+    else:
+        if SOCKET_PATH.exists():
+            SOCKET_PATH.unlink()
+        srv = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        srv.bind(str(SOCKET_PATH))
+        listen_target = str(SOCKET_PATH)
     srv.listen(5)
     srv.settimeout(1.0)  # 1s accept timeout for stop-check loop
-    print(f"[vec-daemon] Listening on {SOCKET_PATH}", flush=True)
+    print(f"[vec-daemon] Listening on {listen_target}", flush=True)
 
     while True:
         if STOP_FILE.exists():
@@ -106,7 +119,8 @@ def main():
             print(f"[vec-daemon] Accept error: {e}", flush=True)
 
     srv.close()
-    SOCKET_PATH.unlink(missing_ok=True)
+    if not USE_TCP:
+        SOCKET_PATH.unlink(missing_ok=True)
     PID_FILE.unlink(missing_ok=True)
     print("[vec-daemon] Stopped.")
 

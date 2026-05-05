@@ -43,6 +43,9 @@ WOW_AGE_MIN_DAYS = 14       # at least one referenced item ≥ 14 days old
 
 # ── T1: Semantic similarity via vec-daemon ───────────────────────────
 VEC_SOCK = HOME / ".local" / "share" / "claude-vault" / "vec-daemon.sock"
+# Windows fallback: AF_UNIX missing on MSVC-built CPython → TCP loopback.
+VEC_USE_TCP = not hasattr(socket, "AF_UNIX")
+VEC_PORT = int(os.environ.get("CTX_VEC_PORT", "29501"))
 SEMANTIC_THRESHOLD = 0.85
 # e5-small calibration (empirical, 2026-04-20):
 #   related pairs:    cos ∈ [0.84, 0.90]  (item subject vs on-topic response chunk)
@@ -52,12 +55,19 @@ SEMANTIC_THRESHOLD = 0.85
 
 def _embed(text: str, timeout: float = 0.8) -> list | None:
     """Query vec-daemon for an embedding. Returns None on any failure."""
-    if not VEC_SOCK.exists() or not text:
+    if not text:
         return None
     try:
-        s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        s.settimeout(timeout)
-        s.connect(str(VEC_SOCK))
+        if VEC_USE_TCP:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.settimeout(timeout)
+            s.connect(("127.0.0.1", VEC_PORT))
+        else:
+            if not VEC_SOCK.exists():
+                return None
+            s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            s.settimeout(timeout)
+            s.connect(str(VEC_SOCK))
         s.sendall((json.dumps({"q": text[:1000]}) + "\n").encode("utf-8"))
         buf = b""
         while b"\n" not in buf:
