@@ -87,10 +87,10 @@ CTX = **Claude Code의 자동 context 주입 시스템**.
 - `docs/research/CTX_NEMOTRON_COMPARISON_REPORT.docx`
 
 ### Phase 3: CTX 약점 분석 + 대안 조사 (expert-research)
-**CTX 3대 약점**:
-1. 외부 코드베이스 R@5=0.152 (heuristic 과적합)
-2. keyword 쿼리 R@3=0.379 < BM25=0.667
-3. 교차 파일 추론 불가 (multi-hop)
+**CTX 3대 약점** (2026-03-27 시점 진단):
+1. ~~외부 코드베이스 R@5=0.152 (heuristic 과적합)~~ — **갱신: iter11 재측정 (`benchmarks/results/reeval_external_iter11.json`) 결과 Mean R@5=0.595** (Flask 0.6462 / FastAPI 0.3870 / Requests 0.7526). 0.152 는 pre-fix baseline 으로 stale.
+2. keyword 쿼리 R@3=0.379 < BM25=0.667 — Phase 5 에서 **0.724 달성** (해소)
+3. 교차 파일 추론 불가 (multi-hop) — 잔존 약점
 
 **즉시 실행 가능 개선**: TF-IDF → BM25 교체 (ROI 최고)
 - 결과 문서: `FromScratch/docs/research/20260327-ctx-alternatives-research.md`
@@ -194,7 +194,7 @@ def rank_ctx_doc(query, docs, bm25_index=None):
 3. **G2 real codebase Δ+0.200 개선**: instruction parsing → CTX query 변환 레이어 추가
 
 ### 중기 (1-2주)
-3. **외부 코드베이스 R@5=0.152 개선**: AST 파서 기반 심볼 추출 (heuristic 제거)
+3. **외부 코드베이스 R@5 추가 개선**: 현재 Mean R@5=0.595 (iter11), FastAPI 0.387 가 최약점. AST 파서 기반 심볼 추출 (heuristic 제거) 검토
    - `src/retrieval/adaptive_trigger.py`의 `_index_symbols()` 개선
 4. **교차 파일 추론**: Import graph BFS 확장 (현재 2-hop 한계)
 

@@ -260,7 +260,7 @@ codex exec --model gpt-5.1 \
 
 다음은 **이번 사이클에서 다루지 않는다** — 별도 사이클 후보.
 
-- `src/retrieval/adaptive_trigger.py` 자체의 god object 해체 — eval 한정 영향, 외부 R@5=0.152 개선 작업과 묶어서 별도 진행.
+- `src/retrieval/adaptive_trigger.py` 자체의 god object 해체 — eval 한정 영향, 외부 R@5 추가 개선 작업과 묶어서 별도 진행. (참고: iter11 재측정 기준 Mean R@5=0.595, 0.152 는 pre-fix baseline 으로 stale)
 - `chat-memory.py` 분해 — 현재 529줄로 임계 미만, vault.db 통합 변경과 함께 진행.
 - 외부 코드베이스 R@5 개선, AST 파서 교체, GraphRAG 통합 등 알고리즘 변경.
 - 새 retrieval 전략 추가, README 갱신, packaging 변경(버전 bump 제외).
