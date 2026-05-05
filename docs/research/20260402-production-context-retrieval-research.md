@@ -7,7 +7,7 @@
 
 ## Executive Summary
 
-**Finding**: CTX's BM25-based retrieval is **token-efficient (5.99% vs 100% baseline)** but **low-recall externally (R@5=0.152)**. 
+**Finding**: CTX's BM25-based retrieval is **token-efficient (5.99% vs 100% baseline)** but **low-recall externally (R@5=0.595)**. 
 Five production tools exist with complementary strengths:
 
 1. **Cursor** — Two-stage re-ranking (embedding + LLM re-rank)
@@ -337,7 +337,7 @@ Source Code → Tree-Sitter Parse (66 langs) → Extract symbols & calls
 
 | Tool | Type | Strength | Weakness | R@5 Potential | Token Cost | Latency |
 |------|------|----------|----------|---------------|-----------|---------|
-| **CTX (current)** | Trigger+BM25 | EXPLICIT, token-efficient | External R@5=0.152, no re-rank | — | 5.99% | <1ms |
+| **CTX (current)** | Trigger+BM25 | EXPLICIT, token-efficient | External R@5=0.595, no re-rank | — | 5.99% | <1ms |
 | **Cursor** | Embedding+rerank | High-quality re-ranking | API cost, slow | 0.40-0.50 | 20-30% | 500ms |
 | **Aider** | PageRank+budget | Dependency-aware, token-optimal | New parsing overhead | 0.30-0.40 | 5-10% | 50-100ms |
 | **Continue.dev** | Multi-provider | Pluggable, LanceDB | No built-in ranking | 0.35-0.45 | 10-15% | 10-50ms |

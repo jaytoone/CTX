@@ -131,7 +131,7 @@
 | Goal 2: 문서 검색 | NDCG@5=0.771 vs BM25=0.633 | ✅ PASS | HIGH |
 | Goal 2: 구조 의존성 | IMPLICIT R@5=1.000/0.715 | ✅ PASS | HIGH |
 | 잔여: 결정 기억 복원 | Decision Recall Rate 미측정 | ⏳ TBD | — |
-| 잔여: 외부 대형 코드베이스 | Flask/FastAPI R@5=0.152 | ⏳ 개선 여지 | MEDIUM |
+| 잔여: 외부 대형 코드베이스 | Flask/FastAPI R@5=0.595 | ⏳ 개선 여지 | MEDIUM |
 
 ---
 

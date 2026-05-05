@@ -18,7 +18,7 @@ CTX의 약점(외부 코드베이스 일반화 실패, 자유 키워드 검색 B
 
 | 약점 | 즉시 (1-2일) | 중기 (1-2주) | 장기 |
 |------|------------|------------|------|
-| 외부 코드베이스 R@5=0.152 | AST 파서 기반 심볼 추출 (heuristic 제거) | LocAgent DHG non-LLM 버전 | LocAgent 풀스택 |
+| 외부 코드베이스 R@5=0.595 | AST 파서 기반 심볼 추출 (heuristic 제거) | LocAgent DHG non-LLM 버전 | LocAgent 풀스택 |
 | keyword R@3=0.379 < BM25=0.667 | **TF-IDF → BM25 교체** | BM25 + Code-tuned Embedding | Dense 단독 (재인덱싱 파이프라인 포함) |
 | 교차 파일 추론 불가 | Import graph BFS 확장 | Dependency GraphRAG (파싱 기반, non-LLM) | LocAgent 멀티홉 에이전트 |
 

@@ -88,7 +88,7 @@ CTX = **Claude Code의 자동 context 주입 시스템**.
 
 ### Phase 3: CTX 약점 분석 + 대안 조사 (expert-research)
 **CTX 3대 약점**:
-1. 외부 코드베이스 R@5=0.152 (heuristic 과적합)
+1. 외부 코드베이스 R@5=0.595 (iter11, Flask/FastAPI/Requests mean)
 2. keyword 쿼리 R@3=0.379 < BM25=0.667
 3. 교차 파일 추론 불가 (multi-hop)
 
@@ -194,7 +194,7 @@ def rank_ctx_doc(query, docs, bm25_index=None):
 3. **G2 real codebase Δ+0.200 개선**: instruction parsing → CTX query 변환 레이어 추가
 
 ### 중기 (1-2주)
-3. **외부 코드베이스 R@5=0.152 개선**: AST 파서 기반 심볼 추출 (heuristic 제거)
+3. **외부 코드베이스 R@5=0.595 개선**: AST 파서 기반 심볼 추출 (heuristic 제거)
    - `src/retrieval/adaptive_trigger.py`의 `_index_symbols()` 개선
 4. **교차 파일 추론**: Import graph BFS 확장 (현재 2-hop 한계)
 
