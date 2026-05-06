@@ -13,9 +13,14 @@ import os
 import re
 import socket
 import sqlite3
-import sqlite_vec
 import struct
 import sys
+
+try:
+    import sqlite_vec
+    _SQLITE_VEC_OK = True
+except ImportError:
+    _SQLITE_VEC_OK = False
 
 VAULT_DB     = os.path.expanduser("~/.local/share/claude-vault/vault.db")
 VEC_SOCK     = os.path.expanduser("~/.local/share/claude-vault/vec-daemon.sock")
@@ -118,7 +123,7 @@ def query_vault_vector(
     exclude_session_id: str | None = None,
 ) -> list[tuple]:
     """KNN vector search using sqlite-vec. Returns (msg_id, cosine_dist, role, content, ts, project)."""
-    if not query_emb or not os.path.exists(VAULT_DB):
+    if not query_emb or not os.path.exists(VAULT_DB) or not _SQLITE_VEC_OK:
         return []
     try:
         import numpy as np
