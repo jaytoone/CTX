@@ -236,6 +236,7 @@ def step_seed_vault(
     dry_run: bool = False,
     project_dir: Path | None = None,
     max_commits: int = 500,
+    force: bool = False,
 ) -> tuple[int, str]:
     """Pre-populate vault.db with git commit history so G1 recall fires in session 1.
 
@@ -262,8 +263,8 @@ def step_seed_vault(
     vault_db = CLAUDE_VAULT_DIR / "vault.db"
 
     if not dry_run:
-        # Skip if already seeded for this project
-        if vault_db.exists():
+        # Skip if already seeded for this project (unless force=True)
+        if vault_db.exists() and not force:
             try:
                 conn = sqlite3.connect(f"file:{vault_db}?mode=ro", uri=True, timeout=2.0)
                 count = conn.execute(
@@ -271,7 +272,7 @@ def step_seed_vault(
                 ).fetchone()[0]
                 conn.close()
                 if count > 0:
-                    return count, f"already seeded ({count} commits) — skipping"
+                    return count, f"already seeded ({count} commits) — skipping (use --reseed to refresh)"
             except Exception:
                 pass  # vault doesn't exist yet or schema mismatch → proceed
 
@@ -314,6 +315,20 @@ def step_seed_vault(
     try:
         conn = sqlite3.connect(str(vault_db), timeout=5.0)
         conn.executescript(_VAULT_SCHEMA)
+
+        if force:
+            # FTS5-safe delete: remove index entries before deleting rows
+            old = conn.execute(
+                "SELECT id, content FROM messages WHERE session_id=?", (session_id,)
+            ).fetchall()
+            for row_id, content in old:
+                conn.execute(
+                    "INSERT INTO messages_fts(messages_fts, rowid, content) VALUES ('delete', ?, ?)",
+                    (row_id, content),
+                )
+            conn.execute("DELETE FROM messages WHERE session_id=?", (session_id,))
+            conn.execute("DELETE FROM sessions WHERE session_id=?", (session_id,))
+
         conn.execute(
             "INSERT OR IGNORE INTO sessions (session_id, project) VALUES (?, ?)",
             (session_id, str(project_dir)),
@@ -391,6 +406,7 @@ def cmd_install(args: argparse.Namespace) -> int:
         n_seeded, seed_msg = step_seed_vault(
             dry_run=args.dry_run,
             max_commits=args.max_commits,
+            force=getattr(args, "reseed", False),
         )
         print(f"\n5/5 vault seed:  {seed_msg}")
     else:
@@ -513,6 +529,8 @@ def main() -> int:
                    help="Remove CTX hook registrations from settings.json.")
     p.add_argument("--no-seed", action="store_true",
                    help="Skip vault pre-seeding with git history.")
+    p.add_argument("--reseed", action="store_true",
+                   help="Force re-seed vault even if already seeded (refreshes after new commits).")
     p.add_argument("--max-commits", type=int, default=500,
                    help="Max commits to seed into vault (default: 500).")
     p.add_argument("command", nargs="?", default=None,

@@ -1508,6 +1508,20 @@ def main():
                 for c in relevant
             ])
 
+            # Sharing trigger: fire once per project on first-ever G1 recall
+            try:
+                _omc_dir = Path(project_dir) / ".omc"
+                _g1_flag = _omc_dir / "ctx-g1-first-fire.flag"
+                if not _g1_flag.exists():
+                    _omc_dir.mkdir(exist_ok=True)
+                    _g1_flag.write_text("1")
+                    lines.append(
+                        "[CTX] First G1 recall fired in this project — "
+                        "share with your team: pip install ctx-retriever && ctx-install"
+                    )
+            except Exception:
+                pass
+
     # 2. G2: BM25 over project docs
     g2_files = []
     g2_keywords = []
