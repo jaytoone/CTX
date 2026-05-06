@@ -4,6 +4,7 @@ Usage:
     ctx-install                   # install / activate (idempotent)
     ctx-install --dry-run         # show what would change; touch nothing
     ctx-install --uninstall       # remove CTX hooks from settings.json
+    ctx-install --no-seed         # skip git history vault pre-seeding
     ctx-install status            # check current install state + hook health
 
 Design goals (why this CLI exists):
@@ -20,10 +21,12 @@ to ~/.claude/hooks/ on first install. Subsequent installs are idempotent.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import importlib.resources
 import json
 import os
 import shutil
+import sqlite3
 import subprocess
 import sys
 import time
@@ -207,6 +210,126 @@ def step_smoke_test() -> tuple[bool, str]:
     return True, "hook fired OK (no corpus yet — last-injection.json not written on fresh install)"
 
 
+# ─────────────────────── vault seed ───────────────────────
+
+_VAULT_SCHEMA = """
+    CREATE TABLE IF NOT EXISTS sessions (
+        session_id TEXT PRIMARY KEY,
+        project    TEXT
+    );
+    CREATE TABLE IF NOT EXISTS messages (
+        id         INTEGER PRIMARY KEY AUTOINCREMENT,
+        session_id TEXT,
+        role       TEXT,
+        content    TEXT,
+        timestamp  TEXT
+    );
+    CREATE VIRTUAL TABLE IF NOT EXISTS messages_fts
+        USING fts5(content, content=messages, content_rowid=id);
+    CREATE TRIGGER IF NOT EXISTS messages_ai AFTER INSERT ON messages BEGIN
+        INSERT INTO messages_fts(rowid, content) VALUES (new.id, new.content);
+    END;
+"""
+
+
+def step_seed_vault(
+    dry_run: bool = False,
+    project_dir: Path | None = None,
+    max_commits: int = 500,
+) -> tuple[int, str]:
+    """Pre-populate vault.db with git commit history so G1 recall fires in session 1.
+
+    Idempotent: skips silently if this project was already seeded.
+    Returns (n_commits_inserted, status_message).
+    """
+    if project_dir is None:
+        project_dir = Path.cwd()
+
+    # Require a git repo
+    try:
+        check = subprocess.run(
+            ["git", "-C", str(project_dir), "rev-parse", "--git-dir"],
+            capture_output=True, text=True, timeout=5,
+        )
+        if check.returncode != 0:
+            return 0, f"not a git repo ({project_dir.name}) — vault seed skipped"
+    except (FileNotFoundError, subprocess.TimeoutExpired):
+        return 0, "git unavailable — vault seed skipped"
+
+    # Stable, per-project session ID (safe to re-run ctx-install)
+    project_hash = hashlib.sha1(str(project_dir).encode()).hexdigest()[:8]
+    session_id = f"git-seed-{project_hash}"
+    vault_db = CLAUDE_VAULT_DIR / "vault.db"
+
+    if not dry_run:
+        # Skip if already seeded for this project
+        if vault_db.exists():
+            try:
+                conn = sqlite3.connect(f"file:{vault_db}?mode=ro", uri=True, timeout=2.0)
+                count = conn.execute(
+                    "SELECT COUNT(*) FROM messages WHERE session_id=?", (session_id,)
+                ).fetchone()[0]
+                conn.close()
+                if count > 0:
+                    return count, f"already seeded ({count} commits) — skipping"
+            except Exception:
+                pass  # vault doesn't exist yet or schema mismatch → proceed
+
+    # Fetch git log (no-merges, subject + body)
+    try:
+        log = subprocess.run(
+            ["git", "-C", str(project_dir), "log",
+             "--pretty=format:%ai\x1f%s\x1f%b\x1e",
+             f"--max-count={max_commits}", "--no-merges"],
+            capture_output=True, text=True, timeout=15,
+        )
+    except subprocess.TimeoutExpired:
+        return 0, "git log timed out — vault seed skipped"
+
+    commits: list[tuple[str, str, str]] = []  # (session_id, role, content, timestamp) → built below
+    rows: list[tuple[str, str, str, str]] = []
+    for entry in log.stdout.split("\x1e"):
+        entry = entry.strip()
+        if not entry:
+            continue
+        parts = entry.split("\x1f", 2)
+        if len(parts) < 2:
+            continue
+        timestamp, subject = parts[0].strip(), parts[1].strip()
+        body = parts[2].strip() if len(parts) > 2 else ""
+        if len(subject) < 5:
+            continue
+        content = f"[git] {subject}"
+        if body:
+            content += f"\n{body}"
+        rows.append((session_id, "assistant", content, timestamp))
+
+    if not rows:
+        return 0, "no commits found — vault seed skipped"
+
+    if dry_run:
+        return len(rows), f"would seed {len(rows)} commits into {vault_db}"
+
+    CLAUDE_VAULT_DIR.mkdir(parents=True, exist_ok=True)
+    try:
+        conn = sqlite3.connect(str(vault_db), timeout=5.0)
+        conn.executescript(_VAULT_SCHEMA)
+        conn.execute(
+            "INSERT OR IGNORE INTO sessions (session_id, project) VALUES (?, ?)",
+            (session_id, str(project_dir)),
+        )
+        conn.executemany(
+            "INSERT INTO messages (session_id, role, content, timestamp) VALUES (?,?,?,?)",
+            rows,
+        )
+        conn.commit()
+        conn.close()
+    except Exception as exc:
+        return 0, f"vault write failed: {exc}"
+
+    return len(rows), f"seeded {len(rows)} commits → {vault_db}"
+
+
 # ─────────────────────── commands ───────────────────────
 
 def cmd_install(args: argparse.Namespace) -> int:
@@ -262,6 +385,16 @@ def cmd_install(args: argparse.Namespace) -> int:
         print("\n  Hook chain installed but smoke test failed.")
         print("  Check the hook files directly with: python3 ~/.claude/hooks/bm25-memory.py --rich")
         return 4
+
+    # 5. Seed vault.db with git history (cold-start fix)
+    if not getattr(args, "no_seed", False):
+        n_seeded, seed_msg = step_seed_vault(
+            dry_run=args.dry_run,
+            max_commits=args.max_commits,
+        )
+        print(f"\n5/5 vault seed:  {seed_msg}")
+    else:
+        print("\n5/5 vault seed:  skipped (--no-seed)")
 
     print("\n" + "=" * 50)
     print("CTX installed. Restart Claude Code to activate.")
@@ -378,6 +511,10 @@ def main() -> int:
                    help="Show what would change; touch no files.")
     p.add_argument("--uninstall", action="store_true",
                    help="Remove CTX hook registrations from settings.json.")
+    p.add_argument("--no-seed", action="store_true",
+                   help="Skip vault pre-seeding with git history.")
+    p.add_argument("--max-commits", type=int, default=500,
+                   help="Max commits to seed into vault (default: 500).")
     p.add_argument("command", nargs="?", default=None,
                    help="Optional: 'status' to check current install state.")
     args = p.parse_args()
