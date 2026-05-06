@@ -15,21 +15,48 @@ CTX classifies developer queries into four trigger types and routes each to a sp
 
 **[▶ Dashboard demo (39s)](https://drive.google.com/file/d/1b4ZvbRYkXKTepKDx8N7gLfim-zLDiCGo/view?usp=sharing)**
 
-## Install
+## Install for Claude Code (Hook mode)
+
+CTX runs as Claude Code hooks that inject context before every prompt. Two install paths:
+
+### Option A — pip (always works, recommended)
 
 ```bash
 pip install ctx-retriever
+ctx-install                     # wires hooks into ~/.claude/settings.json
 ```
 
-Or from source:
+Restart Claude Code. Done.
+
+### Option B — Claude Code plugin
+
+First, register the CTX marketplace (one-time, per machine):
 
 ```bash
-git clone https://github.com/jaytoone/CTX
-cd CTX
-pip install -e .
+python3 -c "
+import json, pathlib
+p = pathlib.Path('~/.claude/settings.json').expanduser()
+s = json.loads(p.read_text()) if p.exists() else {}
+s.setdefault('extraKnownMarketplaces', {})['jaytoone'] = {
+    'source': {'source': 'github', 'repo': 'jaytoone/CTX'}
+}
+p.write_text(json.dumps(s, indent=2))
+print('[CTX] marketplace registered')
+"
 ```
 
-## Quick Start
+Then in Claude Code:
+
+```
+/plugin install ctx@jaytoone
+```
+
+The plugin Setup hook installs dependencies and wires everything automatically. Restart Claude Code.
+
+> The marketplace registration step will become unnecessary once CTX is accepted into
+> the official Claude Code plugin directory. Until then, Option A is simpler for new users.
+
+## Quick Start (library API)
 
 ```python
 from ctx_retriever.retrieval.adaptive_trigger import AdaptiveTriggerRetriever
@@ -48,16 +75,7 @@ for filepath in result.retrieved_files:
     print(filepath, result.scores[filepath])
 ```
 
-## Claude Code Hook (Recommended)
-
-CTX runs as a set of Claude Code hooks that inject relevant past decisions, docs, and code into every prompt. Install is one command:
-
-```bash
-pip install ctx-retriever
-ctx-install                     # register CTX hooks in ~/.claude/settings.json
-```
-
-**That's it.** Restart Claude Code and hooks fire on every prompt.
+## Claude Code Hook details
 
 ### Optional: enable cross-encoder reranking (BGE)
 
