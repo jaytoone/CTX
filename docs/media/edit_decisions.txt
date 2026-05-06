@@ -1,0 +1,42 @@
+CTX YouTube Video — Edit Decision Log
+Generated: 2026-05-06
+======================================================
+
+SOURCE FILES:
+  Face cam : IMG_1649.mov (original, preserved)
+             IMG_1649_original.mov (backup copy)
+  Screen   : CTX Dashboard - Chrome 2026-05-05 22-11-45.mp4 (LT-3, pending)
+
+SYNC POINT:
+  MOV start (00:00) = where background music begins in MP4
+  → Apply same offset to MP4 when received
+
+EDIT DECISIONS (apply identically to both files):
+------------------------------------------------------
+  ACTION  | MOV TIMESTAMP | DURATION | NOTES
+------------------------------------------------------
+  CUT     | 10:06.75      | 2.0s     | dead air pause
+  CUT     | 12:41.77      | 3.0s     | dead air pause
+------------------------------------------------------
+
+SILENCE SEGMENTS (keep, just trim short pauses):
+  TRIM    | 02:13.44      | 1.8s     | brief pause (keep)
+  TRIM    | 02:17.82      | 1.5s     | brief pause (keep)
+  TRIM    | 09:52.52      | 1.0s     | brief pause (keep)
+  TRIM    | 10:02.68      | 1.5s     | brief pause (keep)
+  TRIM    | 10:04.72      | 1.0s     | brief pause (keep)
+  TRIM    | 10:14.89      | 1.0s     | brief pause (keep)
+  TRIM    | 12:49.41      | 1.8s     | brief pause (keep)
+
+SPEECH SEGMENTS (final output):
+  Seg 01: 00:00.00 → 10:06.75  (~10 min 7s)
+  Seg 02: 10:08.78 → 12:41.77  (~2 min 33s)
+  Seg 03: 12:44.75 → 17:47.11  (~5 min 2s)
+
+ESTIMATED FINAL DURATION: ~17:42 (5s removed)
+
+PIP LAYOUT (when MP4 arrives):
+  Main track  : MP4 screen recording (full 1920x1080)
+  Overlay     : pip_face_cam.mp4 (320x180, bottom-right corner)
+  Offset      : MP4 background music start = MOV 00:00
+  Audio       : MP4 audio (background music) + MOV audio mixed

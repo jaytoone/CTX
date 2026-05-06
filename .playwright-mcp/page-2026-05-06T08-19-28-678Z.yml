@@ -1,0 +1,1241 @@
+- generic [ref=e2]:
+  - link "Skip to main content" [ref=e3] [cursor=pointer]:
+    - /url: "#content-area"
+  - generic [ref=e5]:
+    - generic [ref=e10]:
+      - generic [ref=e12]:
+        - link "Claude Code Docs home page light logo" [ref=e14] [cursor=pointer]:
+          - /url: /docs/en/overview
+          - generic [ref=e15]: Claude Code Docs home page
+          - img "light logo" [ref=e16]
+        - generic [ref=e17]:
+          - button "Open search" [ref=e18] [cursor=pointer]:
+            - generic [ref=e19]: Search...
+            - img [ref=e20]
+          - button [ref=e21] [cursor=pointer]:
+            - img [ref=e22]
+          - button "More actions" [ref=e25] [cursor=pointer]:
+            - img [ref=e26]
+      - button "Navigation Tools and plugins Create plugins" [ref=e27] [cursor=pointer]:
+        - generic [ref=e28]:
+          - generic [ref=e29]: Navigation
+          - img [ref=e30]
+        - generic [ref=e32]:
+          - generic [ref=e33]:
+            - generic [ref=e34]: Tools and plugins
+            - img [ref=e35]
+          - generic [ref=e37]: Create plugins
+    - generic [ref=e41]:
+      - banner [ref=e42]:
+        - generic [ref=e43]:
+          - generic [ref=e44]: Tools and plugins
+          - generic [ref=e45]:
+            - heading "Create plugins" [level=1] [ref=e46]
+            - generic [ref=e47]:
+              - button "Copy page" [ref=e48] [cursor=pointer]:
+                - generic [ref=e49]:
+                  - img [ref=e50]
+                  - generic [ref=e53]: Copy page
+              - button "More actions" [ref=e54] [cursor=pointer]:
+                - img [ref=e55]
+        - paragraph [ref=e58]: Create custom plugins to extend Claude Code with skills, agents, hooks, and MCP servers.
+      - generic [ref=e59]:
+        - blockquote [ref=e60]:
+          - heading "Documentation Index" [level=2] [ref=e61]
+          - paragraph [ref=e62]:
+            - text: "Fetch the complete documentation index at:"
+            - link "https://code.claude.com/docs/llms.txt" [ref=e63] [cursor=pointer]:
+              - /url: https://code.claude.com/docs/llms.txt
+          - paragraph [ref=e64]: Use this file to discover all available pages before exploring further.
+        - generic [ref=e65]: Plugins let you extend Claude Code with custom functionality that can be shared across projects and teams. This guide covers creating your own plugins with skills, agents, hooks, and MCP servers.
+        - generic [ref=e66]:
+          - text: Looking to install existing plugins? See
+          - link "Discover and install plugins" [ref=e67] [cursor=pointer]:
+            - /url: /docs/en/discover-plugins
+          - text: . For complete technical specifications, see
+          - link "Plugins reference" [ref=e68] [cursor=pointer]:
+            - /url: /docs/en/plugins-reference
+          - text: .
+        - heading "Navigate to header When to use plugins vs standalone configuration" [level=2] [ref=e69]:
+          - link "Navigate to header" [ref=e70] [cursor=pointer]:
+            - /url: "#when-to-use-plugins-vs-standalone-configuration"
+            - img [ref=e72]
+          - generic [ref=e74] [cursor=pointer]: When to use plugins vs standalone configuration
+        - generic [ref=e75]: "Claude Code supports two ways to add custom skills, agents, and hooks:"
+        - table [ref=e78]:
+          - rowgroup [ref=e79]:
+            - row "Approach Skill names Best for" [ref=e80]:
+              - columnheader "Approach" [ref=e81]
+              - columnheader "Skill names" [ref=e82]
+              - columnheader "Best for" [ref=e83]
+          - rowgroup [ref=e84]:
+            - row "Standalone (.claude/ directory) /hello Personal workflows, project-specific customizations, quick experiments" [ref=e85]:
+              - cell "Standalone (.claude/ directory)" [ref=e86]:
+                - strong [ref=e87]: Standalone
+                - text: (
+                - code [ref=e88]: .claude/
+                - text: directory)
+              - cell "/hello" [ref=e89]:
+                - code [ref=e90]: /hello
+              - cell "Personal workflows, project-specific customizations, quick experiments" [ref=e91]
+            - row "Plugins (directories with .claude-plugin/plugin.json) /plugin-name:hello Sharing with teammates, distributing to community, versioned releases, reusable across projects" [ref=e92]:
+              - cell "Plugins (directories with .claude-plugin/plugin.json)" [ref=e93]:
+                - strong [ref=e94]: Plugins
+                - text: (directories with
+                - code [ref=e95]: .claude-plugin/plugin.json
+                - text: )
+              - cell "/plugin-name:hello" [ref=e96]:
+                - code [ref=e97]: /plugin-name:hello
+              - cell "Sharing with teammates, distributing to community, versioned releases, reusable across projects" [ref=e98]
+        - generic [ref=e99]:
+          - strong [ref=e100]: Use standalone configuration when
+          - text: ":"
+        - list [ref=e101]:
+          - listitem [ref=e102]: You’re customizing Claude Code for a single project
+          - listitem [ref=e103]: The configuration is personal and doesn’t need to be shared
+          - listitem [ref=e104]: You’re experimenting with skills or hooks before packaging them
+          - listitem [ref=e105]:
+            - text: You want short skill names like
+            - code [ref=e106]: /hello
+            - text: or
+            - code [ref=e107]: /deploy
+        - generic [ref=e108]:
+          - strong [ref=e109]: Use plugins when
+          - text: ":"
+        - list [ref=e110]:
+          - listitem [ref=e111]: You want to share functionality with your team or community
+          - listitem [ref=e112]: You need the same skills/agents across multiple projects
+          - listitem [ref=e113]: You want version control and easy updates for your extensions
+          - listitem [ref=e114]: You’re distributing through a marketplace
+          - listitem [ref=e115]:
+            - text: You’re okay with namespaced skills like
+            - code [ref=e116]: /my-plugin:hello
+            - text: (namespacing prevents conflicts between plugins)
+        - generic [ref=e117]:
+          - img "Tip" [ref=e119]
+          - generic [ref=e122]:
+            - text: Start with standalone configuration in
+            - code [ref=e123]: .claude/
+            - text: for quick iteration, then
+            - link "convert to a plugin" [ref=e124] [cursor=pointer]:
+              - /url: "#convert-existing-configurations-to-plugins"
+            - text: when you’re ready to share.
+        - heading "Navigate to header Quickstart" [level=2] [ref=e125]:
+          - link "Navigate to header" [ref=e126] [cursor=pointer]:
+            - /url: "#quickstart"
+            - img [ref=e128]
+          - generic [ref=e130] [cursor=pointer]: Quickstart
+        - generic [ref=e131]:
+          - text: This quickstart walks you through creating a plugin with a custom skill. You’ll create a manifest (the configuration file that defines your plugin), add a skill, and test it locally using the
+          - code [ref=e132]: "--plugin-dir"
+          - text: flag.
+        - heading "Navigate to header Prerequisites" [level=3] [ref=e133]:
+          - link "Navigate to header" [ref=e134] [cursor=pointer]:
+            - /url: "#prerequisites"
+            - img [ref=e136]
+          - generic [ref=e138] [cursor=pointer]: Prerequisites
+        - list [ref=e139]:
+          - listitem [ref=e140]:
+            - text: Claude Code
+            - link "installed and authenticated" [ref=e141] [cursor=pointer]:
+              - /url: /docs/en/quickstart#step-1-install-claude-code
+        - generic [ref=e142]:
+          - img "Note" [ref=e144]
+          - generic [ref=e147]:
+            - text: If you don’t see the
+            - code [ref=e148]: /plugin
+            - text: command, update Claude Code to the latest version. See
+            - link "Troubleshooting" [ref=e149] [cursor=pointer]:
+              - /url: /docs/en/troubleshooting
+            - text: for upgrade instructions.
+        - heading "Navigate to header Create your first plugin" [level=3] [ref=e150]:
+          - link "Navigate to header" [ref=e151] [cursor=pointer]:
+            - /url: "#create-your-first-plugin"
+            - img [ref=e153]
+          - generic [ref=e155] [cursor=pointer]: Create your first plugin
+        - list [ref=e156]:
+          - listitem [ref=e157]:
+            - generic [ref=e160]:
+              - generic [ref=e161]: "1"
+              - link "Navigate to header" [ref=e163] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=e165]
+            - generic [ref=e167]:
+              - paragraph [ref=e168]: Create the plugin directory
+              - generic [ref=e169]:
+                - generic [ref=e170]: "Every plugin lives in its own directory containing a manifest and your skills, agents, or hooks. Create one now:"
+                - generic [ref=e171]:
+                  - generic [ref=e172]:
+                    - button "Report incorrect code" [ref=e174] [cursor=pointer]:
+                      - img [ref=e175]
+                    - button "Copy the contents from the code block" [ref=e178] [cursor=pointer]:
+                      - img [ref=e179]
+                    - button "Ask AI" [ref=e183] [cursor=pointer]:
+                      - img [ref=e184]
+                  - code [ref=e190]:
+                    - generic [ref=e191]: mkdir my-first-plugin
+          - listitem [ref=e192]:
+            - generic [ref=e195]:
+              - generic [ref=e196]: "2"
+              - link "Navigate to header" [ref=e198] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=e200]
+            - generic [ref=e202]:
+              - paragraph [ref=e203]: Create the plugin manifest
+              - generic [ref=e204]:
+                - generic [ref=e205]:
+                  - text: The manifest file at
+                  - code [ref=e206]: .claude-plugin/plugin.json
+                  - text: "defines your plugin’s identity: its name, description, and version. Claude Code uses this metadata to display your plugin in the plugin manager."
+                - generic [ref=e207]:
+                  - text: Create the
+                  - code [ref=e208]: .claude-plugin
+                  - text: "directory inside your plugin folder:"
+                - generic [ref=e209]:
+                  - generic [ref=e210]:
+                    - button "Report incorrect code" [ref=e212] [cursor=pointer]:
+                      - img [ref=e213]
+                    - button "Copy the contents from the code block" [ref=e216] [cursor=pointer]:
+                      - img [ref=e217]
+                    - button "Ask AI" [ref=e221] [cursor=pointer]:
+                      - img [ref=e222]
+                  - code [ref=e228]:
+                    - generic [ref=e229]: mkdir my-first-plugin/.claude-plugin
+                - generic [ref=e230]:
+                  - text: Then create
+                  - code [ref=e231]: my-first-plugin/.claude-plugin/plugin.json
+                  - text: "with this content:"
+                - generic [ref=e232]:
+                  - generic [ref=e233]:
+                    - generic "my-first-plugin/.claude-plugin/plugin.json" [ref=e235]
+                    - generic [ref=e236]:
+                      - button "Report incorrect code" [ref=e238] [cursor=pointer]:
+                        - img [ref=e239]
+                      - button "Copy the contents from the code block" [ref=e242] [cursor=pointer]:
+                        - img [ref=e243]
+                      - button "Ask AI" [ref=e247] [cursor=pointer]:
+                        - img [ref=e248]
+                  - code [ref=e254]:
+                    - generic [ref=e255]: "{"
+                    - generic [ref=e256]: "\"name\": \"my-first-plugin\","
+                    - generic [ref=e257]: "\"description\": \"A greeting plugin to learn the basics\","
+                    - generic [ref=e258]: "\"version\": \"1.0.0\","
+                    - generic [ref=e259]: "\"author\": {"
+                    - generic [ref=e260]: "\"name\": \"Your Name\""
+                    - generic [ref=e261]: "}"
+                    - generic [ref=e262]: "}"
+                - table [ref=e265]:
+                  - rowgroup [ref=e266]:
+                    - row "Field Purpose" [ref=e267]:
+                      - columnheader "Field" [ref=e268]
+                      - columnheader "Purpose" [ref=e269]
+                  - rowgroup [ref=e270]:
+                    - row "name Unique identifier and skill namespace. Skills are prefixed with this (e.g., /my-first-plugin:hello)." [ref=e271]:
+                      - cell "name" [ref=e272]:
+                        - code [ref=e273]: name
+                      - cell "Unique identifier and skill namespace. Skills are prefixed with this (e.g., /my-first-plugin:hello)." [ref=e274]:
+                        - text: Unique identifier and skill namespace. Skills are prefixed with this (e.g.,
+                        - code [ref=e275]: /my-first-plugin:hello
+                        - text: ).
+                    - row "description Shown in the plugin manager when browsing or installing plugins." [ref=e276]:
+                      - cell "description" [ref=e277]:
+                        - code [ref=e278]: description
+                      - cell "Shown in the plugin manager when browsing or installing plugins." [ref=e279]
+                    - row "version Optional. If set, users only receive updates when you bump this field. If omitted and your plugin is distributed via git, the commit SHA is used and every commit counts as a new version. See version management." [ref=e280]:
+                      - cell "version" [ref=e281]:
+                        - code [ref=e282]: version
+                      - cell "Optional. If set, users only receive updates when you bump this field. If omitted and your plugin is distributed via git, the commit SHA is used and every commit counts as a new version. See version management." [ref=e283]:
+                        - text: Optional. If set, users only receive updates when you bump this field. If omitted and your plugin is distributed via git, the commit SHA is used and every commit counts as a new version. See
+                        - link "version management" [ref=e284] [cursor=pointer]:
+                          - /url: /docs/en/plugins-reference#version-management
+                        - text: .
+                    - row "author Optional. Helpful for attribution." [ref=e285]:
+                      - cell "author" [ref=e286]:
+                        - code [ref=e287]: author
+                      - cell "Optional. Helpful for attribution." [ref=e288]
+                - generic [ref=e289]:
+                  - text: For additional fields like
+                  - code [ref=e290]: homepage
+                  - text: ","
+                  - code [ref=e291]: repository
+                  - text: ", and"
+                  - code [ref=e292]: license
+                  - text: ", see the"
+                  - link "full manifest schema" [ref=e293] [cursor=pointer]:
+                    - /url: /docs/en/plugins-reference#plugin-manifest-schema
+                  - text: .
+          - listitem [ref=e294]:
+            - generic [ref=e297]:
+              - generic [ref=e298]: "3"
+              - link "Navigate to header" [ref=e300] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=e302]
+            - generic [ref=e304]:
+              - paragraph [ref=e305]: Add a skill
+              - generic [ref=e306]:
+                - generic [ref=e307]:
+                  - text: Skills live in the
+                  - code [ref=e308]: skills/
+                  - text: directory. Each skill is a folder containing a
+                  - code [ref=e309]: SKILL.md
+                  - text: file. The folder name becomes the skill name, prefixed with the plugin’s namespace (
+                  - code [ref=e310]: hello/
+                  - text: in a plugin named
+                  - code [ref=e311]: my-first-plugin
+                  - text: creates
+                  - code [ref=e312]: /my-first-plugin:hello
+                  - text: ).
+                - generic [ref=e313]: "Create a skill directory in your plugin folder:"
+                - generic [ref=e314]:
+                  - generic [ref=e315]:
+                    - button "Report incorrect code" [ref=e317] [cursor=pointer]:
+                      - img [ref=e318]
+                    - button "Copy the contents from the code block" [ref=e321] [cursor=pointer]:
+                      - img [ref=e322]
+                    - button "Ask AI" [ref=e326] [cursor=pointer]:
+                      - img [ref=e327]
+                  - code [ref=e333]:
+                    - generic [ref=e334]: mkdir -p my-first-plugin/skills/hello
+                - generic [ref=e335]:
+                  - text: Then create
+                  - code [ref=e336]: my-first-plugin/skills/hello/SKILL.md
+                  - text: "with this content:"
+                - generic [ref=e337]:
+                  - generic [ref=e338]:
+                    - generic "my-first-plugin/skills/hello/SKILL.md" [ref=e340]
+                    - generic [ref=e341]:
+                      - button "Report incorrect code" [ref=e343] [cursor=pointer]:
+                        - img [ref=e344]
+                      - button "Copy the contents from the code block" [ref=e347] [cursor=pointer]:
+                        - img [ref=e348]
+                      - button "Ask AI" [ref=e352] [cursor=pointer]:
+                        - img [ref=e353]
+                  - code [ref=e359]:
+                    - generic [ref=e360]: "---"
+                    - generic [ref=e361]: "description: Greet the user with a friendly message"
+                    - generic [ref=e362]: "disable-model-invocation: true"
+                    - generic [ref=e363]: "---"
+                    - generic [ref=e364]: Greet the user warmly and ask how you can help them today.
+          - listitem [ref=e365]:
+            - generic [ref=e368]:
+              - generic [ref=e369]: "4"
+              - link "Navigate to header" [ref=e371] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=e373]
+            - generic [ref=e375]:
+              - paragraph [ref=e376]: Test your plugin
+              - generic [ref=e377]:
+                - generic [ref=e378]:
+                  - text: Run Claude Code with the
+                  - code [ref=e379]: "--plugin-dir"
+                  - text: "flag to load your plugin:"
+                - generic [ref=e380]:
+                  - generic [ref=e381]:
+                    - button "Report incorrect code" [ref=e383] [cursor=pointer]:
+                      - img [ref=e384]
+                    - button "Copy the contents from the code block" [ref=e387] [cursor=pointer]:
+                      - img [ref=e388]
+                    - button "Ask AI" [ref=e392] [cursor=pointer]:
+                      - img [ref=e393]
+                  - code [ref=e399]:
+                    - generic [ref=e400]: claude --plugin-dir ./my-first-plugin
+                - generic [ref=e401]: "Once Claude Code starts, try your new skill:"
+                - generic [ref=e402]:
+                  - generic [ref=e403]:
+                    - button "Report incorrect code" [ref=e405] [cursor=pointer]:
+                      - img [ref=e406]
+                    - button "Copy the contents from the code block" [ref=e409] [cursor=pointer]:
+                      - img [ref=e410]
+                    - button "Ask AI" [ref=e414] [cursor=pointer]:
+                      - img [ref=e415]
+                  - code [ref=e421]:
+                    - generic [ref=e422]: /my-first-plugin:hello
+                - generic [ref=e423]:
+                  - text: You’ll see Claude respond with a greeting. Run
+                  - code [ref=e424]: /help
+                  - text: to see your skill listed under the plugin namespace.
+                - generic [ref=e425]:
+                  - img "Note" [ref=e427]
+                  - generic [ref=e429]:
+                    - generic [ref=e430]:
+                      - strong [ref=e431]: Why namespacing?
+                      - text: Plugin skills are always namespaced (like
+                      - code [ref=e432]: /my-first-plugin:hello
+                      - text: ) to prevent conflicts when multiple plugins have skills with the same name.
+                    - generic [ref=e433]:
+                      - text: To change the namespace prefix, update the
+                      - code [ref=e434]: name
+                      - text: field in
+                      - code [ref=e435]: plugin.json
+                      - text: .
+          - listitem [ref=e436]:
+            - generic [ref=e439]:
+              - generic [ref=e440]: "5"
+              - link "Navigate to header" [ref=e442] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=e444]
+            - generic [ref=e446]:
+              - paragraph [ref=e447]: Add skill arguments
+              - generic [ref=e448]:
+                - generic [ref=e449]:
+                  - text: Make your skill dynamic by accepting user input. The
+                  - code [ref=e450]: $ARGUMENTS
+                  - text: placeholder captures any text the user provides after the skill name.
+                - generic [ref=e451]:
+                  - text: Update your
+                  - code [ref=e452]: SKILL.md
+                  - text: "file:"
+                - generic [ref=e453]:
+                  - generic [ref=e454]:
+                    - generic "my-first-plugin/skills/hello/SKILL.md" [ref=e456]
+                    - generic [ref=e457]:
+                      - button "Report incorrect code" [ref=e459] [cursor=pointer]:
+                        - img [ref=e460]
+                      - button "Copy the contents from the code block" [ref=e463] [cursor=pointer]:
+                        - img [ref=e464]
+                      - button "Ask AI" [ref=e468] [cursor=pointer]:
+                        - img [ref=e469]
+                  - code [ref=e475]:
+                    - generic [ref=e476]: "---"
+                    - generic [ref=e477]: "description: Greet the user with a personalized message"
+                    - generic [ref=e478]: "---"
+                    - generic [ref=e479]: "# Hello Skill"
+                    - generic [ref=e480]: Greet the user named "$ARGUMENTS" warmly and ask how you can help them today. Make the greeting personal and encouraging.
+                - generic [ref=e481]:
+                  - text: Run
+                  - code [ref=e482]: /reload-plugins
+                  - text: "to pick up the changes, then try the skill with your name:"
+                - generic [ref=e483]:
+                  - generic [ref=e484]:
+                    - button "Report incorrect code" [ref=e486] [cursor=pointer]:
+                      - img [ref=e487]
+                    - button "Copy the contents from the code block" [ref=e490] [cursor=pointer]:
+                      - img [ref=e491]
+                    - button "Ask AI" [ref=e495] [cursor=pointer]:
+                      - img [ref=e496]
+                  - code [ref=e502]:
+                    - generic [ref=e503]: /my-first-plugin:hello Alex
+                - generic [ref=e504]:
+                  - text: Claude will greet you by name. For more on passing arguments to skills, see
+                  - link "Skills" [ref=e505] [cursor=pointer]:
+                    - /url: /docs/en/skills#pass-arguments-to-skills
+                  - text: .
+        - generic [ref=e506]: "You’ve successfully created and tested a plugin with these key components:"
+        - list [ref=e507]:
+          - listitem [ref=e508]:
+            - strong [ref=e509]: Plugin manifest
+            - text: (
+            - code [ref=e510]: .claude-plugin/plugin.json
+            - text: "): describes your plugin’s metadata"
+          - listitem [ref=e511]:
+            - strong [ref=e512]: Skills directory
+            - text: (
+            - code [ref=e513]: skills/
+            - text: "): contains your custom skills"
+          - listitem [ref=e514]:
+            - strong [ref=e515]: Skill arguments
+            - text: (
+            - code [ref=e516]: $ARGUMENTS
+            - text: "): captures user input for dynamic behavior"
+        - generic [ref=e517]:
+          - img "Tip" [ref=e519]
+          - generic [ref=e522]:
+            - text: The
+            - code [ref=e523]: "--plugin-dir"
+            - text: flag is useful for development and testing. When you’re ready to share your plugin with others, see
+            - link "Create and distribute a plugin marketplace" [ref=e524] [cursor=pointer]:
+              - /url: /docs/en/plugin-marketplaces
+            - text: .
+        - heading "Navigate to header Plugin structure overview" [level=2] [ref=e525]:
+          - link "Navigate to header" [ref=e526] [cursor=pointer]:
+            - /url: "#plugin-structure-overview"
+            - img [ref=e528]
+          - generic [ref=e530] [cursor=pointer]: Plugin structure overview
+        - generic [ref=e531]: "You’ve created a plugin with a skill, but plugins can include much more: custom agents, hooks, MCP servers, LSP servers, and background monitors."
+        - generic [ref=e532]:
+          - img "Warning" [ref=e534]
+          - generic [ref=e537]:
+            - strong [ref=e538]: Common mistake
+            - text: ": Don’t put"
+            - code [ref=e539]: commands/
+            - text: ","
+            - code [ref=e540]: agents/
+            - text: ","
+            - code [ref=e541]: skills/
+            - text: ", or"
+            - code [ref=e542]: hooks/
+            - text: inside the
+            - code [ref=e543]: .claude-plugin/
+            - text: directory. Only
+            - code [ref=e544]: plugin.json
+            - text: goes inside
+            - code [ref=e545]: .claude-plugin/
+            - text: . All other directories must be at the plugin root level.
+        - table [ref=e548]:
+          - rowgroup [ref=e549]:
+            - row "Directory Location Purpose" [ref=e550]:
+              - columnheader "Directory" [ref=e551]
+              - columnheader "Location" [ref=e552]
+              - columnheader "Purpose" [ref=e553]
+          - rowgroup [ref=e554]:
+            - row ".claude-plugin/ Plugin root Contains plugin.json manifest (optional if components use default locations)" [ref=e555]:
+              - cell ".claude-plugin/" [ref=e556]:
+                - code [ref=e557]: .claude-plugin/
+              - cell "Plugin root" [ref=e558]
+              - cell "Contains plugin.json manifest (optional if components use default locations)" [ref=e559]:
+                - text: Contains
+                - code [ref=e560]: plugin.json
+                - text: manifest (optional if components use default locations)
+            - row "skills/ Plugin root Skills as <name>/SKILL.md directories" [ref=e561]:
+              - cell "skills/" [ref=e562]:
+                - code [ref=e563]: skills/
+              - cell "Plugin root" [ref=e564]
+              - cell "Skills as <name>/SKILL.md directories" [ref=e565]:
+                - text: Skills as
+                - code [ref=e566]: <name>/SKILL.md
+                - text: directories
+            - row "commands/ Plugin root Skills as flat Markdown files. Use skills/ for new plugins" [ref=e567]:
+              - cell "commands/" [ref=e568]:
+                - code [ref=e569]: commands/
+              - cell "Plugin root" [ref=e570]
+              - cell "Skills as flat Markdown files. Use skills/ for new plugins" [ref=e571]:
+                - text: Skills as flat Markdown files. Use
+                - code [ref=e572]: skills/
+                - text: for new plugins
+            - row "agents/ Plugin root Custom agent definitions" [ref=e573]:
+              - cell "agents/" [ref=e574]:
+                - code [ref=e575]: agents/
+              - cell "Plugin root" [ref=e576]
+              - cell "Custom agent definitions" [ref=e577]
+            - row "hooks/ Plugin root Event handlers in hooks.json" [ref=e578]:
+              - cell "hooks/" [ref=e579]:
+                - code [ref=e580]: hooks/
+              - cell "Plugin root" [ref=e581]
+              - cell "Event handlers in hooks.json" [ref=e582]:
+                - text: Event handlers in
+                - code [ref=e583]: hooks.json
+            - row ".mcp.json Plugin root MCP server configurations" [ref=e584]:
+              - cell ".mcp.json" [ref=e585]:
+                - code [ref=e586]: .mcp.json
+              - cell "Plugin root" [ref=e587]
+              - cell "MCP server configurations" [ref=e588]
+            - row ".lsp.json Plugin root LSP server configurations for code intelligence" [ref=e589]:
+              - cell ".lsp.json" [ref=e590]:
+                - code [ref=e591]: .lsp.json
+              - cell "Plugin root" [ref=e592]
+              - cell "LSP server configurations for code intelligence" [ref=e593]
+            - row "monitors/ Plugin root Background monitor configurations in monitors.json" [ref=e594]:
+              - cell "monitors/" [ref=e595]:
+                - code [ref=e596]: monitors/
+              - cell "Plugin root" [ref=e597]
+              - cell "Background monitor configurations in monitors.json" [ref=e598]:
+                - text: Background monitor configurations in
+                - code [ref=e599]: monitors.json
+            - row "bin/ Plugin root Executables added to the Bash tool’s PATH while the plugin is enabled" [ref=e600]:
+              - cell "bin/" [ref=e601]:
+                - code [ref=e602]: bin/
+              - cell "Plugin root" [ref=e603]
+              - cell "Executables added to the Bash tool’s PATH while the plugin is enabled" [ref=e604]:
+                - text: Executables added to the Bash tool’s
+                - code [ref=e605]: PATH
+                - text: while the plugin is enabled
+            - row "settings.json Plugin root Default settings applied when the plugin is enabled" [ref=e606]:
+              - cell "settings.json" [ref=e607]:
+                - code [ref=e608]: settings.json
+              - cell "Plugin root" [ref=e609]
+              - cell "Default settings applied when the plugin is enabled" [ref=e610]:
+                - text: Default
+                - link "settings" [ref=e611] [cursor=pointer]:
+                  - /url: /docs/en/settings
+                - text: applied when the plugin is enabled
+        - generic [ref=e612]:
+          - img "Note" [ref=e614]
+          - generic [ref=e617]:
+            - strong [ref=e618]: Next steps
+            - text: ": Ready to add more features? Jump to"
+            - link "Develop more complex plugins" [ref=e619] [cursor=pointer]:
+              - /url: "#develop-more-complex-plugins"
+            - text: to add agents, hooks, MCP servers, and LSP servers. For complete technical specifications of all plugin components, see
+            - link "Plugins reference" [ref=e620] [cursor=pointer]:
+              - /url: /docs/en/plugins-reference
+            - text: .
+        - heading "Navigate to header Develop more complex plugins" [level=2] [ref=e621]:
+          - link "Navigate to header" [ref=e622] [cursor=pointer]:
+            - /url: "#develop-more-complex-plugins"
+            - img [ref=e624]
+          - generic [ref=e626] [cursor=pointer]: Develop more complex plugins
+        - generic [ref=e627]: Once you’re comfortable with basic plugins, you can create more sophisticated extensions.
+        - heading "Navigate to header Add Skills to your plugin" [level=3] [ref=e628]:
+          - link "Navigate to header" [ref=e629] [cursor=pointer]:
+            - /url: "#add-skills-to-your-plugin"
+            - img [ref=e631]
+          - generic [ref=e633] [cursor=pointer]: Add Skills to your plugin
+        - generic [ref=e634]:
+          - text: Plugins can include
+          - link "Agent Skills" [ref=e635] [cursor=pointer]:
+            - /url: /docs/en/skills
+          - text: "to extend Claude’s capabilities. Skills are model-invoked: Claude automatically uses them based on the task context."
+        - generic [ref=e636]:
+          - text: Add a
+          - code [ref=e637]: skills/
+          - text: directory at your plugin root with Skill folders containing
+          - code [ref=e638]: SKILL.md
+          - text: "files:"
+        - generic [ref=e639]:
+          - generic [ref=e640]:
+            - button "Report incorrect code" [ref=e642] [cursor=pointer]:
+              - img [ref=e643]
+            - button "Copy the contents from the code block" [ref=e646] [cursor=pointer]:
+              - img [ref=e647]
+            - button "Ask AI" [ref=e651] [cursor=pointer]:
+              - img [ref=e652]
+          - code [ref=e658]:
+            - generic [ref=e659]: my-plugin/
+            - generic [ref=e660]: ├── .claude-plugin/
+            - generic [ref=e661]: │ └── plugin.json
+            - generic [ref=e662]: └── skills/
+            - generic [ref=e663]: └── code-review/
+            - generic [ref=e664]: └── SKILL.md
+        - generic [ref=e665]:
+          - text: Each
+          - code [ref=e666]: SKILL.md
+          - text: contains YAML frontmatter and instructions. Include a
+          - code [ref=e667]: description
+          - text: "so Claude knows when to use the skill:"
+        - generic [ref=e668]:
+          - generic [ref=e669]:
+            - button "Report incorrect code" [ref=e671] [cursor=pointer]:
+              - img [ref=e672]
+            - button "Copy the contents from the code block" [ref=e675] [cursor=pointer]:
+              - img [ref=e676]
+            - button "Ask AI" [ref=e680] [cursor=pointer]:
+              - img [ref=e681]
+          - code [ref=e687]:
+            - generic [ref=e688]: "---"
+            - generic [ref=e689]: "description: Reviews code for best practices and potential issues. Use when reviewing code, checking PRs, or analyzing code quality."
+            - generic [ref=e690]: "---"
+            - generic [ref=e691]: "When reviewing code, check for:"
+            - generic [ref=e692]: 1. Code organization and structure
+            - generic [ref=e693]: 2. Error handling
+            - generic [ref=e694]: 3. Security concerns
+            - generic [ref=e695]: 4. Test coverage
+        - generic [ref=e696]:
+          - text: After installing the plugin, run
+          - code [ref=e697]: /reload-plugins
+          - text: to load the Skills. For complete Skill authoring guidance including progressive disclosure and tool restrictions, see
+          - link "Agent Skills" [ref=e698] [cursor=pointer]:
+            - /url: /docs/en/skills
+          - text: .
+        - heading "Navigate to header Add LSP servers to your plugin" [level=3] [ref=e699]:
+          - link "Navigate to header" [ref=e700] [cursor=pointer]:
+            - /url: "#add-lsp-servers-to-your-plugin"
+            - img [ref=e702]
+          - generic [ref=e704] [cursor=pointer]: Add LSP servers to your plugin
+        - generic [ref=e705]:
+          - img "Tip" [ref=e707]
+          - generic [ref=e710]: For common languages like TypeScript, Python, and Rust, install the pre-built LSP plugins from the official marketplace. Create custom LSP plugins only when you need support for languages not already covered.
+        - generic [ref=e711]:
+          - text: LSP (Language Server Protocol) plugins give Claude real-time code intelligence. If you need to support a language that doesn’t have an official LSP plugin, you can create your own by adding an
+          - code [ref=e712]: .lsp.json
+          - text: "file to your plugin:"
+        - generic [ref=e713]:
+          - generic [ref=e714]:
+            - generic ".lsp.json" [ref=e716]
+            - generic [ref=e717]:
+              - button "Report incorrect code" [ref=e719] [cursor=pointer]:
+                - img [ref=e720]
+              - button "Copy the contents from the code block" [ref=e723] [cursor=pointer]:
+                - img [ref=e724]
+              - button "Ask AI" [ref=e728] [cursor=pointer]:
+                - img [ref=e729]
+          - code [ref=e735]:
+            - generic [ref=e736]: "{"
+            - generic [ref=e737]: "\"go\": {"
+            - generic [ref=e738]: "\"command\": \"gopls\","
+            - generic [ref=e739]: "\"args\": [\"serve\"],"
+            - generic [ref=e740]: "\"extensionToLanguage\": {"
+            - generic [ref=e741]: "\".go\": \"go\""
+            - generic [ref=e742]: "}"
+            - generic [ref=e743]: "}"
+            - generic [ref=e744]: "}"
+        - generic [ref=e745]: Users installing your plugin must have the language server binary installed on their machine.
+        - generic [ref=e746]:
+          - text: For complete LSP configuration options, see
+          - link "LSP servers" [ref=e747] [cursor=pointer]:
+            - /url: /docs/en/plugins-reference#lsp-servers
+          - text: .
+        - heading "Navigate to header Add background monitors to your plugin" [level=3] [ref=e748]:
+          - link "Navigate to header" [ref=e749] [cursor=pointer]:
+            - /url: "#add-background-monitors-to-your-plugin"
+            - img [ref=e751]
+          - generic [ref=e753] [cursor=pointer]: Add background monitors to your plugin
+        - generic [ref=e754]: Background monitors let your plugin watch logs, files, or external status in the background and notify Claude as events arrive. Claude Code starts each monitor automatically when the plugin is active, so you don’t need to instruct Claude to start the watch.
+        - generic [ref=e755]:
+          - text: Add a
+          - code [ref=e756]: monitors/monitors.json
+          - text: "file at the plugin root with an array of monitor entries:"
+        - generic [ref=e757]:
+          - generic [ref=e758]:
+            - generic "monitors/monitors.json" [ref=e760]
+            - generic [ref=e761]:
+              - button "Report incorrect code" [ref=e763] [cursor=pointer]:
+                - img [ref=e764]
+              - button "Copy the contents from the code block" [ref=e767] [cursor=pointer]:
+                - img [ref=e768]
+              - button "Ask AI" [ref=e772] [cursor=pointer]:
+                - img [ref=e773]
+          - code [ref=e779]:
+            - generic [ref=e780]: "["
+            - generic [ref=e781]: "{"
+            - generic [ref=e782]: "\"name\": \"error-log\","
+            - generic [ref=e783]: "\"command\": \"tail -F ./logs/error.log\","
+            - generic [ref=e784]: "\"description\": \"Application error log\""
+            - generic [ref=e785]: "}"
+            - generic [ref=e786]: "]"
+        - generic [ref=e787]:
+          - text: Each stdout line from
+          - code [ref=e788]: command
+          - text: is delivered to Claude as a notification during the session. For the full schema, including the
+          - code [ref=e789]: when
+          - text: trigger and variable substitution, see
+          - link "Monitors" [ref=e790] [cursor=pointer]:
+            - /url: /docs/en/plugins-reference#monitors
+          - text: .
+        - heading "Navigate to header Ship default settings with your plugin" [level=3] [ref=e791]:
+          - link "Navigate to header" [ref=e792] [cursor=pointer]:
+            - /url: "#ship-default-settings-with-your-plugin"
+            - img [ref=e794]
+          - generic [ref=e796] [cursor=pointer]: Ship default settings with your plugin
+        - generic [ref=e797]:
+          - text: Plugins can include a
+          - code [ref=e798]: settings.json
+          - text: file at the plugin root to apply default configuration when the plugin is enabled. Currently, only the
+          - code [ref=e799]: agent
+          - text: and
+          - code [ref=e800]: subagentStatusLine
+          - text: keys are supported.
+        - generic [ref=e801]:
+          - text: Setting
+          - code [ref=e802]: agent
+          - text: activates one of the plugin’s
+          - link "custom agents" [ref=e803] [cursor=pointer]:
+            - /url: /docs/en/sub-agents
+          - text: as the main thread, applying its system prompt, tool restrictions, and model. This lets a plugin change how Claude Code behaves by default when enabled.
+        - generic [ref=e804]:
+          - generic [ref=e805]:
+            - generic "settings.json" [ref=e807]
+            - generic [ref=e808]:
+              - button "Report incorrect code" [ref=e810] [cursor=pointer]:
+                - img [ref=e811]
+              - button "Copy the contents from the code block" [ref=e814] [cursor=pointer]:
+                - img [ref=e815]
+              - button "Ask AI" [ref=e819] [cursor=pointer]:
+                - img [ref=e820]
+          - code [ref=e826]:
+            - generic [ref=e827]: "{"
+            - generic [ref=e828]: "\"agent\": \"security-reviewer\""
+            - generic [ref=e829]: "}"
+        - generic [ref=e830]:
+          - text: This example activates the
+          - code [ref=e831]: security-reviewer
+          - text: agent defined in the plugin’s
+          - code [ref=e832]: agents/
+          - text: directory. Settings from
+          - code [ref=e833]: settings.json
+          - text: take priority over
+          - code [ref=e834]: settings
+          - text: declared in
+          - code [ref=e835]: plugin.json
+          - text: . Unknown keys are silently ignored.
+        - heading "Navigate to header Organize complex plugins" [level=3] [ref=e836]:
+          - link "Navigate to header" [ref=e837] [cursor=pointer]:
+            - /url: "#organize-complex-plugins"
+            - img [ref=e839]
+          - generic [ref=e841] [cursor=pointer]: Organize complex plugins
+        - generic [ref=e842]:
+          - text: For plugins with many components, organize your directory structure by functionality. For complete directory layouts and organization patterns, see
+          - link "Plugin directory structure" [ref=e843] [cursor=pointer]:
+            - /url: /docs/en/plugins-reference#plugin-directory-structure
+          - text: .
+        - heading "Navigate to header Test your plugins locally" [level=3] [ref=e844]:
+          - link "Navigate to header" [ref=e845] [cursor=pointer]:
+            - /url: "#test-your-plugins-locally"
+            - img [ref=e847]
+          - generic [ref=e849] [cursor=pointer]: Test your plugins locally
+        - generic [ref=e850]:
+          - text: Use the
+          - code [ref=e851]: "--plugin-dir"
+          - text: flag to test plugins during development. This loads your plugin directly without requiring installation.
+        - generic [ref=e852]:
+          - generic [ref=e853]:
+            - button "Report incorrect code" [ref=e855] [cursor=pointer]:
+              - img [ref=e856]
+            - button "Copy the contents from the code block" [ref=e859] [cursor=pointer]:
+              - img [ref=e860]
+            - button "Ask AI" [ref=e864] [cursor=pointer]:
+              - img [ref=e865]
+          - code [ref=e871]:
+            - generic [ref=e872]: claude --plugin-dir ./my-plugin
+        - generic [ref=e873]:
+          - text: When a
+          - code [ref=e874]: "--plugin-dir"
+          - text: plugin has the same name as an installed marketplace plugin, the local copy takes precedence for that session. This lets you test changes to a plugin you already have installed without uninstalling it first. Marketplace plugins force-enabled by managed settings are the only exception and cannot be overridden.
+        - generic [ref=e875]:
+          - text: As you make changes to your plugin, run
+          - code [ref=e876]: /reload-plugins
+          - text: "to pick up the updates without restarting. This reloads plugins, skills, agents, hooks, plugin MCP servers, and plugin LSP servers. Test your plugin components:"
+        - list [ref=e877]:
+          - listitem [ref=e878]:
+            - text: Try your skills with
+            - code [ref=e879]: /plugin-name:skill-name
+          - listitem [ref=e880]:
+            - text: Check that agents appear in
+            - code [ref=e881]: /agents
+          - listitem [ref=e882]: Verify hooks work as expected
+        - generic [ref=e883]:
+          - img "Tip" [ref=e885]
+          - generic [ref=e887]:
+            - generic [ref=e888]: "You can load multiple plugins at once by specifying the flag multiple times:"
+            - generic [ref=e889]:
+              - generic [ref=e890]:
+                - button "Report incorrect code" [ref=e892] [cursor=pointer]:
+                  - img [ref=e893]
+                - button "Copy the contents from the code block" [ref=e896] [cursor=pointer]:
+                  - img [ref=e897]
+                - button "Ask AI" [ref=e901] [cursor=pointer]:
+                  - img [ref=e902]
+              - code [ref=e908]:
+                - generic [ref=e909]: claude --plugin-dir ./plugin-one --plugin-dir ./plugin-two
+        - heading "Navigate to header Debug plugin issues" [level=3] [ref=e910]:
+          - link "Navigate to header" [ref=e911] [cursor=pointer]:
+            - /url: "#debug-plugin-issues"
+            - img [ref=e913]
+          - generic [ref=e915] [cursor=pointer]: Debug plugin issues
+        - generic [ref=e916]: "If your plugin isn’t working as expected:"
+        - list [ref=e917]:
+          - listitem [ref=e918]:
+            - strong [ref=e919]: Check the structure
+            - text: ": Ensure your directories are at the plugin root, not inside"
+            - code [ref=e920]: .claude-plugin/
+          - listitem [ref=e921]:
+            - strong [ref=e922]: Test components individually
+            - text: ": Check each skill, agent, and hook separately"
+          - listitem [ref=e923]:
+            - strong [ref=e924]: Use validation and debugging tools
+            - text: ": See"
+            - link "Debugging and development tools" [ref=e925] [cursor=pointer]:
+              - /url: /docs/en/plugins-reference#debugging-and-development-tools
+            - text: for CLI commands and troubleshooting techniques
+        - heading "Navigate to header Share your plugins" [level=3] [ref=e926]:
+          - link "Navigate to header" [ref=e927] [cursor=pointer]:
+            - /url: "#share-your-plugins"
+            - img [ref=e929]
+          - generic [ref=e931] [cursor=pointer]: Share your plugins
+        - generic [ref=e932]: "When your plugin is ready to share:"
+        - list [ref=e933]:
+          - listitem [ref=e934]:
+            - strong [ref=e935]: Add documentation
+            - text: ": Include a"
+            - code [ref=e936]: README.md
+            - text: with installation and usage instructions
+          - listitem [ref=e937]:
+            - strong [ref=e938]: Choose a versioning strategy
+            - text: ": Decide whether to set an explicit"
+            - code [ref=e939]: version
+            - text: or rely on the git commit SHA. See
+            - link "version management" [ref=e940] [cursor=pointer]:
+              - /url: /docs/en/plugins-reference#version-management
+          - listitem [ref=e941]:
+            - strong [ref=e942]: Create or use a marketplace
+            - text: ": Distribute through"
+            - link "plugin marketplaces" [ref=e943] [cursor=pointer]:
+              - /url: /docs/en/plugin-marketplaces
+            - text: for installation
+          - listitem [ref=e944]:
+            - strong [ref=e945]: Test with others
+            - text: ": Have team members test the plugin before wider distribution"
+        - generic [ref=e946]:
+          - text: Once your plugin is in a marketplace, others can install it using the instructions in
+          - link "Discover and install plugins" [ref=e947] [cursor=pointer]:
+            - /url: /docs/en/discover-plugins
+          - text: . To keep a plugin internal to your team, host the marketplace in a
+          - link "private repository" [ref=e948] [cursor=pointer]:
+            - /url: /docs/en/plugin-marketplaces#private-repositories
+          - text: .
+        - heading "Navigate to header Submit your plugin to the official marketplace" [level=3] [ref=e949]:
+          - link "Navigate to header" [ref=e950] [cursor=pointer]:
+            - /url: "#submit-your-plugin-to-the-official-marketplace"
+            - img [ref=e952]
+          - generic [ref=e954] [cursor=pointer]: Submit your plugin to the official marketplace
+        - generic [ref=e955]: "To submit a plugin to the official Anthropic marketplace, use one of the in-app submission forms:"
+        - list [ref=e956]:
+          - listitem [ref=e957]:
+            - strong [ref=e958]: Claude.ai
+            - text: ":"
+            - link "claude.ai/settings/plugins/submit" [ref=e959] [cursor=pointer]:
+              - /url: https://claude.ai/settings/plugins/submit
+          - listitem [ref=e960]:
+            - strong [ref=e961]: Console
+            - text: ":"
+            - link "platform.claude.com/plugins/submit" [ref=e962] [cursor=pointer]:
+              - /url: https://platform.claude.com/plugins/submit
+        - generic [ref=e963]:
+          - text: Once your plugin is listed, you can have your own CLI prompt Claude Code users to install it. See
+          - link "Recommend your plugin from your CLI" [ref=e964] [cursor=pointer]:
+            - /url: /docs/en/plugin-hints
+          - text: .
+        - generic [ref=e965]:
+          - img "Note" [ref=e967]
+          - generic [ref=e970]:
+            - text: For complete technical specifications, debugging techniques, and distribution strategies, see
+            - link "Plugins reference" [ref=e971] [cursor=pointer]:
+              - /url: /docs/en/plugins-reference
+            - text: .
+        - heading "Navigate to header Convert existing configurations to plugins" [level=2] [ref=e972]:
+          - link "Navigate to header" [ref=e973] [cursor=pointer]:
+            - /url: "#convert-existing-configurations-to-plugins"
+            - img [ref=e975]
+          - generic [ref=e977] [cursor=pointer]: Convert existing configurations to plugins
+        - generic [ref=e978]:
+          - text: If you already have skills or hooks in your
+          - code [ref=e979]: .claude/
+          - text: directory, you can convert them into a plugin for easier sharing and distribution.
+        - heading "Navigate to header Migration steps" [level=3] [ref=e980]:
+          - link "Navigate to header" [ref=e981] [cursor=pointer]:
+            - /url: "#migration-steps"
+            - img [ref=e983]
+          - generic [ref=e985] [cursor=pointer]: Migration steps
+        - list [ref=e986]:
+          - listitem [ref=e987]:
+            - generic [ref=e990]:
+              - generic [ref=e991]: "1"
+              - link "Navigate to header" [ref=e993] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=e995]
+            - generic [ref=e997]:
+              - paragraph [ref=e998]: Create the plugin structure
+              - generic [ref=e999]:
+                - generic [ref=e1000]: "Create a new plugin directory:"
+                - generic [ref=e1001]:
+                  - generic [ref=e1002]:
+                    - button "Report incorrect code" [ref=e1004] [cursor=pointer]:
+                      - img [ref=e1005]
+                    - button "Copy the contents from the code block" [ref=e1008] [cursor=pointer]:
+                      - img [ref=e1009]
+                    - button "Ask AI" [ref=e1013] [cursor=pointer]:
+                      - img [ref=e1014]
+                  - code [ref=e1020]:
+                    - generic [ref=e1021]: mkdir -p my-plugin/.claude-plugin
+                - generic [ref=e1022]:
+                  - text: Create the manifest file at
+                  - code [ref=e1023]: my-plugin/.claude-plugin/plugin.json
+                  - text: ":"
+                - generic [ref=e1024]:
+                  - generic [ref=e1025]:
+                    - generic "my-plugin/.claude-plugin/plugin.json" [ref=e1027]
+                    - generic [ref=e1028]:
+                      - button "Report incorrect code" [ref=e1030] [cursor=pointer]:
+                        - img [ref=e1031]
+                      - button "Copy the contents from the code block" [ref=e1034] [cursor=pointer]:
+                        - img [ref=e1035]
+                      - button "Ask AI" [ref=e1039] [cursor=pointer]:
+                        - img [ref=e1040]
+                  - code [ref=e1046]:
+                    - generic [ref=e1047]: "{"
+                    - generic [ref=e1048]: "\"name\": \"my-plugin\","
+                    - generic [ref=e1049]: "\"description\": \"Migrated from standalone configuration\","
+                    - generic [ref=e1050]: "\"version\": \"1.0.0\""
+                    - generic [ref=e1051]: "}"
+          - listitem [ref=e1052]:
+            - generic [ref=e1055]:
+              - generic [ref=e1056]: "2"
+              - link "Navigate to header" [ref=e1058] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=e1060]
+            - generic [ref=e1062]:
+              - paragraph [ref=e1063]: Copy your existing files
+              - generic [ref=e1064]:
+                - generic [ref=e1065]: "Copy your existing configurations to the plugin directory:"
+                - generic [ref=e1066]:
+                  - generic [ref=e1067]:
+                    - button "Report incorrect code" [ref=e1069] [cursor=pointer]:
+                      - img [ref=e1070]
+                    - button "Copy the contents from the code block" [ref=e1073] [cursor=pointer]:
+                      - img [ref=e1074]
+                    - button "Ask AI" [ref=e1078] [cursor=pointer]:
+                      - img [ref=e1079]
+                  - code [ref=e1085]:
+                    - generic [ref=e1086]: "# Copy commands"
+                    - generic [ref=e1087]: cp -r .claude/commands my-plugin/
+                    - generic [ref=e1088]: "# Copy agents (if any)"
+                    - generic [ref=e1089]: cp -r .claude/agents my-plugin/
+                    - generic [ref=e1090]: "# Copy skills (if any)"
+                    - generic [ref=e1091]: cp -r .claude/skills my-plugin/
+          - listitem [ref=e1092]:
+            - generic [ref=e1095]:
+              - generic [ref=e1096]: "3"
+              - link "Navigate to header" [ref=e1098] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=e1100]
+            - generic [ref=e1102]:
+              - paragraph [ref=e1103]: Migrate hooks
+              - generic [ref=e1104]:
+                - generic [ref=e1105]: "If you have hooks in your settings, create a hooks directory:"
+                - generic [ref=e1106]:
+                  - generic [ref=e1107]:
+                    - button "Report incorrect code" [ref=e1109] [cursor=pointer]:
+                      - img [ref=e1110]
+                    - button "Copy the contents from the code block" [ref=e1113] [cursor=pointer]:
+                      - img [ref=e1114]
+                    - button "Ask AI" [ref=e1118] [cursor=pointer]:
+                      - img [ref=e1119]
+                  - code [ref=e1125]:
+                    - generic [ref=e1126]: mkdir my-plugin/hooks
+                - generic [ref=e1127]:
+                  - text: Create
+                  - code [ref=e1128]: my-plugin/hooks/hooks.json
+                  - text: with your hooks configuration. Copy the
+                  - code [ref=e1129]: hooks
+                  - text: object from your
+                  - code [ref=e1130]: .claude/settings.json
+                  - text: or
+                  - code [ref=e1131]: settings.local.json
+                  - text: ", since the format is the same. The command receives hook input as JSON on stdin, so use"
+                  - code [ref=e1132]: jq
+                  - text: "to extract the file path:"
+                - generic [ref=e1133]:
+                  - generic [ref=e1134]:
+                    - generic "my-plugin/hooks/hooks.json" [ref=e1136]
+                    - generic [ref=e1137]:
+                      - button "Report incorrect code" [ref=e1139] [cursor=pointer]:
+                        - img [ref=e1140]
+                      - button "Copy the contents from the code block" [ref=e1143] [cursor=pointer]:
+                        - img [ref=e1144]
+                      - button "Ask AI" [ref=e1148] [cursor=pointer]:
+                        - img [ref=e1149]
+                  - code [ref=e1155]:
+                    - generic [ref=e1156]: "{"
+                    - generic [ref=e1157]: "\"hooks\": {"
+                    - generic [ref=e1158]: "\"PostToolUse\": ["
+                    - generic [ref=e1159]: "{"
+                    - generic [ref=e1160]: "\"matcher\": \"Write|Edit\","
+                    - generic [ref=e1161]: "\"hooks\": [{ \"type\": \"command\", \"command\": \"jq -r '.tool_input.file_path' | xargs npm run lint:fix\" }]"
+                    - generic [ref=e1162]: "}"
+                    - generic [ref=e1163]: "]"
+                    - generic [ref=e1164]: "}"
+                    - generic [ref=e1165]: "}"
+          - listitem [ref=e1166]:
+            - generic [ref=e1169]:
+              - generic [ref=e1170]: "4"
+              - link "Navigate to header" [ref=e1172] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=e1174]
+            - generic [ref=e1176]:
+              - paragraph [ref=e1177]: Test your migrated plugin
+              - generic [ref=e1178]:
+                - generic [ref=e1179]: "Load your plugin to verify everything works:"
+                - generic [ref=e1180]:
+                  - generic [ref=e1181]:
+                    - button "Report incorrect code" [ref=e1183] [cursor=pointer]:
+                      - img [ref=e1184]
+                    - button "Copy the contents from the code block" [ref=e1187] [cursor=pointer]:
+                      - img [ref=e1188]
+                    - button "Ask AI" [ref=e1192] [cursor=pointer]:
+                      - img [ref=e1193]
+                  - code [ref=e1199]:
+                    - generic [ref=e1200]: claude --plugin-dir ./my-plugin
+                - generic [ref=e1201]:
+                  - text: "Test each component: run your commands, check agents appear in"
+                  - code [ref=e1202]: /agents
+                  - text: ", and verify hooks trigger correctly."
+        - heading "Navigate to header What changes when migrating" [level=3] [ref=e1203]:
+          - link "Navigate to header" [ref=e1204] [cursor=pointer]:
+            - /url: "#what-changes-when-migrating"
+            - img [ref=e1206]
+          - generic [ref=e1208] [cursor=pointer]: What changes when migrating
+        - table [ref=e1211]:
+          - rowgroup [ref=e1212]:
+            - row "Standalone (.claude/) Plugin" [ref=e1213]:
+              - columnheader "Standalone (.claude/)" [ref=e1214]:
+                - text: Standalone (
+                - code [ref=e1215]: .claude/
+                - text: )
+              - columnheader "Plugin" [ref=e1216]
+          - rowgroup [ref=e1217]:
+            - row "Only available in one project Can be shared via marketplaces" [ref=e1218]:
+              - cell "Only available in one project" [ref=e1219]
+              - cell "Can be shared via marketplaces" [ref=e1220]
+            - row "Files in .claude/commands/ Files in plugin-name/commands/" [ref=e1221]:
+              - cell "Files in .claude/commands/" [ref=e1222]:
+                - text: Files in
+                - code [ref=e1223]: .claude/commands/
+              - cell "Files in plugin-name/commands/" [ref=e1224]:
+                - text: Files in
+                - code [ref=e1225]: plugin-name/commands/
+            - row "Hooks in settings.json Hooks in hooks/hooks.json" [ref=e1226]:
+              - cell "Hooks in settings.json" [ref=e1227]:
+                - text: Hooks in
+                - code [ref=e1228]: settings.json
+              - cell "Hooks in hooks/hooks.json" [ref=e1229]:
+                - text: Hooks in
+                - code [ref=e1230]: hooks/hooks.json
+            - row "Must manually copy to share Install with /plugin install" [ref=e1231]:
+              - cell "Must manually copy to share" [ref=e1232]
+              - cell "Install with /plugin install" [ref=e1233]:
+                - text: Install with
+                - code [ref=e1234]: /plugin install
+        - generic [ref=e1235]:
+          - img "Note" [ref=e1237]
+          - generic [ref=e1240]:
+            - text: After migrating, you can remove the original files from
+            - code [ref=e1241]: .claude/
+            - text: to avoid duplicates. The plugin version will take precedence when loaded.
+        - heading "Navigate to header Next steps" [level=2] [ref=e1242]:
+          - link "Navigate to header" [ref=e1243] [cursor=pointer]:
+            - /url: "#next-steps"
+            - img [ref=e1245]
+          - generic [ref=e1247] [cursor=pointer]: Next steps
+        - generic [ref=e1248]: "Now that you understand Claude Code’s plugin system, here are suggested paths for different goals:"
+        - heading "Navigate to header For plugin users" [level=3] [ref=e1249]:
+          - link "Navigate to header" [ref=e1250] [cursor=pointer]:
+            - /url: "#for-plugin-users"
+            - img [ref=e1252]
+          - generic [ref=e1254] [cursor=pointer]: For plugin users
+        - list [ref=e1255]:
+          - listitem [ref=e1256]:
+            - link "Discover and install plugins" [ref=e1257] [cursor=pointer]:
+              - /url: /docs/en/discover-plugins
+            - text: ": browse marketplaces and install plugins"
+          - listitem [ref=e1258]:
+            - link "Configure team marketplaces" [ref=e1259] [cursor=pointer]:
+              - /url: /docs/en/discover-plugins#configure-team-marketplaces
+            - text: ": set up repository-level plugins for your team"
+        - heading "Navigate to header For plugin developers" [level=3] [ref=e1260]:
+          - link "Navigate to header" [ref=e1261] [cursor=pointer]:
+            - /url: "#for-plugin-developers"
+            - img [ref=e1263]
+          - generic [ref=e1265] [cursor=pointer]: For plugin developers
+        - list [ref=e1266]:
+          - listitem [ref=e1267]:
+            - link "Create and distribute a marketplace" [ref=e1268] [cursor=pointer]:
+              - /url: /docs/en/plugin-marketplaces
+            - text: ": package and share your plugins"
+          - listitem [ref=e1269]:
+            - link "Plugins reference" [ref=e1270] [cursor=pointer]:
+              - /url: /docs/en/plugins-reference
+            - text: ": complete technical specifications"
+          - listitem [ref=e1271]:
+            - text: "Dive deeper into specific plugin components:"
+            - list [ref=e1272]:
+              - listitem [ref=e1273]:
+                - link "Skills" [ref=e1274] [cursor=pointer]:
+                  - /url: /docs/en/skills
+                - text: ": skill development details"
+              - listitem [ref=e1275]:
+                - link "Subagents" [ref=e1276] [cursor=pointer]:
+                  - /url: /docs/en/sub-agents
+                - text: ": agent configuration and capabilities"
+              - listitem [ref=e1277]:
+                - link "Hooks" [ref=e1278] [cursor=pointer]:
+                  - /url: /docs/en/hooks
+                - text: ": event handling and automation"
+              - listitem [ref=e1279]:
+                - link "MCP" [ref=e1280] [cursor=pointer]:
+                  - /url: /docs/en/mcp
+                - text: ": external tool integration"
+      - generic [ref=e1282]:
+        - paragraph [ref=e1283]: Was this page helpful?
+        - generic [ref=e1285]:
+          - button "Yes" [ref=e1286] [cursor=pointer]:
+            - img [ref=e1287]
+            - generic [ref=e1289]: "Yes"
+          - button "No" [ref=e1290] [cursor=pointer]:
+            - img [ref=e1291]
+            - generic [ref=e1293]: "No"
+      - generic [ref=e1294]:
+        - link "Discover and install prebuilt plugins" [ref=e1295] [cursor=pointer]:
+          - /url: /docs/en/discover-plugins
+          - img [ref=e1296]
+          - generic [ref=e1298]: Discover and install prebuilt plugins
+        - link "Extend Claude with skills" [ref=e1299] [cursor=pointer]:
+          - /url: /docs/en/skills
+          - generic [ref=e1300]: Extend Claude with skills
+          - img [ref=e1301]
+      - generic [ref=e1304]:
+        - textbox "Ask a question..." [ref=e1305]
+        - generic: ⌘I
+        - button "Send message" [disabled] [ref=e1306]:
+          - img [ref=e1307]
+    - contentinfo [ref=e1309]:
+      - generic [ref=e1311]:
+        - generic [ref=e1312]:
+          - link "Claude Code Docs home page light logo" [ref=e1313] [cursor=pointer]:
+            - /url: /docs/en/overview
+            - generic [ref=e1314]: Claude Code Docs home page
+            - img "light logo" [ref=e1315]
+          - generic [ref=e1316]:
+            - link "x" [ref=e1317] [cursor=pointer]:
+              - /url: https://x.com/AnthropicAI
+              - generic [ref=e1318]: x
+              - img [ref=e1319]
+            - link "linkedin" [ref=e1320] [cursor=pointer]:
+              - /url: https://www.linkedin.com/company/anthropicresearch
+              - generic [ref=e1321]: linkedin
+              - img [ref=e1322]
+        - generic [ref=e1323]:
+          - generic [ref=e1325]:
+            - paragraph [ref=e1326]: Company
+            - link "Anthropic" [ref=e1327] [cursor=pointer]:
+              - /url: https://www.anthropic.com/company
+            - link "Careers" [ref=e1328] [cursor=pointer]:
+              - /url: https://www.anthropic.com/careers
+            - link "Economic Futures" [ref=e1329] [cursor=pointer]:
+              - /url: https://www.anthropic.com/economic-futures
+            - link "Research" [ref=e1330] [cursor=pointer]:
+              - /url: https://www.anthropic.com/research
+            - link "News" [ref=e1331] [cursor=pointer]:
+              - /url: https://www.anthropic.com/news
+            - link "Trust center" [ref=e1332] [cursor=pointer]:
+              - /url: https://trust.anthropic.com/
+            - link "Transparency" [ref=e1333] [cursor=pointer]:
+              - /url: https://www.anthropic.com/transparency
+          - generic [ref=e1335]:
+            - paragraph [ref=e1336]: Help and security
+            - link "Availability" [ref=e1337] [cursor=pointer]:
+              - /url: https://www.anthropic.com/supported-countries
+            - link "Status" [ref=e1338] [cursor=pointer]:
+              - /url: https://status.anthropic.com/
+            - link "Support center" [ref=e1339] [cursor=pointer]:
+              - /url: https://support.claude.com/
+          - generic [ref=e1341]:
+            - paragraph [ref=e1342]: Learn
+            - link "Courses" [ref=e1343] [cursor=pointer]:
+              - /url: https://www.anthropic.com/learn
+            - link "MCP connectors" [ref=e1344] [cursor=pointer]:
+              - /url: https://claude.com/partners/mcp
+            - link "Customer stories" [ref=e1345] [cursor=pointer]:
+              - /url: https://www.claude.com/customers
+            - link "Engineering blog" [ref=e1346] [cursor=pointer]:
+              - /url: https://www.anthropic.com/engineering
+            - link "Events" [ref=e1347] [cursor=pointer]:
+              - /url: https://www.anthropic.com/events
+            - link "Powered by Claude" [ref=e1348] [cursor=pointer]:
+              - /url: https://claude.com/partners/powered-by-claude
+            - link "Service partners" [ref=e1349] [cursor=pointer]:
+              - /url: https://claude.com/partners/services
+            - link "Startups program" [ref=e1350] [cursor=pointer]:
+              - /url: https://claude.com/programs/startups
+          - generic [ref=e1352]:
+            - paragraph [ref=e1353]: Terms and policies
+            - link "Privacy choices" [ref=e1354] [cursor=pointer]:
+              - /url: "#"
+            - link "Privacy policy" [ref=e1355] [cursor=pointer]:
+              - /url: https://www.anthropic.com/legal/privacy
+            - link "Disclosure policy" [ref=e1356] [cursor=pointer]:
+              - /url: https://www.anthropic.com/responsible-disclosure-policy
+            - link "Usage policy" [ref=e1357] [cursor=pointer]:
+              - /url: https://www.anthropic.com/legal/aup
+            - link "Commercial terms" [ref=e1358] [cursor=pointer]:
+              - /url: https://www.anthropic.com/legal/commercial-terms
+            - link "Consumer terms" [ref=e1359] [cursor=pointer]:
+              - /url: https://www.anthropic.com/legal/consumer-terms

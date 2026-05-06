@@ -1,0 +1,92 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e5]: CTX Telemetry
+      - generic [ref=e6]: 987 events · window 2h
+    - generic [ref=e7]: B
+    - navigation [ref=e8]:
+      - link "📊 Bench" [ref=e9] [cursor=pointer]:
+        - /url: /static/bench.html
+      - link "🧪 PUAC" [ref=e10] [cursor=pointer]:
+        - /url: /static/puac.html
+    - generic [ref=e11]:
+      - generic [ref=e12]: Updated 15:24 UTC
+      - generic [ref=e13]: 2h
+      - button "EN | KO" [ref=e14] [cursor=pointer]:
+        - generic [ref=e15]: EN
+        - generic [ref=e16]: "|"
+        - generic [ref=e17]: KO
+  - main [ref=e18]:
+    - generic [ref=e19]:
+      - heading "System Health" [level=2] [ref=e20]
+      - generic [ref=e21]:
+        - generic [ref=e25]: ~
+        - generic [ref=e29]: ~
+        - generic [ref=e33]: ~
+        - generic [ref=e37]: ~
+        - generic [ref=e41]: ~
+    - generic [ref=e42]:
+      - heading "Activity events / minute (last 2h)" [level=2] [ref=e43]:
+        - generic [ref=e44]: Activity
+        - generic [ref=e45]: events / minute (last 2h)
+      - generic [ref=e47]: ": :"
+    - generic [ref=e53]:
+      - heading "Latency distribution bm25-memory hook" [level=2] [ref=e54]:
+        - generic [ref=e55]: Latency distribution
+        - generic [ref=e56]: bm25-memory hook
+      - generic [ref=e57]:
+        - generic [ref=e60]: "0"
+        - generic [ref=e63]: "0"
+        - generic [ref=e67]: "193"
+        - generic [ref=e71]: "2"
+        - generic [ref=e75]: "3"
+        - generic [ref=e79]: "122"
+    - generic [ref=e80]:
+      - heading "Utility rate share of injected items Claude actually referenced ⓘ how" [level=2] [ref=e81]:
+        - generic [ref=e82]: Utility rate
+        - generic [ref=e83]: share of injected items Claude actually referenced
+        - generic "Measured on the Stop hook by matching each injected item's distinctive tokens against the assistant's response AND tool-use params. Stale events auto-excluded." [ref=e84]: ⓘ how
+      - generic [ref=e86]:
+        - generic [ref=e87]: 0%
+        - generic [ref=e88]:
+          - generic [ref=e89]: Overall utility
+          - generic [ref=e90]: turns measured · items injected
+    - generic [ref=e91]:
+      - heading "Quality notices rate-based, informational" [level=2] [ref=e92]:
+        - generic [ref=e93]: Quality notices
+        - generic [ref=e94]: rate-based, informational
+      - generic [ref=e96]: — none —
+    - heading "Other signals" [level=2] [ref=e98]
+    - heading "Retrieval distribution node type · query type · retrieval method — schema v1.6" [level=2] [ref=e100]:
+      - generic [ref=e101]: Retrieval distribution
+      - generic [ref=e102]: node type · query type · retrieval method — schema v1.6
+    - heading "Knowledge graph decisions · docs · prompts — coral = selected prompt, edges = retrieval + topic + temporal refresh" [level=2] [ref=e104]:
+      - generic [ref=e105]: Knowledge graph
+      - generic [ref=e106]: decisions · docs · prompts — coral = selected prompt, edges = retrieval + topic + temporal
+      - button "refresh" [ref=e107] [cursor=pointer]
+    - generic [ref=e110]:
+      - heading "Function proof — real samples recent prompts → actual hook outputs (eye-check relevance) refresh" [level=2] [ref=e111]:
+        - generic [ref=e112]: Function proof — real samples
+        - generic [ref=e113]: recent prompts → actual hook outputs (eye-check relevance)
+        - button "refresh" [ref=e114] [cursor=pointer]
+      - generic [ref=e115]:
+        - strong [ref=e116]: "Per-prompt utility pill:"
+        - generic [ref=e117]: ≥50%
+        - generic [ref=e118]: ≥25%
+        - generic [ref=e119]: <25%
+        - generic [ref=e120]: —
+        - generic [ref=e121]:
+          - text: = how much of what CTX
+          - emphasis [ref=e122]: surfaced
+          - text: was actually
+          - emphasis [ref=e123]: used
+          - text: in Claude's response. Blocks below show what CTX surfaced into context. A filled block with 0% utility = CTX injected items but Claude didn't reference them — honest signal, not a bug; usually means the prompt was about a different topic than what BM25 matched. — = the reply isn't persisted yet (lands on Stop hook ~30s after the turn); score fills in on next refresh. CM entries are project-scoped
+          - emphasis [ref=e124]: history
+          - text: ", not this prompt's reply."
+      - button "Load 10 more" [ref=e126] [cursor=pointer]
+    - heading "Recent events newest first, last 30" [level=2] [ref=e128]:
+      - generic [ref=e129]: Recent events
+      - generic [ref=e130]: newest first, last 30
+  - contentinfo [ref=e131]:
+    - generic [ref=e132]: —
+    - generic [ref=e133]: "connected: reconnecting…"

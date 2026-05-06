@@ -1,0 +1,51 @@
+- generic [ref=e2]:
+  - region
+  - generic [ref=e3]:
+    - link "Skip to content" [ref=e4] [cursor=pointer]:
+      - /url: "#start-of-content"
+    - banner [ref=e6]
+  - main [ref=e9]:
+    - generic [ref=e10]:
+      - generic [ref=e14]:
+        - img [ref=e17]
+        - generic [ref=e19]:
+          - heading "Two-factor authentication" [level=1] [ref=e20]
+          - paragraph [ref=e21]: Authenticate using your passkey.
+      - generic [ref=e23]:
+        - generic [ref=e25]:
+          - generic [ref=e27]:
+            - img [ref=e29]
+            - paragraph [ref=e32]: This browser or device is reporting partial passkey support.
+          - button "Use passkey" [ref=e33] [cursor=pointer]:
+            - generic [ref=e35]: Use passkey
+        - generic [ref=e36]:
+          - button "More options" [active] [ref=e37] [cursor=pointer]:
+            - generic [ref=e40]:
+              - text: More options
+              - img [ref=e41]
+          - listitem [ref=e62]:
+            - link "Authenticator app" [ref=e63] [cursor=pointer]:
+              - /url: /sessions/two-factor/app
+              - generic [ref=e65]: Authenticator app
+          - listitem [ref=e66]:
+            - link "2FA recovery code" [ref=e67] [cursor=pointer]:
+              - /url: /sessions/two-factor/recovery
+              - generic [ref=e69]: 2FA recovery code
+  - contentinfo [ref=e43]:
+    - list [ref=e44]:
+      - listitem [ref=e45]:
+        - link "Terms" [ref=e46] [cursor=pointer]:
+          - /url: https://docs.github.com/site-policy/github-terms/github-terms-of-service
+      - listitem [ref=e47]:
+        - link "Privacy" [ref=e48] [cursor=pointer]:
+          - /url: https://docs.github.com/site-policy/privacy-policies/github-privacy-statement
+      - listitem [ref=e49]:
+        - link "Docs" [ref=e50] [cursor=pointer]:
+          - /url: https://docs.github.com
+      - listitem [ref=e51]:
+        - link "Contact GitHub Support" [ref=e52] [cursor=pointer]:
+          - /url: https://support.github.com
+      - listitem [ref=e53]:
+        - button "Manage cookies" [ref=e55] [cursor=pointer]
+      - listitem [ref=e56]:
+        - button "Do not share my personal information" [ref=e58] [cursor=pointer]

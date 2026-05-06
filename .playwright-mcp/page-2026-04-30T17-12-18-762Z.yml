@@ -1,0 +1,65 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e5]: CTX 텔레메트리
+      - generic [ref=e6]: —
+    - generic [ref=e7]: —
+    - generic [ref=e8]:
+      - generic [ref=e9]: —
+      - generic [ref=e10]: 7d
+      - button "EN | KO" [ref=e11] [cursor=pointer]:
+        - generic [ref=e12]: EN
+        - generic [ref=e13]: "|"
+        - generic [ref=e14]: KO
+  - main [ref=e15]:
+    - heading "시스템 상태" [level=2] [ref=e17]
+    - heading "활동 이벤트 / 분 (최근 2시간)" [level=2] [ref=e19]:
+      - generic [ref=e20]: 활동
+      - generic [ref=e21]: 이벤트 / 분 (최근 2시간)
+    - generic [ref=e22]:
+      - heading "Retrieval method breakdown last graph window" [level=2] [ref=e23]:
+        - text: Retrieval method breakdown
+        - generic [ref=e24]: last graph window
+      - generic [ref=e25]: loading…
+    - heading "지연시간 분포 bm25-memory 후크" [level=2] [ref=e27]:
+      - generic [ref=e28]: 지연시간 분포
+      - generic [ref=e29]: bm25-memory 후크
+    - heading "활용률 주입된 항목 중 Claude가 실제로 참조한 비율 ⓘ 방법" [level=2] [ref=e31]:
+      - generic [ref=e32]: 활용률
+      - generic [ref=e33]: 주입된 항목 중 Claude가 실제로 참조한 비율
+      - generic "Stop 후크에서 주입된 각 항목의 고유 토큰을 assistant 응답 및 tool-use 파라미터와 매칭하여 측정. 오래된 이벤트는 자동 제외." [ref=e34]: ⓘ 방법
+    - generic [ref=e35]:
+      - heading "품질 알림 비율 기반, 안내용" [level=2] [ref=e36]:
+        - generic [ref=e37]: 품질 알림
+        - generic [ref=e38]: 비율 기반, 안내용
+      - heading "기타 신호" [level=2] [ref=e40]
+    - heading "지식 그래프 결정 · 문서 · 프롬프트 — 산호색 = 선택된 프롬프트, 엣지 = 검색 + 토픽 + 시간 새로고침" [level=2] [ref=e42]:
+      - generic [ref=e43]: 지식 그래프
+      - generic [ref=e44]: 결정 · 문서 · 프롬프트 — 산호색 = 선택된 프롬프트, 엣지 = 검색 + 토픽 + 시간
+      - button "새로고침" [ref=e45] [cursor=pointer]
+    - generic [ref=e48]:
+      - heading "기능 증명 — 실제 샘플 최근 프롬프트 → 실제 후크 출력 (관련성 직접 확인) 새로고침" [level=2] [ref=e49]:
+        - generic [ref=e50]: 기능 증명 — 실제 샘플
+        - generic [ref=e51]: 최근 프롬프트 → 실제 후크 출력 (관련성 직접 확인)
+        - button "새로고침" [ref=e52] [cursor=pointer]
+      - generic [ref=e53]:
+        - strong [ref=e54]: "프롬프트별 활용률 배지:"
+        - generic [ref=e55]: ≥50%
+        - generic [ref=e56]: ≥25%
+        - generic [ref=e57]: <25%
+        - generic [ref=e58]: —
+        - generic [ref=e59]:
+          - text: = CTX가
+          - emphasis [ref=e60]: 꺼낸
+          - text: 것 중 Claude 응답에서
+          - emphasis [ref=e61]: 실제 사용된
+          - text: 비율. 아래 블록은 CTX가 문맥에 주입한 것을 표시. 블록은 채워졌는데 활용률 0% = CTX가 항목을 주입했지만 Claude가 참조하지 않음 — 버그가 아닌 정직한 신호, 보통 BM25가 매칭한 주제와 프롬프트 주제가 다를 때 발생. — = 응답이 아직 저장되지 않음 (Stop 후크가 턴 종료 ~30초 후 실행됨); 다음 새로고침에 점수 채워짐. CM 항목은 이 프롬프트 응답이 아닌 프로젝트
+          - emphasis [ref=e62]: 히스토리
+          - text: .
+      - button "10개 더 보기" [ref=e64] [cursor=pointer]
+    - heading "최근 이벤트 최신순, 최근 30개" [level=2] [ref=e66]:
+      - generic [ref=e67]: 최근 이벤트
+      - generic [ref=e68]: 최신순, 최근 30개
+  - contentinfo [ref=e69]:
+    - generic [ref=e70]: —
+    - generic [ref=e71]: "연결: 실시간"

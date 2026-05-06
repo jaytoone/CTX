@@ -1,5 +1,5 @@
 ---
-title: CTX - Trigger-Driven Dynamic Context Loading
+title: CTX - Cross-Session Memory for Claude Code
 emoji: 🧠
 colorFrom: indigo
 colorTo: blue
@@ -8,15 +8,18 @@ sdk_version: 5.29.0
 app_file: app.py
 pinned: true
 license: mit
-short_description: Trigger-based code retrieval for LLM agents
+short_description: G1 decision recall + G2 file retrieval hooks for Claude Code
 ---
 
-# CTX: Trigger-Driven Context Retrieval for Code-Aware LLM Agents
+# CTX: Cross-Session Memory for Claude Code
 
-Interactive demo — enter a developer query and see which files CTX injects as context and why.
+Interactive before/after demo — see what Claude Code answers with and without CTX context injection.
 
-**Key results**: 1.9x higher Token-Efficiency Score than BM25, Recall@5 = 1.0 on implicit dependency queries, only 5.2% token usage.
+**What CTX does**: Two hooks fire on every Claude Code prompt. G1 recalls past engineering decisions from your session history. G2 finds the relevant file and line number before Claude's first tool call. Pure BM25, under 1ms, no LLM, no embedding model.
 
-**GitHub**: https://github.com/jaytoone/CTX
-**Install**: `pip install ctx-retriever`
-**Claude Code hook**: see [setup guide](https://github.com/jaytoone/CTX/blob/master/docs/claude_code_integration.md)
+**Key results**: G1 Recall@7 = 1.000 (vs 0.219 without), hallucination rate 0% (vs 17%), hook latency < 1ms.
+
+**Platform**: Linux + WSL2 (v1.0). Windows-native in progress.
+
+**GitHub**: https://github.com/jaytoone/CTX  
+**Install**: `pip install ctx-retriever && ctx-install`
