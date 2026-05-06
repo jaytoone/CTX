@@ -26,11 +26,12 @@ Env vars:
   CTX_BGE_DEVICE       — "cuda" / "cpu" (default: auto-detect)
   CTX_BGE_FP16         — "1" to load fp16 on GPU (halves VRAM; default "1")
 """
-import sys, os, json, socket, threading, time
+import sys, os, json, socket, threading, time, fcntl
 from pathlib import Path
 
 SOCKET_PATH = Path.home() / ".local/share/claude-vault/bge-daemon.sock"
 PID_FILE    = Path.home() / ".local/share/claude-vault/bge-daemon.pid"
+LOCK_FILE   = Path.home() / ".local/share/claude-vault/bge-daemon.lock"
 STOP_FILE   = Path.home() / ".local/share/claude-vault/bge-daemon.stop"
 LOG_FILE    = Path.home() / ".local/share/claude-vault/bge-daemon.log"
 MODEL_NAME  = os.environ.get("CTX_BGE_MODEL", "BAAI/bge-reranker-v2-m3")
@@ -73,14 +74,13 @@ if "--status" in sys.argv:
     sys.exit(0 if ok else 2)
 
 # ── single-instance guard ──────────────────────────────────────
-if PID_FILE.exists():
-    try:
-        existing_pid = int(PID_FILE.read_text().strip())
-        os.kill(existing_pid, 0)
-        print(f"[bge-daemon] Already running (PID {existing_pid}). Exiting.")
-        sys.exit(0)
-    except (ProcessLookupError, ValueError):
-        pass   # stale PID file, continue
+# flock prevents race when multiple instances start simultaneously (PID file check alone is not atomic)
+_lock_fh = open(LOCK_FILE, "w")
+try:
+    fcntl.flock(_lock_fh, fcntl.LOCK_EX | fcntl.LOCK_NB)
+except BlockingIOError:
+    print("[bge-daemon] Already running (lock held). Exiting.")
+    sys.exit(0)
 
 def log(msg):
     line = f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] {msg}"

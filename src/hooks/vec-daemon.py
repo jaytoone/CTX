@@ -13,11 +13,12 @@ Usage:
   python3 vec-daemon.py &          # start in background
   python3 vec-daemon.py --stop     # create stop file
 """
-import sys, os, json, socket, threading, time, struct
+import sys, os, json, socket, threading, time, struct, fcntl
 from pathlib import Path
 
 SOCKET_PATH = Path.home() / ".local/share/claude-vault/vec-daemon.sock"
 PID_FILE    = Path.home() / ".local/share/claude-vault/vec-daemon.pid"
+LOCK_FILE   = Path.home() / ".local/share/claude-vault/vec-daemon.lock"
 STOP_FILE   = Path.home() / ".local/share/claude-vault/vec-daemon.stop"
 MODEL_NAME  = "intfloat/multilingual-e5-small"
 
@@ -26,15 +27,13 @@ if "--stop" in sys.argv:
     print("Stop file written.")
     sys.exit(0)
 
-# Guard: exit if already running
-if PID_FILE.exists():
-    try:
-        existing_pid = int(PID_FILE.read_text().strip())
-        os.kill(existing_pid, 0)
-        print(f"[vec-daemon] Already running (PID {existing_pid}). Exiting.")
-        sys.exit(0)
-    except (ProcessLookupError, ValueError):
-        pass  # stale PID file, continue
+# Guard: exclusive flock prevents race condition when multiple instances start simultaneously
+_lock_fh = open(LOCK_FILE, "w")
+try:
+    fcntl.flock(_lock_fh, fcntl.LOCK_EX | fcntl.LOCK_NB)
+except BlockingIOError:
+    print("[vec-daemon] Already running (lock held). Exiting.")
+    sys.exit(0)
 
 def load_model():
     from sentence_transformers import SentenceTransformer
