@@ -329,6 +329,8 @@ def tokenize(text: str, drop_stopwords: bool = False):
     matches "logging". Preserves the original token too so exact-match precision
     is never lost (dedup handles duplicates). Opt-out via CTX_STEM=0.
     """
+    # \w+ matches Unicode word chars including Hangul/CJK syllables \u2014 Korean is handled.
+    # Unified with eval tokenizer pattern (doc_retrieval_eval_v2._eval_tokenize).
     raw = re.findall(r'\d+[-\u2013]\d+|\d+\.\d+|\w+', text.lower())
     result = []
     for tok in raw:
