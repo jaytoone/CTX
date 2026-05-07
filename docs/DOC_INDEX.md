@@ -2,6 +2,7 @@
 
 | 파일 | 설명 |
 |------|------|
+| [marketing/channel_reactions_log.md](marketing/channel_reactions_log.md) | CTX channel reactions log (updated 2026-05-07) — live reaction metrics across GeekNews, HN (item 48017090, 4pts), Dev.to, LinkedIn, GitHub (4 stars, 1 fork), PyPI. Includes reaction checking flow, automation methods per channel. |
 | [infra/hook-python-requirements.md](infra/hook-python-requirements.md) | Claude Code hook Python requirements (2026-04-29) — pip packages needed for memory/CTX hooks on any machine: sqlite-vec (chat-memory.py), rank-bm25 (bm25-memory.py), numpy (auto-dep). Includes hook inventory, verification commands, Windows-specific notes (python3 alias, codebase-memory-mcp unavailable). |
 | [demo-script-v1.0.md](demo-script-v1.0.md) | CTX demo video narration script v1.0 (2026-04-29) — 3-min script: hook (cold-start problem), install one-liner, G1 decision recall demo, G2 file retrieval demo, benchmark numbers, wrap. Includes pre-recording checklist, B-roll shot list, and recording notes. |
 | [research/20260429-ctx-crossplatform-distribution-readiness.md](research/20260429-ctx-crossplatform-distribution-readiness.md) | CTX cross-platform distribution readiness (2026-04-29, expert-research-v2) — 4 P0 blockers before publish: Windows stdio pipe deadlock (issue #34457 open), vec-daemon Unix socket broken on Windows, `python3` invocation opens MS Store, hardcoded path strings break vault.db. Fastest path: scope v1.0 to Linux+WSL2, ship automated installer. Full Windows-native needs TCP loopback migration + upstream fix. |

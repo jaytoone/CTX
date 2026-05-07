@@ -9,11 +9,11 @@ Last updated: 2026-05-06
   - `nave94` (us): Video link + Dev.to link
 - **"함께 보면 좋은 글"** section showing 5 related posts (claude-mem, context plugin, etc.) — good sign for algorithm
 
-## Hacker News (item?id=47996700)
-- **Points**: 0
+## Hacker News (item?id=48017090)
+- **Points**: 4 (updated 2026-05-07)
 - **Comments**: 0
+- Title: "Ctx – Persistent Memory for Claude Code, Cursor, and AI Coding Agents"
 - Posted via Dev.to URL (GitHub URL was blocked for new account)
-- Low traction — expected for new account
 
 ## Dev.to
 - **Reactions**: 1
