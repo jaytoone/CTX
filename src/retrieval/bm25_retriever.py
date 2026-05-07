@@ -16,13 +16,11 @@ from src.retrieval.full_context import RetrievalResult, estimate_tokens
 def _tokenize(text: str) -> List[str]:
     """Identifier-focused tokenizer: alphanumeric/underscore tokens, len > 1.
 
-    Kept as a local wrapper so callers inside this module use a consistent
-    vocabulary suited for source-code files (identifier tokens only).
-    Delegates to the canonical _bm25 tokenizer with stopwords disabled so
-    IDF handles common terms naturally.
+    Intentionally NOT the canonical _bm25.tokenize (PR-1 out-of-scope):
+    canonical applies dict.fromkeys() dedup, which collapses repeated
+    identifier occurrences and flattens BM25 TF scoring on code corpora.
+    Code search needs raw identifier-frequency counts.
     """
-    # Use canonical tokenizer but post-filter to identifier-shaped tokens
-    # (mirrors original regex: r'[a-zA-Z_][a-zA-Z0-9_]*', len > 1)
     raw = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]*', text.lower())
     return [t for t in raw if len(t) > 1]
 

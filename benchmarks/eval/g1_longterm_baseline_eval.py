@@ -20,6 +20,9 @@ import sys
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src" / "hooks"))
+from _bm25.tokenizer import tokenize as _canonical_tokenize  # noqa: E402  canonical (PR-1)
+
 # ── LLM client ───────────────────────────────────────────────────────────────
 
 def get_llm_client():
@@ -264,9 +267,7 @@ def get_bm25_context(query: str, commit_corpus: List[Dict], top_k: int = 7) -> T
     if not commit_corpus:
         return "[Empty corpus]", 0
 
-    def tokenize(text: str) -> List[str]:
-        return re.findall(r'\b\w+\b', text.lower())
-
+    tokenize = _canonical_tokenize  # PR-1: was local re.findall(r'\b\w+\b'); now canonical _bm25 tokenize
     subjects = [c.get('subject', '') for c in commit_corpus]
     tokenized = [tokenize(s) for s in subjects]
     bm25 = BM25Okapi(tokenized)

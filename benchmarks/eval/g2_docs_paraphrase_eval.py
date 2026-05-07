@@ -18,11 +18,15 @@ Run:
 
 import json
 import re
+import sys
 import time
 from pathlib import Path
 from typing import List, Tuple
 
 from rank_bm25 import BM25Okapi
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src" / "hooks"))
+from _bm25.tokenizer import tokenize  # noqa: E402  canonical (PR-1)
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -316,23 +320,6 @@ QA_PAIRS = [
 # ──────────────────────────────────────────────────────────────────────────────
 # BM25 index construction
 # ──────────────────────────────────────────────────────────────────────────────
-
-_KO_PARTICLES = re.compile(
-    r'(와|과|이|가|은|는|을|를|의|에서|으로|에게|부터|까지|처럼|같이|보다|이나|며|에|로|도|만|나|고)$'
-)
-
-
-def tokenize(text: str) -> List[str]:
-    """Preserve decimal numbers and numeric ranges. Strip Korean particles from mixed tokens."""
-    raw = re.findall(r'\d+[-\u2013]\d+|\d+\.\d+|\w+', text.lower())
-    result = []
-    for tok in raw:
-        cleaned = _KO_PARTICLES.sub('', tok)
-        if cleaned and cleaned != tok:
-            result.append(cleaned)
-        result.append(tok)
-    return list(dict.fromkeys(result))
-
 
 def chunk_document(filename: str, content: str) -> List[str]:
     """Split by ## section headers."""

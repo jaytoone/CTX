@@ -820,6 +820,9 @@ def cmd_cluster(args):
     MAX_FILES = 300
 
     def _tokenize(text: str) -> list[str]:
+        # Intentionally not the canonical _bm25.tokenize (PR-1 out-of-scope):
+        # this is for source-file identifier-frequency stats, not BM25 ranking.
+        # Excludes 1-2 char tokens and digit-only/non-ASCII — IDF doesn't apply.
         return [t.lower() for t in re.findall(r'[a-zA-Z][a-zA-Z0-9]{2,28}', text)]
 
     token_counts: dict[str, int] = {}

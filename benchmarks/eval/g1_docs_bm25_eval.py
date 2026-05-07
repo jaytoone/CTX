@@ -22,6 +22,9 @@ from typing import List, Optional, Tuple
 import anthropic
 from rank_bm25 import BM25Okapi
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src" / "hooks"))
+from _bm25.tokenizer import tokenize  # noqa: E402  canonical (PR-1)
+
 
 # ──────────────────────────────────────────────────────────────────────────────
 # QA Pairs (same as g1_docs_memory_eval.py)
@@ -74,12 +77,6 @@ QA_PAIRS = [
 # ──────────────────────────────────────────────────────────────────────────────
 # Step 1: Build BM25 index over doc chunks
 # ──────────────────────────────────────────────────────────────────────────────
-
-def tokenize(text: str) -> List[str]:
-    """Lowercase; preserve decimal numbers (0.724) and numeric ranges (7-30)."""
-    tokens = re.findall(r'\d+[-\u2013]\d+|\d+\.\d+|\w+', text.lower())
-    return [t for t in tokens if t]
-
 
 def chunk_document(filename: str, content: str) -> List[str]:
     """Split a document by ## section headers. Each chunk = filename § header\ncontent."""
