@@ -46,7 +46,10 @@ def dense_rank_decisions(corpus, query, top_k=20):
             scored.append((cos, item))
     if not scored:
         return []
-    scored.sort(key=lambda x: -x[0])
+    # Tiebreak by stable item key so equal-cosine items have a deterministic
+    # order even if Python's sort stability is bypassed (e.g. PyPy, future
+    # dict-iteration changes, or different input orderings).
+    scored.sort(key=lambda x: (-x[0], x[1].get("hash") or (x[1].get("text") or "")[:20]))
     last_retrieval_scores["dense_top"] = float(scored[0][0])
     return [item for _, item in scored[:top_k]]
 
@@ -76,7 +79,9 @@ def rrf_merge(list_a, list_b, k_rrf=60):
         scores[k] = scores.get(k, 0.0) + 1.0 / (k_rrf + rank)
         hash_to_item[k] = item
 
-    merged_keys = sorted(scores.keys(), key=lambda h: -scores[h])
+    # Tiebreak by hash key so equal-RRF items don't depend on dict insertion order
+    # (which itself depends on whether list_a or list_b saw the hash first).
+    merged_keys = sorted(scores.keys(), key=lambda h: (-scores[h], h))
     return [hash_to_item[h] for h in merged_keys]
 
 
@@ -150,7 +155,9 @@ def bm25_rank_decisions(corpus, query, top_k=7, min_score=0.5,
     last_retrieval_scores["bm25_top"] = top_score
     adaptive_floor = max(min_score, top_score * adaptive_floor_ratio)
 
-    ranked_idx = sorted(range(len(corpus)), key=lambda i: scores[i], reverse=True)
+    # Tiebreak by index ascending so equal-score corpus entries have a
+    # deterministic order regardless of sort stability guarantees.
+    ranked_idx = sorted(range(len(corpus)), key=lambda i: (-scores[i], i))
 
     # Cluster signature: normalizes "live-infinite iter N/∞: goal_vM" boilerplate
     # so different iter-numbers don't escape MMR dedup.
