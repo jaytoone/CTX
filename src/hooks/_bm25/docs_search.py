@@ -93,15 +93,21 @@ def build_docs_bm25(project_dir):
     Strategy: full-doc (no chunking) — A/B test 2026-04-11 confirms +9.1% recall@5
     vs header-chunked approach (0.758 vs 0.667 on 33 paraphrase pairs).
     Full-doc wins on temporal/open-set/perf queries where answers span multiple sections.
+
+    Name-collision dedup: extra files (root README/CLAUDE/MEMORY) win over
+    same-named files inside docs/research/ — root README.md is canonical fork
+    metadata, and docs/research/ may carry placeholder copies that pollute
+    retrieval results.
     """
-    all_units = []
+    units_by_name: dict[str, str] = {}
+
     docs_dir = Path(project_dir) / "docs" / "research"
     if docs_dir.exists():
         for md_file in sorted(docs_dir.glob("*.md")):
             try:
                 text = f"{md_file.name}\n{md_file.read_text()}"
                 if len(text) > 50:
-                    all_units.append(text)
+                    units_by_name[md_file.name] = text
             except Exception:
                 pass
 
@@ -110,10 +116,11 @@ def build_docs_bm25(project_dir):
             p = Path(fpath)
             text = f"{p.name}\n{p.read_text()}"
             if len(text) > 50:
-                all_units.append(text)
+                units_by_name[p.name] = text  # extra files win on name collision
         except Exception:
             pass
 
+    all_units = list(units_by_name.values())
     if not all_units or not _HAS_BM25:
         return None, []
     tokenized = [tokenize(u) for u in all_units]
