@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ctx-retriever"
-version = "0.3.14"
+version = "0.3.15"
 description = "Trigger-Driven Dynamic Context Loading for Code-Aware LLM Agents"
 readme = "README.md"
 license = { text = "MIT" }
@@ -31,6 +31,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dense = ["chromadb>=0.4.0", "sentence-transformers>=2.2.0"]
+dashboard = ["fastapi>=0.100.0", "uvicorn>=0.20.0"]
 dev = ["pytest>=7.0", "pytest-cov"]
 
 [project.urls]
@@ -41,12 +42,14 @@ Repository = "https://github.com/jaytoone/CTX"
 [project.scripts]
 ctx-install = "ctx_retriever.cli.install:main"
 ctx-telemetry = "ctx_retriever.cli.telemetry:main"
+ctx-dashboard = "ctx_retriever.cli.dashboard:main"
 
 [tool.setuptools]
 packages = [
     "ctx_retriever",
     "ctx_retriever.analysis",
     "ctx_retriever.cli",
+    "ctx_retriever.dashboard",
     "ctx_retriever.data",
     "ctx_retriever.evaluator",
     "ctx_retriever.hooks",
@@ -61,3 +64,4 @@ packages = [
 [tool.setuptools.package-data]
 "*" = ["*.json", "*.yaml"]
 "ctx_retriever.hooks" = ["*.py", "ctx-telemetry"]
+"ctx_retriever.dashboard" = ["*.py", "static/*.html", "static/*.js", "static/*.css"]
