@@ -57,7 +57,17 @@ def _get(url: str) -> dict | list | None:
 # ── 1. PyPI downloads ────────────────────────────────────────────────
 
 def pypi_stats() -> dict:
-    data = _get(f"https://pypistats.org/api/packages/{PYPI_PACKAGE}/recent")
+    # pypistats.org sometimes rejects default User-Agent — try with Accept header
+    try:
+        req = urllib.request.Request(
+            f"https://pypistats.org/api/packages/{PYPI_PACKAGE}/recent",
+            headers={"User-Agent": "ctx-market-signals/1.0", "Accept": "application/json"},
+        )
+        with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
+            data = json.load(r)
+    except Exception as e:
+        print(f"  [WARN] pypi fetch failed: {e}", file=sys.stderr)
+        return {}
     if not data:
         return {}
     d = data.get("data", {})
@@ -130,7 +140,76 @@ def ctx_repo_stats() -> dict:
     return result
 
 
-# ── 4. HN Algolia ────────────────────────────────────────────────────
+# ── 4. Channel reactions (direct post stats) ─────────────────────────
+# Tracks engagement on the actual CTX posts across all channels
+
+CTX_CHANNELS = {
+    "geeknews": {
+        "name": "GeekNews",
+        "url":  "https://news.hada.io/topic?id=29124",
+        "type": "html_scrape",
+    },
+    "hn": {
+        "name": "Hacker News",
+        "url":  "https://news.ycombinator.com/item?id=48017090",
+        "api":  "https://hn.algolia.com/api/v1/items/48017090",
+        "type": "hn_api",
+    },
+    "devto": {
+        "name": "Dev.to",
+        "url":  "https://dev.to/jaewon_jang_d63fddcf69ac2/ctx-i-gave-claude-code-a-memory-that-actually-works-45id",
+        "api":  "https://dev.to/api/articles/2597891",
+        "type": "devto_api",
+    },
+    "github": {
+        "name": "GitHub (CTX repo)",
+        "url":  "https://github.com/jaytoone/CTX",
+        "api":  "https://api.github.com/repos/jaytoone/CTX",
+        "type": "github_api",
+    },
+}
+
+
+def channel_reactions() -> dict:
+    """Fetch engagement metrics for each CTX post/channel."""
+    results = {}
+    for ch_id, ch in CTX_CHANNELS.items():
+        result = {"name": ch["name"], "url": ch["url"]}
+        try:
+            if ch["type"] == "hn_api":
+                data = _get(ch["api"])
+                if data:
+                    result["points"]   = data.get("points") or 0
+                    result["comments"] = len(data.get("children") or [])
+            elif ch["type"] == "devto_api":
+                data = _get(ch["api"])
+                if data:
+                    result["reactions"] = data.get("public_reactions_count", 0)
+                    result["comments"]  = data.get("comments_count", 0)
+                    result["reads"]     = data.get("page_views_count", 0)
+            elif ch["type"] == "github_api":
+                data = _get(ch["api"])
+                if data:
+                    result["stars"]    = data.get("stargazers_count", 0)
+                    result["forks"]    = data.get("forks_count", 0)
+                    result["issues"]   = data.get("open_issues_count", 0)
+            elif ch["type"] == "html_scrape":
+                import re as _re
+                req = urllib.request.Request(ch["url"], headers={"User-Agent": "ctx-market-signals/1.0"})
+                with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
+                    html = r.read().decode("utf-8", errors="replace")
+                # GeekNews: <span id='tp{id}'>N</span> = points, data-topic-comment-count='N' = comments
+                m_pts = _re.search(r"<span id='tp\d+'>([\d]+)</span>", html)
+                m_cmt = _re.search(r"data-topic-comment-count='(\d+)'", html)
+                if m_pts: result["points"] = int(m_pts.group(1))
+                if m_cmt: result["comments"] = int(m_cmt.group(1))
+        except Exception as e:
+            result["error"] = str(e)[:60]
+        results[ch_id] = result
+    return results
+
+
+# ── 5. HN Algolia ────────────────────────────────────────────────────
 
 def hn_hits() -> list[dict]:
     results = []
@@ -220,17 +299,19 @@ def main():
     run_all = not (args.pypi_only or args.github_only or args.hn_only)
 
     print("Fetching signals...", file=sys.stderr)
-    pypi = pypi_stats()                       if (run_all or args.pypi_only)   else {}
-    gh   = github_issues()                    if (run_all or args.github_only) else []
-    hn   = hn_hits()                          if (run_all or args.hn_only)     else []
-    ctx  = ctx_repo_stats()                   if run_all                       else {}
+    pypi     = pypi_stats()                   if (run_all or args.pypi_only)   else {}
+    gh       = github_issues()                if (run_all or args.github_only) else []
+    hn       = hn_hits()                      if (run_all or args.hn_only)     else []
+    ctx      = ctx_repo_stats()               if run_all                       else {}
+    channels = channel_reactions()            if run_all                       else {}
 
     result = {
-        "ts":     datetime.now(timezone.utc).isoformat(),
-        "pypi":   pypi,
-        "github": gh,
-        "hn":     hn,
+        "ts":       datetime.now(timezone.utc).isoformat(),
+        "pypi":     pypi,
+        "github":   gh,
+        "hn":       hn,
         "ctx_repo": ctx,
+        "channels": channels,
     }
 
     if args.json:
