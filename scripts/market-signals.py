@@ -101,7 +101,36 @@ def github_issues() -> list[dict]:
     return hits[:15]
 
 
-# ── 3. HN Algolia ────────────────────────────────────────────────────
+# ── 3. CTX repo itself ──────────────────────────────────────────────
+
+CTX_REPO = "jaytoone/CTX"
+
+def ctx_repo_stats() -> dict:
+    """Track CTX's own GitHub repo — stars, forks, open issues, latest release."""
+    data = _get(f"https://api.github.com/repos/{CTX_REPO}")
+    if not data:
+        return {}
+    result = {
+        "stars":       data.get("stargazers_count", 0),
+        "forks":       data.get("forks_count", 0),
+        "open_issues": data.get("open_issues_count", 0),
+        "watchers":    data.get("watchers_count", 0),
+        "pushed_at":   (data.get("pushed_at") or "")[:10],
+    }
+    # Latest release tag
+    rel = _get(f"https://api.github.com/repos/{CTX_REPO}/releases/latest")
+    if rel:
+        result["latest_release"] = rel.get("tag_name", "")
+        result["release_date"]   = (rel.get("published_at") or "")[:10]
+    # Open PRs
+    prs = _get(f"https://api.github.com/repos/{CTX_REPO}/pulls?state=open&per_page=5")
+    if prs:
+        result["open_prs"] = len(prs)
+        result["pr_titles"] = [pr["title"][:60] for pr in prs]
+    return result
+
+
+# ── 4. HN Algolia ────────────────────────────────────────────────────
 
 def hn_hits() -> list[dict]:
     results = []
@@ -194,12 +223,14 @@ def main():
     pypi = pypi_stats()                       if (run_all or args.pypi_only)   else {}
     gh   = github_issues()                    if (run_all or args.github_only) else []
     hn   = hn_hits()                          if (run_all or args.hn_only)     else []
+    ctx  = ctx_repo_stats()                   if run_all                       else {}
 
     result = {
         "ts":     datetime.now(timezone.utc).isoformat(),
         "pypi":   pypi,
         "github": gh,
         "hn":     hn,
+        "ctx_repo": ctx,
     }
 
     if args.json:
