@@ -994,6 +994,66 @@ def cmd_clear(args):
         print("No telemetry logs to delete.")
 
 
+def cmd_send(args):
+    """One-step opt-in + upload. Grants consent and uploads in a single command.
+
+    What gets sent: k-anonymized session_aggregate rows (numeric only, no code/text).
+    Schema: https://github.com/jaytoone/CTX#telemetry-opt-in-local-only
+    Revoke anytime: ctx-telemetry consent revoke
+    """
+    import datetime as _dt
+
+    print("CTX Telemetry — one-step opt-in + upload")
+    print("Schema: https://github.com/jaytoone/CTX#telemetry-opt-in-local-only")
+    print("Sends: k-anonymized session stats only. No code, queries, or text.")
+    print("Revoke anytime: ctx-telemetry consent revoke")
+    print()
+
+    # Auto-grant consent if not already granted for current schema
+    _CURRENT_SCHEMA = "v1.6"
+    needs_consent = True
+    if CONSENT_FILE.exists():
+        try:
+            existing = json.loads(CONSENT_FILE.read_text())
+            if existing.get("schema_version") == _CURRENT_SCHEMA:
+                needs_consent = False
+        except Exception:
+            pass
+
+    if needs_consent:
+        # Derive user_id (same method as utility-rate.py and consent grant)
+        uid = "unknown"
+        try:
+            machine_id = ""
+            for mid_path in ["/etc/machine-id", "/var/lib/dbus/machine-id"]:
+                try:
+                    machine_id = open(mid_path).read().strip(); break
+                except Exception:
+                    pass
+            if not machine_id:
+                import socket; machine_id = socket.gethostname()
+            install_ts = int((Path.home() / ".claude").stat().st_mtime) if (Path.home() / ".claude").exists() else 0
+            import datetime as _dtm
+            d = _dtm.datetime.fromtimestamp(install_ts, tz=_dtm.timezone.utc).replace(day=1, hour=0, minute=0, second=0)
+            uid = hashlib.sha256(f"{machine_id}:{int(d.timestamp())}".encode()).hexdigest()[:16]
+        except Exception:
+            pass
+        consent = {
+            "schema_version": _CURRENT_SCHEMA,
+            "granted_at": _dt.datetime.now(_dt.timezone.utc).isoformat(),
+            "user_id": uid,
+            "stage": "2",
+        }
+        CONSENT_FILE.write_text(json.dumps(consent, indent=2))
+        print(f"Consent granted (schema {_CURRENT_SCHEMA}). User ID: {uid[:8]}...")
+
+    # Run upload
+    class _FakeArgs:
+        send = True
+
+    cmd_upload(_FakeArgs())
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(
         prog="ctx-telemetry",
@@ -1011,6 +1071,7 @@ def main(argv=None):
     sub.add_parser("clear", help="Delete local telemetry logs")
     sub.add_parser("calibrate", help="Citation bias detection — validate utility_rate signal")
     sub.add_parser("tune", help="Compute optimal BM25 parameters from local telemetry (flywheel)")
+    sub.add_parser("send", help="One-step: grant consent + upload k-anonymized data (shortcut for consent grant + upload --send)")
     upload_p = sub.add_parser("upload", help="Stage 2 upload — POST k-anonymized session_aggregate rows")
     upload_p.add_argument("--send", action="store_true", help="Actually POST (default: dry-run preview)")
     consent_p = sub.add_parser("consent", help="Stage 2 consent management (opt-in upload)")
@@ -1021,7 +1082,9 @@ def main(argv=None):
     cluster_p.add_argument("-p", "--project", default=None, help="Project directory (default: cwd)")
 
     args = parser.parse_args(argv)
-    if args.cmd == "last":
+    if args.cmd == "send":
+        cmd_send(args)
+    elif args.cmd == "last":
         cmd_last(args)
     elif args.cmd == "clear":
         cmd_clear(args)

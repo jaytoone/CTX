@@ -423,7 +423,7 @@ def cmd_install(args: argparse.Namespace) -> int:
     print("=" * 50)
     print()
     print("Optional: help improve CTX by sharing anonymous usage data.")
-    print("  ctx-telemetry consent grant   # opt-in (k-anonymized, no code/text sent)")
+    print("  ctx-telemetry send            # opt-in + upload in one step")
     print("  ctx-telemetry                 # preview what would be shared")
     print("  Schema: https://github.com/jaytoone/CTX#telemetry-opt-in-local-only")
     return 0
