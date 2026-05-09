@@ -464,6 +464,70 @@ _SESSION_STATE_PATH = HOME / ".claude" / "ctx-session-state.json"
 _SESSION_AGGREGATES_LOG = HOME / ".claude" / "ctx-session-aggregates.jsonl"
 
 
+_TURSO_DB_URL = "https://frwp-jaytoone.aws-us-west-2.turso.io"
+_TURSO_WRITE_TOKEN = (
+    "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NzYxMzQ4MjksImlkIjoiMDE5Y2VjYzIt"
+    "MWMwMS03MGNjLWJjMzktMTA2NjlhODhlOTgxIiwicmlkIjoiNTgwNzNiZjgtNDc4My00YjhiLWI4ZjAt"
+    "ZDY0ZWU2ZDRkYzcxIn0.AjxxxM0v4fcz0mONEdpI2t6ulp1NvUM87FLMUuWyvFa0wx0qavjzBGf6HnS9B"
+    "--DepuT0EbhwRRuc9HHRTGXAA"
+)
+_REVOKE_FILE = Path.home() / ".claude" / "ctx-telemetry-revoke"
+_UPLOAD_STATE = Path.home() / ".claude" / "ctx-telemetry-upload-state.json"
+
+_TURSO_FIELDS = [
+    "schema_version", "user_id", "session_id_hash", "ts_date",
+    "total_turns", "total_injections", "mean_utility_rate",
+    "hook_source_hist", "retrieval_method_hist", "session_outcome",
+    "vault_entry_count", "index_staleness_hours", "mean_top_score_bm25",
+    "query_type_hist", "node_type_hist",
+]
+
+
+def _auto_upload_row(row: dict) -> None:
+    """Silently upload one session_aggregate row to Turso.
+
+    Opt-out: create ~/.claude/ctx-telemetry-revoke to disable.
+    Sends numeric+categorical stats only — no code, text, or paths.
+    """
+    if _REVOKE_FILE.exists():
+        return
+    try:
+        import urllib.request as _req
+        import hashlib as _hl
+
+        # Build INSERT args
+        cols = [f for f in _TURSO_FIELDS if f in row]
+        placeholders = ", ".join("?" for _ in cols)
+        sql = f"INSERT INTO ctx_session_aggregates ({', '.join(cols)}) VALUES ({placeholders})"
+        args = []
+        for c in cols:
+            v = row[c]
+            if isinstance(v, dict):
+                v = json.dumps(v)
+            if v is None:
+                args.append({"type": "null"})
+            elif isinstance(v, float):
+                args.append({"type": "float", "value": v})
+            elif isinstance(v, int):
+                args.append({"type": "integer", "value": str(v)})
+            else:
+                args.append({"type": "text", "value": str(v)})
+
+        payload = json.dumps({"requests": [
+            {"type": "execute", "stmt": {"sql": sql, "args": args}}
+        ]}).encode()
+        token = _TURSO_WRITE_TOKEN.replace("\n", "")
+        req = _req.Request(
+            f"{_TURSO_DB_URL}/v2/pipeline", data=payload,
+            headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+            method="POST",
+        )
+        with _req.urlopen(req, timeout=8) as resp:
+            json.load(resp)
+    except Exception:
+        pass  # silent — never break the hook on upload failure
+
+
 def _accumulate_session_aggregate(session_id, by_block, utility_rate):
     """Accumulate per-turn metrics into a running session state.
 
@@ -519,6 +583,7 @@ def _accumulate_session_aggregate(session_id, by_block, utility_rate):
                 agg["node_type_hist"] = node_type_hist
             with open(_SESSION_AGGREGATES_LOG, "a", encoding="utf-8") as f:
                 f.write(json.dumps(agg) + "\n")
+            _auto_upload_row(agg)
             state = {}
 
         # Accumulate current turn

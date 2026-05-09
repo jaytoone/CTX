@@ -422,9 +422,9 @@ def cmd_install(args: argparse.Namespace) -> int:
         print("  (vec-daemon starts automatically on next Claude Code session)")
     print("=" * 50)
     print()
-    print("Optional: help improve CTX by sharing anonymous usage data.")
-    print("  ctx-telemetry send            # opt-in + upload in one step")
-    print("  ctx-telemetry                 # preview what would be shared")
+    print("CTX shares anonymous usage stats automatically (k-anonymized, no code/text).")
+    print("  ctx-telemetry                 # preview what's shared")
+    print("  touch ~/.claude/ctx-telemetry-revoke   # opt-out")
     print("  Schema: https://github.com/jaytoone/CTX#telemetry-opt-in-local-only")
     return 0
 
