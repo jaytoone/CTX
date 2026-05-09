@@ -295,7 +295,7 @@ def _read_stop_stdin() -> dict:
 # ── retrieval_event schema (data flywheel — privacy-safe, local-first) ──────
 _RETRIEVAL_EVENTS_LOG = HOME / ".claude" / "ctx-retrieval-events.jsonl"
 _RETRIEVAL_META_PATH = HOME / ".claude" / "last-retrieval-meta.json"
-_RETRIEVAL_EVENT_SCHEMA = "v1.6"
+_RETRIEVAL_EVENT_SCHEMA = "v1.7"
 _USER_ID_CACHE = HOME / ".claude" / "ctx-user-id.hash"
 
 
@@ -480,6 +480,10 @@ _TURSO_FIELDS = [
     "hook_source_hist", "retrieval_method_hist", "session_outcome",
     "vault_entry_count", "index_staleness_hours", "mean_top_score_bm25",
     "query_type_hist", "node_type_hist",
+    # v1.7 additions — moat/monetization value
+    "project_type_id",   # stack fingerprint (python_ml/nextjs_react/etc.) — enables Pro tier segmentation
+    "ctx_version",       # package version — tracks improvement across releases
+    "utility_by_qtype",  # {KEYWORD: rate, SEMANTIC: rate} cross-table — proves routing works
 ]
 
 
@@ -581,6 +585,26 @@ def _accumulate_session_aggregate(session_id, by_block, utility_rate):
             node_type_hist = state.get("node_type_hist", {})
             if node_type_hist:
                 agg["node_type_hist"] = node_type_hist
+            # v1.7: project_type_id from ctx-auto-tune.json (run ctx-telemetry cluster to populate)
+            try:
+                auto_tune = Path.home() / ".claude" / "ctx-auto-tune.json"
+                if auto_tune.exists():
+                    tune = json.loads(auto_tune.read_text())
+                    pt = tune.get("project_type_id") or tune.get("project_type_hint")
+                    if pt:
+                        agg["project_type_id"] = str(pt)
+            except Exception:
+                pass
+            # v1.7: ctx_version from installed package
+            try:
+                import importlib.metadata as _meta
+                agg["ctx_version"] = _meta.version("ctx-retriever")
+            except Exception:
+                pass
+            # v1.7: utility_by_qtype — utility_rate breakdown per query type
+            uq = state.get("utility_by_qtype", {})
+            if uq:
+                agg["utility_by_qtype"] = {qt: round(v["sum"] / v["n"], 4) for qt, v in uq.items() if v["n"] > 0}
             with open(_SESSION_AGGREGATES_LOG, "a", encoding="utf-8") as f:
                 f.write(json.dumps(agg) + "\n")
             _auto_upload_row(agg)
@@ -620,6 +644,12 @@ def _accumulate_session_aggregate(session_id, by_block, utility_rate):
                 qt = bdata.get("query_type")
                 if qt and qt != "UNKNOWN":
                     qt_hist[qt] = qt_hist.get(qt, 0) + 1
+                    # v1.7: track utility_rate per query_type for cross-table
+                    uq = state.setdefault("utility_by_qtype", {})
+                    if qt not in uq:
+                        uq[qt] = {"sum": 0.0, "n": 0}
+                    uq[qt]["sum"] += utility_rate
+                    uq[qt]["n"] += 1
                 top_bm25 = bdata.get("top_score_bm25")
                 if top_bm25 is not None:
                     state["top_score_bm25_sum"] = state.get("top_score_bm25_sum", 0.0) + top_bm25
