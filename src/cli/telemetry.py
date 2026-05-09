@@ -481,9 +481,70 @@ def cmd_tune(args):
     print("To re-run as more data accumulates: ctx-telemetry tune")
 
 
-_UPLOAD_ENDPOINT = "https://telemetry.ctx-retriever.com/v1/session_aggregate"
+# Stage 2: Turso HTTP API endpoint (libSQL, SQLite-compatible, 5 GB free)
+# DB: frwp-jaytoone.aws-us-west-2.turso.io (ctx_session_aggregates table)
+# To migrate to dedicated ctx-telemetry DB: update TURSO_DB_URL + rotate TURSO_WRITE_TOKEN
+_TURSO_DB_URL = "https://frwp-jaytoone.aws-us-west-2.turso.io"
+_TURSO_WRITE_TOKEN = "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NzYxMzQ4MjksImlkIjoiMDE5Y2VjYzItMWMwMS03MGNjLWJjMzktMTA2NjlhODhlOTgxIiwicmlkIjoiNTgwNzNiZjgtNDc4My00YjhiLWI4ZjAtZDY0ZWU2ZDRkYzcxIn0.AjxxxM0v4fcz0mONEdpI2t6ulp1NvUM87FLMUuWyvFa0wx0qavjzBGf6HnS9B--DepuT0EbhwRRuc9HHRTGXAA"
 _UPLOAD_MIN_USERS_K = 5    # k-anonymity gate: suppress if < 5 users per date window
 _UPLOAD_STATE_FILE = Path.home() / ".claude" / "ctx-telemetry-upload-state.json"
+
+
+def _turso_insert_rows(rows: list[dict]) -> tuple[int, str]:
+    """Insert session_aggregate rows into Turso via HTTP pipeline API.
+    Returns (inserted_count, error_or_empty).
+    """
+    import urllib.request as _req
+    import urllib.error as _err
+
+    FIELDS = [
+        "schema_version", "user_id", "session_id_hash", "ts_date",
+        "total_turns", "total_injections", "mean_utility_rate",
+        "hook_source_hist", "retrieval_method_hist", "session_outcome",
+        "vault_entry_count", "index_staleness_hours", "mean_top_score_bm25",
+        "query_type_hist", "node_type_hist", "k_count",
+    ]
+
+    requests = []
+    for row in rows:
+        cols = [f for f in FIELDS if f in row]
+        placeholders = ", ".join("?" for _ in cols)
+        sql = f"INSERT INTO ctx_session_aggregates ({', '.join(cols)}) VALUES ({placeholders})"
+        args = []
+        for c in cols:
+            v = row[c]
+            if isinstance(v, dict):
+                v = json.dumps(v)
+            if v is None:
+                args.append({"type": "null"})
+            elif isinstance(v, bool):
+                args.append({"type": "integer", "value": str(int(v))})
+            elif isinstance(v, float):
+                args.append({"type": "float", "value": v})   # float: JSON number
+            elif isinstance(v, int):
+                args.append({"type": "integer", "value": str(v)})  # int: string
+            else:
+                args.append({"type": "text", "value": str(v)})
+        requests.append({"type": "execute", "stmt": {"sql": sql, "args": args}})
+
+    payload = json.dumps({"requests": requests}).encode()
+    req = _req.Request(
+        f"{_TURSO_DB_URL}/v2/pipeline",
+        data=payload,
+        headers={"Authorization": f"Bearer {_TURSO_WRITE_TOKEN}", "Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with _req.urlopen(req, timeout=15) as resp:
+            result = json.load(resp)
+        errors = [r for r in result.get("results", []) if r.get("type") == "error"]
+        if errors:
+            return 0, str(errors[0])
+        return len(rows), ""
+    except _err.HTTPError as e:
+        return 0, f"HTTP {e.code}: {e.read().decode()[:200]}"
+    except Exception as exc:
+        return 0, str(exc)
 
 
 def cmd_upload(args):
@@ -585,41 +646,25 @@ def cmd_upload(args):
     print()
 
     if not send:
-        print(f"Endpoint: {_UPLOAD_ENDPOINT}")
-        print("Stage 2 endpoint is NOT yet active.")
-        print()
-        print("To upload when endpoint is live: ctx-telemetry upload --send")
-        print("To monitor endpoint status:      https://github.com/jaytoone/CTX/issues (watch for Stage 2 announcement)")
+        print(f"Endpoint: Turso ({_TURSO_DB_URL})")
+        print("Dry-run complete. To actually upload: ctx-telemetry upload --send")
         return
 
-    # Actual send (when endpoint is live)
-    try:
-        import urllib.request as _req
-        import urllib.error as _err
-        payload = [r for _, r in eligible]
-        data = json.dumps({"rows": payload, "client_version": "v1.6"}).encode()
-        req = _req.Request(
-            _UPLOAD_ENDPOINT,
-            data=data,
-            headers={"Content-Type": "application/json", "X-CTX-Schema": "v1.6"},
-            method="POST",
-        )
-        with _req.urlopen(req, timeout=15) as resp:
-            status = resp.status
-            body = resp.read().decode()[:200]
-        if status == 200:
-            new_sent = already_sent | {h for h, _ in eligible}
-            upload_state["sent_hashes"] = list(new_sent)
-            upload_state["last_upload"] = _dt.datetime.now(_dt.timezone.utc).isoformat()
-            upload_state["total_sent"] = len(new_sent)
-            _UPLOAD_STATE_FILE.write_text(json.dumps(upload_state, indent=2))
-            print(f"Upload successful: {len(eligible)} rows sent.")
-            print(f"Response: {body}")
-        else:
-            print(f"Upload failed: HTTP {status} — {body}")
-    except Exception as exc:
-        print(f"Upload failed: {exc}")
-        print("Check that the Stage 2 endpoint is active.")
+    # Actual send via Turso HTTP API
+    payload = [r for _, r in eligible]
+    # Add k_count for server-side audit (client-computed, server logs it)
+    for r in payload:
+        r["k_count"] = len(by_date.get(r.get("ts_date", ""), []))
+    inserted, err = _turso_insert_rows(payload)
+    if not err:
+        new_sent = already_sent | {h for h, _ in eligible}
+        upload_state["sent_hashes"] = list(new_sent)
+        upload_state["last_upload"] = _dt.datetime.now(_dt.timezone.utc).isoformat()
+        upload_state["total_sent"] = len(new_sent)
+        _UPLOAD_STATE_FILE.write_text(json.dumps(upload_state, indent=2))
+        print(f"Upload successful: {inserted} rows → Turso ctx_session_aggregates.")
+    else:
+        print(f"Upload failed: {err}")
 
 
 def cmd_consent(args):

@@ -34,6 +34,11 @@ try:
     bench_endpoint.register(app)
 except Exception:
     pass
+try:
+    import telemetry_endpoint
+    telemetry_endpoint.register(app)
+except Exception:
+    pass
 
 
 def _load(name: str) -> dict:

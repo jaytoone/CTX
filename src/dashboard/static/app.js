@@ -1065,11 +1065,14 @@ function wireContributorClicks(detail, highlightNodeId) {
       if (ev.target.tagName === 'SUMMARY' || ev.target.closest('summary')) return;
       const nodeId = li.dataset.nodeId;
       if (!nodeId) return;
-      // Focus + pulse the node on the graph pane
+      // Scroll to graph panel first, then focus the node inside it
+      document.getElementById('graph-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       if (graphNetwork && graphNetwork.getNodeAt) {
         try {
           graphNetwork.selectNodes([nodeId], true);
-          graphNetwork.focus(nodeId, { scale: 1.3, animation: { duration: 400, easingFunction: 'easeInOutQuad' } });
+          setTimeout(() => {
+            graphNetwork.focus(nodeId, { scale: 1.3, animation: { duration: 400, easingFunction: 'easeInOutQuad' } });
+          }, 350);
         } catch (e) {
           console.warn('focus failed', e);
         }

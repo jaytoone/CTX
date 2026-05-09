@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ctx-retriever"
-version = "0.3.15"
+version = "0.3.16"
 description = "Trigger-Driven Dynamic Context Loading for Code-Aware LLM Agents"
 readme = "README.md"
 license = { text = "MIT" }
@@ -12,7 +12,7 @@ requires-python = ">=3.9"
 authors = [{ name = "jaytoone" }]
 keywords = ["retrieval", "llm", "code-search", "context", "rag", "claude-code", "claude-code-plugin"]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
@@ -20,6 +20,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Topic :: Software Development :: Libraries",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 dependencies = [
     "rank_bm25>=0.2.2",
@@ -37,7 +38,9 @@ dev = ["pytest>=7.0", "pytest-cov"]
 [project.urls]
 Homepage = "https://github.com/jaytoone/CTX"
 Repository = "https://github.com/jaytoone/CTX"
-"HuggingFace Demo" = "https://huggingface.co/spaces/jaytoone/ctx-demo"
+Documentation = "https://github.com/jaytoone/CTX#readme"
+"Bug Tracker" = "https://github.com/jaytoone/CTX/issues"
+"Live Demo" = "https://huggingface.co/spaces/Be2Jay/ctx-dashboard-demo"
 
 [project.scripts]
 ctx-install = "ctx_retriever.cli.install:main"
