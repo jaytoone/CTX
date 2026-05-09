@@ -2,18 +2,22 @@
 
 **Vision**: CTX becomes the data moat layer for AI coding tools — the only system that closes the loop between context injection and AI citation behavior, across sessions and across users.
 
-**North Star Metric**: Cross-user `utility_rate` improvement delta (measured: how much does CTX get better per 100 sessions of opt-in data?)
+**North Star Metric (NS1)**: Cross-user `utility_rate` improvement delta (measured: how much does CTX get better per 100 sessions of opt-in data?)
+
+**North Star Metric (NS2 — active)**: `distinct_external_users` in Turso `ctx_session_aggregates` > 0
+- Gate: at least 1 real user (not developer) has opted in and uploaded data
+- Current: 0 external users (1054 rows = developer self-data only)
+- Fast-check: `SELECT COUNT(DISTINCT user_id) FROM ctx_session_aggregates WHERE user_id NOT LIKE 'test_%'`
+- **This is the primary goal until the first external upload is confirmed**
 
 ---
 
 ## Current State (2026-05-09)
 
-- v0.3.16 staged (uncommitted) — Beta status, Turso pipeline live
-- PyPI: 1,394 downloads/month (138 yesterday — spike)
-- Local telemetry: 1,020 session_aggregates, 12 eligible dates, all k≥5
-- Turso DB: `ctx_session_aggregates` table created, pipeline tested ✅
-- HF Space: `ctx-dashboard-demo` RUNNING ✅
-- GitHub: 4 stars, 2 forks, 4 open issues
+- v0.3.16 committed — Beta, Turso pipeline live, install opt-in prompt added
+- PyPI: 1,394 downloads/month | Turso: 1054 rows (all self-data, 0 external users yet)
+- M1 ✅ M2 ✅ M5-GN ✅ | M4 waiting (2026-05-16) | M5-HN karma gate
+- **Blocker for NS2**: v0.3.16 not yet published to PyPI — new installs still get old version without opt-in prompt
 
 ---
 
