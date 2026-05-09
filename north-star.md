@@ -55,7 +55,7 @@
 **Blocked by**: Cooldown expires 2026-05-16
 **Note**: Previous API submission rejected (#1773 closed) — MUST use web form
 
-### M5 — HN + GeekNews posts [KARMA GATE]
+### M5 — HN + GeekNews posts [PARTIALLY DONE]
 **Goal**: Show HN post live, GeekNews post live
 **Acceptance**: Both posts indexed, >5 points each
 **Actions**:
