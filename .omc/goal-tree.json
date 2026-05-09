@@ -1,12 +1,12 @@
 {
-  "root_goal": "Implement 3-Tier Tangible MERIDIAN eval stack (PUAC harness + public benchmark integration + human pairwise protocol) for CTX vs claude-mem",
-  "original_goal": "Implement 3-Tier Tangible MERIDIAN eval stack (PUAC harness + public benchmark integration + human pairwise protocol) for CTX vs claude-mem",
+  "root_goal": "Execute CTX north-star milestones M1→M2→M4 in order — flywheel activation + distribution",
+  "original_goal": "M1부터 CTX north-star 마일스톤 순서대로 실행",
   "level": 0,
+  "sub_goals": [],
   "evolution_count": 0,
   "evolution_history": [],
-  "reward_spec": {
-    "primary_metric": "reproducible eval stack",
-    "threshold": "ctx-eval CLI runs + dashboard shows CL/AR/PRR per prompt + LongMemEval harness callable"
-  },
-  "history": []
+  "reward_spec": {"primary_metric": "milestones completed", "threshold": "M1+M2 done, M4+M5 in progress"},
+  "history": [
+    {"iteration": 1, "outcome": "success", "completed": "M2 (install opt-in prompt + token env var)"}
+  ]
 }
