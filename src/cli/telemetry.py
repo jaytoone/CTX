@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import sys
 from collections import defaultdict
 from pathlib import Path
@@ -494,10 +495,29 @@ _UPLOAD_MIN_USERS_K = 5    # k-anonymity gate: suppress if < 5 users per date wi
 _UPLOAD_STATE_FILE = Path.home() / ".claude" / "ctx-telemetry-upload-state.json"
 
 
+_TURSO_BATCH_SIZE = 50  # rows per pipeline call to avoid timeout
+
+
 def _turso_insert_rows(rows: list[dict]) -> tuple[int, str]:
-    """Insert session_aggregate rows into Turso via HTTP pipeline API.
+    """Insert session_aggregate rows into Turso via HTTP pipeline API (batched).
     Returns (inserted_count, error_or_empty).
     """
+    import urllib.request as _req
+    import urllib.error as _err
+
+    # Send in batches to avoid timeout on large payloads
+    total_inserted = 0
+    for batch_start in range(0, len(rows), _TURSO_BATCH_SIZE):
+        batch = rows[batch_start:batch_start + _TURSO_BATCH_SIZE]
+        n, err = _turso_insert_batch(batch)
+        if err:
+            return total_inserted, err
+        total_inserted += n
+    return total_inserted, ""
+
+
+def _turso_insert_batch(rows: list[dict]) -> tuple[int, str]:
+    """Insert one batch of rows. Internal helper."""
     import urllib.request as _req
     import urllib.error as _err
 
