@@ -1,41 +1,12 @@
 {
   "status": "ACTIVE",
-  "session_id": "inf-20260424T110044-puac-meridian",
-  "current_iteration": 53,
-  "root_goal": "Bump ctx-retriever to 0.2.2 + PyPI publish with Stage 1 telemetry changes; update plugin hooks manifest to reflect CM instrumentation",
-  "original_goal": "Implement 3-Tier Tangible MERIDIAN eval stack (PUAC harness + public benchmark integration + human pairwise protocol) for CTX vs claude-mem",
-  "evolution_count": 1,
-  "evolution_history": [
-    {
-      "from": "Implement 3-Tier Tangible MERIDIAN eval stack (PUAC harness + public benchmark integration + human pairwise protocol) for CTX vs claude-mem",
-      "to": "Complete CTX data flywheel Stage 1: session_aggregate per-session rollup + DOC_INDEX",
-      "iteration": 50,
-      "score": 0.97,
-      "reason": "MERIDIAN at 0.99; flywheel infra gap (impact 0.90\u21920.97); Stage 1 partial"
-    }
-  ],
-  "best_score": 0.97,
+  "session_id": "inf-20260509-ctx-ns2-update",
+  "current_iteration": 1,
+  "root_goal": "push toward NS2 (first external user in Turso) + update all channels with v0.3.19 + execute M4/M5-HN milestones",
+  "original_goal": "go update \u2014 CTX north-star: NS2 + channel updates + milestone execution",
+  "evolution_count": 0,
+  "best_score": 0.0,
   "plateau_count": 0,
-  "started_at": "2026-04-24T11:00:44.420852Z",
-  "wave1_complete": true,
-  "wave1_evolution_count": 0,
-  "wave1_specialists": [
-    "research-explore",
-    "ops-planner"
-  ],
-  "pending_async_tasks": [
-    {
-      "task": "homograph auto-label (120 labels)",
-      "pid_hint": "check pgrep -af auto_label.py",
-      "output_path": "benchmarks/datasets/homograph_gold.json",
-      "next_iter_action": "once file exists \u2192 run `python3 benchmarks/eval/homograph_audit.py score`"
-    }
-  ],
-  "next_iter_plan": [
-    "iter 4: Tier 1 \u2014 LongMemEval harness wrapper (benchmarks/eval/tier1_longmemeval.py)",
-    "iter 5: Tier 1 \u2014 MemoryAgentBench Competency-4 conflict-resolution test",
-    "iter 6: Dashboard FRONTEND \u2014 split-pane diff view consuming /api/puac-compare/{pid}",
-    "iter 7: Tier 3 pairwise annotation endpoint + N=10 pilot"
-  ],
-  "last_session_resume": "2026-04-27T09:31:51.884982Z"
+  "started_at": "2026-05-09T14:52:30.923366+00:00",
+  "wave1_complete": false
 }

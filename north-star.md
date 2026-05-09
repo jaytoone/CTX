@@ -12,12 +12,14 @@
 
 ---
 
-## Current State (2026-05-09)
+## Current State (2026-05-09 — updated)
 
-- v0.3.16 committed — Beta, Turso pipeline live, install opt-in prompt added
-- PyPI: 1,394 downloads/month | Turso: 1054 rows (all self-data, 0 external users yet)
-- M1 ✅ M2 ✅ M5-GN ✅ | M4 waiting (2026-05-16) | M5-HN karma gate
-- **Blocker for NS2**: v0.3.16 not yet published to PyPI — new installs still get old version without opt-in prompt
+- v0.3.19 on PyPI ✅ — schema v1.7: project_type_id + ctx_version + utility_by_qtype
+- Auto-upload on session end (opt-out model) — zero friction for users
+- Turso: 1058 rows, 1 distinct user (self), ctx_version='0.3.18' appearing ✅
+- NS2 gate: PENDING — awaiting first external user upload
+- M1 ✅ M2 ✅ M5-GN ✅ | M4 waiting (2026-05-16) | M5-HN karma=1 (gate)
+- GN post: 1pt, 5 comments (updated today with v0.3.16+v0.3.19 info)
 
 ---
 
