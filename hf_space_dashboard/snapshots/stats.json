@@ -1,0 +1,43 @@
+{
+  "pypi_total": 1854,
+  "pypi_last_7d": 912,
+  "pypi_last_30d": 1734,
+  "weekly_trend": [
+    {
+      "week": "W14 Mar 30",
+      "downloads": 115,
+      "note": "initial release"
+    },
+    {
+      "week": "W15 Apr 06",
+      "downloads": 13,
+      "note": ""
+    },
+    {
+      "week": "W16 Apr 13",
+      "downloads": 1,
+      "note": ""
+    },
+    {
+      "week": "W17 Apr 20",
+      "downloads": 10,
+      "note": ""
+    },
+    {
+      "week": "W18 Apr 27",
+      "downloads": 828,
+      "note": "GN post + PyPI surge"
+    },
+    {
+      "week": "W19 May 04",
+      "downloads": 887,
+      "note": "current week (in progress)"
+    }
+  ],
+  "turso_rows": 1075,
+  "turso_users": 1,
+  "ns2_status": "PENDING",
+  "gn_points": 1,
+  "gn_comments": 6,
+  "updated_at": "2026-05-10"
+}

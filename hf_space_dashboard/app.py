@@ -82,6 +82,11 @@ def node_explain(node_id: str, prompt_id: str):
     return JSONResponse({"error": "node not found in snapshot", "node_id": node_id})
 
 
+@app.get("/api/stats")
+def stats():
+    return JSONResponse(_load("stats.json"))
+
+
 @app.get("/api/samples")
 def samples(offset: int = 0, limit: int = 10):
     return JSONResponse(_load("samples.json"))
