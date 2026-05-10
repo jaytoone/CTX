@@ -20,7 +20,19 @@ from pathlib import Path
 from typing import List, Optional, Tuple
 
 import anthropic
+import importlib.util
 from rank_bm25 import BM25Okapi
+
+
+# ── Canonical tokenizer (PR #3 unification) ────────────────────────────────
+# The upstream BM25 tokenizer lives inside `src/hooks/bm25-memory.py` (a
+# hyphenated filename rules out a normal `import`). Load it dynamically so eval
+# pipelines share the exact production tokenization (`tokenize`).
+_MONOLITH = Path(__file__).resolve().parents[2] / "src" / "hooks" / "bm25-memory.py"
+_spec = importlib.util.spec_from_file_location("bm25_memory", _MONOLITH)
+_bm25_memory = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_bm25_memory)
+tokenize = _bm25_memory.tokenize  # noqa: E305  canonical entry point
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -74,12 +86,6 @@ QA_PAIRS = [
 # ──────────────────────────────────────────────────────────────────────────────
 # Step 1: Build BM25 index over doc chunks
 # ──────────────────────────────────────────────────────────────────────────────
-
-def tokenize(text: str) -> List[str]:
-    """Lowercase; preserve decimal numbers (0.724) and numeric ranges (7-30)."""
-    tokens = re.findall(r'\d+[-\u2013]\d+|\d+\.\d+|\w+', text.lower())
-    return [t for t in tokens if t]
-
 
 def chunk_document(filename: str, content: str) -> List[str]:
     """Split a document by ## section headers. Each chunk = filename § header\ncontent."""
