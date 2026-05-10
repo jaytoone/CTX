@@ -81,23 +81,6 @@ _VEC_SOCK = Path.home() / ".local/share/claude-vault/vec-daemon.sock"
 _VEC_TIMEOUT = 0.8   # seconds — fail fast if daemon is down
 _VEC_DISABLED = os.environ.get("CTX_DISABLE_SEMANTIC_RERANK") == "1"
 
-# ── Auto-tune: read flywheel parameter recommendations (ctx-telemetry tune output) ──
-_AUTO_TUNE_PATH = Path.home() / ".claude" / "ctx-auto-tune.json"
-_AUTO_TUNE: dict = {}
-_AUTO_TUNE_ACTIVE: bool = False
-try:
-    if _AUTO_TUNE_PATH.exists():
-        _auto_tune_raw = json.loads(_AUTO_TUNE_PATH.read_text())
-        if isinstance(_auto_tune_raw, dict):
-            _AUTO_TUNE = _auto_tune_raw
-            _AUTO_TUNE_ACTIVE = True
-except Exception:
-    pass
-
-# Retrieval score capture: populated by bm25_rank_decisions / dense_rank_decisions
-# so callers can read top_score_bm25 / top_score_dense without signature changes.
-_last_retrieval_scores: dict = {}
-
 # bge-daemon: BGE cross-encoder served over Unix socket (same pattern as vec-daemon).
 # Hook stays fast because the 7s model load happens ONCE in the daemon, not per
 # UserPromptSubmit. Default ON; disable via CTX_CROSS_ENCODER=0 if daemon is down
@@ -329,8 +312,6 @@ def tokenize(text: str, drop_stopwords: bool = False):
     matches "logging". Preserves the original token too so exact-match precision
     is never lost (dedup handles duplicates). Opt-out via CTX_STEM=0.
     """
-    # \w+ matches Unicode word chars including Hangul/CJK syllables \u2014 Korean is handled.
-    # Unified with eval tokenizer pattern (doc_retrieval_eval_v2._eval_tokenize).
     raw = re.findall(r'\d+[-\u2013]\d+|\d+\.\d+|\w+', text.lower())
     result = []
     for tok in raw:
@@ -567,7 +548,6 @@ def dense_rank_decisions(corpus, query, top_k=20):
     if not scored:
         return []
     scored.sort(key=lambda x: -x[0])
-    _last_retrieval_scores["dense_top"] = float(scored[0][0])
     return [item for _, item in scored[:top_k]]
 
 
@@ -596,7 +576,7 @@ def rrf_merge(list_a, list_b, k_rrf=60):
         scores[k] = scores.get(k, 0.0) + 1.0 / (k_rrf + rank)
         hash_to_item[k] = item
 
-    merged_keys = sorted(scores.keys(), key=lambda h: -scores[h])
+    merged_keys = sorted(scores.keys(), key=lambda h: (-scores[h], h))
     return [hash_to_item[h] for h in merged_keys]
 
 
@@ -643,10 +623,9 @@ def bm25_rank_decisions(corpus, query, top_k=7, min_score=0.5,
         return []
 
     top_score = float(max(scores))
-    _last_retrieval_scores["bm25_top"] = top_score
     adaptive_floor = max(min_score, top_score * adaptive_floor_ratio)
 
-    ranked_idx = sorted(range(len(corpus)), key=lambda i: scores[i], reverse=True)
+    ranked_idx = sorted(range(len(corpus)), key=lambda i: (-scores[i], i))
 
     # Cluster signature: normalizes "live-infinite iter N/∞: goal_vM" boilerplate
     # so different iter-numbers don't escape MMR dedup (MEMORY.md: "live-inf iter
@@ -781,14 +760,16 @@ def build_docs_bm25(project_dir):
     vs header-chunked approach (0.758 vs 0.667 on 33 paraphrase pairs).
     Full-doc wins on temporal/open-set/perf queries where answers span multiple sections.
     """
-    all_units = []
+    # Name-keyed dict: root extras (README/CLAUDE/MEMORY) win on collision
+    # Prevents duplicate entries when docs/research/ has same-name placeholders
+    units_by_name = {}
     docs_dir = Path(project_dir) / "docs" / "research"
     if docs_dir.exists():
         for md_file in sorted(docs_dir.glob("*.md")):
             try:
                 text = f"{md_file.name}\n{md_file.read_text()}"
                 if len(text) > 50:
-                    all_units.append(text)
+                    units_by_name.setdefault(md_file.name, text)
             except Exception:
                 pass
 
@@ -797,9 +778,11 @@ def build_docs_bm25(project_dir):
             p = Path(fpath)
             text = f"{p.name}\n{p.read_text()}"
             if len(text) > 50:
-                all_units.append(text)
+                units_by_name[p.name] = text  # root always wins
         except Exception:
             pass
+
+    all_units = list(units_by_name.values())
 
     if not all_units or not HAS_BM25:
         return None, []
@@ -944,7 +927,6 @@ def dense_rank_docs(units_emb, query, top_k=10):
     if not scored:
         return []
     scored.sort(key=lambda x: -x[0])
-    _last_retrieval_scores["dense_top"] = float(scored[0][0])
     return [item for _, item in scored[:top_k]]
 
 
@@ -972,7 +954,6 @@ def hybrid_search_docs(project_dir, query, top_k=5):
     # Step 1: BM25 candidates
     scores = bm25.get_scores(query_tokens)
     top_score = float(max(scores)) if len(scores) else 0.0
-    _last_retrieval_scores["bm25_top"] = top_score
     if top_score < 1.0:
         return []
     floor = max(1.0, top_score * 0.35)
@@ -1452,26 +1433,7 @@ def main():
     corpus = get_decision_corpus(project_dir)
     g1_header = ""
     if corpus:
-        # Auto-tune: adjust top_k based on flywheel recommendations
-        _g1_top_k = 7
-        if _AUTO_TUNE:
-            _qtype_now = _classify_query_type(prompt)
-            _temporal_gap = _AUTO_TUNE.get("temporal_utility_gap", 0)
-            # If TEMPORAL utility is 10pp below KEYWORD, reduce top_k to inject only best matches
-            if _qtype_now == "TEMPORAL" and _temporal_gap > 0.10:
-                _g1_top_k = 5  # more selective for low-utility temporal queries
-            # Project-type profile adjustments (Stage 3 local loop)
-            _proj_type = _AUTO_TUNE.get("project_type_hint", "")
-            _proj_conf = _AUTO_TUNE.get("project_type_confidence", "LOW")
-            if _proj_conf in ("HIGH", "MEDIUM"):
-                if _proj_type == "python_ml":
-                    # ML projects: training/model decisions span longer history
-                    _g1_top_k = min(_g1_top_k + 1, 10)
-                elif _proj_type == "nextjs_react":
-                    # React: component decisions are keyword-specific, fewer suffice
-                    _g1_top_k = max(_g1_top_k - 1, 4)
-        _last_retrieval_scores.clear()
-        relevant = hybrid_rank_decisions(corpus, prompt, top_k=_g1_top_k)
+        relevant = hybrid_rank_decisions(corpus, prompt, top_k=7)
         if relevant:
             # Build forced display header (mechanically injected, not advisory)
             first_subj = relevant[0]["subject"][:70]
@@ -1492,63 +1454,25 @@ def main():
                 "duration_ms": int((_time.perf_counter() - _t_g1) * 1000),
             })
             _blocks_fired.append("g1")
-            _g1_meta: dict = {
+            _retrieval_meta["blocks"]["g1_decisions"] = {
                 "candidates": len(corpus),
                 "returned": len(relevant),
                 "retrieval_method": "HYBRID" if (_VEC_SOCK.exists() and not _VEC_DISABLED) else "BM25",
                 "duration_ms": int((_time.perf_counter() - _t_g1) * 1000),
                 "query_type": _classify_query_type(prompt),
             }
-            if "bm25_top" in _last_retrieval_scores:
-                _g1_meta["top_score_bm25"] = round(_last_retrieval_scores["bm25_top"], 4)
-            if "dense_top" in _last_retrieval_scores:
-                _g1_meta["top_score_dense"] = round(_last_retrieval_scores["dense_top"], 4)
-            _retrieval_meta["blocks"]["g1_decisions"] = _g1_meta
             # Citation probe: log G1 retrieved nodes
             log_retrieved_nodes(project_dir, _session_id, prompt, "g1_decisions", [
                 {"id": c.get("hash", c["subject"][:20]), "text": c["subject"], "date": c.get("date", "")}
                 for c in relevant
             ])
 
-            # Sharing trigger: fire once per project on first-ever G1 recall
-            try:
-                _omc_dir = Path(project_dir) / ".omc"
-                _g1_flag = _omc_dir / "ctx-g1-first-fire.flag"
-                if not _g1_flag.exists():
-                    _omc_dir.mkdir(exist_ok=True)
-                    _g1_flag.write_text("1")
-                    lines.append(
-                        "[CTX] First G1 recall fired in this project — "
-                        "share with your team: pip install ctx-retriever && ctx-install"
-                    )
-            except Exception:
-                pass
-
     # 2. G2: BM25 over project docs
     g2_files = []
     g2_keywords = []
     if prompt:
         _t_g2d = _time.perf_counter()
-        # Auto-tune: adjust G2-DOCS top_k based on flywheel recommendations
-        _g2d_top_k = 5
-        if _AUTO_TUNE:
-            _qtype_now2 = _classify_query_type(prompt)
-            _g2_temporal_gap = _AUTO_TUNE.get("temporal_utility_gap", 0)
-            if _qtype_now2 == "TEMPORAL" and _g2_temporal_gap > 0.10:
-                _g2d_top_k = 3  # more selective for low-utility temporal doc queries
-            # Project-type profile adjustments (Stage 3 local loop)
-            _proj_type2 = _AUTO_TUNE.get("project_type_hint", "")
-            _proj_conf2 = _AUTO_TUNE.get("project_type_confidence", "LOW")
-            if _proj_conf2 in ("HIGH", "MEDIUM"):
-                if _proj_type2 == "nextjs_react":
-                    # Next.js: more framework docs per query (more component/API docs)
-                    _g2d_top_k = min(_g2d_top_k + 1, 8)
-                elif _proj_type2 == "rust_systems":
-                    # Rust: docs are precise, fewer higher-quality docs preferred
-                    _g2d_top_k = max(_g2d_top_k - 1, 3)
-        _last_retrieval_scores.pop("bm25_top", None)
-        _last_retrieval_scores.pop("dense_top", None)
-        doc_chunks = hybrid_search_docs(project_dir, prompt, top_k=_g2d_top_k)
+        doc_chunks = hybrid_search_docs(project_dir, prompt, top_k=5)
         if doc_chunks:
             lines.append("[G2-DOCS] (BM25+dense RRF relevant research docs)")
             for chunk in doc_chunks:
@@ -1574,19 +1498,13 @@ def main():
                 "duration_ms": int((_time.perf_counter() - _t_g2d) * 1000),
             })
             _blocks_fired.append("g2_docs")
-            _g2d_corpus_size = len(build_docs_bm25(project_dir)[1]) if doc_chunks else None
-            _g2d_meta: dict = {
-                "candidates": _g2d_corpus_size,
+            _retrieval_meta["blocks"]["g2_docs"] = {
+                "candidates": None,
                 "returned": len(doc_chunks),
                 "retrieval_method": "HYBRID" if (_VEC_SOCK.exists() and not _VEC_DISABLED) else "BM25",
                 "duration_ms": int((_time.perf_counter() - _t_g2d) * 1000),
                 "query_type": _classify_query_type(prompt),
             }
-            if "bm25_top" in _last_retrieval_scores:
-                _g2d_meta["top_score_bm25"] = round(_last_retrieval_scores["bm25_top"], 4)
-            if "dense_top" in _last_retrieval_scores:
-                _g2d_meta["top_score_dense"] = round(_last_retrieval_scores["dense_top"], 4)
-            _retrieval_meta["blocks"]["g2_docs"] = _g2d_meta
             # Citation probe: log G2-DOCS retrieved nodes
             log_retrieved_nodes(project_dir, _session_id, prompt, "g2_docs", [
                 {"id": chunk.strip().split("\n")[0].split(" §")[0].strip(), "text": chunk.strip().split("\n")[0][:80]}
@@ -1678,21 +1596,6 @@ def main():
             _daemon_warns.append("bge-daemon down — cross-encoder rerank disabled")
         if _daemon_warns:
             header_lines.append("> **⚠ Semantic layer**: " + " | ".join(_daemon_warns))
-        # Auto-tune active badge — shows flywheel is running
-        if _AUTO_TUNE_ACTIVE:
-            n_rec = _AUTO_TUNE.get("based_on_n", "?")
-            prefer_hybrid = _AUTO_TUNE.get("prefer_hybrid_G1", False)
-            temporal_gap = _AUTO_TUNE.get("temporal_utility_gap")
-            proj_hint = _AUTO_TUNE.get("project_type_hint")
-            proj_conf = _AUTO_TUNE.get("project_type_confidence", "LOW")
-            parts = [f"n={n_rec}"]
-            if prefer_hybrid:
-                parts.append("hybrid✓")
-            if temporal_gap and temporal_gap > 0.05:
-                parts.append(f"temporal-gap={temporal_gap*100:.0f}pp")
-            if proj_hint and proj_hint != "multi_lang" and proj_conf in ("HIGH", "MEDIUM"):
-                parts.append(proj_hint)
-            header_lines.append(f"> **CTX auto-tune** [{', '.join(parts)}] — run `ctx-telemetry tune` to refresh")
         if header_lines:
             lines = header_lines + [""] + lines
 
@@ -1793,7 +1696,7 @@ def main():
                     tokens = _extract_content_tokens(subj, n=5)
                     if tokens:
                         item = {
-                            "block": "g1_decisions",
+                            "block": "g1",
                             "tokens": tokens,
                             "subject": subj[:200],  # preserved for semantic scoring
                         }
