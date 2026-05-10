@@ -547,7 +547,10 @@ def dense_rank_decisions(corpus, query, top_k=20):
             scored.append((cos, item))
     if not scored:
         return []
-    scored.sort(key=lambda x: -x[0])
+    # Tiebreak by stable item key — parity with rrf_merge / bm25_rank_decisions
+    # (7f9d5a9 covered those two; the dense site was mentioned in that commit
+    # message but missed in the diff).
+    scored.sort(key=lambda x: (-x[0], x[1].get("hash") or (x[1].get("text") or "")[:20]))
     return [item for _, item in scored[:top_k]]
 
 
