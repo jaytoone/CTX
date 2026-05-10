@@ -18,7 +18,18 @@ import re
 import subprocess
 import sys
 from pathlib import Path
+import importlib.util
 from typing import Dict, List, Optional, Tuple
+
+
+# Canonical tokenizer (PR #3 unification): load `bm25-memory.py` dynamically
+# (hyphen rules out a normal import) so eval and production share the exact
+# same tokenize() implementation.
+_MONOLITH = Path(__file__).resolve().parents[2] / "src" / "hooks" / "bm25-memory.py"
+_spec = importlib.util.spec_from_file_location("bm25_memory", _MONOLITH)
+_bm25_memory = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_bm25_memory)
+_canonical_tokenize = _bm25_memory.tokenize
 
 # ── LLM client ───────────────────────────────────────────────────────────────
 
@@ -264,9 +275,7 @@ def get_bm25_context(query: str, commit_corpus: List[Dict], top_k: int = 7) -> T
     if not commit_corpus:
         return "[Empty corpus]", 0
 
-    def tokenize(text: str) -> List[str]:
-        return re.findall(r'\b\w+\b', text.lower())
-
+    tokenize = _canonical_tokenize  # PR #3: was local re.findall(r'\b\w+\b'); now canonical
     subjects = [c.get('subject', '') for c in commit_corpus]
     tokenized = [tokenize(s) for s in subjects]
     bm25 = BM25Okapi(tokenized)

@@ -16,6 +16,7 @@ Run:
   python3 benchmarks/eval/g2_docs_paraphrase_eval.py 2>&1
 """
 
+import importlib.util
 import json
 import re
 import time
@@ -23,6 +24,17 @@ from pathlib import Path
 from typing import List, Tuple
 
 from rank_bm25 import BM25Okapi
+
+
+# ── Canonical tokenizer (PR #3 unification) ──────────────────────────────────
+# The upstream BM25 tokenizer lives inside `src/hooks/bm25-memory.py` (a
+# hyphenated filename rules out a normal `import`). Load it dynamically so eval
+# pipelines share the exact production tokenization (`tokenize`).
+_MONOLITH = Path(__file__).resolve().parents[2] / "src" / "hooks" / "bm25-memory.py"
+_spec = importlib.util.spec_from_file_location("bm25_memory", _MONOLITH)
+_bm25_memory = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_bm25_memory)
+tokenize = _bm25_memory.tokenize  # noqa: E305  canonical entry point
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -316,23 +328,6 @@ QA_PAIRS = [
 # ──────────────────────────────────────────────────────────────────────────────
 # BM25 index construction
 # ──────────────────────────────────────────────────────────────────────────────
-
-_KO_PARTICLES = re.compile(
-    r'(와|과|이|가|은|는|을|를|의|에서|으로|에게|부터|까지|처럼|같이|보다|이나|며|에|로|도|만|나|고)$'
-)
-
-
-def tokenize(text: str) -> List[str]:
-    """Preserve decimal numbers and numeric ranges. Strip Korean particles from mixed tokens."""
-    raw = re.findall(r'\d+[-\u2013]\d+|\d+\.\d+|\w+', text.lower())
-    result = []
-    for tok in raw:
-        cleaned = _KO_PARTICLES.sub('', tok)
-        if cleaned and cleaned != tok:
-            result.append(cleaned)
-        result.append(tok)
-    return list(dict.fromkeys(result))
-
 
 def chunk_document(filename: str, content: str) -> List[str]:
     """Split by ## section headers."""
