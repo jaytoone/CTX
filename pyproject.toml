@@ -46,6 +46,7 @@ Documentation = "https://github.com/jaytoone/CTX#readme"
 ctx-install = "ctx_retriever.cli.install:main"
 ctx-telemetry = "ctx_retriever.cli.telemetry:main"
 ctx-dashboard = "ctx_retriever.cli.dashboard:main"
+ctx-pro = "ctx_retriever.pro.cli:main"
 
 [tool.setuptools]
 packages = [
@@ -56,6 +57,7 @@ packages = [
     "ctx_retriever.data",
     "ctx_retriever.evaluator",
     "ctx_retriever.hooks",
+    "ctx_retriever.pro",
     "ctx_retriever.retrieval",
     "ctx_retriever.trigger",
     "ctx_retriever.visualizer",
