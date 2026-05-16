@@ -66,5 +66,5 @@ packages = [
 
 [tool.setuptools.package-data]
 "*" = ["*.json", "*.yaml"]
-"ctx_retriever.hooks" = ["*.py", "ctx-telemetry"]
+"ctx_retriever.hooks" = ["*.py", "*.sh", "ctx-telemetry"]
 "ctx_retriever.dashboard" = ["*.py", "static/*.html", "static/*.js", "static/*.css"]
