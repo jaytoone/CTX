@@ -48,20 +48,32 @@ CLAUDE_VAULT_DIR = Path.home() / ".local" / "share" / "claude-vault"
 # Daemon scripts shipped in wheel → deployed to ~/.local/share/claude-vault/
 CTX_DAEMONS = ["vec-daemon.py", "bge-daemon.py"]
 
-# The 5 production hooks CTX ships. Each entry: (filename, event, async).
+# The CTX hooks ctx-install ships. Each entry: (filename, event, async[, extra_args]).
 # Matched against current ~/.claude/settings.json structure.
+#
+# SessionStart hook (ensure-claude-vault-daemons.sh) handles vec-daemon /
+# bge-daemon autostart so a fresh `pip install ctx-retriever && ctx-install`
+# matches the daemon-autostart behaviour the plugin Setup path provides.
+# Async so session start isn't blocked by daemon model load.
 CTX_HOOKS = [
-    ("chat-memory.py",            "UserPromptSubmit", False),
-    ("bm25-memory.py",            "UserPromptSubmit", False, ["--rich"]),
-    ("memory-keyword-trigger.py", "UserPromptSubmit", False),
-    ("g2-fallback.py",            "PostToolUse",      False),
-    ("utility-rate.py",           "Stop",             True),   # telemetry — async
+    ("chat-memory.py",                  "UserPromptSubmit", False),
+    ("bm25-memory.py",                  "UserPromptSubmit", False, ["--rich"]),
+    ("memory-keyword-trigger.py",       "UserPromptSubmit", False),
+    ("g2-fallback.py",                  "PostToolUse",      False),
+    ("utility-rate.py",                 "Stop",             True),   # telemetry — async
+    ("ensure-claude-vault-daemons.sh",  "SessionStart",     True),   # daemon autostart — async
 ]
 
 
 def _hook_entry(filename: str, extra_args: list[str] | None = None) -> dict:
-    """Build the JSON hook entry for settings.json."""
-    cmd = f"python3 $HOME/.claude/hooks/{filename}"
+    """Build the JSON hook entry for settings.json.
+
+    Shell scripts (`.sh`) are invoked via `bash`; Python hooks via `python3`.
+    """
+    if filename.endswith(".sh"):
+        cmd = f"bash $HOME/.claude/hooks/{filename}"
+    else:
+        cmd = f"python3 $HOME/.claude/hooks/{filename}"
     if extra_args:
         cmd = cmd + " " + " ".join(extra_args)
     return {"type": "command", "command": cmd}
