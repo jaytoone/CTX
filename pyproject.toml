@@ -41,7 +41,6 @@ Homepage = "https://github.com/jaytoone/CTX"
 Repository = "https://github.com/jaytoone/CTX"
 Documentation = "https://github.com/jaytoone/CTX#readme"
 "Bug Tracker" = "https://github.com/jaytoone/CTX/issues"
-"Live Demo" = "https://huggingface.co/spaces/Be2Jay/ctx-dashboard-demo"
 
 [project.scripts]
 ctx-install = "ctx_retriever.cli.install:main"
