@@ -464,12 +464,11 @@ def cmd_install(args: argparse.Namespace) -> int:
 
 
 # Turso config — must stay in sync with src/hooks/utility-rate.py _TURSO_*
-_TURSO_DB_URL = "https://frwp-jaytoone.aws-us-west-2.turso.io"
+_TURSO_DB_URL = "https://hub-ctx-jaytoone.aws-us-west-2.turso.io"
 _TURSO_WRITE_TOKEN = (
-    "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NzYxMzQ4MjksImlkIjoiMDE5Y2VjYzIt"
-    "MWMwMS03MGNjLWJjMzktMTA2NjlhODhlOTgxIiwicmlkIjoiNTgwNzNiZjgtNDc4My00YjhiLWI4ZjAt"
-    "ZDY0ZWU2ZDRkYzcxIn0.AjxxxM0v4fcz0mONEdpI2t6ulp1NvUM87FLMUuWyvFa0wx0qavjzBGf6HnS9B"
-    "--DepuT0EbhwRRuc9HHRTGXAA"
+    "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3NzkwODUwNDksImlkIjoiMDE5ZTM5YmEt"
+    "YmEwMS03OGU5LWEzMDMtOTQwMTBhZTllNGJlIiwicmlkIjoiYjRjZWFiNDUtNjk4MC00MGQ1LWFmYTUtNTdhMmY4NjNl"
+    "ZGYwIn0.aGVFInXKg0HCQrTGW76L-Wd0xlv8eqnVA_GqdFaj4cNwfacotQTNjRCVetdtdIMNryuzFd6d_wTFuuDTB9fwAw"
 )
 _REVOKE_FILE = Path.home() / ".claude" / "ctx-telemetry-revoke"
 
