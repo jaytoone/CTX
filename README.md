@@ -12,8 +12,6 @@ CTX classifies developer queries into four trigger types and routes each to a sp
 
 > **Key insight**: code import graphs encode structural dependency information that text-based RAG cannot capture. CTX achieves Recall@5 = 1.0 on implicit dependency queries vs 0.4 for BM25.
 
-**[▶ Dashboard demo (39s)](https://drive.google.com/file/d/1b4ZvbRYkXKTepKDx8N7gLfim-zLDiCGo/view?usp=sharing)**
-
 ## Install for Claude Code (Hook mode)
 
 CTX runs as Claude Code hooks that inject context before every prompt. Two install paths:
@@ -161,12 +159,6 @@ Per response-type:
 ```
 
 **What this measures** — distinctive terms from each user prompt, substring-matched against the assistant's response text AND tool_use parameters (file_path/command/pattern). On turns where CTX's hooks would surface related context, this rate approximates the *ceiling* of plausible utility. It is NOT a direct CTX measurement — install CTX and compare against live `utility_measured` telemetry for the actual delta. Use it to decide "is this signal worth pursuing?" before committing to install.
-
-Live dashboard (after install):
-
-![CTX Telemetry Dashboard](https://raw.githubusercontent.com/jaytoone/CTX/master/docs/media/ctx-cover.png)
-
-The dashboard visualizes utility in four stacked views — pooled rate with 95% CI, per-block breakdown (g1/g2_docs/g2_prefetch), by response type (prose/mixed/tool_heavy), and by item age (0-7d / 7-30d / 30d+). The knowledge graph below it lights up decisions in coral when Claude actually used them in the last 7 days; dead-weight decisions (no recent references) appear muted — pruning candidates.
 
 ## Hook Performance
 
