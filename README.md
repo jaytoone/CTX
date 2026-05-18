@@ -12,46 +12,15 @@ CTX classifies developer queries into four trigger types and routes each to a sp
 
 > **Key insight**: code import graphs encode structural dependency information that text-based RAG cannot capture. CTX achieves Recall@5 = 1.0 on implicit dependency queries vs 0.4 for BM25.
 
-## Install for Claude Code (Hook mode)
-
-CTX runs as Claude Code hooks that inject context before every prompt. Two install paths:
-
-### Option A — pip (always works, recommended)
+## Install
 
 ```bash
 pip install ctx-retriever
-ctx-install                     # wires hooks into ~/.claude/settings.json
 ```
 
-Restart Claude Code. Done.
+Hooks wire automatically on first Python startup. Restart Claude Code. Done.
 
-### Option B — Claude Code plugin
-
-First, register the CTX marketplace (one-time, per machine):
-
-```bash
-python3 -c "
-import json, pathlib
-p = pathlib.Path('~/.claude/settings.json').expanduser()
-s = json.loads(p.read_text()) if p.exists() else {}
-s.setdefault('extraKnownMarketplaces', {})['jaytoone'] = {
-    'source': {'source': 'github', 'repo': 'jaytoone/CTX'}
-}
-p.write_text(json.dumps(s, indent=2))
-print('[CTX] marketplace registered')
-"
-```
-
-Then in Claude Code:
-
-```
-/plugin install ctx@jaytoone
-```
-
-The plugin Setup hook installs dependencies and wires everything automatically. Restart Claude Code.
-
-> The marketplace registration step will become unnecessary once CTX is accepted into
-> the official Claude Code plugin directory. Until then, Option A is simpler for new users.
+> **Opt-out:** `touch ~/.claude/ctx-telemetry-revoke` to disable anonymous usage stats.
 
 ## Quick Start (library API)
 
@@ -86,47 +55,6 @@ CTX_BGE_ENABLE=1
 
 When enabled, bge-daemon starts automatically on session open and reranks retrieved results.
 **Not recommended for machines with less than 4GB RAM or slow internet** (model downloads on first run).
-
-### What ctx-install does (atomic, backup-first)
-
-1. Verifies the 4 CTX hook files exist at `~/.claude/hooks/` (chat-memory, bm25-memory, memory-keyword-trigger, g2-fallback)
-2. Reads `~/.claude/settings.json`, takes a timestamped backup (`settings.json.bak.<TS>`)
-3. Merges the CTX hook registrations into the existing `hooks` dict **without overwriting your other hooks** (dedupes by command string — safe to re-run)
-4. Atomically writes the new settings.json (temp-file-then-rename — never leaves partial state on disk)
-5. Smoke-tests by firing `bm25-memory.py` once with a dummy prompt and confirming `last-injection.json` gets written
-
-### Other subcommands
-
-```bash
-ctx-install --dry-run           # show what would change, touch nothing
-ctx-install status              # verify hook file presence + settings.json registration + last fire
-ctx-install --uninstall         # remove CTX hook registrations (hook files left in place)
-```
-
-### Manual install (legacy — only needed if `ctx-install` fails)
-
-```bash
-# 1. Copy hook files to ~/.claude/hooks/
-# 2. Register each in ~/.claude/settings.json under the appropriate event key
-```
-
-Example settings block (what ctx-install writes for you):
-
-```json
-{
-  "hooks": {
-    "UserPromptSubmit": [
-      { "hooks": [{ "type": "command", "command": "python3 $HOME/.claude/hooks/chat-memory.py" }] },
-      { "hooks": [{ "type": "command", "command": "python3 $HOME/.claude/hooks/bm25-memory.py --rich" }] },
-      { "hooks": [{ "type": "command", "command": "python3 $HOME/.claude/hooks/memory-keyword-trigger.py" }] }
-    ],
-    "PostToolUse": [
-      { "matcher": "Grep",
-        "hooks": [{ "type": "command", "command": "python3 $HOME/.claude/hooks/g2-fallback.py" }] }
-    ]
-  }
-}
-```
 
 **What you get in each prompt:**
 ```
