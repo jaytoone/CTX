@@ -27,7 +27,7 @@ main{display:grid;grid-template-columns:1.4fr 1fr;gap:14px;padding:20px 24px;max
 .panel.wide{grid-column:1/-1}
 .panel h2{margin:0 0 14px;font-family:var(--serif);font-size:17px;font-weight:500;color:var(--text)}
 </style>
-<link rel="stylesheet" href="/static/styles.css?v=mobile9" />
+<link rel="stylesheet" href="/static/styles.css?v=codefiles1" />
 <!-- uPlot for time-series (tiny, ~40KB) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uplot@1.6.31/dist/uPlot.min.css" />
 <script defer src="https://cdn.jsdelivr.net/npm/uplot@1.6.31/dist/uPlot.iife.min.js"></script>
@@ -88,6 +88,22 @@ window.addEventListener('message',e=>{if(e.data?.type==='hub-theme')document.doc
       <span class="hint info-tip right" data-i18n-title="panel.utility.tip" title="Measured on the Stop hook by substring-matching each injected item's distinctive tokens against the assistant's response.">ⓘ&nbsp;<span data-i18n="panel.utility.how">how</span></span>
     </h2>
     <div id="utility-body"></div>
+  </section>
+
+  <section class="panel" id="codefiles-panel">
+    <h2>
+      <span>Code files</span>
+      <span class="hint">G2-PREFETCH / G2-GREP — code files discovered by CTX on recent turns</span>
+    </h2>
+    <div id="codefiles-body"><span style="color:var(--text-dim);font-size:12px;font-family:var(--mono)">loading…</span></div>
+  </section>
+
+  <section class="panel" id="token-usage-panel">
+    <h2>
+      <span data-i18n="panel.token_usage">Token Usage</span>
+      <span class="hint" data-i18n="panel.token_usage.hint">CTX-injected tokens per turn</span>
+    </h2>
+    <div id="token-usage-body"><span style="color:var(--text-dim);font-size:12px;font-family:var(--mono)">loading…</span></div>
   </section>
 
   <section class="panel" id="status-panel">

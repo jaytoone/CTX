@@ -58,6 +58,8 @@ const I18N = {
   "panel.utility.tip":      { en: "Measured on the Stop hook by matching each injected item's distinctive tokens against the assistant's response AND tool-use params. Stale events auto-excluded.", ko: "Stop 후크에서 주입된 각 항목의 고유 토큰을 assistant 응답 및 tool-use 파라미터와 매칭하여 측정. 오래된 이벤트는 자동 제외." },
   "panel.notices":          { en: "Quality notices", ko: "품질 알림" },
   "panel.notices.hint":     { en: "rate-based, informational", ko: "비율 기반, 안내용" },
+  "panel.token_usage":      { en: "Token Usage", ko: "토큰 사용량" },
+  "panel.token_usage.hint": { en: "CTX-injected tokens per turn", ko: "CTX가 턴당 주입한 토큰 수" },
   "panel.other":            { en: "Other signals", ko: "기타 신호" },
   "panel.graph":            { en: "Knowledge graph", ko: "지식 그래프" },
   "panel.graph.hint":       { en: "decisions · docs · prompts — coral = selected prompt, edges = retrieval + topic + temporal", ko: "결정 · 문서 · 프롬프트 — 산호색 = 선택된 프롬프트, 엣지 = 검색 + 토픽 + 시간" },
@@ -543,6 +545,40 @@ function renderOther(other) {
     const label = OTHER_LABELS[o.label] || o.label;
     return `<span class="pill" title="${esc(o.label)}">${esc(label)} <span class="count">×${esc(o.count)}</span></span>`;
   }).join("");
+}
+
+function renderTokenUsage(tu) {
+  const host = $("token-usage-body");
+  if (!host) return;
+  if (!tu) {
+    host.innerHTML = `<span style="color:var(--text-dim);font-size:12px;font-family:var(--mono)">No token_usage events yet — inject CTX context to start tracking.</span>`;
+    return;
+  }
+  const pct = tu.total_prompt_tokens > 0
+    ? ((tu.total_injected_tokens / tu.total_prompt_tokens) * 100).toFixed(1)
+    : null;
+  const byBlock = tu.by_block && Object.keys(tu.by_block).length > 0
+    ? Object.entries(tu.by_block)
+        .sort((a, b) => b[1] - a[1])
+        .map(([blk, toks]) => `<span class="pill" style="font-family:var(--mono);font-size:11px">${esc(blk)} <span class="count">${toks.toLocaleString()}</span></span>`)
+        .join(" ")
+    : null;
+  host.innerHTML = `
+    <div style="display:flex;flex-wrap:wrap;gap:18px;align-items:flex-start">
+      <div style="min-width:160px">
+        <div style="font-size:28px;font-weight:600;color:var(--accent);font-family:var(--mono);line-height:1">${tu.avg_injected_tokens.toLocaleString()}</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:3px">avg CTX tokens / turn</div>
+      </div>
+      ${pct !== null ? `<div style="min-width:120px">
+        <div style="font-size:28px;font-weight:600;color:var(--text-soft);font-family:var(--mono);line-height:1">${pct}%</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:3px">of prompt tokens</div>
+      </div>` : ''}
+      <div style="min-width:120px">
+        <div style="font-size:22px;font-weight:500;color:var(--text-soft);font-family:var(--mono);line-height:1">${tu.total_turns}</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:3px">turns tracked</div>
+      </div>
+    </div>
+    ${byBlock ? `<div style="margin-top:12px"><div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px">by block (total tokens)</div><div class="pills">${byBlock}</div></div>` : ''}`;
 }
 
 function fmtTs(ts) {
@@ -1954,6 +1990,28 @@ function renderSamples(samples) {
   host.innerHTML = liveHTML + extraHTML;
 }
 
+function renderCodeFiles(cf) {
+  const host = $("codefiles-body");
+  if (!cf || !cf.files || cf.files.length === 0) {
+    host.innerHTML = `<div style="color:var(--text-dim);font-size:12px;font-family:var(--mono)">No code files discovered yet — G2-PREFETCH / G2-GREP will populate this panel after a few turns.</div>`;
+    return;
+  }
+  const METHOD_COLOR = {"G2-PREFETCH": "#cc785c", "G2-GREP": "#5c87cc"};
+  const rows = cf.files.map(f => {
+    const methodColor = METHOD_COLOR[f.method] || "#8a8278";
+    const symbolPart = f.symbol ? `<span class="sym">${esc(f.symbol)}</span> ` : "";
+    const pathEsc = esc(f.path);
+    return `<div class="cf-row">
+      <span class="cf-method" style="color:${methodColor}">${esc(f.method)}</span>
+      <span class="cf-path">${symbolPart}<span class="path">${pathEsc}</span></span>
+    </div>`;
+  }).join("");
+  host.innerHTML = `<div class="cf-list">${rows}</div>
+    <div class="cf-footer" style="color:var(--text-dim);font-size:11px;font-family:var(--mono);margin-top:8px;">
+      ${cf.files.length} file${cf.files.length !== 1 ? "s" : ""} · ${cf.total_turns} recent turn${cf.total_turns !== 1 ? "s" : ""}
+    </div>`;
+}
+
 function renderEvents(evs) {
   if (!evs || evs.length === 0) return `<div style="color:var(--text-dim); padding:10px;">No recent events.</div>`;
   return evs.map(e => `
@@ -2011,6 +2069,8 @@ function apply(snap) {
   renderActivity(snap.activity);
   $("latency-bars").innerHTML = renderLatencyBars(snap.latency_hist);
   renderUtility(snap.utility);
+  renderCodeFiles(snap.code_files);
+  renderTokenUsage(snap.token_usage);
   $("notices").innerHTML = renderNotices(snap.notices);
   $("other").innerHTML = renderOther(snap.other);
   $("events").innerHTML = renderEvents(snap.recent);

@@ -40,6 +40,11 @@ WOW_EVENT_FILE = HOME / ".claude" / ".ctx-wow-event.json"   # latest qualifying 
 WOW_UTILITY_MIN = 0.70      # utility_rate ≥ 70%
 WOW_AGE_MIN_DAYS = 14       # at least one referenced item ≥ 14 days old
 
+# Hub discovery nudge — fires once after N high-utility sessions
+HUB_NUDGE_FILE = HOME / ".claude" / ".ctx-hub-nudge-sent"
+HUB_HIGH_UTILITY_COUNT_FILE = HOME / ".claude" / ".ctx-hub-utility-count"
+HUB_NUDGE_SESSION_THRESHOLD = 5   # sessions with utility_rate ≥ WOW_UTILITY_MIN
+
 
 # ── T1: Semantic similarity via vec-daemon ───────────────────────────
 VEC_SOCK = HOME / ".local" / "share" / "claude-vault" / "vec-daemon.sock"
@@ -544,6 +549,7 @@ def _accumulate_session_aggregate(session_id, by_block, utility_rate):
     from datetime import date as _date
 
     try:
+        import time as _time
         state = {}
         if _SESSION_STATE_PATH.exists():
             try:
@@ -553,10 +559,22 @@ def _accumulate_session_aggregate(session_id, by_block, utility_rate):
 
         current_sid = session_id or "unknown"
         current_sid_hash = hashlib.sha256(current_sid.encode()).hexdigest()[:16]
+        now_ts = _time.time()
 
         prev_sid_hash = state.get("session_id_hash", "")
-        if prev_sid_hash and prev_sid_hash != current_sid_hash:
-            # New session — flush aggregate for old session
+        prev_last_stop_ts = float(state.get("last_stop_ts", 0))
+        # Flush triggers:
+        #   (a) session_id changed   → user opened a new session (existing behavior)
+        #   (b) idle-timeout > 30min → previous session was abandoned; treat as ended
+        idle_timeout_s = 1800
+        session_changed = prev_sid_hash and prev_sid_hash != current_sid_hash
+        idle_timed_out = (
+            prev_sid_hash
+            and prev_last_stop_ts > 0
+            and (now_ts - prev_last_stop_ts) > idle_timeout_s
+        )
+        if prev_sid_hash and (session_changed or idle_timed_out):
+            # New session OR same-session-but-resumed-after-long-idle — flush previous
             turns = state.get("turns", 0)
             agg = {
                 "schema_version": _RETRIEVAL_EVENT_SCHEMA,
@@ -615,6 +633,7 @@ def _accumulate_session_aggregate(session_id, by_block, utility_rate):
         state.setdefault("ts_date", str(_date.today()))
         state["turns"] = state.get("turns", 0) + 1
         state["utility_rate_sum"] = state.get("utility_rate_sum", 0.0) + utility_rate
+        state["last_stop_ts"] = now_ts  # for idle-timeout flush detection
 
         # Total injections
         turn_injections = sum(v.get("total", 0) for v in by_block.values())
@@ -894,6 +913,23 @@ def main():
                 }))
             except Exception:
                 pass
+
+    # ── Hub discovery nudge: fires once after N high-utility sessions ───────
+    if total > 0 and rate >= WOW_UTILITY_MIN and not HUB_NUDGE_FILE.exists():
+        try:
+            count = int(HUB_HIGH_UTILITY_COUNT_FILE.read_text().strip()) if HUB_HIGH_UTILITY_COUNT_FILE.exists() else 0
+            count += 1
+            HUB_HIGH_UTILITY_COUNT_FILE.write_text(str(count))
+            if count >= HUB_NUDGE_SESSION_THRESHOLD:
+                print(
+                    "\n[CTX] You've had 5 high-quality sessions."
+                    " Hub is available — run `ctx-hub start` to track milestones"
+                    " and get them auto-injected into every future session.",
+                    file=sys.stderr,
+                )
+                HUB_NUDGE_FILE.write_text(str(time.time()))
+        except Exception:
+            pass
 
     # ── session_aggregate: per-session rollup (Stage 1 flywheel, second half) ──
     _accumulate_session_aggregate(

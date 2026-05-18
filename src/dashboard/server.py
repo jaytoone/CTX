@@ -459,6 +459,8 @@ def _compute_samples(n_prompts: int = 3, offset: int = 0, include_realtime: bool
         g1_raw = _ctx._extract_block(bm_out, "[RECENT DECISIONS]")[:3]
         g2_doc_raw = _ctx._extract_block(bm_out, "[G2-DOCS]")[:3]
         g2_pre_items = _ctx._extract_block(bm_out, "[G2-PREFETCH]")[:3]
+        if not g2_pre_items:
+            g2_pre_items = _ctx._extract_block(bm_out, "[G2-GREP]")[:3]
 
         # Per-prompt utility: score parsed blocks against the real response
         # (must use raw strings before wrapping as dicts)
@@ -737,6 +739,42 @@ def _maybe_trigger_reactive_refresh():
         _PENDING_REFRESH["graph"] = True
 
 
+# ── Code files panel — extract file paths from recent G2-PREFETCH / G2-GREP ──
+
+def _compute_code_files(max_files: int = 20) -> dict:
+    """Extract code file paths from SAMPLE_CACHE g2_prefetch/g2_grep items.
+
+    Returns {files: [{path, symbol, method, prompt_ts}], total_turns}.
+    Deduplicates by path, keeps most recent occurrence.
+    """
+    files = []
+    seen_paths = set()
+    prompts = SAMPLE_CACHE.get("prompts") or []
+    for prompt in prompts:
+        ts = prompt.get("ts", "")
+        for item in (prompt.get("g2_prefetch") or []):
+            # Format: "Function: foo @ path.py" or "Class: Bar @ path.py"
+            # or plain file paths from G2-GREP
+            symbol = ""
+            path = item
+            if " @ " in item:
+                parts = item.split(" @ ", 1)
+                symbol = parts[0].strip()
+                path = parts[1].strip()
+            if path and path not in seen_paths:
+                seen_paths.add(path)
+                method = "G2-PREFETCH" if symbol else "G2-GREP"
+                files.append({"path": path, "symbol": symbol, "method": method, "prompt_ts": ts})
+        for item in (prompt.get("g2_grep") or []):
+            path = item.strip()
+            if path and path not in seen_paths:
+                seen_paths.add(path)
+                files.append({"path": path, "symbol": "", "method": "G2-GREP", "prompt_ts": ts})
+        if len(files) >= max_files:
+            break
+    return {"files": files[:max_files], "total_turns": len(prompts)}
+
+
 # ── Build a full snapshot JSON for the dashboard ──────────────────────
 def _build_snapshot():
     TAIL.refresh()
@@ -856,6 +894,8 @@ def _build_snapshot():
         "recent": _recent_events(events, n=30),
         "samples": SAMPLE_CACHE,
         "utility": _compute_utility(events),
+        "token_usage": data.get("token_usage"),
+        "code_files": _compute_code_files(),
         "thresholds": {
             "cm_hybrid_min": int(TH["cm_hybrid_pct_min"] * 100),
             "g2_docs_max": int(TH["g2_docs_over_concern"] * 100),

@@ -7,7 +7,7 @@
 [![HuggingFace Demo](https://img.shields.io/badge/HuggingFace-Demo-orange)](https://huggingface.co/spaces/Be2Jay/ctx-demo)
 [![Publish to PyPI](https://github.com/jaytoone/CTX/actions/workflows/publish.yml/badge.svg)](https://github.com/jaytoone/CTX/actions/workflows/publish.yml)
 
-![CTX Knowledge Graph — decisions, docs, and prompts in real time](docs/media/ctx-cover-graph.png)
+![CTX Knowledge Graph — decisions, docs, and prompts in real time](https://raw.githubusercontent.com/jaytoone/CTX/master/docs/media/ctx-cover-graph.png)
 
 CTX classifies developer queries into four trigger types and routes each to a specialized retrieval pipeline. For dependency-sensitive queries, CTX traverses the codebase import graph to resolve transitive relationships that keyword and embedding methods miss. It achieves **1.9x higher Token-Efficiency Score** than BM25 while using only **5.2% of tokens**, and **outperforms BM25 on held-out external codebases** (Flask, FastAPI, Requests — mean R@5 +0.163).
 
@@ -165,7 +165,7 @@ Per response-type:
 
 Live dashboard (after install):
 
-![CTX Telemetry Dashboard](docs/media/ctx-cover.png)
+![CTX Telemetry Dashboard](https://raw.githubusercontent.com/jaytoone/CTX/master/docs/media/ctx-cover.png)
 
 The dashboard visualizes utility in four stacked views — pooled rate with 95% CI, per-block breakdown (g1/g2_docs/g2_prefetch), by response type (prose/mixed/tool_heavy), and by item age (0-7d / 7-30d / 30d+). The knowledge graph below it lights up decisions in coral when Claude actually used them in the last 7 days; dead-weight decisions (no recent references) appear muted — pruning candidates.
 

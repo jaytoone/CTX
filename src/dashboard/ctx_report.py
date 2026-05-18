@@ -248,11 +248,16 @@ def _extract_block(hook_output: str, block_marker: str) -> list:
                 continue
             if stripped.startswith("["):  # next block
                 break
+            if stripped.startswith("Start with:"):  # summary line
+                continue
             # Format 1: G1 / G2-DOCS items start with '>'
             if stripped.startswith(">"):
                 items.append(stripped.lstrip("> ").strip()[:60])
             # Format 2: G2-PREFETCH items have a symbol-kind prefix
             elif any(stripped.startswith(p) for p in PREFETCH_PREFIXES):
+                items.append(stripped[:60])
+            # Format 3: G2-GREP items are plain file paths (no special prefix)
+            elif "/" in stripped or "." in stripped:
                 items.append(stripped[:60])
     return items
 
@@ -515,6 +520,37 @@ def _build_rich_group(args, events, data, live: bool = False):
         box=box.ROUNDED, border_style=style, padding=(0, 1),
     ))
 
+    # ── Token Usage panel — usage-based metric (M27)
+    tu = data.get("token_usage")
+    if tu:
+        tok_table = Table.grid(padding=(0, 1), expand=False)
+        tok_table.add_column(style="bold", width=18)
+        tok_table.add_column(width=22, justify="right", style="cyan")
+        tok_table.add_column(style="dim")
+
+        tok_table.add_row("Turns tracked", f"{tu['total_turns']}", "")
+        tok_table.add_row("Avg injected/turn", f"{tu['avg_injected_tokens']:,} tokens",
+                          f"(total {tu['total_injected_tokens']:,})")
+        tok_table.add_row("Avg prompt/turn", f"{tu['avg_prompt_tokens']:,} tokens",
+                          f"(total {tu['total_prompt_tokens']:,})")
+
+        # Per-block breakdown
+        if tu.get("by_block"):
+            block_parts = []
+            for blk, tokens in sorted(tu["by_block"].items(), key=lambda x: -x[1]):
+                block_parts.append(f"[cyan]{blk}[/cyan] {tokens:,}")
+            tok_table.add_row("By block", "", " · ".join(block_parts))
+
+        items.append(Panel(
+            tok_table,
+            title="[bold]Token Usage (CTX-injected)[/bold]",
+            box=box.ROUNDED, border_style="blue", padding=(0, 1),
+        ))
+    else:
+        items.append(Text.from_markup(
+            "[dim]Token usage: no data yet (enable CTX_TELEMETRY=1)[/dim]"
+        ))
+
     # ── Quality notices — one-line summary
     if data["quality_notices"]:
         parts = [f"[yellow]~[/yellow] {m}" for m, _ in data["quality_notices"]]
@@ -637,6 +673,38 @@ def _render_rich_live(args, refresh_seconds: float = 2.0):
         console.print("[dim]— exited watch mode —[/dim]")
 
 
+def _compute_token_usage(token_events):
+    """Aggregate token_usage events into summary metrics.
+
+    Returns dict with:
+      - total_turns: number of token_usage events
+      - total_injected_tokens: sum of injected_tokens across all events
+      - avg_injected_tokens: mean injected tokens per turn
+      - total_prompt_tokens: sum of prompt_tokens across all events
+      - avg_prompt_tokens: mean prompt tokens per turn
+      - by_block: per-block token totals {block_name: total_tokens}
+    """
+    if not token_events:
+        return None
+
+    total_injected = sum(e.get("injected_tokens", 0) for e in token_events)
+    total_prompt = sum(e.get("prompt_tokens", 0) for e in token_events)
+    by_block: dict = {}
+    for e in token_events:
+        bt = e.get("block_tokens", {})
+        for block, tokens in bt.items():
+            by_block[block] = by_block.get(block, 0) + tokens
+
+    return {
+        "total_turns": len(token_events),
+        "total_injected_tokens": total_injected,
+        "avg_injected_tokens": round(total_injected / len(token_events), 1),
+        "total_prompt_tokens": total_prompt,
+        "avg_prompt_tokens": round(total_prompt / len(token_events), 1),
+        "by_block": by_block,
+    }
+
+
 def _compute_metrics(events):
     """Aggregate events into a metrics dict for rich/plain renderers."""
     by_type = defaultdict(list)
@@ -713,6 +781,7 @@ def _compute_metrics(events):
         "daily_counts": daily_counts,
         "decision_hits": len(by_type.get("decision_captured", [])),
         "grep_signals": Counter(e.get("signal") for e in by_type.get("grep_signal", [])),
+        "token_usage": _compute_token_usage(by_type.get("token_usage", [])),
         "by_type": by_type,
     }
 

@@ -627,6 +627,23 @@ main {
 .util-chip.low     { color: var(--red);    border-color: var(--red);    background: var(--red-soft); }
 .util-chip.pending { color: var(--text-dim); border-color: var(--panel-border); background: transparent; }
 
+/* Code files panel */
+.cf-list { display: flex; flex-direction: column; gap: 4px; }
+.cf-row {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 5px 8px; border-radius: 4px;
+  font-family: var(--mono); font-size: 12px;
+  line-height: 1.4;
+}
+.cf-row:hover { background: var(--panel-soft); }
+.cf-method {
+  flex-shrink: 0; width: 90px; font-size: 10px; font-weight: 600;
+  letter-spacing: 0.04em; padding-top: 1px;
+}
+.cf-path { display: flex; align-items: baseline; gap: 4px; min-width: 0; }
+.cf-path .sym { color: var(--text-soft); font-weight: 500; white-space: nowrap; }
+.cf-path .path { color: var(--text-dim); word-break: break-all; }
+
 .info-tip {
   cursor: help;
   color: var(--accent-deep);

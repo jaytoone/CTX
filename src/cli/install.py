@@ -103,6 +103,14 @@ def _pkg_hooks_dir() -> Path | None:
         return None
 
 
+# Feature-presence markers: if a hook file exists in dst but lacks its marker,
+# treat it as outdated and overwrite (with .pre-upgrade.bak backup).
+# Prevents upgraders from pre-telemetry CTX permanently missing _auto_upload_row.
+_HOOK_REQUIRED_MARKERS = {
+    "utility-rate.py": "_auto_upload_row",   # telemetry auto-upload
+}
+
+
 def step_copy_hooks(dry_run: bool = False) -> tuple[int, int, list[str]]:
     """Copy hook files from the installed package to ~/.claude/hooks/.
     Returns (copied, skipped, errors)."""
@@ -122,6 +130,28 @@ def step_copy_hooks(dry_run: bool = False) -> tuple[int, int, list[str]]:
         if not src_file.is_file():
             continue  # optional file (utility-rate.py not in CTX_HOOKS list)
         if dst_file.is_file():
+            # If outdated (missing required feature marker), overwrite with backup.
+            required = _HOOK_REQUIRED_MARKERS.get(fname)
+            if required:
+                try:
+                    existing = dst_file.read_text(encoding="utf-8", errors="replace")
+                except OSError:
+                    existing = ""
+                if required not in existing:
+                    if not dry_run:
+                        try:
+                            backup = dst_file.with_suffix(dst_file.suffix + ".pre-upgrade.bak")
+                            shutil.copy2(dst_file, backup)
+                            shutil.copy2(src_file, dst_file)
+                            dst_file.chmod(0o755)
+                            copied += 1
+                            continue
+                        except OSError as e:
+                            errors.append(f"upgrade {fname}: {e}")
+                            continue
+                    else:
+                        copied += 1
+                        continue
             skipped += 1
             continue
         if not dry_run:
@@ -426,7 +456,91 @@ def cmd_install(args: argparse.Namespace) -> int:
     print("  ctx-telemetry                 # preview what's shared")
     print("  touch ~/.claude/ctx-telemetry-revoke   # opt-out")
     print("  Schema: https://github.com/jaytoone/CTX#telemetry-opt-in-local-only")
+
+    # Install-time ping — count the install itself, before any session data.
+    # Independent of session-end flush so single-session/never-return users still appear.
+    _send_install_ping()
     return 0
+
+
+# Turso config — must stay in sync with src/hooks/utility-rate.py _TURSO_*
+_TURSO_DB_URL = "https://frwp-jaytoone.aws-us-west-2.turso.io"
+_TURSO_WRITE_TOKEN = (
+    "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NzYxMzQ4MjksImlkIjoiMDE5Y2VjYzIt"
+    "MWMwMS03MGNjLWJjMzktMTA2NjlhODhlOTgxIiwicmlkIjoiNTgwNzNiZjgtNDc4My00YjhiLWI4ZjAt"
+    "ZDY0ZWU2ZDRkYzcxIn0.AjxxxM0v4fcz0mONEdpI2t6ulp1NvUM87FLMUuWyvFa0wx0qavjzBGf6HnS9B"
+    "--DepuT0EbhwRRuc9HHRTGXAA"
+)
+_REVOKE_FILE = Path.home() / ".claude" / "ctx-telemetry-revoke"
+
+
+def _compute_install_user_id() -> str:
+    """Reproduce the same user_id_hash that utility-rate.py would generate.
+    Source: SHA256(machine_id + install_month_epoch). Same algorithm used for sessions
+    so the install ping clusters with a user's later session rows."""
+    import hashlib
+    machine_id = ""
+    for mid_path in ["/etc/machine-id", "/var/lib/dbus/machine-id"]:
+        try:
+            machine_id = open(mid_path).read().strip()
+            break
+        except OSError:
+            pass
+    if not machine_id:
+        import socket
+        machine_id = socket.gethostname()
+    claude_dir = Path.home() / ".claude"
+    try:
+        install_ts = int(claude_dir.stat().st_mtime) if claude_dir.exists() else 0
+    except OSError:
+        install_ts = 0
+    from datetime import datetime, timezone
+    d = datetime.fromtimestamp(install_ts, tz=timezone.utc).replace(day=1, hour=0, minute=0, second=0)
+    install_month_epoch = str(int(d.timestamp()))
+    return hashlib.sha256(f"{machine_id}:{install_month_epoch}".encode()).hexdigest()[:16]
+
+
+def _send_install_ping() -> None:
+    """Fire-and-forget INSTALL_PING row to Turso so installs are counted even before
+    any Claude Code session ends. Silent on failure — never breaks the install flow."""
+    if _REVOKE_FILE.exists():
+        return
+    try:
+        import urllib.request as _req
+        import time as _time
+        from datetime import date as _date
+        try:
+            import importlib.metadata as _meta
+            ctx_ver = _meta.version("ctx-retriever")
+        except Exception:
+            ctx_ver = "unknown"
+        sql = (
+            "INSERT INTO ctx_session_aggregates "
+            "(schema_version, user_id, session_id_hash, ts_date, total_turns, "
+            "session_outcome, ctx_version) VALUES (?, ?, ?, ?, ?, ?, ?)"
+        )
+        args_list = [
+            {"type": "text",    "value": "v1.7"},
+            {"type": "text",    "value": _compute_install_user_id()},
+            {"type": "text",    "value": f"install:{int(_time.time())}"},
+            {"type": "text",    "value": str(_date.today())},
+            {"type": "integer", "value": "0"},
+            {"type": "text",    "value": "INSTALL_PING"},
+            {"type": "text",    "value": ctx_ver},
+        ]
+        payload = json.dumps({"requests": [
+            {"type": "execute", "stmt": {"sql": sql, "args": args_list}}
+        ]}).encode()
+        token = _TURSO_WRITE_TOKEN.replace("\n", "")
+        req = _req.Request(
+            f"{_TURSO_DB_URL}/v2/pipeline", data=payload,
+            headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+            method="POST",
+        )
+        with _req.urlopen(req, timeout=8) as resp:
+            json.load(resp)
+    except Exception:
+        pass  # silent — never break install on telemetry failure
 
 
 def cmd_uninstall(args: argparse.Namespace) -> int:
@@ -506,6 +620,20 @@ def cmd_status(args: argparse.Namespace) -> int:
         status = "running" if alive else "stopped"
         print(f"   {'✓' if alive else '○'} {daemon}  ({status})")
 
+    # Pro status
+    try:
+        from ctx_retriever.pro.gate import ProGate
+        gate = ProGate()
+        if gate.is_active():
+            info = gate.info()
+            email = info.get("email") or "(no email)"
+            tier = info.get("tier", "pro")
+            print(f"\nPro: active (tier={tier}, email={email})")
+        else:
+            print("\nPro: free  (no license -- run `ctx-pro info` to learn about Pro features)")
+    except Exception:
+        pass
+
     # Stale path check (CLAUDE_PLUGIN_ROOT update bug — anthropics/claude-code#18517)
     stale = []
     for event, cmd in installed_cmds:
@@ -532,6 +660,8 @@ def main() -> int:
                    help="Show what would change; touch no files.")
     p.add_argument("--uninstall", action="store_true",
                    help="Remove CTX hook registrations from settings.json.")
+    p.add_argument("--silent", action="store_true",
+                   help="Suppress all output (used by autoinstall .pth trigger).")
     p.add_argument("--no-seed", action="store_true",
                    help="Skip vault pre-seeding with git history.")
     p.add_argument("--reseed", action="store_true",
@@ -546,6 +676,13 @@ def main() -> int:
         return cmd_status(args)
     if args.uninstall:
         return cmd_uninstall(args)
+    if getattr(args, "silent", False):
+        import io, contextlib
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            args.no_seed = True  # silent mode skips slow vault seed
+            rc = cmd_install(args)
+        return rc
     return cmd_install(args)
 
 
