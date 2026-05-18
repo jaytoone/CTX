@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ctx-retriever"
-version = "0.3.25"
+version = "0.3.26"
 description = "Trigger-Driven Dynamic Context Loading for Code-Aware LLM Agents"
 readme = "README.md"
 license = { text = "MIT" }
@@ -65,11 +65,6 @@ packages = [
 
 [tool.setuptools.package-dir]
 "ctx_retriever" = "src"
-
-[tool.setuptools.data-files]
-# Empty-string key → installs to site-packages (purelib) so the .pth file is
-# picked up by Python on every startup, enabling zero-friction auto-wiring.
-"" = ["ctx_retriever_autoinstall.pth"]
 
 [tool.setuptools.package-data]
 "*" = ["*.json", "*.yaml"]
