@@ -1409,9 +1409,58 @@ def _count_tokens(text: str) -> int:
     return len(refined) if refined else len(tokens)
 
 
+def _retry_install_pending() -> None:
+    """Retry a queued install ping if present (< 7 days old). Solution 4 of
+    collection-guarantee research (docs/ns-replies/20260518-M31-collection-guarantee.md).
+    Handles the case where _send_install_ping() failed due to network timeout."""
+    _pending = Path.home() / ".claude" / "ctx-install-pending.json"
+    _revoke = Path.home() / ".claude" / "ctx-telemetry-revoke"
+    if not _pending.exists() or _revoke.exists():
+        return
+    try:
+        import time as _t, urllib.request as _ur
+        data = json.loads(_pending.read_text())
+        if (_t.time() - data.get("queued_at", 0)) > 7 * 86400:
+            _pending.unlink(missing_ok=True)
+            return
+        payload = data.get("payload", {})
+        if not payload:
+            return
+        _db = "https://hub-ctx-jaytoone.aws-us-west-2.turso.io"
+        _tok = (
+            "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3NzkwODUwNDksImlkIjoiMDE5ZTM5YmEt"
+            "YmEwMS03OGU5LWEzMDMtOTQwMTBhZTllNGJlIiwicmlkIjoiYjRjZWFiNDUtNjk4MC00MGQ1LWFmYTUtNTdhMmY4NjNl"
+            "ZGYwIn0.aGVFInXKg0HCQrTGW76L-Wd0xlv8eqnVA_GqdFaj4cNwfacotQTNjRCVetdtdIMNryuzFd6d_wTFuuDTB9fwAw"
+        ).replace("\n", "")
+        sql = ("INSERT INTO ctx_session_aggregates (schema_version,user_id,session_id_hash,"
+               "ts_date,total_turns,session_outcome,ctx_version) VALUES (?,?,?,?,?,?,?)")
+        args = [
+            {"type": "text",    "value": payload.get("schema_version", "v1.7")},
+            {"type": "text",    "value": payload.get("user_id", "unknown")},
+            {"type": "text",    "value": payload.get("session_id_hash", f"retry:{int(_t.time())}")},
+            {"type": "text",    "value": payload.get("ts_date", str(__import__("datetime").date.today()))},
+            {"type": "integer", "value": str(payload.get("total_turns", 0))},
+            {"type": "text",    "value": payload.get("session_outcome", "INSTALL_PING")},
+            {"type": "text",    "value": payload.get("ctx_version", "unknown")},
+        ]
+        body = json.dumps({"requests": [{"type": "execute", "stmt": {"sql": sql, "args": args}}]}).encode()
+        req = _ur.Request(f"{_db}/v2/pipeline", data=body,
+            headers={"Authorization": f"Bearer {_tok}", "Content-Type": "application/json"}, method="POST")
+        with _ur.urlopen(req, timeout=5) as r:
+            json.load(r)
+        _pending.unlink(missing_ok=True)
+    except Exception:
+        pass  # silent — never block the main hook
+
+
 def main():
     import time as _time
     _t_start = _time.perf_counter()
+    # Opportunistic retry of any queued install ping (non-blocking, silent on failure)
+    try:
+        _retry_install_pending()
+    except Exception:
+        pass
     try:
         input_data = json.load(sys.stdin)
     except Exception:

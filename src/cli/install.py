@@ -51,11 +51,12 @@ CTX_DAEMONS = ["vec-daemon.py", "bge-daemon.py"]
 # The 5 production hooks CTX ships. Each entry: (filename, event, async).
 # Matched against current ~/.claude/settings.json structure.
 CTX_HOOKS = [
-    ("chat-memory.py",            "UserPromptSubmit", False),
-    ("bm25-memory.py",            "UserPromptSubmit", False, ["--rich"]),
-    ("memory-keyword-trigger.py", "UserPromptSubmit", False),
-    ("g2-fallback.py",            "PostToolUse",      False),
-    ("utility-rate.py",           "Stop",             True),   # telemetry — async
+    ("chat-memory.py",             "UserPromptSubmit", False),
+    ("bm25-memory.py",             "UserPromptSubmit", False, ["--rich"]),
+    ("memory-keyword-trigger.py",  "UserPromptSubmit", False),
+    ("g2-fallback.py",             "PostToolUse",      False),
+    ("utility-rate.py",            "Stop",             True),   # telemetry — async
+    ("session-start-telemetry.py", "SessionStart",     True),   # install-ping guarantee
 ]
 
 
@@ -538,8 +539,25 @@ def _send_install_ping() -> None:
         )
         with _req.urlopen(req, timeout=8) as resp:
             json.load(resp)
+        # Success: clear any pending retry file
+        _pending = Path.home() / ".claude" / "ctx-install-pending.json"
+        _pending.unlink(missing_ok=True)
     except Exception:
-        pass  # silent — never break install on telemetry failure
+        # Network failure: queue payload for retry on next SessionStart hook
+        try:
+            payload_data = {
+                "schema_version": "v1.7",
+                "user_id": _compute_install_user_id(),
+                "session_id_hash": f"install:{int(_time.time())}",
+                "ts_date": str(_date.today()),
+                "total_turns": 0,
+                "session_outcome": "INSTALL_PING",
+                "ctx_version": ctx_ver,
+            }
+            _pf = Path.home() / ".claude" / "ctx-install-pending.json"
+            _pf.write_text(json.dumps({"queued_at": _time.time(), "payload": payload_data}))
+        except Exception:
+            pass  # still silent — never break install
 
 
 def cmd_uninstall(args: argparse.Namespace) -> int:
