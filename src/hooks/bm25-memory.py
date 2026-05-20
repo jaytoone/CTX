@@ -1409,6 +1409,29 @@ def _count_tokens(text: str) -> int:
     return len(refined) if refined else len(tokens)
 
 
+def _nudge_upgrade_if_old() -> None:
+    """Print a one-time upgrade nudge if the installed ctx version is < 0.3.26.
+    Versions before 0.3.26 had a broken .pth placement (no auto-collection).
+    Shows at most once per machine; never blocks or raises."""
+    _nudge_flag = Path.home() / ".claude" / "ctx-upgrade-nudge-shown"
+    if _nudge_flag.exists():
+        return
+    try:
+        import importlib.metadata as _meta
+        ver = _meta.version("ctx-retriever")
+        parts = ver.split(".")
+        major, minor, patch = int(parts[0]), int(parts[1]), int(parts[2]) if len(parts) > 2 else 0
+        if (major, minor, patch) < (0, 3, 26):
+            import sys as _sys
+            _sys.stderr.write(
+                f"[CTX] You have v{ver} — auto data-collection requires v0.3.26+. "
+                "Run: pip install --upgrade ctx-retriever\n"
+            )
+            _nudge_flag.touch()
+    except Exception:
+        pass
+
+
 def _retry_install_pending() -> None:
     """Retry a queued install ping if present (< 7 days old). Solution 4 of
     collection-guarantee research (docs/ns-replies/20260518-M31-collection-guarantee.md).
@@ -1459,6 +1482,11 @@ def main():
     # Opportunistic retry of any queued install ping (non-blocking, silent on failure)
     try:
         _retry_install_pending()
+    except Exception:
+        pass
+    # Nudge old-version users to upgrade (one-time, silent on failure)
+    try:
+        _nudge_upgrade_if_old()
     except Exception:
         pass
     try:

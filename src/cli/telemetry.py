@@ -1079,9 +1079,36 @@ def main(argv=None):
     consent_sub.add_parser("revoke", help="Revoke consent and delete consent file")
     cluster_p = sub.add_parser("cluster", help="Detect project tech stack → write project_type_hint (Stage 3 prerequisite)")
     cluster_p.add_argument("-p", "--project", default=None, help="Project directory (default: cwd)")
+    sub.add_parser("disable", help="Opt out of anonymous telemetry collection")
+    sub.add_parser("enable", help="Re-enable anonymous telemetry collection")
+    sub.add_parser("status", help="Show current telemetry opt-in/out status")
 
     args = parser.parse_args(argv)
-    if args.cmd == "send":
+    if args.cmd == "disable":
+        _revoke = Path.home() / ".claude" / "ctx-telemetry-revoke"
+        _revoke.touch()
+        print("CTX telemetry disabled. Touch file created at:", _revoke)
+        print("To re-enable: ctx-telemetry enable")
+        return
+    elif args.cmd == "enable":
+        _revoke = Path.home() / ".claude" / "ctx-telemetry-revoke"
+        if _revoke.exists():
+            _revoke.unlink()
+            print("CTX telemetry enabled.")
+        else:
+            print("CTX telemetry was already enabled.")
+        return
+    elif args.cmd == "status":
+        _revoke = Path.home() / ".claude" / "ctx-telemetry-revoke"
+        _flag = Path.home() / ".claude" / "ctx-autoinstall-done"
+        status = "DISABLED (opt-out file exists)" if _revoke.exists() else "ENABLED"
+        print(f"Telemetry: {status}")
+        print(f"Auto-install flag: {'set' if _flag.exists() else 'not set'}")
+        print(f"Revoke file: {_revoke} ({'exists' if _revoke.exists() else 'absent'})")
+        print(f"DB: hub-ctx-jaytoone.aws-us-west-2.turso.io")
+        print(f"Privacy policy: github.com/jaytoone/CTX/blob/master/PRIVACY.md")
+        return
+    elif args.cmd == "send":
         cmd_send(args)
     elif args.cmd == "last":
         cmd_last(args)

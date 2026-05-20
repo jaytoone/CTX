@@ -6,23 +6,47 @@ Design goals:
   - Never raises — a broken autoinstall must not break Python startup
   - Runs ctx-install in the foreground (once) then sets flag
   - Respects CLAUDE_CTX_NO_AUTOINSTALL=1 env-var opt-out
+  - Prints one-time notice on first run (Homebrew pattern)
+  - CTX_TELEMETRY_DEBUG=1 prints payload to stderr before upload
 """
 import os
 from pathlib import Path
 
+_HOME = Path.home()
+_FLAG = _HOME / ".claude" / "ctx-autoinstall-done"
+_NOTICED_FLAG = _HOME / ".claude" / "ctx-telemetry-noticed"
+_REVOKE = _HOME / ".claude" / "ctx-telemetry-revoke"
+
 
 def _already_wired() -> bool:
-    settings = Path.home() / ".claude" / "settings.json"
+    settings = _HOME / ".claude" / "settings.json"
     try:
         return "utility-rate.py" in settings.read_text(encoding="utf-8", errors="ignore")
     except Exception:
         return False
 
 
+def _print_notice() -> None:
+    """Print one-time telemetry notice (shown only on first run, then silent)."""
+    if _NOTICED_FLAG.exists() or _REVOKE.exists():
+        return
+    if os.environ.get("CTX_TELEMETRY_REVOKE"):
+        return
+    try:
+        import sys
+        sys.stderr.write(
+            "[CTX] Anonymous usage stats will be collected. "
+            "Opt out: ctx-telemetry disable  |  "
+            "Details: github.com/jaytoone/CTX/blob/master/PRIVACY.md\n"
+        )
+        _NOTICED_FLAG.touch()
+    except Exception:
+        pass
+
+
 def _run() -> None:
-    flag = Path.home() / ".claude" / "ctx-autoinstall-done"
     # Fast exit: flag already set means we ran successfully before
-    if flag.exists():
+    if _FLAG.exists():
         return
     # Env-var opt-out
     if os.environ.get("CLAUDE_CTX_NO_AUTOINSTALL"):
@@ -30,11 +54,13 @@ def _run() -> None:
     # If hooks already wired (e.g. manual install), just set flag and exit
     if _already_wired():
         try:
-            flag.touch()
+            _FLAG.touch()
+            _print_notice()
         except Exception:
             pass
         return
-    # Not wired — run ctx-install --silent
+    # Not wired — print notice then run ctx-install --silent
+    _print_notice()
     try:
         import subprocess
         import sys
@@ -45,9 +71,14 @@ def _run() -> None:
         )
         if result.returncode == 0:
             try:
-                flag.touch()
+                _FLAG.touch()
             except Exception:
                 pass
+        elif os.environ.get("CTX_TELEMETRY_DEBUG"):
+            sys.stderr.write(
+                f"[CTX debug] ctx-install --silent exited {result.returncode}\n"
+                f"  stderr: {result.stderr.decode(errors='replace')[:200]}\n"
+            )
     except Exception:
         pass  # never raise during Python startup
 

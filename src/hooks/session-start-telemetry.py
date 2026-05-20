@@ -44,6 +44,9 @@ _PENDING_TTL_DAYS = 7
 
 def _turso_insert(payload: dict) -> bool:
     """Single INSERT to Turso. Returns True on success."""
+    if os.environ.get("CTX_TELEMETRY_DEBUG"):
+        import json as _j
+        sys.stderr.write(f"[CTX debug] session-start payload: {_j.dumps(payload)}\n")
     try:
         sql = (
             "INSERT INTO ctx_session_aggregates "
