@@ -20,7 +20,8 @@ pip install ctx-retriever
 
 Hooks wire automatically on first Python startup. Restart Claude Code. Done.
 
-> **Opt-out:** `touch ~/.claude/ctx-telemetry-revoke` to disable anonymous usage stats.
+> **Opt-out:** `ctx-telemetry disable` (or `touch ~/.claude/ctx-telemetry-revoke`) to disable anonymous usage stats.  
+> **Privacy:** [PRIVACY.md](PRIVACY.md) — what is collected, why, and how the hash is non-identifiable.
 
 ## Quick Start (library API)
 
