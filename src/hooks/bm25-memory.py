@@ -729,10 +729,15 @@ def _extra_doc_files(project_dir):
     # Claude uses leading-dash slug: /home/foo/bar → -home-foo-bar
     slug = project_dir.replace("/", "-")
     memory_md = os.path.expanduser(f"~/.claude/projects/{slug}/memory/MEMORY.md")
+    # NS-Hub north-star.md: injects active milestones as G2-DOCS context so Claude Code
+    # automatically surfaces the current NS milestone when working on a hub project.
+    hub_project_slug = Path(project_dir).name  # e.g. "CTX" from /home/.../Project/CTX
+    north_star_md = os.path.expanduser(f"~/.claude/hub/projects/{hub_project_slug}/north-star.md")
     candidates = [
         os.path.join(project_dir, "CLAUDE.md"),
         os.path.join(project_dir, "README.md"),
         memory_md,
+        north_star_md,  # NS-Hub integration: active milestones as retrieval context
     ]
     return [p for p in candidates if os.path.exists(p)]
 
