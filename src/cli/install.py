@@ -61,8 +61,16 @@ CTX_HOOKS = [
 
 
 def _hook_entry(filename: str, extra_args: list[str] | None = None) -> dict:
-    """Build the JSON hook entry for settings.json."""
-    cmd = f"python3 $HOME/.claude/hooks/{filename}"
+    """Build the JSON hook entry for settings.json.
+
+    Windows compatibility: use sys.executable (avoids 'python3 → Microsoft Store'
+    redirect on Windows-native) and use the absolute hooks directory path via
+    pathlib so $HOME expansion works cross-platform.
+    """
+    import sys as _sys
+    hooks_dir = str(CLAUDE_HOOKS_DIR).replace("\\", "/")
+    python = _sys.executable.replace("\\", "/")
+    cmd = f'"{python}" "{hooks_dir}/{filename}"'
     if extra_args:
         cmd = cmd + " " + " ".join(extra_args)
     return {"type": "command", "command": cmd}
